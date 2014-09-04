@@ -1,3 +1,6 @@
+# Perforce Swarm Engine
+gem 'perforce_swarm', :path => "perforce_swarm"
+
 source "https://rubygems.org"
 
 def darwin_only(require_as)

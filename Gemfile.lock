@@ -1,3 +1,9 @@
+PATH
+  remote: perforce_swarm
+  specs:
+    perforce_swarm (2014.4)
+      rails (~> 4.1.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -645,6 +651,7 @@ DEPENDENCIES
   omniauth-google-oauth2
   omniauth-twitter
   org-ruby
+  perforce_swarm!
   pg
   poltergeist (~> 1.5.1)
   pry

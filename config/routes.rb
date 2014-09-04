@@ -2,6 +2,9 @@ require 'sidekiq/web'
 require 'api/api'
 
 Gitlab::Application.routes.draw do
+
+  mount PerforceSwarm::Engine, at: "/"
+
   #
   # Search
   #

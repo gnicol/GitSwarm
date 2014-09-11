@@ -39,7 +39,6 @@
 #= require shortcuts_dashboard_navigation
 #= require shortcuts_issueable
 #= require shortcuts_network
-#= require perforce_swarm/application.js.coffee
 #= require_tree .
 
 window.slugify = (text) ->

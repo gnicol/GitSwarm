@@ -13,8 +13,17 @@ module PerforceSwarm
       end
     end
   end
+
+  module ApplicationControllerIncludes
+    def load_recent_projects
+      if current_user
+        @recent_projects = current_user.authorized_projects.sorted_by_activity.non_archived.limit(5)
+      end
+    end
+  end
 end
 
 class ApplicationController < ActionController::Base
   prepend PerforceSwarm::ApplicationControllerExtension
+  include PerforceSwarm::ApplicationControllerIncludes
 end

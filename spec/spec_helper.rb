@@ -55,9 +55,9 @@ RSpec.configure do |config|
   config.around(:each) do |test|
     path = test.metadata[:file_path].gsub(/^.*\/spec/, "./spec") +','+testdescription(test.metadata)
     if(!$rspec_pathlist.include?(path) || $rspec_pathlist[path]==test.metadata[:file_path])
-      #Unfortunately, multiple tests will result in the same path if the test is not described with 
+      # Unfortunately, multiple tests will result in the same path if the test is not described with 
       # an "it" block (this is pretty simple).  
-      #We therefore only allow dupes in the same test file.
+      # We therefore only allow dupes in the same test file.
       $rspec_pathlist[path] = test.metadata[:file_path]
       test.run
     end

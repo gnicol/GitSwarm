@@ -47,8 +47,8 @@ RSpec.configure do |config|
         return metadata[:description_args][0].to_s
      else
         return testdescription(metadata[:example_group])+"/"+metadata[:description_args][0].to_s
-        end
      end
+  end
 
    config.around(:each) do |test|
      path = test.metadata[:file_path].gsub(/^.*\/spec/, "./spec") +','+testdescription(test.metadata)
@@ -58,6 +58,6 @@ RSpec.configure do |config|
        #We therefore only allow dupes in the same test file.
           $rspec_pathlist[path] = test.metadata[:file_path]
           test.run
-       end
-     end
+      end
+   end
 end

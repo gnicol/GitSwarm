@@ -30,10 +30,13 @@ namespace :pspec do
 end
 
 desc "GITLAB | Run specs"
-task :pspec do
+task :pspec, :response do | t, args |
+  arglist =  ENV.select{|k,v| (%W(line example tag pattern P e l t).include?k) }
+                .map{|k,v| (k.length>1?"--":"-")+"#{k} #{v}"}.join(" ");
+
   cmds = [
     %W(rake gitlab:setup),
-    %W(#{@rspec_command}),
+    "#{@rspec_command} #{arglist}",
   ]
   run_commands(cmds)
 end

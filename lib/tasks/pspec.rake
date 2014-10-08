@@ -1,11 +1,11 @@
-Rake::Task["spec"].clear if Rake::Task.task_defined?('spec')
+namespace :pspec do
+  @rspec_command = "rspec perforce_swarm/spec spec"
 
-namespace :spec do
   desc 'GITLAB | Run request specs'
   task :api do
     cmds = [
       %W(rake gitlab:setup),
-      %W(rspec spec --tag @api)
+      %W(#{@rspec_command} --tag @api)
     ]
     run_commands(cmds)
   end
@@ -14,7 +14,7 @@ namespace :spec do
   task :feature do
     cmds = [
       %W(rake gitlab:setup),
-      %W(rspec spec --tag @feature)
+      %W(#{@rspec_command} --tag @feature)
     ]
     run_commands(cmds)
   end
@@ -23,17 +23,17 @@ namespace :spec do
   task :other do
     cmds = [
       %W(rake gitlab:setup),
-      %W(rspec spec --tag ~@api --tag ~@feature)
+      %W(#{@rspec_command} --tag ~@api --tag ~@feature)
     ]
     run_commands(cmds)
   end
 end
 
 desc "GITLAB | Run specs"
-task :spec do
+task :pspec do
   cmds = [
     %W(rake gitlab:setup),
-    %W(rspec spec)
+    %W(#{@rspec_command}),
   ]
   run_commands(cmds)
 end

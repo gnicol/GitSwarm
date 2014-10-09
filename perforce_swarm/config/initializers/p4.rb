@@ -1,0 +1,24 @@
+require 'P4'
+require 'request_store'
+
+# Setup Perforce connection
+module PerforceSwarm
+  class P4
+    def self.run *args
+      get_connection.run *args
+    end
+
+    def self.get_connection
+      return RequestStore.store[:p4] if RequestStore.store[:p4]
+
+      config      = PerforceSwarm::Config.p4
+      p4          = ::P4.new
+      p4.port     = config.port
+      p4.user     = config.user
+      p4.password = config['password'] || ""
+      p4.connect
+
+      RequestStore.store[:p4] = p4
+    end
+  end
+end

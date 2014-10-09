@@ -9,5 +9,4 @@ module PerforceSwarm
   end
 end
 
-# Perforce Config
 PerforceSwarm::Config['p4'] ||= Settingslogic.new({})

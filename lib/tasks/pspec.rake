@@ -1,5 +1,5 @@
 namespace :pspec do
-  @rspec_command = "rspec perforce_swarm/spec spec"
+  @rspec_command = "rspec spec perforce_swarm/spec"
 
   desc 'GITLAB | Run request specs'
   task :api do
@@ -36,7 +36,7 @@ task :pspec, :response do | t, args |
 
   cmds = [
     %W(rake gitlab:setup),
-    "#{@rspec_command} #{arglist}",
+    "#{@rspec_command} #{arglist}".split("\s"),
   ]
   run_commands(cmds)
 end

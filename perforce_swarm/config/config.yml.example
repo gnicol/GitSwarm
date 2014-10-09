@@ -1,8 +1,8 @@
 defaults: &defaults
-  # perforce:
-  #   port: "localhost:1666"
-  #   user: "jdoe"
-  #   password: "secret"
+  p4:
+    port: "perforce:1666"
+    user: "jdoe"
+    password: "secret"
 
 development:
   <<: *defaults

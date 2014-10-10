@@ -1,8 +1,8 @@
 require 'P4'
 require 'request_store'
 
-# Setup Perforce connection
 module PerforceSwarm
+  # Creates a P4 connection and hangs onto it for the life of a request.
   class P4
     def self.run *args
       get_connection.run *args

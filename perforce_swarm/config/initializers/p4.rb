@@ -2,7 +2,7 @@ require 'P4'
 require 'request_store'
 
 module PerforceSwarm
-  # Creates a P4 connection and hangs onto it for the life of a request.
+  # Lazy creates a P4 connection and hangs onto it for the life of a request.
   class P4
     def self.run *args
       get_connection.run *args
@@ -15,7 +15,7 @@ module PerforceSwarm
       p4          = ::P4.new
       p4.port     = config.port
       p4.user     = config.user
-      p4.password = config['password'] || ""
+      p4.password = config['password'] || ''
       p4.connect
 
       RequestStore.store[:p4] = p4

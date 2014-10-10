@@ -1,6 +1,6 @@
 # Perforce Swarm Engine
-gem 'perforce_swarm', :path => "perforce_swarm"
-eval_gemfile File.join(File.dirname(__FILE__), "perforce_swarm/Gemfile")
+gem 'perforce_swarm', :path => 'perforce_swarm'
+eval_gemfile File.join(File.dirname(__FILE__), 'perforce_swarm/Gemfile')
 
 source "https://rubygems.org"
 

@@ -6,7 +6,7 @@ namespace :perforce_swarm do
 
     # Grab all the projects from p4 so we can turn them
     # into GitLab projects via the create service.
-    projects = PerforceSwarm::P4.run 'keys', '-e', 'swarm-project-*'
+    projects = PerforceSwarm::P4.run('keys', '-e', 'swarm-project-*')
     projects.each do |project|
       project = project.fetch('value')
       project = ActiveSupport::JSON.decode(project)

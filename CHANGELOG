@@ -1,7 +1,48 @@
+v 7.4.0
+  - Refactored membership logic
+  - Improve error reporting on users API (Julien Bianchi)
+  - Refactor test coverage tools usage. Use SIMPLECOV=true to generate it locally
+  - Default branch is protected by default
+  - Increase unicorn timeout to 60 seconds
+  - Sort search autocomplete projects by stars count so most popular go first
+  - Add README to tab on project show page
+  - Do not delete tmp/repositories itself during clean-up, only its contents
+  - Support for backup uploads to remote storage
+  - Prevent notes polling when there are not notes
+  - API: Add support for forking a project via the API (Bernhard Kaindl)
+  - API: filter project issues by milestone (Julien Bianchi)
+  - Fail harder in the backup script
+  - Changes to Slack service structure, only webhook url needed
+  - Zen mode for wiki and milestones (Robert Schilling)
+  - Move Emoji parsing to html-pipeline-gitlab (Robert Schilling)
+  - Font Awesome 4.2 integration (Sullivan Senechal)
+  - Add Pushover service integration (Sullivan Senechal)
+  - Add select field type for services options (Sullivan Senechal)
+  - Add cross-project references to the Markdown parser (Vinnie Okada)
+  - Add task lists to issue and merge request descriptions (Vinnie Okada)
+  - Snippets can be public, internal or private
+  - Improve danger zone: ask project path to confirm data-loss action
+  - Raise exception on forgery
+  - Show build coverage in Merge Requests (requires GitLab CI v5.1)
+  - New milestone and label links on issue edit form
+  - Improved repository graphs
+  - Improve event note display in dashboard and project activity views (Vinnie Okada)
+
+v 7.3.2
+  - Fix creating new file via web editor
+  - Use gitlab-shell v2.0.1
+
+v 7.3.1
+  - Fix ref parsing in Gitlab::GitAccess
+  - Fix error 500 when viewing diff on a file with changed permissions
+  - Fix adding comments to MR when source branch is master
+  - Fix error 500 when searching description contains relative link
+
 v 7.3.0
   - Always set the 'origin' remote in satellite actions
   - Write authorized_keys in tmp/ during tests
   - Use sockets to connect to Redis
+  - Add dormant New Relic gem (can be enabled via environment variables)
   - Expire Rack sessions after 1 week
   - Cleaner signin/signup pages
   - Improved comments UI
@@ -30,6 +71,8 @@ v 7.3.0
   - Enabled Shibboleth authentication support (Matus Banas)
   - Zen mode (fullscreen) for issues/MR/notes (Robert Schilling)
   - Add ability to configure webhook timeout via gitlab.yml (Wes Gurney)
+  - Sort project merge requests in asc or desc order for updated_at or created_at field (sponsored by O'Reilly Media)
+  - Add Redis socket support to 'rake gitlab:shell:install'
 
 v 7.2.1
   - Delete orphaned labels during label migration (James Brooks)

@@ -1,4 +1,11 @@
+PATH
+  remote: perforce_swarm
+  specs:
+    perforce_swarm (2014.4)
+      rails (~> 4.1.1)
+
 GEM
+  remote: http://geminabox.das.perforce.com/
   remote: https://rubygems.org/
   specs:
     RedCloth (4.2.9)
@@ -337,6 +344,9 @@ GEM
     org-ruby (0.9.9)
       rubypants (~> 0.2)
     orm_adapter (0.5.0)
+    p4ruby-internal (2014.1)
+      rake (~> 10.3)
+      rdoc (~> 3.0)
     pg (0.15.1)
     phantomjs (1.9.2.0)
     poltergeist (1.5.1)
@@ -658,6 +668,8 @@ DEPENDENCIES
   omniauth-shibboleth
   omniauth-twitter
   org-ruby (= 0.9.9)
+  p4ruby-internal
+  perforce_swarm!
   pg
   poltergeist (~> 1.5.1)
   pry

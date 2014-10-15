@@ -26,6 +26,8 @@ v 7.4.0
   - Show build coverage in Merge Requests (requires GitLab CI v5.1)
   - New milestone and label links on issue edit form
   - Improved repository graphs
+  - Improve event note display in dashboard and project activity views (Vinnie Okada)
+  - Add users sorting to admin area
 
 v 7.3.2
   - Fix creating new file via web editor

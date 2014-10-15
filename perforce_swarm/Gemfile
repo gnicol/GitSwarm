@@ -1,5 +1,4 @@
 source 'http://geminabox.das.perforce.com/'
 
 gem 'p4ruby-internal'
-gem 'request_store'
 gem 'js-routes', '~> 0.9.9'

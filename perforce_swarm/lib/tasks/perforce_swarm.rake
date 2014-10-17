@@ -1,6 +1,6 @@
 namespace :perforce_swarm do
-  desc "Import Perforce Swarm Data"
-  task :import => :environment do
+  desc 'Import Perforce Swarm Data'
+  task import: :environment do
     # We need a user to create a project via the service.
     admin = User.order(:id).find_by!(admin: true)
 
@@ -10,12 +10,10 @@ namespace :perforce_swarm do
     projects.each do |project|
       project = project.fetch('value')
       project = ActiveSupport::JSON.decode(project)
-      project = ::Projects::CreateService.new(
+      ::Projects::CreateService.new(
         admin,
-        {
-          name:         project.fetch('name'),
-          description:  project.fetch('description')
-        }
+        name:         project.fetch('name'),
+        description:  project.fetch('description')
       ).execute
     end
   end

@@ -16,7 +16,7 @@ class Spinach::Features::EventFilters < Spinach::FeatureSteps
     end
     # Submit the comment
     within('.js-main-target-form') do
-      click_button "Add Comment"
+      click_button 'Add Comment'
     end
   end
 

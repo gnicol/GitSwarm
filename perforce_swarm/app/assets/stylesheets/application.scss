@@ -1,1 +1,8 @@
-@import "../../../../app/assets/stylesheets/application";
+/*
+ * Prepend Gitlab Styles
+ *= require "../../../../app/assets/stylesheets/application"
+ */
+
+/* Bootstrap variables and mixins that we can referenc in our own files */
+@import "bootstrap/variables";
+@import "bootstrap/mixins";

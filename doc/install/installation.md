@@ -1,18 +1,22 @@
 # Installation
 
+## Consider the Omnibus package installation
+
+Since a manual installation is a lot of work and error prone we strongly recommend the fast and reliable [Omnibus package installation](https://about.gitlab.com/downloads/) (deb/rpm).
+
 ## Select Version to Install
 
 Make sure you view [this installation guide](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md) from the branch (version) of GitLab you would like to install. In most cases this should be the highest numbered stable branch (example shown below).
 
 ![Select latest branch](https://i.imgur.com/Lrdxk1k.png)
 
-If the highest number stable branch is unclear please check the [GitLab Blog](https://www.gitlab.com/blog/) for installation guide links by version.
+If the highest number stable branch is unclear please check the [GitLab Blog](https://about.gitlab.com/blog/) for installation guide links by version.
 
 ## Important Notes
 
 This guide is long because it covers many cases and includes all commands you need, this is [one of the few installation scripts that actually works out of the box](https://twitter.com/robinvdvleuten/status/424163226532986880).
 
-This installation guide was created for and tested on **Debian/Ubuntu** operating systems. Please read [doc/install/requirements.md](./requirements.md) for hardware and operating system requirements. If you want to install on RHEL/CentOS we recommend using the [Omnibus packages](https://www.gitlab.com/downloads/).
+This installation guide was created for and tested on **Debian/Ubuntu** operating systems. Please read [doc/install/requirements.md](./requirements.md) for hardware and operating system requirements. If you want to install on RHEL/CentOS we recommend using the [Omnibus packages](https://about.gitlab.com/downloads/).
 
 This is the official installation guide to set up a production server. To set up a **development installation** or for many other installation options please see [the installation section of the readme](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/README.md#installation).
 
@@ -28,6 +32,7 @@ The GitLab installation consists of setting up the following components:
 1. Ruby
 1. System Users
 1. Database
+1. Redis
 1. GitLab
 1. Nginx
 
@@ -139,7 +144,12 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
 
     # Configure redis to use sockets
     sudo cp /etc/redis/redis.conf /etc/redis/redis.conf.orig
-    sed -e 's/^# unixsocket /unixsocket /' -e 's/^port .*/port 0/' /etc/redis/redis.conf.orig | sudo tee /etc/redis/redis.conf
+
+    # Disable Redis listening on TCP by setting 'port' to 0
+    sed 's/^port .*/port 0/' /etc/redis/redis.conf.orig | sudo tee /etc/redis/redis.conf
+
+    # Enable Redis socket for default Debian / Ubuntu path
+    echo 'unixsocket /var/run/redis/redis.sock' | sudo tee -a /etc/redis/redis.conf
 
     # Activate the changes to redis.conf
     sudo service redis-server restart
@@ -155,9 +165,9 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
 ### Clone the Source
 
     # Clone GitLab repository
-    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-2-stable gitlab
+    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-3-stable gitlab
 
-**Note:** You can change `7-2-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
+**Note:** You can change `7-3-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
 
 ### Configure It
 
@@ -192,7 +202,7 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
 
     # Find number of cores
     nproc
-    
+
     # Enable cluster mode if you expect to have a high load instance
     # Ex. change amount of workers to 3 for 2GB RAM server
     # Set the number of workers to at least the number of cores
@@ -210,7 +220,7 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
     # Configure Redis connection settings
     sudo -u git -H cp config/resque.yml.example config/resque.yml
 
-    # Change the Redis socket path if necessary
+    # Change the Redis socket path if you are not using the default Debian / Ubuntu configuration
     sudo -u git -H editor config/resque.yml
 
 **Important Note:** Make sure to edit both `gitlab.yml` and `unicorn.rb` to match your setup.
@@ -252,7 +262,7 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
 GitLab Shell is an SSH access and repository management software developed specially for GitLab.
 
     # Run the installation task for gitlab-shell (replace `REDIS_URL` if needed):
-    sudo -u git -H bundle exec rake gitlab:shell:install[v1.9.7] REDIS_URL=redis://localhost:6379 RAILS_ENV=production
+    sudo -u git -H bundle exec rake gitlab:shell:install[v2.0.1] REDIS_URL=unix:/var/run/redis/redis.sock RAILS_ENV=production
 
     # By default, the gitlab-shell config is generated from your main GitLab config.
     # You can review (and modify) the gitlab-shell config as follows:
@@ -337,7 +347,7 @@ Validate your `gitlab` or `gitlab-ssl` Nginx config file with the following comm
 
     sudo nginx -t
 
-You should receive `syntax is okay` and `test is successful` messages. If you receive errors check your `gitlab` or `gitlab-ssl` Nginx config file for typos, etc. as indiciated in the error message given.
+You should receive `syntax is okay` and `test is successful` messages. If you receive errors check your `gitlab` or `gitlab-ssl` Nginx config file for typos, etc. as indicated in the error message given.
 
 ### Restart
 

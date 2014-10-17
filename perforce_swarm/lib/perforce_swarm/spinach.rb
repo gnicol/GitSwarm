@@ -5,11 +5,11 @@ Spinach.hooks.before_run do
   # All scenarios in parent application that need to be skipped should be marked with a '@skip-parent' tag
   # in the rails engine, for a dummy scenario with the same name & feature location as the parent
   skipped_scenarios = Hash.new
-  Dir["#{Rails.root}/perforce_swarm/features/**/*.feature"].each do|engine_file|
+  Dir["#{Rails.root}/perforce_swarm/features/**/*.feature"].each do |engine_file|
     app_file = engine_file.gsub(/\/perforce_swarm/, '')
     next unless File.exist?(app_file)
 
-    feature_name =  `grep 'Feature:' #{engine_file} |sed 's/Feature: *//g'`.strip
+    feature_name = `grep 'Feature:' #{engine_file} |sed 's/Feature: *//g'`.strip
     local_skipped_scenarios = `grep -C 1 '@skip-parent' #{engine_file} |grep 'Scenario:'|sed 's/Scenario: *//g'`
         .split("\n")
         .each { |a| a.strip! if a.respond_to? :strip! }

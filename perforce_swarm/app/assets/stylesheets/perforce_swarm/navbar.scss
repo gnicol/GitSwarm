@@ -84,20 +84,6 @@ header.navbar-gitlab .navbar-inner {
     padding-right: 2px;
   }
 
-  @media (min-width: $screen-sm) {
-    /* Hide the navbar toggle on all but xs screen sizes */
-    .navbar-toggle {
-      display: none;
-    }
-    /**
-     * Hide navless menus on all but xs screen sizes
-     * (navless menus still contain help links in xs mode)
-     */
-    .main-nav.navless {
-      display: none !important;
-    }
-  }
-
   @media (max-width: $screen-xs-max) {
     /* Restore bootstrap defaults, as Gitlab's styles do some weird sizing here */
     .navbar-nav {
@@ -141,5 +127,19 @@ header.navbar-gitlab .navbar-inner {
       right: 0;
       left: auto;
     }
+  }
+}
+
+@media (min-width: $screen-sm) {
+  /* Hide the navbar toggle on all but xs screen sizes */
+  .navbar-toggle {
+    display: none;
+  }
+  /**
+   * Hide navless menus on all but xs screen sizes
+   * (navless menus still contain help links in xs mode)
+   */
+  .main-nav.navless {
+    display: none !important;
   }
 }

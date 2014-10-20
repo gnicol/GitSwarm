@@ -1,4 +1,4 @@
-if ENV['RAILS_ENV'] != 'production'
+if ENV['RAILS_ENV'] == 'test'
   require 'rspec'
   Dir[Rails.root.join('perforce_swarm/spec/support/**/*.rb')].each { |f| require f }
 

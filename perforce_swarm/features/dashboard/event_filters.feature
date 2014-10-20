@@ -99,7 +99,7 @@ Feature: Event Filters
     Given I sign in as a user
     And I own a project
     And I create a new merge request event
-    When I visit the dashboard page
+    When I visit dashboard page
     Then I should see open merge request event
 
   # Similar test cases exist in rspec
@@ -108,7 +108,7 @@ Feature: Event Filters
     And I own a project
     And I create a new merge request event
     And I close the merge request
-    When I visit the dashboard page
+    When I visit dashboard page
     Then I should see closed merge request event
 
   # Similar test cases exist in rspec
@@ -117,6 +117,53 @@ Feature: Event Filters
     And I own a project
     And this project has a push event
     And this commit has a comment
-    When I visit the dashboard page
+    When I visit dashboard page
     Then I should see comment on commit event
 
+  Scenario: I should see the new branch event
+    Given I sign in as a user
+    And I own a project
+    And I create a new branch
+    When I visit dashboard page
+    Then I should see new branch event
+
+  Scenario: I should navigate to the branch commit page
+    Given I sign in as a user
+    And I own a project
+    And I create a new branch
+    And I visit dashboard page
+    When I click on the branch link on the new branch event
+    Then I should see branch commit page
+
+  Scenario: I should see branch delete event
+    Given I sign in as a user
+    And I own a project
+    And this project has a second branch
+    And I delete the branch
+    When I visit dashboard page
+    Then I should see branch delete event
+
+  Scenario: I should not see link on branch delete event
+    Given I sign in as a user
+    And I own a project 
+    And this project has a second branch
+    And I delete the branch
+    When I visit dashboard page
+    Then I should not see a link to the branch in the branch delete event
+
+  Scenario: I should see error message that branch has been deleted
+    Given I sign in as a user
+    And I own a project
+    And this project has a deleted branch
+    And I visit dashboard page
+    When I click on a link to the deleted branch
+    Then I should see error message that branch has been deleted
+
+  Scenario: I should see the branch commit page
+    Given I sign in as a user
+    And I own a project
+    And this project has issue #1
+    And I create a branch called "#1"
+    And I visit dashboard page
+    When I click link to branch
+    Then I should see the branch commit page

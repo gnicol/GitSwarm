@@ -12,9 +12,7 @@ module PerforceSwarm
         gon.current_user_is_admin = current_user.is_admin?
       end
     end
-  end
 
-  module ApplicationControllerIncludes
     def load_recent_projects
       if current_user
         @recent_projects = current_user.authorized_projects.sorted_by_activity.non_archived.limit(5)
@@ -25,5 +23,5 @@ end
 
 class ApplicationController < ActionController::Base
   prepend PerforceSwarm::ApplicationControllerExtension
-  include PerforceSwarm::ApplicationControllerIncludes
+  before_filter :load_recent_projects
 end

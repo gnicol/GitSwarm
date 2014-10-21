@@ -1,6 +1,6 @@
 module PerforceSwarm
   class Config < Settingslogic
-    if File.exists? "#{__dir__}/../config.yml"
+    if File.exist? "#{__dir__}/../config.yml"
       source("#{__dir__}/../config.yml")
     else
       source({})

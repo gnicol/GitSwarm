@@ -40,7 +40,6 @@ GEM
     rake (10.3.2)
     rdoc (3.12.2)
       json (~> 1.4)
-    request_store (1.0.5)
     sprockets (2.12.1)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -62,4 +61,3 @@ PLATFORMS
 DEPENDENCIES
   js-routes (~> 0.9.9)
   p4ruby-internal
-  request_store

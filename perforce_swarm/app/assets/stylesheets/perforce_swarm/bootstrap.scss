@@ -1,5 +1,7 @@
-// The dropdown menu (ul)
-// Square off the border and drop the box-shadow
+/*
+ * The dropdown menu (ul)
+ * Square off the border and drop the box-shadow
+ */
 .dropdown-menu {
   border-radius: 0px;
   @include box-shadow(none);

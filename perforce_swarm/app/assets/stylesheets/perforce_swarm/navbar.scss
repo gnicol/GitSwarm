@@ -69,12 +69,8 @@ header.navbar-gitlab .navbar-inner {
         padding-top: 9px;
         padding-bottom: 9px;
         line-height: 24px;
-        padding-right: 2px !important;
+        padding-right: 3px !important;
         top: 0;
-
-        .caret {
-          margin-left: 0;
-        }
       }
     }
   }
@@ -113,8 +109,12 @@ header.navbar-gitlab .navbar-inner {
         width: 100%;
       }
 
+      .dropdown-header, > li > a {
+        line-height: 18px;
+        padding: 5px 15px 5px 25px;
+      }
+
       > li > a {
-        line-height: $line-height-computed;
         text-align: left;
         &:hover,
         &:focus {

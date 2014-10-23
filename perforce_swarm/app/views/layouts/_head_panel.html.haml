@@ -58,7 +58,7 @@
         %li.dropdown.navbar-right
           %a.dropdown-toggle.profile-pic{href: '#', 'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', title: 'User Menu', class: 'has_bottom_tooltip', 'data-original-title' => 'User Menu', 'aria-label' => 'User Menu'}
             = image_tag avatar_icon(current_user.email, 26)
-            %span.caret
+            %span.caret>
           %ul.dropdown-menu{role: 'menu', 'aria-label' => 'User Menu'}
             %li{role: 'menuitem'}
               = link_to current_user, class: 'profile-link' do

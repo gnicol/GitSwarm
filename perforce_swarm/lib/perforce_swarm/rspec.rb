@@ -4,8 +4,6 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     Dir[Rails.root.join('perforce_swarm/spec/support/**/*.rb')].each { |f| require f }
-    config.include PerforceTestEnv
-    PerforceTestEnv.init
   end
 
   def testdescription(metadata)

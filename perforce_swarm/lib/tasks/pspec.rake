@@ -31,7 +31,7 @@ end
 
 desc 'GITLAB | Run specs'
 task :pspec do
-  arglist = ENV.select { |k, _v| (%w(line example tag pattern P e l t).include?(k)) }
+  arglist = ENV.select { |k, _v| (%w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)) }
                .map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')
 
   cmds = [

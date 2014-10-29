@@ -2,25 +2,24 @@ require 'rspec'
 
 RSpec.configure do |config|
 
-  rspec_pathlist = Hash.new
   override_file = 'perforce_swarm/config/override_names'
   skip_count = 0
 
   def ensure_file(filename)
     unless File.exist?(filename)
-      File.open(Rails.root.join(filename), 'w') {|f| f.write('')}
+      File.open(Rails.root.join(filename), 'w') { |f| f.write('') }
     end
   end
 
   def in_file?(filename, data)
-    lines = File.open(Rails.root.join(filename),'r').read.split("\n")
+    lines = File.open(Rails.root.join(filename), 'r').read.split("\n")
     lines.include?(data)
   end
 
   def unique_add_to_file(filename, data)
     unless in_file?(filename, data)
-      File.open(Rails.root.join(filename), 'a') {|f| f.write(data+"\n")}
-    end   
+      File.open(Rails.root.join(filename), 'a') { |f| f.write(data + "\n") }
+    end
   end
 
   def test_description(metadata)
@@ -37,7 +36,7 @@ RSpec.configure do |config|
   def override_label(metadata)
     test_filepath(metadata) + ',' + test_description(metadata)
   end
-  
+
   config.before(:suite) do
     Dir[Rails.root.join('perforce_swarm/spec/support/**/*.rb')].each { |f| require f }
     ensure_file(override_file)
@@ -48,21 +47,21 @@ RSpec.configure do |config|
   end
 
   config.around(:each) do |test|
-    if test.metadata.has_key?(:override) && test.metadata[:override] == true
+    if test.metadata.key?(:override) && test.metadata[:override] == true
       unique_add_to_file(override_file, override_label(test.metadata))
       test.run
     elsif in_file?(override_file, override_label(test.metadata))
       # skip this test
       skip_count += 1
-      print "(S)"
+      print '(S)'
     else
       test.run
     end
   end
-  #if !rspec_pathlist.include?(path) || rspec_pathlist[path] == test.metadata[:file_path]
-    # Unfortunately, multiple tests will result in the same path if the test is not described with
-    # an "it" block (this is pretty simple).
-    # We therefore only allow dupes in the same test file.
-    # rspec_pathlist[path] = test.metadata[:file_path]
-  #end
+  # if !rspec_pathlist.include?(path) || rspec_pathlist[path] == test.metadata[:file_path]
+  #   Unfortunately, multiple tests will result in the same path if the test is not described with
+  #   an "it" block (this is pretty simple).
+  #   We therefore only allow dupes in the same test file.
+  #   rspec_pathlist[path] = test.metadata[:file_path]
+  # end
 end

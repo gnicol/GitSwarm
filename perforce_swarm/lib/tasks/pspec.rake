@@ -31,12 +31,13 @@ end
 
 desc 'GITLAB | Run specs'
 task :pspec do
-  arglist = ENV.select { |k, _v| (%w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)) }
-               .map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')
+  arglist = ENV.select do |k, _v|
+    %w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)
+  end
 
   cmds = [
     %w(rake gitlab:setup),
-    "#{@rspec_command} #{arglist}".split("\s")
+    "#{@rspec_command} #{arglist.map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')}".split("\s")
   ]
   run_commands(cmds)
 end

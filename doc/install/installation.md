@@ -74,8 +74,8 @@ Is the system packaged Git too old? Remove it and compile from source.
 
     # Download and compile from source
     cd /tmp
-    curl -L --progress https://www.kernel.org/pub/software/scm/git/git-2.0.0.tar.gz | tar xz
-    cd git-2.0.0/
+    curl -L --progress https://www.kernel.org/pub/software/scm/git/git-2.1.2.tar.gz | tar xz
+    cd git-2.1.2/
     make prefix=/usr/local all
 
     # Install into /usr/local/bin
@@ -150,6 +150,17 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
 
     # Enable Redis socket for default Debian / Ubuntu path
     echo 'unixsocket /var/run/redis/redis.sock' | sudo tee -a /etc/redis/redis.conf
+    # Grant permission to the socket to all members of the redis group
+    echo 'unixsocketperm 770' | sudo tee -a /etc/redis/redis.conf
+
+    # Create the directory which contains the socket
+    mkdir /var/run/redis
+    chown redis:redis /var/run/redis
+    chmod 755 /var/run/redis
+    # Persist the directory which contains the socket, if applicable
+    if [ -d /etc/tmpfiles.d ]; then
+      echo 'd  /var/run/redis  0755  redis  redis  10d  -' | sudo tee -a /etc/tmpfiles.d/redis.conf
+    fi
 
     # Activate the changes to redis.conf
     sudo service redis-server restart
@@ -165,9 +176,9 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
 ### Clone the Source
 
     # Clone GitLab repository
-    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-3-stable gitlab
+    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-4-stable gitlab
 
-**Note:** You can change `7-3-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
+**Note:** You can change `7-4-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
 
 ### Configure It
 

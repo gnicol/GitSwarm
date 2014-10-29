@@ -1,3 +1,19 @@
+v 7.5.0
+  - API: Add support for Hipchat (Kevin Houdebert)
+  - Add time zone configuration on gitlab.yml (Sullivan Senechal)
+  - Fix LDAP authentication for Git HTTP access
+  - Fix LDAP config lookup for provider 'ldap'
+  - Add Atlassian Bamboo CI service (Drew Blessing)
+
+v 7.4.2
+  - Fix internal snippet exposing for unauthenticated users
+
+v 7.4.1
+  - Fix LDAP authentication for Git HTTP access
+  - Fix LDAP config lookup for provider 'ldap'
+  - Fix public snippets
+  - Fix 500 error on projects with nested submodules
+
 v 7.4.0
   - Refactored membership logic
   - Improve error reporting on users API (Julien Bianchi)
@@ -28,6 +44,13 @@ v 7.4.0
   - Improved repository graphs
   - Improve event note display in dashboard and project activity views (Vinnie Okada)
   - Add users sorting to admin area
+  - UI improvements
+  - Fix ambiguous sha problem with mentioned commit
+  - Fixed bug with apostrophe when at mentioning users
+  - Add active directory ldap option
+  - Developers can push to wiki repo. Protected branches does not affect wiki repo any more 
+  - Faster rev list
+  - Fix branch removal
 
 v 7.3.2
   - Fix creating new file via web editor

@@ -277,6 +277,9 @@ GEM
       turbolinks
     jquery-ui-rails (4.2.1)
       railties (>= 3.2.16)
+    js-routes (0.9.9)
+      railties (>= 3.2)
+      sprockets-rails
     json (1.8.1)
     jwt (0.1.13)
       multi_json (>= 1.5)
@@ -654,6 +657,7 @@ DEPENDENCIES
   jquery-scrollto-rails
   jquery-turbolinks
   jquery-ui-rails
+  js-routes (~> 0.9.9)
   kaminari (~> 0.15.1)
   launchy
   letter_opener

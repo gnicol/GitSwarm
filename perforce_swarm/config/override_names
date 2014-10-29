@@ -1,0 +1,1 @@
+./spec/lib/gitlab/ldap/config_spec.rb,Gitlab::LDAP::Config/initalize/works

@@ -4,6 +4,7 @@ RSpec.configure do |config|
 
   rspec_pathlist = Hash.new
   override_file = 'perforce_swarm/config/override_names'
+  skip_count = 0
 
   def ensure_file(filename)
     unless File.exist?(filename)
@@ -42,12 +43,17 @@ RSpec.configure do |config|
     ensure_file(override_file)
   end
 
+  config.after(:suite) do
+    puts "\n#{skip_count} example#{'s' if skip_count > 1} skipped" if skip_count > 0
+  end
+
   config.around(:each) do |test|
     if test.metadata.has_key?(:override) && test.metadata[:override] == :true
       unique_add_to_file(override_file, override_label(test.metadata))
       test.run
     elsif in_file?(override_file, override_label(test.metadata))
       # skip this test
+      skip_count += 1
       print "(S)"
     else
       test.run

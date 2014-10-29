@@ -5,7 +5,7 @@ describe Gitlab::LDAP::Config do
   let(:provider) { 'ldap' }
 
   describe :initalize do
-    it "works", :override => :true do
+    it "works", override: true do
       expect(config).to be_a described_class
     end
   end

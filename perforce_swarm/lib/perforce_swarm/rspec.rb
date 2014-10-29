@@ -48,7 +48,7 @@ RSpec.configure do |config|
   end
 
   config.around(:each) do |test|
-    if test.metadata.has_key?(:override) && test.metadata[:override] == :true
+    if test.metadata.has_key?(:override) && test.metadata[:override] == true
       unique_add_to_file(override_file, override_label(test.metadata))
       test.run
     elsif in_file?(override_file, override_label(test.metadata))

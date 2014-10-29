@@ -128,17 +128,3 @@ header.navbar-gitlab .navbar-inner {
     }
   }
 }
-
-@media (min-width: $screen-sm) {
-  /* Hide the navbar toggle on all but xs screen sizes */
-  .navbar-toggle {
-    display: none;
-  }
-  /**
-   * Hide navless menus on all but xs screen sizes
-   * (navless menus still contain help links in xs mode)
-   */
-  .main-nav.navless {
-    display: none !important;
-  }
-}

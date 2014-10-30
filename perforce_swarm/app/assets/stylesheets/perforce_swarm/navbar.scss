@@ -66,8 +66,7 @@ header.navbar-gitlab .navbar-inner {
       }
 
       .profile-pic {
-        padding-top: 9px;
-        padding-bottom: 9px;
+        padding: 9px;
         line-height: 24px;
         padding-right: 3px !important;
         top: 0;
@@ -126,5 +125,11 @@ header.navbar-gitlab .navbar-inner {
       right: 0;
       left: auto;
     }
+  }
+}
+
+@media (max-width: $screen-xs-max) {
+  #nprogress .spinner {
+    display: none;
   }
 }

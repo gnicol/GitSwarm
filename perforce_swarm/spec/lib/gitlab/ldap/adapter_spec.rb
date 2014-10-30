@@ -13,7 +13,7 @@ describe Gitlab::LDAP::Adapter do
         before { ldap.stub(search: [:foo]) }
 
         it ' ', override: true do
-           should be_true
+          should be_true
         end
       end
 
@@ -26,7 +26,7 @@ describe Gitlab::LDAP::Adapter do
       end
     end
 
-    context "when the search encounters an error" do
+    context 'when the search encounters an error' do
       before { ldap.stub(search: nil, get_operation_result: double(code: 1, message: 'some error')) }
 
       it ' ', override: true do

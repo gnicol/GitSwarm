@@ -1,24 +1,27 @@
 namespace :pspec do
   @rspec_command = 'rspec spec perforce_swarm/spec'
+  @engine_command = 'rspec perforce_swarm/spec'
 
   desc 'GITLAB | Run main application specs'
   task :main_app do
-    arglist = ENV.select { |k, _v| (%w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)) }
-                 .map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')
+    arglist = ENV.select do |k, _v|
+      %w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)
+    end
     cmds = [
       %w(rake gitlab:setup),
-      "rspec spec #{arglist}".split("\s")
+      "rspec spec #{arglist.map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')}".split("\s")
     ]
     run_commands(cmds)
   end
-  
+
   desc 'GITLAB | Run engine specs only'
   task :engine do
-    arglist = ENV.select { |k, _v| (%w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)) }
-                 .map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')
+    arglist = ENV.select do |k, _v|
+      %w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)
+    end
     cmds = [
       %w(rake gitlab:setup),
-      "rspec perforce_swarm/spec #{arglist}".split("\s")
+      "#{@engine_command} #{arglist.map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')}".split("\s")
     ]
     run_commands(cmds)
   end
@@ -53,12 +56,12 @@ end
 
 desc 'GITLAB | Run specs'
 task :pspec do
-  arglist = ENV.select { |k, _v| (%w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)) }
-               .map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')
-
+  arglist = ENV.select do |k, _v|
+    %w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)
+  end
   cmds = [
     %w(rake gitlab:setup),
-    "#{@rspec_command} #{arglist}".split("\s")
+    "#{@rspec_command} #{arglist.map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')}".split("\s")
   ]
   run_commands(cmds)
 end

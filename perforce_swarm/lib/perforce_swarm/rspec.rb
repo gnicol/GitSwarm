@@ -24,9 +24,9 @@ RSpec.configure do |config|
 
   def test_description(metadata)
     if metadata[:example_group].nil? || metadata[:example_group][:description_args].length == 0
-      return metadata[:description_args][0].to_s
+      return metadata[:description_args][0].to_s.strip
     end
-    test_description(metadata[:example_group]) + '/' + metadata[:description_args][0].to_s
+    (test_description(metadata[:example_group]) + '/' + metadata[:description_args][0].to_s).strip
   end
 
   def test_filepath(metadata)

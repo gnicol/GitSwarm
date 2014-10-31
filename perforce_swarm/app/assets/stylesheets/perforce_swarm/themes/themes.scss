@@ -1,9 +1,16 @@
 /**
  * Add in Swarm specific styling to the other themes
  */
-@mixin swarm-themes-override($hover-color) {
+@mixin swarm-themes-override($hover-color, $icon-color) {
   header.navbar-gitlab .navbar-inner {
     .dashboard-menu.dropdown {
+      .title .caret {
+        @if $icon-color { color: $icon-color}
+        &:hover {
+          color: #FFF;
+        }
+      }
+
       &:hover {
         background-color: $hover-color;
       }
@@ -16,14 +23,14 @@
   }
 }
 .ui_color {
-  @include swarm-themes-override(#436);
+  @include swarm-themes-override(#436, #98C);
 }
 .ui_gray  {
-  @include swarm-themes-override(#272727);
+  @include swarm-themes-override(#272727, #AAA);
 }
 .ui_mars {
-  @include swarm-themes-override(#373D47);
+  @include swarm-themes-override(#373D47, #979DA7);
 }
 .ui_modern{
-  @include swarm-themes-override(#018865);
+  @include swarm-themes-override(#018865, #ADC);
 }

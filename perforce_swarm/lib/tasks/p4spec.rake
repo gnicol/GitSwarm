@@ -1,4 +1,4 @@
-namespace :p4spec do
+namespace :rspec do
   @rspec_command = 'rspec spec perforce_swarm/spec'
   @engine_command = 'rspec perforce_swarm/spec'
 
@@ -55,7 +55,7 @@ namespace :p4spec do
 end
 
 desc 'GITLAB | Run specs'
-task :p4spec do
+task :rspec do
   arglist = ENV.select do |k, _v|
     %w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)
   end

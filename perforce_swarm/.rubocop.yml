@@ -14,6 +14,8 @@ Style/GuardClause:
 Style/ClassAndModuleChildren:
   Enabled: false
 
-Metrics/MethodLength:
+Metrics/AbcSize:
   Enabled: false
 
+Metrics/MethodLength:
+  Enabled: false

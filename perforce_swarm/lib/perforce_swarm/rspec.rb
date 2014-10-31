@@ -46,7 +46,7 @@ RSpec.configure do |config|
     puts "\n#{skip_count} example#{'s' if skip_count > 1} skipped" if skip_count > 0
   end
 
-  config.filter_run_excluding :example_group => lambda { |example_group_meta, metadata|
+  config.filter_run_excluding example_group: lambda { |_example_group_meta, metadata|
     return false if metadata.key?(:override) && metadata[:override] == true
     if in_file?(override_file, override_label(metadata))
       skip_count += 1

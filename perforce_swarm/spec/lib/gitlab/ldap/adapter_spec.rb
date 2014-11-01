@@ -9,29 +9,23 @@ describe Gitlab::LDAP::Adapter do
     before { adapter.stub(ldap: ldap) }
 
     context 'when the search is successful' do
-      context 'and the result is non-empty' do
+      context 'and the result is non-empty', override: true do
         before { ldap.stub(search: [:foo]) }
 
-        it ' ', override: true do
-          should be_true
-        end
+        it { should be_true }
       end
 
-      context 'and the result is empty' do
+      context 'and the result is empty', override: true do
         before { ldap.stub(search: []) }
 
-        it ' ', override: true do
-          should be_false
-        end
+        it { should be_false }
       end
     end
 
-    context 'when the search encounters an error' do
+    context 'when the search encounters an error', override: true do
       before { ldap.stub(search: nil, get_operation_result: double(code: 1, message: 'some error')) }
 
-      it ' ', override: true do
-        should be_false
-      end
+      it { should be_false }
     end
   end
 end

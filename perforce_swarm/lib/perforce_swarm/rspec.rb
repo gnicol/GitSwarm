@@ -3,7 +3,6 @@ require 'rspec'
 RSpec.configure do |config|
 
   override_file = 'perforce_swarm/config/override_names'
-  skip_count = 0
 
   def ensure_file(filename)
     unless File.exist?(filename)
@@ -42,10 +41,6 @@ RSpec.configure do |config|
     ensure_file(override_file)
   end
 
-  config.after(:suite) do
-    puts "\n#{skip_count} example#{'s' if skip_count > 1} skipped" if skip_count > 0
-  end
-
   unless config.files_to_run.any? { |path| path.include?('perforce_swarm') }
     p 'WARNING: Running the main test without the Swarm overides.'
     p 'To include the overides add the perforce_swarm/spec filepath and the main_app and override tags'
@@ -53,28 +48,15 @@ RSpec.configure do |config|
   end
 
   config.filter_run_excluding example_group: (lambda do |_example_group_meta, metadata|
+    metadata[:main_app] = true unless metadata[:file_path].include?('perforce_swarm')
     return false if metadata.key?(:override) && metadata[:override] == true
-    return false unless in_file?(override_file, override_label(metadata))
-    skip_count += 1
-    true
+    in_file?(override_file, override_label(metadata))
   end)
 
   config.around(:each) do |test|
     if test.metadata.key?(:override) && test.metadata[:override] == true
       unique_add_to_file(override_file, override_label(test.metadata))
-      test.run
-    elsif in_file?(override_file, override_label(test.metadata))
-      # skip this test
-      skip_count += 1
-      print '(S)'
-    else
-      test.run
     end
+    test.run
   end
-  # if !rspec_pathlist.include?(path) || rspec_pathlist[path] == test.metadata[:file_path]
-  #   Unfortunately, multiple tests will result in the same path if the test is not described with
-  #   an "it" block (this is pretty simple).
-  #   We therefore only allow dupes in the same test file.
-  #   rspec_pathlist[path] = test.metadata[:file_path]
-  # end
 end

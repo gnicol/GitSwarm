@@ -46,6 +46,12 @@ RSpec.configure do |config|
     puts "\n#{skip_count} example#{'s' if skip_count > 1} skipped" if skip_count > 0
   end
 
+  unless config.files_to_run.any? { |path| path.include?('perforce_swarm') }
+    p 'WARNING: Running the main test without the Swarm overides.'
+    p 'To include the overides add the perforce_swarm/spec filepath and the main_app and override tags'
+    p 'eg: rspec -t override -t main_app spec perforce_swarm/spec'
+  end
+
   config.filter_run_excluding example_group: (lambda do |_example_group_meta, metadata|
     return false if metadata.key?(:override) && metadata[:override] == true
     return false unless in_file?(override_file, override_label(metadata))

@@ -1,6 +1,19 @@
 namespace :rspec do
-  @rspec_command = 'rspec spec perforce_swarm/spec'
   @engine_command = 'rspec perforce_swarm/spec'
+  @rspec_command = 'rspec spec perforce_swarm/spec'
+  @rspec_w_overrides_command = 'rspec -t override -t main_app spec perforce_swarm/spec'
+
+  desc 'GITLAB | Run main application specs with engine overrides'
+  task :app_and_over do
+    arglist = ENV.select do |k, _v|
+      %w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)
+    end
+    cmds = [
+      %w(rake gitlab:setup),
+      "#{@rspec_w_overrides_command} #{arglist_string(arglist)}".split("\s")
+    ]
+    run_commands(cmds)
+  end
 
   desc 'GITLAB | Run main application specs'
   task :main_app do
@@ -9,7 +22,7 @@ namespace :rspec do
     end
     cmds = [
       %w(rake gitlab:setup),
-      "rspec spec #{arglist.map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')}".split("\s")
+      "rspec spec #{arglist_string(arglist)}".split("\s")
     ]
     run_commands(cmds)
   end
@@ -21,7 +34,7 @@ namespace :rspec do
     end
     cmds = [
       %w(rake gitlab:setup),
-      "#{@engine_command} #{arglist.map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')}".split("\s")
+      "#{@engine_command} #{arglist_string(arglist)}".split("\s")
     ]
     run_commands(cmds)
   end
@@ -61,7 +74,7 @@ task :rspec do
   end
   cmds = [
     %w(rake gitlab:setup),
-    "#{@rspec_command} #{arglist.map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')}".split("\s")
+    "#{@rspec_command} #{arglist_string(arglist)}".split("\s")
   ]
   run_commands(cmds)
 end
@@ -70,4 +83,8 @@ def run_commands(cmds)
   cmds.each do |cmd|
     system({ 'RAILS_ENV' => 'test', 'force' => 'yes' }, *cmd) || fail("#{cmd} failed!")
   end
+end
+
+def arglist_string(arglist)
+  arglist.map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')
 end

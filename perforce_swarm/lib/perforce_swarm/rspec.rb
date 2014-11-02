@@ -24,20 +24,35 @@ RSpec.configure do |config|
   end
 
   unless config.files_to_run.any? { |path| path.include?('perforce_swarm') }
-    p 'WARNING: Running the main test without the Swarm overides.'
-    p 'To include the overides add the perforce_swarm/spec filepath and the main_app and override tags'
+    p 'WARNING: Running the main test without the Swarm overrides.'
+    p 'To include the overrides add the perforce_swarm/spec filepath and the main_app and override tags'
     p 'eg: rspec -t override -t main_app spec perforce_swarm/spec'
   end
 
   config.filter_run_excluding example_group: (lambda do |_example_group_meta, metadata|
     metadata[:main_app] = true unless metadata[:file_path].include?('perforce_swarm')
-    return false if metadata.key?(:override) && metadata[:override] == true
-    overrides.include? override_label(metadata)
+    if metadata.key?(:override) && metadata[:override] == true
+      unless overrides.include? override_label(metadata)
+        overrides << override_label(metadata)
+      end
+      return false
+    end
+    if overrides.include? override_label(metadata)
+      puts "overrides DID include: #{override_label(metadata)}"
+      return true
+    end
+    puts "overrides did not include: #{override_label(metadata)}"
+    puts "#{overrides.inspect}"
+    false
   end)
 
   config.around(:each) do |test|
     if test.metadata.key?(:override) && test.metadata[:override] == true
-      overrides << override_label(test.metadata)
+      unless overrides.include? override_label(test.metadata)
+        puts "adding to overrides #{override_label(test.metadata)}"
+        puts "current array: #{overrides.inspect}"
+        overrides << override_label(test.metadata)
+      end
     end
     test.run
   end

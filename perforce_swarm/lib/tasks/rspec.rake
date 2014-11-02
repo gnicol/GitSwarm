@@ -4,7 +4,7 @@ namespace :rspec do
   @rspec_w_overrides_command = 'rspec -t override -t main_app spec perforce_swarm/spec'
 
   desc 'GITLAB | Run main application specs with engine overrides'
-  task :app_and_over do
+  task :app do
     arglist = ENV.select do |k, _v|
       %w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)
     end

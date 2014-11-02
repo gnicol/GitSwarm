@@ -15,18 +15,6 @@ namespace :rspec do
     run_commands(cmds)
   end
 
-  desc 'GITLAB | Run main application specs'
-  task :main_app do
-    arglist = ENV.select do |k, _v|
-      %w(line example tag pattern format out backtrace color profile warnings P e l t f o b c p w).include?(k)
-    end
-    cmds = [
-      %w(rake gitlab:setup),
-      "rspec spec #{arglist_string(arglist)}".split("\s")
-    ]
-    run_commands(cmds)
-  end
-
   desc 'GITLAB | Run engine specs only'
   task :engine do
     arglist = ENV.select do |k, _v|

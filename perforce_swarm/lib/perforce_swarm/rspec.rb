@@ -50,6 +50,7 @@ RSpec.configure do |config|
   config.filter_run_excluding example_group: (lambda do |_example_group_meta, metadata|
     metadata[:main_app] = true unless metadata[:file_path].include?('perforce_swarm')
     return false if metadata.key?(:override) && metadata[:override] == true
+    ensure_file(override_file)
     in_file?(override_file, override_label(metadata))
   end)
 

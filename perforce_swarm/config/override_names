@@ -1,4 +1,0 @@
-./spec/lib/gitlab/ldap/adapter_spec.rb,Gitlab::LDAP::Adapter/dn_matches_filter?/when the search is successful/and the result is non-empty/
-./spec/lib/gitlab/ldap/config_spec.rb,Gitlab::LDAP::Config/initalize/works
-./spec/lib/gitlab/ldap/adapter_spec.rb,Gitlab::LDAP::Adapter/dn_matches_filter?/when the search is successful/and the result is empty/
-./spec/lib/gitlab/ldap/adapter_spec.rb,Gitlab::LDAP::Adapter/dn_matches_filter?/when the search encounters an error/

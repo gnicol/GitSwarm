@@ -27,34 +27,6 @@ namespace :rspec do
     run_commands(cmds)
   end
 
-  desc 'GITLAB | Run request specs'
-  task :api do
-    cmds = [
-      %w(rake gitlab:setup),
-      %W(#{@rspec_command} --tag @api)
-    ]
-    run_commands(cmds)
-  end
-
-  desc 'GITLAB | Run feature specs'
-  task :feature do
-    cmds = [
-      %w(rake gitlab:setup),
-      %W(#{@rspec_command} --tag @feature)
-    ]
-    run_commands(cmds)
-  end
-
-  desc 'GITLAB | Run other specs'
-  task :other do
-    cmds = [
-      %w(rake gitlab:setup),
-      %W(#{@rspec_command} --tag ~@api --tag ~@feature)
-    ]
-    run_commands(cmds)
-  end
-end
-
 desc 'GITLAB | Run specs'
 task :rspec do
   arglist = ENV.select do |k, _v|

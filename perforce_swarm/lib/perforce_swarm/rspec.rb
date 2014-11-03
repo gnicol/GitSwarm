@@ -37,20 +37,13 @@ RSpec.configure do |config|
       end
       return false
     end
-    if overrides.include? override_label(metadata)
-      puts "overrides DID include: #{override_label(metadata)}"
-      return true
-    end
-    puts "overrides did not include: #{override_label(metadata)}"
-    puts "#{overrides.inspect}"
+    return true if overrides.include? override_label(metadata)
     false
   end)
 
   config.around(:each) do |test|
     if test.metadata.key?(:override) && test.metadata[:override] == true
       unless overrides.include? override_label(test.metadata)
-        puts "adding to overrides #{override_label(test.metadata)}"
-        puts "current array: #{overrides.inspect}"
         overrides << override_label(test.metadata)
       end
     end

@@ -26,6 +26,7 @@ namespace :rspec do
     ]
     run_commands(cmds)
   end
+end
 
 desc 'GITLAB | Run specs'
 task :rspec do

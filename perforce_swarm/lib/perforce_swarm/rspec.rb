@@ -3,7 +3,7 @@ require 'rspec'
 # this files helps configure Rspec so that tests in the main application
 # can be skipped by overriding them with a test in the perforce_swarm engine
 #
-# to override a test you must create a new test inside of the engine 
+# to override a test you must create a new test inside of the engine
 # that meets all of the following criteria:
 #
 # 1) the new test must be in a file that has the same relative filepath
@@ -48,7 +48,7 @@ RSpec.configure do |config|
     test_filepath(metadata) + ',' + test_description(metadata)
   end
 
-  # before the Rspec suite runs, this will include the 
+  # before the Rspec suite runs, this will include the
   # extra configuration files we've added in our engine
   config.before(:suite) do
     Dir[Rails.root.join('perforce_swarm/spec/support/**/*.rb')].each { |f| require f }
@@ -73,7 +73,7 @@ RSpec.configure do |config|
   #
   # if it is not tagged as an override it will check the overrides array
   # if the array contains the test's identifier string it will skip the test
-  # if the array does not contain it, it will not skip the test 
+  # if the array does not contain it, it will not skip the test
   config.filter_run_excluding example_group: (lambda do |_example_group_meta, metadata|
     metadata[:main_app] = true unless metadata[:file_path].include?('perforce_swarm')
     if metadata.key?(:override) && metadata[:override] == true

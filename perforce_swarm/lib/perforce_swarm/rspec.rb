@@ -1,6 +1,6 @@
 require 'rspec'
 
-# this files helps configure Rspec so that tests in the main application
+# this file helps configure Rspec so that tests in the main application
 # can be skipped by overriding them with a test in the perforce_swarm engine
 #
 # to override a test you must create a new test inside of the engine
@@ -86,15 +86,4 @@ RSpec.configure do |config|
     false
   end)
 
-  # this method runs around each test, it ensures that an override test's
-  # identifier string has been added to the overrides array
-  # though it should have already been added in the filter_run_excluding block
-  config.around(:each) do |test|
-    if test.metadata.key?(:override) && test.metadata[:override] == true
-      unless overrides.include? override_label(test.metadata)
-        overrides << override_label(test.metadata)
-      end
-    end
-    test.run
-  end
 end

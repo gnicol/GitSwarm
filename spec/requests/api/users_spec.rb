@@ -141,8 +141,7 @@ describe API::API, api: true  do
           should == ['must be greater than or equal to 0']
       json_response['message']['username'].
           should == ['can contain only letters, digits, '\
-          '\'_\', \'-\' and \'.\'. It must start with letter, digit or '\
-          '\'_\', optionally preceeded by \'.\'. It must not end in \'.git\'.']
+          '\'_\', \'-\' and \'.\'. Cannot start with \'-\' or end in \'.git\'']
     end
 
     it "shouldn't available for non admin users" do
@@ -285,8 +284,7 @@ describe API::API, api: true  do
           should == ['must be greater than or equal to 0']
       json_response['message']['username'].
           should == ['can contain only letters, digits, '\
-          '\'_\', \'-\' and \'.\'. It must start with letter, digit or '\
-          '\'_\', optionally preceeded by \'.\'. It must not end in \'.git\'.']
+          '\'_\', \'-\' and \'.\'. Cannot start with \'-\' or end in \'.git\'']
     end
 
     context "with existing user" do
@@ -433,6 +431,7 @@ describe API::API, api: true  do
       json_response['is_admin'].should == user.is_admin?
       json_response['can_create_project'].should == user.can_create_project?
       json_response['can_create_group'].should == user.can_create_group?
+      json_response['projects_limit'].should == user.projects_limit
     end
 
     it "should return 401 error if user is unauthenticated" do

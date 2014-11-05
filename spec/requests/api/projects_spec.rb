@@ -209,9 +209,8 @@ describe API::API, api: true  do
       json_response['message']['path'].should == [
         'can\'t be blank',
         'is too short (minimum is 0 characters)',
-        'can contain only letters, digits, \'_\', \'-\' and \'.\'. It must '\
-        'start with letter, digit or \'_\', optionally preceeded by \'.\'. '\
-        'It must not end in \'.git\'.'
+        'can contain only letters, digits, \'_\', \'-\' and \'.\'. ' \
+        'Cannot start with \'-\' or end in \'.git\''
       ]
     end
 
@@ -339,6 +338,7 @@ describe API::API, api: true  do
 
       json_event['action_name'].should == 'joined'
       json_event['project_id'].to_i.should == project.id
+      json_event['author_username'].should == user.username
     end
 
     it "should return a 404 error if not found" do

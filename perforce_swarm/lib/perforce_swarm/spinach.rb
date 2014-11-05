@@ -11,8 +11,8 @@ Spinach.hooks.before_run do
 
     feature_name = `grep 'Feature:' #{engine_file} |sed 's/Feature: *//g'`.strip
     local_skipped_scenarios = `grep -C 1 '@skip-parent' #{engine_file} |grep 'Scenario:'|sed 's/Scenario: *//g'`
-        .split("\n")
-        .each { |a| a.strip! if a.respond_to? :strip! }
+                              .split("\n")
+                              .each { |a| a.strip! if a.respond_to? :strip! }
     if local_skipped_scenarios.any?
       skipped_scenarios[feature_name] = local_skipped_scenarios
     end

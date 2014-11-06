@@ -11,11 +11,22 @@ Feature: Dashboard
     # Automated in features/dashboard/dashboard.feature; Scenario: I should see projects list
     Given ...
 
-  Scenario: Filter projects with 'Shop' and verify that project 'Shop' is in the list
+  Scenario: Filter projects and verify the following
     Given ...
-
-  Scenario: Filter projects with 'Upcase' and verify that project 'Shop' is not in list
-    Given ...
+    # | Filter | Verification                  |
+    # case sensitivity check
+    # | 'Shop' | Should see project 'Shop'     |
+    # | 'shop' | Should see project 'Shop'     |
+    # partial search working cases
+    # | 's'    | Should see project 'Shop'     |
+    # | 'sh'   | Should see project 'Shop'     |
+    # | 'sho'  | Should see project 'Shop'     |
+    # partial search non-working cases
+    # | 'o'    | Should not see project 'Shop' |
+    # | 'oh'   | Should not see project 'Shop' |
+    # | 'ohp'  | Should not see project 'Shop' |
+    # incorrect project name
+    # | 'mop'  | Should not see project 'Shop' |
 
   Scenario: As a user with 3 projects, verify that the project tab has '3' on it.
     Given ...

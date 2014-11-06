@@ -4,10 +4,6 @@ Feature: Dashboard Shortcuts
     Given I sign in as a user
 
   # The following test cases were identified when testing the dashboard activity page
-  Scenario: Navigate to activity tab
-    Given I visit dashboard issues page
-    When I press "g" "a"
-    Then the active main tab should be Activity
 
   # Scenario automated in features/dashboard/shortcuts.feature
   Scenario: Navigate to projects tab
@@ -26,4 +22,6 @@ Feature: Dashboard Shortcuts
     Given I visit dashboard page
     When I press "g" and "m"
     Then the active main tab should be Merge Requests
-  
+
+  Scenario: From the dashboard issues page, press 'g' and 'a' and verify you navigate to the dashboard activity page
+    Given foobar

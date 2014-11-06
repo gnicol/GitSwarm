@@ -39,22 +39,3 @@ Feature: Dashboard
 
   Scenario: As a user with 1 group, verify that the group tab has '1' on it
     Given foobar
-
-  # Scenario automated in features/dashboard/dashboard.feature
-  Scenario: I should see last push widget
-    Given project "Shop" has push event
-    Then I should see last push widget
-    And I click "Create Merge Request" link
-    Then I see prefilled new Merge Request page
-
-  #Scenario automated in features/dashboard/dashboard.feature
-  Scenario: I should see User joined Project event
-    Given user with name "John Doe" joined project "Shop"
-    When I visit dashboard page
-    Then I should see "John Doe joined project at Shop" event
-
-  Scenario: I should see User left Project event
-    Given user with name "John Doe" joined project "Shop"
-    And user with name "John Doe" left project "Shop"
-    When I visit dashboard page
-    Then I should see "John Doe left project at Shop" event

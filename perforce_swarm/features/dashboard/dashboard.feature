@@ -1,9 +1,5 @@
 @dashboard
 Feature: Dashboard
-  Background:
-    Given I sign in as a user
-    And I own project "Shop"
-    And I visit dashboard page
 
   # The following are test cases identified when testing the dashboard activity page
 
@@ -11,31 +7,26 @@ Feature: Dashboard
   #Project tab
   ############
 
-  #Scenario automated in features/dashboard/dashboard.feature
-  Scenario: I should see projects list
-    Given project "Shop" has push event
-    Then I should see "New Project" link
-    Then I should see "Shop" project link
-    Then I should see project "Shop" activity feed
+   Scenario: As a user with 2 non-empty projects ("Shop" and "New Project"), verify that the project list in the project tab contains a link to both projects
+    # Automated in features/dashboard/dashboard.feature; Scenario: I should see projects list
+    Given ...
 
   Scenario: Filter projects with 'Shop' and verify that project 'Shop' is in the list
-    Given foobar
+    Given ...
 
   Scenario: Filter projects with 'Upcase' and verify that project 'Shop' is not in list
-    Given foobar
+    Given ...
 
   Scenario: As a user with 3 projects, verify that the project tab has '3' on it.
-    Given foobar
+    Given ...
 
   ##########
   #Group tab
   ##########
 
-  # Scenario automated in features/dashboard/dashboard.feature
-  Scenario: I should see groups list
-    Given I have group with projects
-    And I visit dashboard page
-    Then I should see groups list
+   Scenario: As a user with groups that have projects ("Group1" and "Group2"), verify that the groups list contains a link to both groups
+    # Automated in features/dashboard/dashboard.feature; Scenario: I should see groups list
+    Given ...
 
   Scenario: As a user with 1 group, verify that the group tab has '1' on it
-    Given foobar
+    Given ...

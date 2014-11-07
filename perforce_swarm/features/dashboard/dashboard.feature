@@ -7,7 +7,7 @@ Feature: Dashboard
   #Project tab
   ############
 
-   Scenario: As a user with 2 non-empty projects ("Shop" and "New Project"), verify that the project list in the project tab contains a link to both projects
+  Scenario: As a user with 2 non-empty projects ("Shop" and "New Project"), verify that the project list in the project tab contains a link to both projects
     # Automated in features/dashboard/dashboard.feature; Scenario: I should see projects list
     Given ...
 
@@ -35,7 +35,7 @@ Feature: Dashboard
   #Group tab
   ##########
 
-   Scenario: As a user with groups that have projects ("Group1" and "Group2"), verify that the groups list contains a link to both groups
+  Scenario: As a user with groups that have projects ("Group1" and "Group2"), verify that the groups list contains a link to both groups
     # Automated in features/dashboard/dashboard.feature; Scenario: I should see groups list
     Given ...
 

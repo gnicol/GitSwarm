@@ -27,27 +27,33 @@ Feature: NavBar
 # Dashboard Dropdown
 #########################
 
+  @automated
   Scenario: Click on the Swarm icon and verify that user is taken to the Dashboard page
     Given I click on the Swarm icon
     Then I should see the Dashboard page
-    And the title of the dropdown should be 'Dashboard'
+      And the title of the dropdown should be 'Dashboard'
 
+  @automated
   Scenario: Click on a project on the Dashboard dropdown and verify that user is taken to the project page
-    Given I click the Dashboard dropdown
-    And I click on a project item
-    Then I should see the project dashboard
-    And the title of the dropdown should be the project name
-
+    Given I own project "Forum"
+      And I visit dashboard page
+    When I open the recent projects dropdown
+      And I click on project "Forum"
+    Then I should see the "Forum" page
+      And the title of the dropdown should be "Forum"
+ 
+  @automated
   Scenario: Click on 'View My Projects' on Dashboard dropdown and verify that user is taken to 'My Projects' page
     Given I click the Dashboard dropdown
-    And I click on 'View My Projects' item
+      And I click on 'View My Projects' item
     Then I should see 'My Projects' page
-
+      
+  @automated
   Scenario: Click on 'View All Public Projects' on Dashboard dropdown and verify that user is taken to 'Public Projects' page
     Given I click the Dashboard dropdown
-    And I click on 'View All Public Projects' item
+      And I click on 'View All Public Projects' item
     Then I should see 'Explore GitLab' page
-    And the title of the dropdown should be 'Explore'
+      And the title of the dropdown should be 'Explore'
 
 #########################
 # Project Dropdown

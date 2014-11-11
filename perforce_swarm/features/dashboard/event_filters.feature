@@ -79,6 +79,9 @@ Feature: Event Filters
   Scenario: As user 'John Doe' push a commit and verify that 'John Doe pushed...' is shown in the activity feed
     Given ...
 
+  Scenario: As user 'John Doe' comment on a merge request and verify that 'John Doe commented...' is shown in the activity feed
+    Given ...
+
   Scenario: In the 'opened issue' event, click on the username (John Doe) and verify that you are navigated to the user's (John Doe) profile/activity page.
     Given ...
 

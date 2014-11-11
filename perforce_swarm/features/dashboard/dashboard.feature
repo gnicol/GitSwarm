@@ -7,21 +7,23 @@ Feature: Dashboard
   #Project tab
   ############
 
-  Scenario: As a user with 2 non-empty projects ("Shop" and "New Project"), verify that the project list in the project tab contains a link to both projects
+  Scenario: As a user who is a member or owner of 2 projects ("Shop" and "New Project"), verify that the project list in the project tab contains a link to both projects
     # Automated in features/dashboard/dashboard.feature; Scenario: I should see projects list
     Given ...
 
-  Scenario: Filter projects and verify the following
-    Given ...
+  Scenario: Filter projects and verify that the following searches work:
+    Given case sensitivity
+    Given partial strings
+    Given incorrect project names
     # | Filter | Verification                  |
-    # case sensitivity check
+    # case sensitivity search
     # | 'Shop' | Should see project 'Shop'     |
     # | 'shop' | Should see project 'Shop'     |
-    # partial search working cases
+    # working partial string search
     # | 's'    | Should see project 'Shop'     |
     # | 'sh'   | Should see project 'Shop'     |
     # | 'sho'  | Should see project 'Shop'     |
-    # partial search non-working cases
+    # non-working partial string search
     # | 'o'    | Should not see project 'Shop' |
     # | 'oh'   | Should not see project 'Shop' |
     # | 'ohp'  | Should not see project 'Shop' |

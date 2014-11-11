@@ -22,19 +22,19 @@ Feature: Event Filters
     Given ...
 
   Scenario: Create an comment on an issue and verify that the issue comment event is shown in the activity feed
-    # Scenario automated in spec/features/atom/dashboard_spec.rb; it 'should have issue comment event'
+    # Automated in spec/features/atom/dashboard_spec.rb; it 'should have issue comment event'
     Given ...
 
   Scenario: With a merge request event, a push event, and a new member event, verify that all events are shown in the activity feed
-    # Scenario automated in features/dashbaord/event_filters.feature; Scenario: I should see all events
+    # Automated in features/dashbaord/event_filters.feature; Scenario: I should see all events
     Given ...
 
   Scenario: Push a change to a project and verify that the 'Create Merge Request' push widget is shown in the actiivity feed. When the 'Create Merge Request' button is click, verify that a prefilled new Merge Request page is shown
-    # Scenario automated in features/dashboard/dashboard.feature; I should see last push widget
+    # Automated in features/dashboard/dashboard.feature; I should see last push widget
     Given ...
    
   Scenario: As a user with name 'John Doe' join a project named 'Shop'. Verify that the 'John Doe joined project at Shop' event is shown in the activity feed
-    # Scenario automated in features/dashboard/dashboard.feature; Scenario: I should see User joined Project event
+    # Automated in features/dashboard/dashboard.feature; Scenario: I should see User joined Project event
     Given ...
     
   Scenario: User 'John Doe' left project 'Shop', verify that 'John Doe left project at Shop' event is shown in the activity feed
@@ -71,19 +71,19 @@ Feature: Event Filters
   ######################
 
   Scenario: Click on the 'team' event filter, and verify that only team events (such as a member joined a project)are shown in the activity feed
-    # Scenario automated in features/dashboard/event_filters.feature; Scenario: I should see only joined events
+    # Automated in features/dashboard/event_filters.feature; Scenario: I should see only joined events
     Given ...
 
   Scenario: Click on the 'merge' event filter and verify that only the 'merge' event is shown in the activity feed
-    # Scenario automated in features/dashboard/event_filters.feature; Scenario: I should see only merged events
+    # Automated in features/dashboard/event_filters.feature; Scenario: I should see only merged events
     Given ...
 
   Scenario: With event filters applied ('push', 'team', 'comments', or 'merge requests'), refresh the page and verify that the filters persist
-    # Scenario automated in features/dashboard/event_filters.feature; Scenario: I should see only selected events while page reloaded
+    # Automated in features/dashboard/event_filters.feature; Scenario: I should see only selected events while page reloaded
     Given ...
 
   Scenario: Click on the 'push' event filter and verify that only the push event is shown in the activity feed.
-    # This scenario is partially automated in features/dashboard/event_filters.feature; Scenario: I should see only pushed events
+    # Partially automated in features/dashboard/event_filters.feature; Scenario: I should see only pushed events
     When the 'push' event filter is removed
     Then verify that all events are shown
 

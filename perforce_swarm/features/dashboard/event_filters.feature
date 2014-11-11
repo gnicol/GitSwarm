@@ -21,7 +21,7 @@ Feature: Event Filters
     # Scenario automated in spec/features/atom/dashboard_spec.rb; it 'should have issue opened event'
     Given ...
 
-  Scenario: Create an comment on an issue and verify that the issue comment event is shown in the activity feed
+  Scenario: Create a comment on an issue and verify that the issue comment event is shown in the activity feed
     # Automated in spec/features/atom/dashboard_spec.rb; it 'should have issue comment event'
     Given ...
 
@@ -29,7 +29,7 @@ Feature: Event Filters
     # Automated in features/dashbaord/event_filters.feature; Scenario: I should see all events
     Given ...
 
-  Scenario: Push a change to a project and verify that the 'Create Merge Request' push widget is shown in the actiivity feed. When the 'Create Merge Request' button is click, verify that a prefilled new Merge Request page is shown
+  Scenario: Push a change to a project and verify that the 'Create Merge Request' push widget is shown in the actiivity feed. When the 'Create Merge Request' button is clicked, verify that a prefilled new Merge Request page is shown
     # Automated in features/dashboard/dashboard.feature; I should see last push widget
     Given ...
    
@@ -70,7 +70,7 @@ Feature: Event Filters
   #Activity Feed Filters
   ######################
 
-  Scenario: Click on the 'team' event filter, and verify that only team events (such as a member joined a project)are shown in the activity feed
+  Scenario: Click on the 'team' event filter, and verify that only team events (such as a member joined a project) are shown in the activity feed
     # Automated in features/dashboard/event_filters.feature; Scenario: I should see only joined events
     Given ...
 
@@ -110,5 +110,5 @@ Feature: Event Filters
   Scenario: With a deleted branch, click on a link to the deleted branch and verify error that branch has been deleted
     Given ...
 
-  Scenario: With a projec that has an issue #1, create a branch called '#1'. On the activity feed, click a link to the branch and verify that you navigate to the branch commit page.
+  Scenario: With a project that has an issue #1, create a branch called '#1'. On the activity feed, click a link to the branch and verify that you navigate to the branch commit page.
     Given ...

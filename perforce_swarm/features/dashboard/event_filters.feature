@@ -33,14 +33,6 @@ Feature: Event Filters
     # Automated in features/dashboard/dashboard.feature; I should see last push widget
     Given ...
    
-  Scenario: As a user with name 'John Doe' join a project named 'Shop'. Verify that the 'John Doe joined project at Shop' event is shown in the activity feed
-    # Automated in features/dashboard/dashboard.feature; Scenario: I should see User joined Project event
-    Given ...
-    
-  Scenario: User 'John Doe' left project 'Shop', verify that 'John Doe left project at Shop' event is shown in the activity feed
-    # Similar test case is automated in features/dashboard/dashboard.feature
-    Given ...
-
   Scenario: Close an issue and verify that the closed issue event is shown in the activity feed
     # Similar test cases exist in spec/features/atom/dashboard_spec.rb
     Given ...
@@ -64,6 +56,30 @@ Feature: Event Filters
     Given ... 
     
   Scenario: Hover over the timestamp of a commit event in the dashboard activity and verify that the tooltip appears
+    Given ...
+
+  ##############################
+  #Username in the Activity Feed
+  ##############################
+   
+  Scenario: As a user with name 'John Doe' join a project named 'Shop'. Verify that the 'John Doe joined project at Shop' event is shown in the activity feed
+    # Automated in features/dashboard/dashboard.feature; Scenario: I should see User joined Project event
+    Given ...
+ 
+  Scenario: As User 'John Doe' leave project 'Shop' and verify that 'John Doe left project at Shop' event is shown in the activity feed
+    # Similar test case is automated in features/dashboard/dashboard.feature
+    Given ...
+
+  Scenario: As user 'John Doe' create an issue and verify that 'John Doe opened issue...' is shown in the activity feed
+    Given ...
+
+  Scenario: As user 'John Doe' create a merge request and verify that 'John Doe opened merge request...' is shown in the activity feed
+    Given ...
+
+  Scenario: As user 'John Doe' push a commit and verify that 'John Doe pushed...' is shown in the activity feed
+    Given ...
+
+  Scenario: In the 'opened issue' event, click on the username (John Doe) and verify that you are navigated to the user's (John Doe) profile/activity page.
     Given ...
 
   ######################

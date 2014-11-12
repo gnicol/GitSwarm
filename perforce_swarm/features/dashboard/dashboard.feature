@@ -3,9 +3,9 @@ Feature: Dashboard
 
   # The following are test cases identified when testing the dashboard activity page
 
-  ############
-  #Project tab
-  ############
+  #############
+  # Project tab
+  #############
 
   Scenario: As a user who is a member or owner of 2 projects ("Shop" and "New Project"), verify that the project list in the project tab contains a link to both projects
     # Automated in features/dashboard/dashboard.feature; Scenario: I should see projects list
@@ -33,9 +33,9 @@ Feature: Dashboard
   Scenario: As a user with 3 projects, verify that the project tab has '3' on it.
     Given ...
 
-  ##########
-  #Group tab
-  ##########
+  ###########
+  # Group tab
+  ###########
 
   Scenario: As a user with groups that have projects ("Group1" and "Group2"), verify that the groups list contains a link to both groups
     # Automated in features/dashboard/dashboard.feature; Scenario: I should see groups list

@@ -6,9 +6,9 @@ Feature: Event Filters
     
   # These are test cases identified while testing the dashboard activity page 
 
-  ##############
-  #Activity Feed
-  ##############
+  ###############
+  # Activity Feed
+  ###############
 
   @automated @javascript
   Scenario: Create a comment on a merge request and verify that the comment event is shown in the activity feed
@@ -58,9 +58,9 @@ Feature: Event Filters
   Scenario: Hover over the timestamp of a commit event in the dashboard activity and verify that the tooltip appears
     Given ...
 
-  ##############################
-  #Username in the Activity Feed
-  ##############################
+  ###############################
+  # Username in the Activity Feed
+  ###############################
    
   Scenario: As a user with name 'John Doe' join a project named 'Shop'. Verify that the 'John Doe joined project at Shop' event is shown in the activity feed
     # Automated in features/dashboard/dashboard.feature; Scenario: I should see User joined Project event
@@ -85,9 +85,9 @@ Feature: Event Filters
   Scenario: In the 'opened issue' event, click on the username (John Doe) and verify that you are navigated to the user's (John Doe) profile/activity page.
     Given ...
 
-  ######################
-  #Activity Feed Filters
-  ######################
+  #######################
+  # Activity Feed Filters
+  #######################
 
   Scenario: Click on the 'team' event filter, and verify that only team events (such as a member joined a project) are shown in the activity feed
     # Automated in features/dashboard/event_filters.feature; Scenario: I should see only joined events
@@ -116,9 +116,9 @@ Feature: Event Filters
     Given the 'comments' event filter is removed
     Then verify that all events are shown
 
-  ###########
-  #Hyperlinks
-  ###########
+  ############
+  # Hyperlinks
+  ############
 
   Scenario: In the new branch event, click on the branches hyperlink and verify that you are navigated to the branch commit page
     Given ...

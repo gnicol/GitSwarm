@@ -30,7 +30,7 @@ module Backup
 
         if File.exists?(path_to_repo(wiki))
           print " * #{wiki.path_with_namespace} ... "
-          if wiki.empty?
+          if wiki.repository.empty?
             puts " [SKIPPED]".cyan
           else
             output, status = Gitlab::Popen.popen(%W(git --git-dir=#{path_to_repo(wiki)} bundle create #{path_to_bundle(wiki)} --all))
@@ -91,7 +91,7 @@ module Backup
     protected
 
     def path_to_repo(project)
-      File.join(repos_path, project.path_with_namespace + '.git')
+      project.repository.path_to_repo
     end
 
     def path_to_bundle(project)

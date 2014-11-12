@@ -18,7 +18,7 @@ Feature: Event Filters
     Then I should see comment event
 
   Scenario: Create an issue and verify that the opened issue event is shown in the activity feed
-    # Scenario automated in spec/features/atom/dashboard_spec.rb; it 'should have issue opened event'
+    # Automated in spec/features/atom/dashboard_spec.rb; it 'should have issue opened event'
     Given ...
 
   Scenario: Create a comment on an issue and verify that the issue comment event is shown in the activity feed

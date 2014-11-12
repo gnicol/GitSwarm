@@ -7,7 +7,7 @@ Feature: Dashboard
   # Project tab
   #############
 
-  Scenario: As a user who is a member or owner of 2 projects ("Shop" and "New Project"), verify that the project list in the project tab contains a link to both projects
+  Scenario: As a user who is a member of project "Shop" and a owner of project "New Project" verify that the project list in the project tab contains a link to both projects
     # Automated in features/dashboard/dashboard.feature; Scenario: I should see projects list
     Given ...
 

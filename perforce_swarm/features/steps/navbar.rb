@@ -1,16 +1,23 @@
 class Spinach::Features::Navbar < Spinach::FeatureSteps
   include SharedAuthentication
-  include SharedPaths
   include SharedProject
+  include SharedPaths
+  include SharedIssues
+  include SharedAdmin
+  include SharedGroups
+
+  #########################
+  # Data
+  #########################
 
   step 'I own a bare project' do
     @project = create(:empty_project, namespace: @user.namespace)
     @project.team << [@user, :master]
   end
 
-  step 'I open the recent projects dropdown' do
-    find(:css, '.navbar-gitlab .dropdown-toggle.title').click
-  end
+  #########################
+  # Dropdown - Dropdown Menu
+  #########################
 
   step 'I should see "Shop" in the recent projects dropdown' do
     within '.navbar-gitlab .dashboard-menu' do
@@ -36,18 +43,37 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     end
   end
 
-  step 'I click on the Swarm icon' do
-    find(:css, '.navbar-gitlab .app_logo').click
-  end
-
-  step 'I should see the Dashboard page' do
-    find('title').should have_content('Dashboard')
-  end
-
-  step 'the title of the dropdown should be \'Dashboard\'' do
-    within '.navbar-gitlab .dashboard-menu' do
-      find(:css, '.dropdown-toggle').text.should eq('Dashboard')
+  step 'I should see "New Project" on the top of the list' do
+    within '.navbar-gitlab' do
+      all('ul.dropdown-menu li')[1].text.should have_content('New Project')
+      all('ul.dropdown-menu li')[2].text.should_not have_content('New Project')
     end
+  end
+
+  step 'project "PerforceProject" should appear on the top of the list in \'Recent Projects\'' do
+    all('ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
+  end
+
+  step 'I should see "PerforceProject" with "QA" group name' do
+    all('ul.dropdown-menu li')[1].text.should have_content('QA')
+    all('ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
+  end
+
+  step 'I should not see any projects under \'Recent Projects\'' do
+    all('ul.dropdown-menu li').count.should eq(8)
+    all('ul.dropdown-menu li')[2].text.should have_content('Dashboard')
+  end
+
+  #########################
+  # Dropdown - Dropdown Click Actions
+  #########################
+
+  step 'I open the recent projects dropdown' do
+    find(:css, '.navbar-gitlab .dropdown-toggle.title').click
+  end
+
+  step 'I click on the Recent Projects dropdown' do
+    find(:css, '.navbar-gitlab .dropdown-toggle.title').click
   end
 
   step 'I click on project "Forum"' do
@@ -56,39 +82,154 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     end
   end
 
+  step 'I click on project "PerforceProject"' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:link, 'PerforceProject').click
+    end
+  end
+
+  step 'I click on \'View My Projects\' link' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:link, 'View My Projects').click
+    end
+  end
+
+  step 'I click on \'View All Public Projects\' link' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:link, 'View All Public Projects').click
+    end
+  end
+
+  step 'I click on \'Dashboard\' link' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:link, 'Dashboard').click
+    end
+  end
+
+  step 'I click on the most recent project under "Recent Projects"' do
+    within '.navbar-gitlab' do
+      all('ul.dropdown-menu li')[1].click
+    end
+  end
+
+  step 'I click on the older project "Shop" in \'Recent Projects\'' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:link, 'Shop').click
+    end
+  end
+
+  #########################
+  # Dropdown - Dropdown Title
+  #########################
+
   step 'the title of the dropdown should be "Forum"' do
     within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').should have_content('Forum')
     end
   end
 
+  step 'the title of the dropdown should be \'Search\'' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:css, '.dropdown-toggle').should have_content('Search')
+    end
+  end
+
+  #########################
+  # Navigation
+  #########################
+
+  step 'I click on the Swarm icon' do
+    find(:css, '.app_logo').click
+  end
+
+  step 'I click on the back button' do
+    page.evaluate_script('window.history.back()')
+  end
+
+  #########################
+  # Pages
+  #########################
+
+  step 'I should see the Dashboard page' do
+    find('title').should have_content('Dashboard')
+  end
+
+  step 'I should see the \'Explore GitLab\' page' do
+    find('title').should have_content('Explore | GitLab')
+  end
+
   step 'I should see the "Forum" page' do
     find('title').should have_content('Forum')
-  end
-
-  step 'I click the Dashboard dropdown' do
-    find(:css, '.navbar-gitlab .dropdown-toggle.title').click
-  end
-
-  step 'I click on \'View My Projects\' item' do
-    find(:link, 'View My Projects').click
   end
 
   step 'I should see \'My Projects\' page' do
     find(:css, '.page-title').should have_content('My Projects')
   end
 
-  step 'I click on \'View All Public Projects\' item' do
-    find(:link, 'View All Public Projects').click
+  step 'I should see the "New Project" project page' do
+    find(:css, 'title').should have_content('New Project')
+    page.should have_content 'git init'
   end
 
-  step 'I should see \'Explore GitLab\' page' do
-    find('title').should have_content('Explore | GitLab')
+  step 'I should see a project page' do
+    within '.main-nav .project-navigation' do
+      find(:css, '.shortcuts-project').should have_content('Project')
+    end
+  end
+
+  step 'I should see the user page' do
+    page.should have_content('User Activity')
+  end
+
+  #########################
+  # Project
+  #########################
+
+  step 'create a project named "New Project"' do
+    fill_in 'project_name', with: 'New Project'
+    click_button 'Create project'
+  end
+
+  #########################
+  # Top Nav
+  #########################
+
+  step 'the title of the dropdown should be \'Dashboard\'' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:css, '.dropdown-toggle').text.should eq('Dashboard')
+    end
   end
 
   step 'the title of the dropdown should be \'Explore\'' do
     within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').text.should eq('Explore')
     end
+  end
+
+  step 'the title of the dropdown should be "New Project"' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:css, '.dropdown-toggle').text.should have_content('New Project')
+    end
+  end
+
+  step 'I search for "Perforce"' do
+    fill_in 'dashboard_search', with: 'Perforce'
+    click_button 'Search'
+  end
+
+  #########################
+  # User Menu
+  #########################
+
+  step 'I click on the User Menu icon' do
+    find(:css, '.profile-pic').click
+  end
+
+  step 'I click on \'Logout\' link' do
+    find(:css, '.logout').click
+  end
+
+  step 'I click on \'Profile\' link' do
+    find(:css, '.profile-link').click
   end
 end

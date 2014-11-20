@@ -93,17 +93,18 @@ Feature: NavBar
     Then I should see the "New Project" project page
     And the title of the dropdown should be "New Project"
     When I click on the Recent Projects dropdown
-    Then I should see "New Project" on the top of the list
+    Then I should see "New Project" at the top of the list in the recent projects dropdown
 
-  @PGL-123
+  @PGL-123 @automated
   Scenario: Rename a project and verify that project name appears correctly on the Dashboard and Project dropdowns
-    When I visit project "PerforceProject" settings page
-    And I rename the project
-    When I click on the Recent Projects dropdown
-    Then I should see the renamed project link
-    And the title of the dropdown should be the renamed project name
-    When I click on the renamed project link
-    Then I should see the renamed project dashboard
+    Given I own project "PerforceProject"
+    And I visit project "PerforceProject" settings page
+    When I rename the project "PerforceProject" to "QAProject"
+    And I click on the Recent Projects dropdown
+    Then I should see "QAProject" at the top of the list in the recent projects dropdown
+    And the title of the dropdown should be 'QAProject'
+    When I click on project "QAProject"
+    Then I should see the "QAProject" page
 
   @PGL-123
   Scenario: Rename project with a long name and verify that the project name appears correctly on the Dashboard and Project dropdowns
@@ -150,7 +151,7 @@ Feature: NavBar
   #########################
 
   @javascript @automated @PGL-123
-  Scenario: Click on a project on the Search dropdown and verify that user is taken to the project page
+  Scenario: Go to the Search page by searching for a project, click on a project on the Search dropdown and verify that user is taken to the project page
     Given I own project "PerforceProject"
     When I visit dashboard search page
     And I search for "Perforce"
@@ -159,19 +160,20 @@ Feature: NavBar
     And I click on the most recent project under "Recent Projects"
     Then I should see a project page
 
-  @PGL-123
+  @automated @PGL-123
   Scenario: Click on 'View My Projects' on Search dropdown and verify that user is taken to 'My Projects' page
-    Given I search for "Perforce"
+    Given I visit dashboard search page
     And I click on the Recent Projects dropdown
     When I click on 'View My Projects' link
     Then I should see 'My Projects' page
 
-  @PGL-123
+  @automated @PGL-123
   Scenario: Click on 'View All Public Projects' on Search dropdown and verify that user is taken to 'Public Projects' page
-    Given I search for "Perforce"
+    Given I visit dashboard search page
     And I click on the Recent Projects dropdown
     When I click on 'View All Public Projects' link
-    Then I should see 'Explore GitLab' page
+    Then I should see the 'Explore GitLab' page
+    And the title of the dropdown should be 'Explore'
     And the title of the dropdown should be 'Explore'
 
   #########################
@@ -240,7 +242,7 @@ Feature: NavBar
     And I click on 'Profile' link
     Then I should see the user page
 
-  @PGL-123
+  @automated @PGL-123
   Scenario: Click on the 'My Settings' link of User Menu dropdown and verify that user is taken to the user settings page
     When I click on the User Menu icon
     And I click on 'My Settings' link
@@ -260,26 +262,35 @@ Feature: NavBar
   Scenario: Create an issue in an older project and verify that project appears first under 'Recent Projects' of Project dropdown
     Given I own project "PerforceProject"
     And I own project "Forum"
+    When I visit dashboard page
+    And I click on the Recent Projects dropdown
+    Then I should see "Forum" at the top of the list in the recent projects dropdown
     When I visit project "PerforceProject" issues page
     And I click link "New Issue"
     And I submit new issue "New Issue"
     When I visit dashboard page
     And I click on the Recent Projects dropdown
-    Then project "PerforceProject" should appear on the top of the list in 'Recent Projects'
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
+
+  @PGL-123 @automated
+  Scenario: Create a merge request in an older project and verify that project appears first under 'Recent Projects' of User Menu dropdown
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" merge requests page
+    And I click link "New Merge Request"
+    When I submit new merge request "PerforceProject Merge Request"
+    Then I should see merge request "PerforceProject Merge Request"
+    When I visit dashboard page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
   @PGL-123
   Scenario: Push a commit in an older project and verify that project appears first under 'Recent Projects' of Dashboard dropdown
-    When I click on an old project in 'Recent Projects'
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" commits page
     And I push a commit to the project
     And I click on the Recent Projects dropdown
-    Then the project should appear on the top of the list in 'Recent Projects'
-
-  @PGL-123
-  Scenario: Create a merge request in an older project and verify that project appears first under 'Recent Projects' of User Menu dropdown
-    When I click on an old project in 'Recent Projects'
-    And I create a merge request on the project
-    When I click on the User Menu icon
-    And I click on 'Profile' link
     Then the project should appear on the top of the list in 'Recent Projects'
 
   #########################
@@ -295,21 +306,23 @@ Feature: NavBar
     When I click on the back button
     Then I should see the Dashboard page
 
+  @javascript @automated @PGL-123
+  Scenario: Click on the back button after creating a project and verify that project still appears in the Dashboard dropdown
+    When I visit new project page
+    And create a project named "New Project"
+    Then I should see the "New Project" project page
+    And the title of the dropdown should be "New Project"
+    When I click on the back button
+    And I click on the Swarm icon
+    And I click on the Recent Projects dropdown
+    Then I should see "New Project" at the top of the list in the recent projects dropdown
+
   @PGL-123
   Scenario: Click on the back button after navigating to the 'Public Projects' page from a project page and verify that user is taken to the project page
     Given I am on the project page
     And I click on 'View All Public Projects' link
     When I click on the back button
     Then I should see the project page
-
-  @PGL-123
-  Scenario: Click on the back button after creating a project and verify that project still appears in the Dashboard dropdown
-    When I visit new project page
-    And fill project form with valid data
-    When I click on the back button
-    And I click on the Swarm icon
-    When I click the Dashboard dropdown
-    Then I should see the new project link on the top of the list
 
   @PGL-123
   Scenario: Click on the back button after renaming a project and verify that project is still renamed in the Project dropdown
@@ -361,7 +374,7 @@ Feature: NavBar
   #########################
 
   @automated @PGL-123
-  Scenario: As an admin, transfer a project in the admin area, verify that the project name should be renamed in the Dashboard dropdown
+  Scenario: As an admin, transfer a project in the admin area to a different group, verify that the project name should be renamed in the Dashboard dropdown
     And I click on 'Logout' link
     When I sign in as an admin
     And I own project "PerforceProject"
@@ -371,6 +384,16 @@ Feature: NavBar
     Then I should see project transferred to group "QA"
     And I click on the Recent Projects dropdown
     Then I should see "PerforceProject" with "QA" group name
+
+  @automated @PGL-123
+  Scenario: As an admin, remove a project in the admin area, verify that the project is removed from the Dashboard dropdown
+    And I click on 'Logout' link
+    When I sign in as an admin
+    And I own project "PerforceProject"
+    When I visit admin projects page
+    And I destroy "PerforceProject"
+    When I click on the Recent Projects dropdown
+    Then I should not see any projects in the recent projects dropdown
 
   @PGL-123
   Scenario: As an admin, rename a project in the admin area, verify that the project name should be renamed in the Project dropdown.
@@ -420,7 +443,16 @@ Feature: NavBar
   @automated @PGL-123
   Scenario: Create a new user and verify that the Dashboard dropdown does not have 'Recent Projects'
     When I click on the Recent Projects dropdown
-    Then I should not see any projects under 'Recent Projects'
+    Then I should not see any projects in the recent projects dropdown
+
+  @PGL-123 @automated
+  Scenario: Rename user and verify that projects in Profile dropdown are renamed
+    Given I own project "PerforceProject"
+    And I visit profile page
+    When I change the username to "NewUserQA" in 'Profile settings'
+    And the profile settings should be updated
+    When I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" with "NewUserQA" user name
 
   @PGL-123
   Scenario: Create a new user and a new project and verify that the project appears on the Project dropdown
@@ -434,13 +466,6 @@ Feature: NavBar
     When I change my username in the user settings page
     And I click on the Swarm icon
     And I click on the Recent Projects dropdown
-    Then my projects names should be changed to new name
-
-  @PGL-123
-  Scenario: Rename user and verify that projects in Profile dropdown are renamed
-    When I change my username in the user settings page
-    And I click on the User Menu icon
-    And I click on 'Profile' link
     Then my projects names should be changed to new name
 
   @PGL-123

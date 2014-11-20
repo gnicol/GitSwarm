@@ -15,6 +15,10 @@ module SharedAdmin
     page.should have_content 'Namespace: QA'
   end
 
+  step 'I destroy "PerforceProject"' do
+    find(:css, '.btn-remove').click
+  end
+
   def project
     @project ||= Project.first
   end

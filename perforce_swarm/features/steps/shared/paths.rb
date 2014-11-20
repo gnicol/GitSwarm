@@ -3,7 +3,14 @@ module SharedPaths
   include RepoHelpers
 
   step 'I visit project "PerforceProject" page' do
-    project = Project.find_by(name: 'PerforceProject')
-    visit project_path(project)
+    visit project_path(perforce_project)
+  end
+
+  step 'I visit project "PerforceProject" merge requests page' do
+    visit project_merge_requests_path(perforce_project)
+  end
+
+  def perforce_project
+    Project.find_by(name: 'PerforceProject')
   end
 end

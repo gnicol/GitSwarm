@@ -19,7 +19,7 @@ module SharedProject
 
   step 'I rename the project "PerforceProject" to "QAProject"' do
     fill_in 'project_name', with: 'QAProject'
-    click_button "Save changes"
+    click_button 'Save changes'
   end
 
   step 'create a project named "New Project"' do
@@ -31,5 +31,4 @@ module SharedProject
     find(:css, 'title').should have_content('New Project')
     page.should have_content 'git init'
   end
-
 end

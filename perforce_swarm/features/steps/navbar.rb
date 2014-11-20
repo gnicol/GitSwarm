@@ -90,7 +90,6 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I click on the Recent Projects dropdown' do
     find(:css, '.navbar-gitlab .dropdown-toggle.title').click
-    sleep(1.5); File.write('/var/www/static/test.html', page.body)
   end
 
   step 'I click on project "Forum"' do

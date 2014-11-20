@@ -39,7 +39,7 @@ document.addEventListener(
 # Update the current page, with data from the passed document
 updateHead = (doc) ->
   # Locate the gon script in the head, and run it.
-  for gonScript in doc.querySelectorAll('head script') when gonScript.innerText.match(/window\.gon/)
+  for gonScript in doc.querySelectorAll('head script') when gonScript.text.match(/window\.gon/)
     script      = document.createElement('script')
     script.text = gonScript.text
     document.head.appendChild(script).parentNode.removeChild(script)

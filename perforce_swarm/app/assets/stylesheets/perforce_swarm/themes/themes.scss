@@ -6,9 +6,11 @@
     .dashboard-menu.dropdown {
       .title .caret {
         @if $icon-color { color: $icon-color}
-        &:hover {
-          color: #FFF;
-        }
+      }
+
+      &.open .title .caret,
+      .title:hover .caret {
+        color: #FFF;
       }
 
       &:hover {

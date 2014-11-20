@@ -9,21 +9,9 @@
           %h1.dropdown-toggle.title{'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', 'tabIndex' => '0' }
             = title
             %span.caret
-          %ul.dropdown-menu{role: 'menu', 'aria-label' => 'Dashboard Menu'}
-            %li{role: 'presentation', class: 'dropdown-header'} Recent Projects
-            - @recent_projects.each do |project|
-              %li{role: 'menuitem'}
-                = link_to project_path(project) do
-                  %span.recent-project-access-icon
-                    = visibility_level_icon(project.visibility_level)
-                  %span.str-truncated
-                    %span.namespace-name
-                      - if project.namespace
-                        = project.namespace.human_name
-                        \/
-                    %span.project-name.filter-title
-                      = project.name
-            %li{role: 'presentation', class: 'divider'}
+          %ul.dropdown-menu{role: 'menu',
+              'aria-label' => 'Dashboard Menu',
+              'data-recent-updated' => projects_to_simple_json(@recent_projects)}
             %li{role: 'menuitem', class: current_route?('dashboard#show') ? 'current' : ''}
               = link_to root_path do
                 Dashboard

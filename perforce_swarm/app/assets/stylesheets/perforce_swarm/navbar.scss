@@ -41,9 +41,10 @@ header.navbar-gitlab .navbar-inner {
       float: none;
       position: static;
       height: 44px;
+      margin: 0;
+      padding-left: 10px;
+      padding-right: 10px;
       line-height: 44px;
-      margin-right: 10px;
-      margin-left: 10px;
     }
 
     &.dropdown {

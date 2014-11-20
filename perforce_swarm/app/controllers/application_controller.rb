@@ -5,6 +5,9 @@ module PerforceSwarm
     def add_gon_variables
       super
 
+      # Pass the visibility level constants to the frontend
+      gon.visibility_levels = Gitlab::VisibilityLevel.options
+
       # Pass additional user information to the frontend for
       # creating routes and determining which menus to show
       if current_user

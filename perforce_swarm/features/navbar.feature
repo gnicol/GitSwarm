@@ -3,14 +3,14 @@ Feature: NavBar
   Background:
     Given I sign in as a user
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: I should see project "Shop" in my recent project dropdown
     Given I own project "Shop"
     And I visit dashboard page
     When I open the recent projects dropdown
     Then I should see "Shop" in the recent projects dropdown
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: I should see my 5 most recent projects in my recent project dropdown
     Given I own project "Shop"
     And I own project "Forum"
@@ -35,7 +35,7 @@ Feature: NavBar
     Then I should see the Dashboard page
     And the title of the dropdown should be 'Dashboard'
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on a project on the Dashboard dropdown and verify that user is taken to the project page
     Given I own project "Forum"
     And I visit dashboard page
@@ -49,7 +49,7 @@ Feature: NavBar
     Given I click on the Recent Projects dropdown
     And I click on 'View My Projects' link
     Then I should see 'My Projects' page
-      
+
   @automated @PGL-123
   Scenario: Click on 'View All Public Projects' on Dashboard dropdown and verify that user is taken to 'Public Projects' page
     Given I click on the Recent Projects dropdown
@@ -95,7 +95,7 @@ Feature: NavBar
     When I click on the Recent Projects dropdown
     Then I should see "New Project" at the top of the list in the recent projects dropdown
 
-  @PGL-123 @automated
+  @javascript @PGL-123 @automated
   Scenario: Rename a project and verify that project name appears correctly on the Dashboard and Project dropdowns
     Given I own project "PerforceProject"
     And I visit project "PerforceProject" settings page
@@ -208,7 +208,7 @@ Feature: NavBar
 
   @automated @PGL-123
   Scenario: Click on 'View All Public Projects' on Admin dropdown and verify that admin is taken to 'Public Projects' page
-    Given I click on 'Logout' link
+    Given I logout
     And I sign in as an admin
     And I visit admin page
     When I click on the Recent Projects dropdown
@@ -251,14 +251,14 @@ Feature: NavBar
   @PGL-123
   Scenario: Click on the 'Logout' link of User Menu dropdown and verify that user is logged out
     When I click on the User Menu icon
-    And I click on 'Logout' link
+    And I logout
     Then I should see the GitLab home page
 
   #########################
   # 'Recent Projects' of Dashboard, Project, and User Menu dropdowns
   #########################
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Create an issue in an older project and verify that project appears first under 'Recent Projects' of Project dropdown
     Given I own project "PerforceProject"
     And I own project "Forum"
@@ -272,7 +272,7 @@ Feature: NavBar
     And I click on the Recent Projects dropdown
     Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
-  @PGL-123 @automated
+  @javascript @PGL-123 @automated
   Scenario: Create a merge request in an older project and verify that project appears first under 'Recent Projects' of User Menu dropdown
     Given I own project "PerforceProject"
     And I own project "Forum"
@@ -373,9 +373,9 @@ Feature: NavBar
   # Admin - Related
   #########################
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: As an admin, transfer a project in the admin area to a different group, verify that the project name should be renamed in the Dashboard dropdown
-    And I click on 'Logout' link
+    And I logout
     When I sign in as an admin
     And I own project "PerforceProject"
     When I visit admin "PerforceProject" project page
@@ -387,7 +387,7 @@ Feature: NavBar
 
   @automated @PGL-123
   Scenario: As an admin, remove a project in the admin area, verify that the project is removed from the Dashboard dropdown
-    And I click on 'Logout' link
+    And I logout
     When I sign in as an admin
     And I own project "PerforceProject"
     When I visit admin projects page
@@ -433,19 +433,19 @@ Feature: NavBar
   Scenario: As an admin, click on the 'Logout' link of the User Menu dropdown and verify that admin is logged out
     Given I sign in as an admin
     When I click on the User Menu icon
-    And I click on 'Logout' link
+    And I logout
     Then I should see the GitLab home page
 
   #########################
   # User and Group - Related
   #########################
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Create a new user and verify that the Dashboard dropdown does not have 'Recent Projects'
     When I click on the Recent Projects dropdown
     Then I should not see any projects in the recent projects dropdown
 
-  @PGL-123 @automated
+  @javascript @PGL-123 @automated
   Scenario: Rename user and verify that projects in Profile dropdown are renamed
     Given I own project "PerforceProject"
     And I visit profile page

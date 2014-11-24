@@ -86,8 +86,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should not see any projects in the recent projects dropdown' do
-    all('.dashboard-menu .dropdown-menu li').count.should eq(5)
-    all('.dashboard-menu .dropdown-menu li')[2].text.should have_content('Dashboard')
+    all('.dashboard-menu .dropdown-menu li').count.should eq(3)
+    all('.dashboard-menu .dropdown-menu li')[0].text.should have_content('Dashboard')
   end
 
   #########################

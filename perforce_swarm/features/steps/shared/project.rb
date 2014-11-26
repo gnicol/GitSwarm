@@ -1,3 +1,5 @@
+require Rails.root.join('features', 'steps', 'shared', 'project')
+
 module SharedProject
   include Spinach::DSL
 
@@ -30,5 +32,9 @@ module SharedProject
   step 'I should see the "New Project" project page' do
     find(:css, 'title').should have_content('New Project')
     page.should have_content 'git init'
+  end
+
+  step 'I should not see project "Internal"' do
+    find('.content').should_not have_content "Internal"
   end
 end

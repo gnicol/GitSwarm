@@ -44,13 +44,13 @@ Feature: NavBar
     Then I should see the "Forum" page
     And the title of the dropdown should be "Forum"
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on 'View My Projects' on Dashboard dropdown and verify that user is taken to 'My Projects' page
     Given I click on the Recent Projects dropdown
     And I click on 'View My Projects' link
     Then I should see 'My Projects' page
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on 'View All Public Projects' on Dashboard dropdown and verify that user is taken to 'Public Projects' page
     Given I click on the Recent Projects dropdown
     And I click on 'View All Public Projects' link
@@ -61,7 +61,7 @@ Feature: NavBar
   # Project Dropdown
   #########################
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on 'Dashboard' on the Project dropdown and verify that user is taken to the Dashboard page
     Given I own project "PerforceProject"
     When I visit project "PerforceProject" page
@@ -69,7 +69,7 @@ Feature: NavBar
     And I click on 'Dashboard' link
     Then I should see the Dashboard page
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on 'View My Projects' on Project dropdown and verify that user is taken to 'My Projects' page
     Given I own project "PerforceProject"
     When I visit project "PerforceProject" page
@@ -77,7 +77,7 @@ Feature: NavBar
     And I click on 'View My Projects' link
     Then I should see 'My Projects' page
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on 'View All Public Projects' on Project dropdown and verify that user is taken to 'Public Projects' page
     Given I own project "PerforceProject"
     When I visit project "PerforceProject" page
@@ -100,9 +100,9 @@ Feature: NavBar
     Given I own project "PerforceProject"
     And I visit project "PerforceProject" settings page
     When I rename the project "PerforceProject" to "QAProject"
-    And I click on the Recent Projects dropdown
+    Then the title of the dropdown should be 'QAProject'
+    When I click on the Recent Projects dropdown
     Then I should see "QAProject" at the top of the list in the recent projects dropdown
-    And the title of the dropdown should be 'QAProject'
     When I click on project "QAProject"
     Then I should see the "QAProject" page
 
@@ -160,14 +160,14 @@ Feature: NavBar
     And I click on the most recent project under "Recent Projects"
     Then I should see a project page
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on 'View My Projects' on Search dropdown and verify that user is taken to 'My Projects' page
     Given I visit dashboard search page
     And I click on the Recent Projects dropdown
     When I click on 'View My Projects' link
     Then I should see 'My Projects' page
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on 'View All Public Projects' on Search dropdown and verify that user is taken to 'Public Projects' page
     Given I visit dashboard search page
     And I click on the Recent Projects dropdown
@@ -180,7 +180,7 @@ Feature: NavBar
   # Snippet Dropdown
   #########################
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on 'View My Projects' on Snippet dropdown and verify that user is taken to 'My Projects' page
     Given I own project "Shop"
     And I visit project "Shop" snippets page
@@ -206,7 +206,7 @@ Feature: NavBar
   # Admin Dropdown
   #########################
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: Click on 'View All Public Projects' on Admin dropdown and verify that admin is taken to 'Public Projects' page
     Given I logout
     And I sign in as an admin
@@ -385,7 +385,7 @@ Feature: NavBar
     And I click on the Recent Projects dropdown
     Then I should see "PerforceProject" with "QA" group name
 
-  @automated @PGL-123
+  @javascript @automated @PGL-123
   Scenario: As an admin, remove a project in the admin area, verify that the project is removed from the Dashboard dropdown
     And I logout
     When I sign in as an admin

@@ -95,58 +95,58 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'I open the recent projects dropdown' do
-    find(:css, '.navbar-gitlab .dropdown-toggle.title').click
+    find(:css, '.navbar-gitlab .dropdown-toggle.title').trigger('click')
   end
 
   step 'I click on the Recent Projects dropdown' do
-    find(:css, '.navbar-gitlab .dropdown-toggle.title').click
+    find(:css, '.navbar-gitlab .dropdown-toggle.title').trigger('click')
   end
 
   step 'I click on project "Forum"' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'Forum').click
+      find(:link, 'Forum').trigger('click')
     end
   end
 
   step 'I click on project "PerforceProject"' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'PerforceProject').click
+      find(:link, 'PerforceProject').trigger('click')
     end
   end
 
   step 'I click on project "QAProject"' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'QAProject').click
+      find(:link, 'QAProject').trigger('click')
     end
   end
 
   step 'I click on \'View My Projects\' link' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'View My Projects').click
+      find(:link, 'View My Projects').trigger('click')
     end
   end
 
   step 'I click on \'View All Public Projects\' link' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'View All Public Projects').click
+      find(:link, 'View All Public Projects').trigger('click')
     end
   end
 
   step 'I click on \'Dashboard\' link' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'Dashboard').click
+      find(:link, 'Dashboard').trigger('click')
     end
   end
 
   step 'I click on the most recent project under "Recent Projects"' do
-    within '.navbar-gitlab' do
-      all('ul.dropdown-menu li')[1].click
+    within '.navbar-gitlab .dashboard-menu' do
+      first('ul.dropdown-menu li a').trigger('click')
     end
   end
 
   step 'I click on the older project "Shop" in \'Recent Projects\'' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'Shop').click
+      find(:link, 'Shop').trigger('click')
     end
   end
 

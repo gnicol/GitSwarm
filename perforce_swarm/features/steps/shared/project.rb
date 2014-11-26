@@ -18,10 +18,8 @@ module SharedProject
   end
 
   step 'I rename the project "PerforceProject" to "QAProject"' do
-    fill_in 'project_name', with: 'QAProject'
+    fill_in 'project_name_edit', with: 'QAProject'
     click_button 'Save changes'
-    # Wait for the form/page to reload
-    page.should have_selector('#project_name', visible: true)
   end
 
   step 'create a project named "New Project"' do

@@ -35,6 +35,6 @@ module SharedProject
   end
 
   step 'I should not see project "Internal"' do
-    find('.content').should_not have_content "Internal"
+    find('.content').should_not have_content 'Internal'
   end
 end

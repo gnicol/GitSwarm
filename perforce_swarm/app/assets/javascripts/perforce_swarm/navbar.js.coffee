@@ -61,15 +61,14 @@ $ ->
   subnavMenu = if subnav.length then subnav.find('ul').clone() else $('<ul />')
   subnavMenu.addClass('dropdown-menu').attr('role', 'menu')
 
-  # Define the top-level menus that we will add in
-  menus = [
-    {name: 'Help', path: -> Routes.help_path()}
-    {name: 'Admin', disabled: gon.current_user_is_admin isnt true, path: -> Routes.admin_root_path()}
-  ]
-
-  # Append each menu to the subnav if it doesn't already exist
-  for menu in menus when !menu.disabled and !subnav.find("li a[href='#{menu.path()}']").length
-    subnavMenu.append("<li><a href=\"#{menu.path()}\">#{menu.name}</a></li>")
+  # Add the top-level menus to the subnave if they don't already exist
+  $('.navbar-gitlab .navbar-nav > li.hidden-xs > a[title]').each(->
+    menu = $(this).clone()
+    return if subnav.find("li a[href='#{menu.attr('href')}']").length
+    menu.html(menu.attr('title') || menu.attr('data-original-title'))
+    menu.removeAttr('title class data-original-title')
+    subnavMenu.append(menu.wrap('<li></li>').parent())
+  )
 
   # Create a dropdown menu that we will use for the subnav in mobile view
   subnavDropdown = $('<li class="dropdown navbar-right visible-xs" />')

@@ -11,7 +11,7 @@ Feature: NavBar
     Then I should see "Shop" in the recent projects dropdown
 
   @javascript @automated @PGL-123
-  Scenario: I should see my 5 most recent projects in my recent project dropdown
+  Scenario: I should see my 5 most recently updated projects in my recent project dropdown
     Given I own project "Shop"
     And I own project "Forum"
     And I own an empty project
@@ -23,6 +23,30 @@ Feature: NavBar
     Then I should not see "Shop" in the recent projects dropdown
     And I should see "Forum" in the recent projects dropdown
     And I should see "Empty Project" in the recent projects dropdown
+
+  @javascript @automated @PGL-123
+  Scenario: I should see recent projects if I am a member of at least one project
+    Given I own project "Shop"
+    And I visit dashboard page
+    And I open the recent projects dropdown
+    Then I should see "Recent Projects" in the recent projects dropdown
+
+  @javascript @automated @PGL-123
+  Scenario: I should not see any recent projects when no projects have been created yet
+    Given I visit dashboard page
+    And I open the recent projects dropdown
+    Then I should not see "Recent Projects" in the recent projects dropdown
+
+  @javascript @automated @PGL-123
+  Scenario: I should see the recent projects update as I view projects
+    Given I own project "Forum"
+    And I own project "Shop"
+    And I own an empty project
+    Then I should not see "Shop" as the latest project in the dropdown
+    When I visit empty project page
+    And I visit project "Forum" page
+    And I visit project "Shop" page
+    Then I should see "Shop" then "Forum" then "Empty Project" in the recent projects dropdown
 
   #########################
   # Dashboard Dropdown

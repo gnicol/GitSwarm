@@ -27,6 +27,21 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     @project.team << [@user, :master]
   end
 
+  step 'I visit empty project page' do
+    project = Project.find_by(name: 'Empty Project')
+    visit project_path(project)
+  end
+
+  step 'I visit project "Forum" page' do
+    project = Project.find_by(name: 'Forum')
+    visit project_path(project)
+  end
+
+  step 'I visit project "Shop" page' do
+    project = Project.find_by(name: 'Shop')
+    visit project_path(project)
+  end
+
   #########################
   # Dropdown - Dropdown Menu
   #########################
@@ -88,6 +103,33 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   step 'I should not see any projects in the recent projects dropdown' do
     all('.dashboard-menu .dropdown-menu li').count.should eq(3)
     all('.dashboard-menu .dropdown-menu li')[0].text.should have_content('Dashboard')
+  end
+
+  step 'I should see "Recent Projects" in the recent projects dropdown' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:css, '.dropdown-menu').should have_content('Recent Projects')
+    end
+  end
+
+  step 'I should not see "Recent Projects" in the recent projects dropdown' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:css, '.dropdown-menu').should_not have_content('Recent Projects')
+    end
+  end
+
+  step 'I should not see "Shop" as the latest project in the dropdown' do
+    within '.navbar-gitlab .dashboard-menu' do
+      all(:css, '.dropdown-menu li')[1].should_not have_content('Shop')
+    end
+  end
+
+  step 'I should see "Shop" then "Forum" then "Empty Project" in the recent projects dropdown' do
+    within '.navbar-gitlab .dashboard-menu' do
+      menuitems = all(:css, '.dropdown-menu li')
+      menuitems[1].should have_content('Shop')
+      menuitems[2].should have_content('Forum')
+      menuitems[3].should have_content('Empty Project')
+    end
   end
 
   #########################

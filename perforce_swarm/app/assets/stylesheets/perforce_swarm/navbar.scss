@@ -47,6 +47,10 @@ header.navbar-gitlab .navbar-inner {
       line-height: 44px;
     }
 
+    .caret {
+      margin-bottom: 1px;
+    }
+
     &.dropdown {
       .title {
         cursor: pointer;
@@ -75,10 +79,14 @@ header.navbar-gitlab .navbar-inner {
         border: none;
       }
 
+      .caret {
+        margin-left: 4px;
+      }
+
       .profile-pic {
         padding: 9px;
         line-height: 24px;
-        padding-right: 3px !important;
+        padding-right: 5px !important;
         top: 0;
       }
 

@@ -63,7 +63,6 @@ $ ->
 
   # Define the top-level menus that we will add in
   menus = [
-    {name: 'Snippets', disabled: !username?, path: -> Routes.user_snippets_path(username)}
     {name: 'Help', path: -> Routes.help_path()}
     {name: 'Admin', disabled: gon.current_user_is_admin isnt true, path: -> Routes.admin_root_path()}
   ]

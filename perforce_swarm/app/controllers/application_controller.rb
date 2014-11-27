@@ -10,9 +10,7 @@ module PerforceSwarm
 
       # Pass additional user information to the frontend for
       # creating routes and determining which menus to show
-      if current_user
-        gon.current_user_username = current_user.username
-      end
+      gon.current_user_username = current_user.username if current_user
     end
 
     def load_recent_projects

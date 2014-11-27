@@ -62,6 +62,15 @@ header.navbar-gitlab .navbar-inner {
   /* Center and properly size the nav area */
   .nav {
     li {
+      > a {
+        padding: 6px 14px;
+
+        > i.fa {
+          width: 16px;
+          text-align: center;
+        }
+      }
+
       .navbar-toggle {
         border: none;
       }
@@ -96,11 +105,11 @@ header.navbar-gitlab .navbar-inner {
       }
     }
 
-  /**
-   * Override small nav dropdown size rules, so that our
-   * dropdown menus still appear as regular dropdown.
-   * These rules are taken from the bootstrap sass files.
-   */
+    /**
+    * Override small nav dropdown size rules, so that our
+    * dropdown menus still appear as regular dropdown.
+    * These rules are taken from the bootstrap sass files.
+    */
     .open .dropdown-menu {
       position: absolute;
       float: left;
@@ -108,6 +117,17 @@ header.navbar-gitlab .navbar-inner {
       background-color: $dropdown-bg;
       border: 1px solid $dropdown-fallback-border; // IE8 fallback
       border: 1px solid $dropdown-border;
+
+      .active > a {
+        color: #000;
+        background-color: transparent;
+        font-weight: bold;
+
+        &:hover, &:focus {
+          color: #FFF;
+          background: #446e9b;
+        }
+      }
 
       li {
         display: list-item;

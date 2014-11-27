@@ -72,6 +72,11 @@ header.navbar-gitlab .navbar-inner {
         padding-right: 3px !important;
         top: 0;
       }
+
+      /* Hide tooltips when dropdowns are open */
+      &.dropdown.open .tooltip {
+        display: none !important;
+      }
     }
   }
 

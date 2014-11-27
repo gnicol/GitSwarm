@@ -12,7 +12,6 @@ module PerforceSwarm
       # creating routes and determining which menus to show
       if current_user
         gon.current_user_username = current_user.username
-        gon.current_user_is_admin = current_user.is_admin?
       end
     end
 

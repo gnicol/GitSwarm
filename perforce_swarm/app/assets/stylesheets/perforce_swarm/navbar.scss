@@ -61,7 +61,7 @@ header.navbar-gitlab .navbar-inner {
 
   /* Center and properly size the nav area */
   .nav {
-    li {
+    > li {
       > a {
         padding: 6px 14px;
 

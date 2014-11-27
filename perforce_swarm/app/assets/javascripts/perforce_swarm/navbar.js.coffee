@@ -38,7 +38,7 @@ $ ->
         <li role="menuitem">
           <a href="#{Routes.project_path(slug)}">
             <span class="recent-project-access-icon">
-              <i class="fa #{getVisibilityIconClass[project.visibility_level]}"></i>
+              <i class="fa #{getVisibilityIconClass(project.visibility_level)}"></i>
             </span>
             <span class="str-truncated">
               <span class="namespace">#{namespace}</span>

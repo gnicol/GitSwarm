@@ -1,5 +1,5 @@
 GEM
-  remote: http://geminabox.das.perforce.com/
+  remote: https://rubygems.org/
   specs:
     actionpack (4.1.5)
       actionview (= 4.1.5)
@@ -26,9 +26,7 @@ GEM
     json (1.8.1)
     minitest (5.4.1)
     multi_json (1.10.1)
-    p4ruby-internal (2014.1)
-      rake (~> 10.3)
-      rdoc (~> 3.0)
+    p4ruby (2014.2.0.pre1)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -38,8 +36,6 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.3.2)
-    rdoc (3.12.2)
-      json (~> 1.4)
     sprockets (2.12.1)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -60,4 +56,4 @@ PLATFORMS
 
 DEPENDENCIES
   js-routes (~> 0.9.9)
-  p4ruby-internal
+  p4ruby (~> 2014.2.0.pre1)

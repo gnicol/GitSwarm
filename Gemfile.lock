@@ -345,7 +345,7 @@ GEM
     org-ruby (0.9.9)
       rubypants (~> 0.2)
     orm_adapter (0.5.0)
-    p4ruby (2014.2.0.pre1)
+    p4ruby (2014.2.0.pre2)
     pg (0.15.1)
     phantomjs (1.9.2.0)
     poltergeist (1.5.1)
@@ -669,7 +669,7 @@ DEPENDENCIES
   omniauth-shibboleth
   omniauth-twitter
   org-ruby (= 0.9.9)
-  p4ruby (~> 2014.2.0.pre1)
+  p4ruby (~> 2014.2.0.pre2)
   perforce_swarm!
   pg
   poltergeist (~> 1.5.1)

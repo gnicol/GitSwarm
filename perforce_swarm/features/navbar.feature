@@ -507,6 +507,47 @@ Feature: NavBar
     Then the title of the dropdown should have renamed group name
 
   #########################
+  # Tracking recently visited projects
+  #########################
+
+  Scenario:  Click on an older project in the dropdown and verify that afterwards, the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on an older project in the "My Projects" page and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on an older project in the "Public Projects" page and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on a commit link of an older project, and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on a branch link of an older project, and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on a merge request link of an older project, and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on an issue link of an older project, and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on a snippet link of an older project, and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on a file link of an older project, and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on a dashboard link of an older project, and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on a comment link of an issue of an older project, and verify that the project appears on the top of the dropdown.
+    Given ...
+
+  Scenario:  Click on a comment link of a merge request of an older project, and verify that the project appears on the top of the dropdown.
+    Given ...
+
+
+  #########################
   # Appearance Themes - Manual testing
   #########################
 

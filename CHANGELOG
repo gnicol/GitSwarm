@@ -2,18 +2,27 @@ v 7.6.0
   - Fork repository to groups
   - New rugged version
   - Add CRON=1 backup setting for quiet backups
+  - Fix failing wiki restore
+  -
+  - Add optional Sidekiq MemoryKiller middleware (enabled via SIDEKIQ_MAX_RSS env variable)
+  -
+  -
+  - Create project with repository in synchrony
+  - Added ability to create empty repo or import existing one if project does not have repository
+  -
+  -
+  - Reactivate highlight.js language autodetection
+  - Mobile UI improvements
+  -
+  - Change maximum avatar file size from 100KB to 200KB
   -
   -
   -
   -
   -
-  -
-  -
-  -
-  -
-  -
-  -
-  -
+
+v 7.5.2
+  - Don't log Sidekiq arguments by default
 
 v 7.5.0
   - API: Add support for Hipchat (Kevin Houdebert)

@@ -241,8 +241,7 @@ GEM
       railties (>= 4.0.1)
     hashie (2.1.2)
     hike (1.2.3)
-    hipchat (0.14.0)
-      httparty
+    hipchat (1.4.0)
       httparty
     html-pipeline (1.11.0)
       activesupport (>= 2)
@@ -290,7 +289,7 @@ GEM
       addressable (~> 2.3)
     letter_opener (1.1.2)
       launchy (~> 2.2)
-    libv8 (3.16.14.3)
+    libv8 (3.16.14.7)
     listen (2.3.1)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
@@ -646,7 +645,7 @@ DEPENDENCIES
   guard-rspec
   guard-spinach
   haml-rails
-  hipchat (~> 0.14.0)
+  hipchat (~> 1.4.0)
   html-pipeline-gitlab (~> 0.1.0)
   httparty
   jasmine (= 2.0.2)

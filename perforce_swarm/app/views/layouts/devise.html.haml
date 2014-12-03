@@ -1,0 +1,25 @@
+!!! 5
+%html{ lang: 'en'}
+  = render 'layouts/head'
+  %body.ui_basic.login-page
+    .container
+      .content
+        = render 'layouts/flash'
+        .row
+          .col-md-5.brand-holder
+            - if brand_item
+              .brand-image
+                = brand_image
+              .brand_text
+                = brand_text
+            - else
+              .brand-image.default-brand-image.hidden-sm.hidden-xs
+                = image_tag 'brand_logo.png'
+
+          .col-md-6.login-holder
+            = yield
+            .footer-links
+              = link_to 'Explore projects', explore_root_path
+              = link_to 'Help', help_path
+              = link_to 'About Swarm', 'http://www.perforce.com/swarm'
+          .col-md-1

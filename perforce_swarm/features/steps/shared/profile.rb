@@ -1,7 +1,7 @@
 module SharedProfile
   include Spinach::DSL
 
-  step 'I change the username to "NewUserQA" in \'Profile settings\'' do
+  step 'I change the username to "NewUserQA" in "Profile settings"' do
     fill_in 'user_name', with: 'NewUserQA'
     click_button 'Save changes'
   end

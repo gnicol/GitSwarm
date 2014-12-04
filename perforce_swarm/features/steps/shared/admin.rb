@@ -2,7 +2,8 @@ module SharedAdmin
   include Spinach::DSL
 
   step 'I visit admin "PerforceProject" project page' do
-    visit admin_project_path(project)
+    project_perforce = Project.find_by(name: 'PerforceProject')
+    visit admin_project_path(project_perforce)
   end
 
   step 'I transfer project "PerforceProject" to "QA"' do
@@ -10,8 +11,9 @@ module SharedAdmin
     click_button 'Transfer'
   end
 
-  step 'I should see project transferred to group "QA"' do
-    page.should have_content 'QA / ' + project.name
+  step 'I should see project "PerforceProject" transferred to group "QA"' do
+    project_perforce = Project.find_by(name: 'PerforceProject')
+    page.should have_content 'QA / ' + project_perforce.name
     page.should have_content 'Namespace: QA'
   end
 

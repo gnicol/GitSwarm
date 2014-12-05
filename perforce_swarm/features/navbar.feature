@@ -75,9 +75,9 @@ Feature: NavBar
     Then I should see "My Projects" page
 
   @javascript @automated @PGL-123
-  Scenario: Click on "View All Public Projects" on Dashboard dropdown and verify that user is taken to "Public Projects" page
+  Scenario: Click on "View All Projects" on Dashboard dropdown and verify that user is taken to "Public Projects" page
     Given I click on the Recent Projects dropdown
-    And I click on "View All Public Projects" link
+    And I click on "View All Projects" link
     Then I should see the "Explore GitLab" page
     And the title of the dropdown should be "Explore"
 
@@ -102,11 +102,11 @@ Feature: NavBar
     Then I should see "My Projects" page
 
   @javascript @automated @PGL-123
-  Scenario: Click on "View All Public Projects" on Project dropdown and verify that user is taken to "Public Projects" page
+  Scenario: Click on "View All Projects" on Project dropdown and verify that user is taken to "Public Projects" page
     Given I own project "PerforceProject"
     When I visit project "PerforceProject" page
     And I click on the Recent Projects dropdown
-    And I click on "View All Public Projects" link
+    And I click on "View All Projects" link
     Then I should see the "Explore GitLab" page
     And the title of the dropdown should be "Explore"
 
@@ -183,11 +183,17 @@ Feature: NavBar
     And I click on the most recent project under "Recent Projects"
     Then I should see a project page
 
-  @javascript @automated @PGL-123
-  Scenario: Click on "View All Public Projects" on Search dropdown and verify that user is taken to "Public Projects" page
+  Scenario: Click on 'View My Projects' on Search dropdown and verify that user is taken to 'My Projects' page
     Given I visit dashboard search page
     And I click on the Recent Projects dropdown
-    When I click on "View All Public Projects" link
+    When I click on 'View My Projects' link
+    Then I should see 'My Projects' page
+
+  @javascript @automated @PGL-123
+  Scenario: Click on "View All Projects" on Search dropdown and verify that user is taken to "Public Projects" page
+    Given I visit dashboard search page
+    And I click on the Recent Projects dropdown
+    When I click on "View All Projects" link
     Then I should see the "Explore GitLab" page
     And the title of the dropdown should be "Explore"
 
@@ -205,25 +211,29 @@ Feature: NavBar
 
   @javascript @automated @PGL-123
   Scenario: Click on a project on the Snippet dropdown and verify that user is taken to the project page
-    Given I own project "Shop"
-    And I own project "Forum"
-    And I visit project "Shop" snippets page
-    When I click on the Recent Projects dropdown
-    And I click on project "Forum"
-    Then I should see the "Forum" page
-    And the title of the dropdown should be "Forum"
+    When I click on the Snippet icon
+    Then the title of the dropdown should be "Snippets"
+    When I click on a project link
+    Then I should see the project dashboard
+
+  @PGL-123
+  Scenario: Click on 'View All Projects' on Snippet dropdown and verify that user is taken to 'Public Projects' page
+    When I click on the Snippet icon
+    And I click on 'View All Projects' link
+    Then I should see 'Explore GitLab' page
+    And the title of the dropdown should be 'Explore'
 
   #########################
   # Admin Dropdown
   #########################
 
   @javascript @automated @PGL-123
-  Scenario: Click on "View All Public Projects" on Admin dropdown and verify that admin is taken to "Public Projects" page
+  Scenario: Click on "View All Projects" on Admin dropdown and verify that admin is taken to "Public Projects" page
     Given I logout
     And I sign in as an admin
     And I visit admin page
     When I click on the Recent Projects dropdown
-    And I click on "View All Public Projects" link
+    And I click on "View All Projects" link
     Then I should see the "Explore GitLab" page
     And the title of the dropdown should be "Explore"
 
@@ -285,6 +295,13 @@ Feature: NavBar
     And I click on the Swarm icon
     And I click on the Recent Projects dropdown
     Then I should see "New Project" at the top of the list in the recent projects dropdown
+
+  @PGL-123
+  Scenario: Click on the back button after navigating to the 'Public Projects' page from a project page and verify that user is taken to the project page
+    Given I am on the project page
+    And I click on 'View All Projects' link
+    When I click on the back button
+    Then I should see the project page
 
   @PGL-123
   Scenario: Click on the back button after renaming a project and verify that project is still renamed in the Project dropdown

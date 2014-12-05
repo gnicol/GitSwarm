@@ -183,9 +183,9 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     end
   end
 
-  step 'I click on "View All Public Projects" link' do
+  step 'I click on "View All Projects" link' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'View All Public Projects').trigger('click')
+      find(:link, 'View All Projects').trigger('click')
     end
   end
 

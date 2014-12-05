@@ -273,12 +273,16 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     find('title').should have_content('Forum')
   end
 
+  step 'I should see "My Projects" page' do
+    find(:css, '.page-title').should have_content('My Projects')
+  end
+
   step 'I should see the "QAProject" page' do
     find('title').should have_content('QAProject')
   end
 
-  step 'I should see "My Projects" page' do
-    find(:css, '.page-title').should have_content('My Projects')
+  step 'I should see the "PerforceProject" page' do
+    find('title').should have_content('PerforceProject')
   end
 
   step 'I should see a project page' do
@@ -314,6 +318,12 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   step 'the title of the dropdown should be "New Project"' do
     within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').text.should have_content('New Project')
+    end
+  end
+
+  step 'the title of the dropdown should be "PerforceProject"' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:css, '.dropdown-toggle').text.should have_content('PerforceProject')
     end
   end
 

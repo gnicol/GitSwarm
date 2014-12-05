@@ -465,42 +465,130 @@ Feature: NavBar
   # Tracking recently visited project pages
   #########################
 
+  @javascript @automated @PGL-448
   Scenario:  Click on an older project in the dropdown and verify that afterwards, the project appears on the top of the dropdown.
-    Given ...
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    And I visit dashboard page
+    When I click on the Recent Projects dropdown
+    Then I should see "Forum" at the top of the list in the recent projects dropdown
+    When I visit project "PerforceProject" page
+    Then I should see the "PerforceProject" page
+    And the title of the dropdown should be "PerforceProject"
+    When I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
-  Scenario:  Click on an older project in the "My Projects" page and verify that the project appears on the top of the dropdown.
-    Given ...
+  @javascript @automated
+  Scenario:  Click on a blob file link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" blob file page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
-  Scenario:  Click on an older project in the "Public Projects" page and verify that the project appears on the top of the dropdown.
-    Given ...
-
+  @javascript @automated @PGL-448 @PGL-509
   Scenario:  Click on a commit link of an older project, and verify that the project appears on the top of the dropdown.
-    Given ...
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" commit page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
-  Scenario:  Click on a branch link of an older project, and verify that the project appears on the top of the dropdown.
-    Given ...
+  @javascript @automated
+  Scenario:  Click on a compare refs link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" compare refs page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
-  Scenario:  Click on a merge request link of an older project, and verify that the project appears on the top of the dropdown.
-    Given ...
+  @javascript @automated
+  Scenario:  Click on a deploy keys link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" deploy keys page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
+  @javascript @automated
+  Scenario:  Click on edit project link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit edit project "PerforceProject" page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
+
+  @javascript @automated
+  Scenario:  Click on files link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" files page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
+
+  @javascript @automated
+  Scenario:  Click on hooks link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" hooks page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
+
+  @javascript @automated @PGL-448
   Scenario:  Click on an issue link of an older project, and verify that the project appears on the top of the dropdown.
-    Given ...
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" issues page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
+  @javascript @PGL-448 @PGL-510
+  Scenario:  Click on a merge request link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" merge request page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
+
+  @javascript @automated
+  Scenario:  Click on network link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" network page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
+
+  @javascript @automated
+  Scenario:  Click on protected branches link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" protected branches page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
+
+  @javascript @automated
   Scenario:  Click on a snippet link of an older project, and verify that the project appears on the top of the dropdown.
-    Given ...
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" snippets page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
-  Scenario:  Click on a file link of an older project, and verify that the project appears on the top of the dropdown.
-    Given ...
+  @javascript @automated
+  Scenario:  Click on tags link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" tags page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
-  Scenario:  Click on a dashboard link of an older project, and verify that the project appears on the top of the dropdown.
-    Given ...
-
-  Scenario:  Click on a comment link of an issue of an older project, and verify that the project appears on the top of the dropdown.
-    Given ...
-
-  Scenario:  Click on a comment link of a merge request of an older project, and verify that the project appears on the top of the dropdown.
-    Given ...
-
+  @javascript @automated
+  Scenario:  Click on a wiki link of an older project, and verify that the project appears on the top of the dropdown.
+    Given I own project "PerforceProject"
+    And I own project "Forum"
+    When I visit project "PerforceProject" wiki page
+    And I click on the Recent Projects dropdown
+    Then I should see "PerforceProject" at the top of the list in the recent projects dropdown
 
   #########################
   # Appearance Themes - Manual testing

@@ -116,7 +116,7 @@ gem "acts-as-taggable-on"
 # Background jobs
 gem 'slim'
 gem 'sinatra', require: nil
-gem 'sidekiq', '2.17.0'
+gem 'sidekiq', '2.17.8'
 
 # HTTP requests
 gem "httparty"

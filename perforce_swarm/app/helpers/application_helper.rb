@@ -10,4 +10,9 @@ module ApplicationHelper
     controller, action, _ = route.split('#')
     current_controller?(controller) && current_action?(action)
   end
+
+  # Override the Gitlab Promo links with our own Perforce links
+  def promo_host
+    'perforce.com'
+  end
 end

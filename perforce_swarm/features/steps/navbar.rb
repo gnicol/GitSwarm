@@ -143,8 +143,12 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     all('ul.dropdown-menu li')[1].text.should have_content('QAProject')
   end
 
-  step 'I should see the project with the project name over 100 characters at the top of the list in the recent projects dropdown' do
-    all('ul.dropdown-menu li')[1].text.should have_content(long_project_name)
+  step 'I should see the project with the project name over 100 characters at the top of the list' do
+    all('ul.dropdown-menu li')[1].text.should have_content(long_project_name + long_project_name)
+  end
+
+  step 'I should not see "PerforceProject" second on the list in the recent projects dropdown' do
+    all('ul.dropdown-menu li')[2].text.should_not have_content('PerforceProject')
   end
 
   #########################
@@ -220,6 +224,12 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   step 'the title of the dropdown should be "Forum"' do
     within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').should have_content('Forum')
+    end
+  end
+
+  step 'the title of the dropdown should be "QAGroup"' do
+    within '.navbar-gitlab .dashboard-menu' do
+      find(:css, '.dropdown-toggle').should have_content('QAGroup')
     end
   end
 

@@ -18,18 +18,13 @@ module SharedProject
   end
 
   step 'I rename the project "PerforceProject" to a project with a name over 100 characters' do
-    fill_in 'project_name_edit', with: long_project_name
+    fill_in 'project_name_edit', with: long_project_name + long_project_name
     click_button 'Save changes'
   end
 
-  step 'I transfer the project "PerforceProject" to another user' do
-    user2 = create(:user)
-    project_perforce = Project.find_by(name: 'PerforceProject')
-    project_perforce.team << [user2, :developer]
-  end
-
-  step 'I transfer the project to a "QA" group' do
-    create(:group, name: 'QA')
+  step 'I rename the path of project "PerforceProject" to "PerforceProjectRenamed"' do
+    fill_in 'project_path', with: 'PerforceProjectRenamed'
+    find(:css, 'input.btn.btn-warning').click
   end
 
   step 'I remove the project' do
@@ -69,6 +64,11 @@ module SharedProject
   # Pages
   #########################
 
+  step 'I should see the "QAProject" project page' do
+    find(:css, 'title').should have_content('QAProject')
+    page.should have_content 'git init'
+  end
+
   step 'I should see the "New Project" project page' do
     find(:css, 'title').should have_content('New Project')
     page.should have_content 'git init'
@@ -83,6 +83,6 @@ module SharedProject
   #########################
 
   def long_project_name
-    'long-project-name_long-project-name_long-project-name_long-project-name_long-project-name_long-project-name_long-project-name_long-project-name_long-project-name'
+    'long-project-name_long-project-name_long-project-name_long-project-name_long-project-name_long-project-name'
   end
 end

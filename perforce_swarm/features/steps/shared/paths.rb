@@ -67,6 +67,10 @@ module SharedPaths
     visit project_wiki_path(perforce_project, :home)
   end
 
+  step 'the path of the page should include "PerforceProjectRenamed"' do
+    current_url.should include('PerforceProjectRenamed')
+  end
+
   def perforce_project
     Project.find_by(name: 'PerforceProject')
   end

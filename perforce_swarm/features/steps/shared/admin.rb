@@ -6,6 +6,16 @@ module SharedAdmin
     visit admin_project_path(project_perforce)
   end
 
+  step 'I should see the admin user page' do
+    page.body.should have_content('User Activity')
+    find(:css, 'ul.nav.navbar-nav').should have_content('Admin Area')
+  end
+
+  step 'I should see the admin user settings page' do
+    find(:css, '.page-title').should have_content('Profile settings')
+    find(:css, 'ul.nav.navbar-nav').should have_content('Admin Area')
+  end
+
   step 'I transfer project "PerforceProject" to "QA"' do
     find(:xpath, "//input[@id='namespace_id']").set group.id
     click_button 'Transfer'

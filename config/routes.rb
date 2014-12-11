@@ -186,11 +186,12 @@ Gitlab::Application.routes.draw do
       post :unarchive
       post :upload_image
       post :toggle_star
+      get :markdown_preview
       get :autocomplete_sources
     end
 
     scope module: :projects do
-      resources :blob, only: [:show, :destroy], constraints: { id: /.+/ } do
+      resources :blob, only: [:show, :destroy], constraints: { id: /.+/, format: false } do
         get :diff, on: :member
       end
       resources :raw,       only: [:show], constraints: {id: /.+/}
@@ -328,10 +329,6 @@ Gitlab::Application.routes.draw do
       resources :notes, only: [:index, :create, :destroy, :update], constraints: {id: /\d+/} do
         member do
           delete :delete_attachment
-        end
-
-        collection do
-          post :preview
         end
       end
     end

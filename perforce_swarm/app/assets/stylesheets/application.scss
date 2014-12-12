@@ -6,3 +6,12 @@
 /* Bootstrap variables and mixins that we can referenc in our own files */
 @import "bootstrap/variables";
 @import "bootstrap/mixins";
+
+/* Our own boostrap style overrides */
+@import "perforce_swarm/bootstrap";
+
+/* Styles for our navbar */
+@import "perforce_swarm/navbar";
+
+/* Theme additions and changes */
+@import "perforce_swarm/themes/*";

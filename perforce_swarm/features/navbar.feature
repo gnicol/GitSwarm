@@ -199,12 +199,6 @@ Feature: NavBar
     And I click on the most recent project under "Recent Projects"
     Then I should see a project page
 
-  Scenario: Click on 'View My Projects' on Search dropdown and verify that user is taken to 'My Projects' page
-    Given I visit dashboard search page
-    And I click on the Recent Projects dropdown
-    When I click on 'View My Projects' link
-    Then I should see 'My Projects' page
-
   @javascript @automated @PGL-123
   Scenario: Click on "View All Projects" on Search dropdown and verify that user is taken to "Public Projects" page
     Given I visit dashboard search page
@@ -227,17 +221,13 @@ Feature: NavBar
 
   @javascript @automated @PGL-123
   Scenario: Click on a project on the Snippet dropdown and verify that user is taken to the project page
-    When I click on the Snippet icon
-    Then the title of the dropdown should be "Snippets"
-    When I click on a project link
-    Then I should see the project dashboard
-
-  @PGL-123
-  Scenario: Click on 'View All Projects' on Snippet dropdown and verify that user is taken to 'Public Projects' page
-    When I click on the Snippet icon
-    And I click on 'View All Projects' link
-    Then I should see 'Explore GitLab' page
-    And the title of the dropdown should be 'Explore'
+    Given I own project "Shop"
+    And I own project "Forum"
+    And I visit project "Shop" snippets page
+    When I click on the Recent Projects dropdown
+    And I click on project "Forum"
+    Then I should see the "Forum" page
+    And the title of the dropdown should be "Forum"
 
   #########################
   # Admin Dropdown

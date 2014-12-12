@@ -61,7 +61,7 @@ $ ->
   subnavMenu = if subnav.length then subnav.find('ul').clone() else $('<ul />')
   subnavMenu.addClass('dropdown-menu').attr('role', 'menu')
 
-  # Add the top-level menus to the subnave if they don't already exist
+  # Add the top-level menus to the subnav if they don't already exist
   $('.navbar-gitlab .navbar-nav > li.hidden-xs > a[title]').each(->
     menu = $(this).clone()
     return if subnav.find("li a[href='#{menu.attr('href')}']").length

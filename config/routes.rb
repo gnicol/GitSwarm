@@ -80,6 +80,7 @@ Gitlab::Application.routes.draw do
   #
   namespace :admin do
     resources :users, constraints: { id: /[a-zA-Z.\/0-9_\-]+/ } do
+      resources :keys, only: [:show, :destroy]
       member do
         put :team_update
         put :block
@@ -263,7 +264,7 @@ Gitlab::Application.routes.draw do
 
       resources :branches, only: [:index, :new, :create, :destroy], constraints: { id: Gitlab::Regex.git_reference_regex }
       resources :tags, only: [:index, :new, :create, :destroy], constraints: { id: Gitlab::Regex.git_reference_regex }
-      resources :protected_branches, only: [:index, :create, :destroy], constraints: { id: Gitlab::Regex.git_reference_regex }
+      resources :protected_branches, only: [:index, :create, :update, :destroy], constraints: { id: Gitlab::Regex.git_reference_regex }
 
       resources :refs, only: [] do
         collection do

@@ -130,8 +130,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I should see "New Project" at the top of the list in the recent projects dropdown' do
     within '.navbar-gitlab' do
-      all('ul.dropdown-menu li')[1].text.should have_content('New Project')
-      all('ul.dropdown-menu li')[2].text.should_not have_content('New Project')
+      all('ul.dropdown-menu li')[1].text.should have_content('new-project')
+      all('ul.dropdown-menu li')[2].text.should_not have_content('new-project')
     end
   end
 
@@ -327,7 +327,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'the title of the dropdown should be "New Project"' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:css, '.dropdown-toggle').text.should have_content('New Project')
+      find(:css, '.dropdown-toggle').text.should have_content('new-project')
     end
   end
 

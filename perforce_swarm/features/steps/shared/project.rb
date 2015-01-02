@@ -8,7 +8,7 @@ module SharedProject
   #########################
 
   step 'create a project named "New Project"' do
-    fill_in 'project_name', with: 'New Project'
+    fill_in 'project_path', with: 'new-project'
     click_button 'Create project'
   end
 
@@ -70,7 +70,7 @@ module SharedProject
   end
 
   step 'I should see the "New Project" project page' do
-    find(:css, 'title').should have_content('New Project')
+    find(:css, 'title').should have_content('new-project')
     page.should have_content 'git init'
   end
 

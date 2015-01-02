@@ -296,7 +296,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see a project page' do
-    within '.main-nav .project-navigation' do
+    within '.nav-sidebar .project-navigation' do
       find(:css, '.shortcuts-project').should have_content('Project')
     end
   end

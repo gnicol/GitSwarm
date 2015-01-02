@@ -13,7 +13,6 @@ require 'rspec'
 # blocks with the exact same descriptions for each block
 
 RSpec.configure do |config|
-
   # this array will hold strings which represent an overriden test
   # each string is made up of the filepath and the test description
   # of a test that is tagged with the override tag
@@ -85,5 +84,4 @@ RSpec.configure do |config|
     return true if overrides.include? override_label(metadata)
     false
   end)
-
 end

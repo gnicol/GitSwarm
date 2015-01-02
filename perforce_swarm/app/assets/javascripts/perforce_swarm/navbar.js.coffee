@@ -54,12 +54,15 @@ $ ->
   Move all subnav links, and some of the top nav
   links to a dropdown when viewport is small
   ###
-  subnav   = $('nav.main-nav')
+  subnav   = $('.nav.nav-sidebar')
   username = gon.current_user_username
 
   # Create the new subnav dropdown menu, clone the exisitng subnav if available
-  subnavMenu = if subnav.length then subnav.find('ul').clone() else $('<ul />')
-  subnavMenu.addClass('dropdown-menu').attr('role', 'menu')
+  subnavMenu = if subnav.length then subnav.clone() else $('<ul />')
+  subnavMenu.removeClass().addClass('dropdown-menu').attr('role', 'menu')
+
+  # Clean up icons, we don't need them in the dropdown
+  subnavMenu.find('i').remove()
 
   # Add the top-level menus to the subnav if they don't already exist
   $('.navbar-gitlab .navbar-nav > li.hidden-xs > a[title]').each(->

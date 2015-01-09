@@ -25,7 +25,7 @@ $ ->
 
   # Grab recently updated projects to fill up our menu if there aren't enough visited projects
   updatedProjects =
-    (updated for updated in dashboardMenu.data('recent-updated') when visitedProjectIds.indexOf(updated.id) is -1)
+    (updated for updated in dashboardMenu.data('recent-updated') || [] when visitedProjectIds.indexOf(updated.id) is -1)
   recentProjects  = visitedProjects.concat(updatedProjects)[0..4]
 
   # Add menu items for each recent project

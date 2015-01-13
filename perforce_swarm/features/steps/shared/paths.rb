@@ -71,6 +71,11 @@ module SharedPaths
     current_url.should include('PerforceProjectRenamed')
   end
 
+  step 'I visit issue page "Tumblr control"' do
+    issue_tumblr_control = Issue.find_by(title: 'Tumblr control')
+    visit project_issue_path(issue_tumblr_control.project, issue_tumblr_control)
+  end
+
   def perforce_project
     Project.find_by(name: 'PerforceProject')
   end

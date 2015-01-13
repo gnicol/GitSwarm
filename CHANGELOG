@@ -1,3 +1,5 @@
+Note: The upcoming release contains empty lines to reduce the number of merge conflicts, scroll down to see past releases.
+
 v 7.7.0
   -
   -
@@ -11,6 +13,7 @@ v 7.7.0
   - Show user SSH keys in admin area
   - Developer can push to protected branches option
   - Set project path instead of project name in create form
+  - Block Git HTTP access after 10 failed authentication attempts
   -
   -
   - Updates to the messages returned by API (sponsored by O'Reilly Media)

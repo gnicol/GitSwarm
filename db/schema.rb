@@ -324,6 +324,8 @@ ActiveRecord::Schema.define(version: 20150108073740) do
     t.string   "import_status"
     t.float    "repository_size",        default: 0.0
     t.integer  "star_count",             default: 0,        null: false
+    t.string   "import_type"
+    t.string   "import_source"
   end
 
   add_index "projects", ["creator_id"], name: "index_projects_on_creator_id", using: :btree
@@ -429,6 +431,7 @@ ActiveRecord::Schema.define(version: 20150108073740) do
     t.boolean  "hide_no_ssh_key",          default: false
     t.string   "website_url",              default: "",    null: false
     t.datetime "last_credential_check_at"
+    t.string   "github_access_token"
   end
 
   add_index "users", ["admin"], name: "index_users_on_admin", using: :btree

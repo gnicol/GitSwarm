@@ -33,7 +33,7 @@ gem 'omniauth-twitter'
 gem 'omniauth-github'
 gem 'omniauth-shibboleth'
 gem 'omniauth-kerberos'
-gem 'doorkeeper', '2.0.1'
+gem 'doorkeeper', '2.1.0'
 gem "rack-oauth2", "~> 1.0.5"
 
 # Browser detection
@@ -267,3 +267,5 @@ group :production do
 end
 
 gem "newrelic_rpm"
+
+gem 'octokit', '3.7.0'

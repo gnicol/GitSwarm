@@ -7,9 +7,6 @@
       %div.dashboard-menu
         %h1.title= title
 
-      %ul.nav.navbar-nav
-        %li.visible-xs
-          %a.navbar-toggle{href: '#', 'onclick' => 'return false;', 'data-target' => '.navbar-collapse', 'data-toggle' => 'collapse', 'aria-label' => 'Toggle navigation'}
-            %i.fa.fa-bars
-      .pull-right
-        = link_to 'Sign in', new_session_path(:user, redirect_to_referer: 'yes'), class: 'btn btn-sign-in btn-new'
+      - unless current_controller?('sessions')
+        .pull-right
+          = link_to 'Sign in', new_session_path(:user, redirect_to_referer: 'yes'), class: 'btn btn-sign-in btn-new'

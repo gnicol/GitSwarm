@@ -25,35 +25,59 @@ Feature: Project Issues
   # New Issue Page - Description
   #########################
 
-  Scenario: A description with special characters on the New Issue page
+  Scenario: Using special characters in the description field on the New Issue page
     Given I click link "New Issue"
     And I submit new issue with the description "!@#$%^&*()_+-=[]\{}|;':",./<>?`~'"
     Then I should see an issue with the description "!@#$%^&*()_+-=[]\{}|;':",./<>?`~'"
 
-  Scenario: A description with @mention on the New Issue page
+  Scenario:  Using a valid @mention user in the description field on the New Issue page
     Given I click link "New Issue"
-    And I submit new issue with an @mention in the description field
-    Then I should see an issue with an @mention link in the description
+    And user "John" exists
+    When I submit new issue with "@John" in the description field
+    Then I should see an issue with a link to John's profile page in the description
 
-  Scenario: A description with #1 on the New Issue page
+  Scenario:  Using an invalid @mention user in the description field on the New Issue page
+    Given I click link "New Issue"
+    And I submit new issue with an invalid @mention user in the description field
+    Then I should see an issue that does not have a link to the invalid @mention user
+
+  Scenario: Using #1 in the description field on the New Issue page
     Given I click link "New Issue"
     And I submit new issue with a #1 in the description field
     Then I should see an issue with an issue link in the description
 
-  Scenario: A description with !1 on the New Issue page
+  Scenario: Using #12345 that does not refer to an issue in the description field on the New Issue page
     Given I click link "New Issue"
+    And I submit new issue with a #12345 in the description field
+    Then I should see an issue that does not have an issue link in the description
+
+  Scenario: Using !1 that refers to an existing merge request in the description field on the New Issue page
+    Given I click link "New Issue"
+    And merge request #1 exists
     And I submit new issue with a !1 in the description field
     Then I should see an issue with a merge request link in the description
 
-  Scenario: A description with $1 on the New Issue page
+  Scenario: Using !12345 that does not refer to a merge request in the description field on the New Issue page
     Given I click link "New Issue"
-    And I submit new issue with a $1 in the description field
+    And I submit new issue with a !12345 in the description field
+    Then I should see an issue that does not have a merge request link in the description
+
+  Scenario: Using $1 that refers to an existing code snippet in the description field on the New Issue page
+    Given I click link "New Issue"
+    And code snippet #1 exists
+    When I submit new issue with a $1 in the description field
     Then I should see an issue with a snippet link in the description
 
-  Scenario: A description with the first 7 characters of a commit on the New Issue page
+  Scenario: Using $12345 that does not refer to a code snippet in the description field on the New Issue page
     Given I click link "New Issue"
-    And I submit new issue with the first 7 characters of a commit in the description field
-    Then I should see an issue with a commit link in the description
+    And I submit new issue with a $12345 in the description field
+    Then I should see an issue that does not have a snippet link in the description
+
+  Scenario: Using first 7 characters of a valid commit in the description field on the New Issue page
+    Given I click link "New Issue"
+    And commit "5984d3d1" exists
+    When I submit new issue with "5984d3d1" in the description field
+    Then I should see an issue with a commit link to "5984d3d1" in the description
 
   #########################
   # New Issue Page - Attaching image or file
@@ -347,29 +371,53 @@ Feature: Project Issues
     And I leave a comment like "!@#$%^&*()_+-=[]\{}|;':",./<>?`~'"
     Then I should see comment "!@#$%^&*()_+-=[]\{}|;':",./<>?`~'"
 
-  Scenario: I comment issue with @mention on a single issue page
+  Scenario: I comment issue with a valid @mention user on a single issue page
     Given I visit issue page "Tumblr control"
-    And I leave a comment with an @mention
-    Then I should see a comment with an @mention link
+    And user "John" exists
+    When I leave a comment with "@John"
+    Then I should see a comment with a link to John's profile page
+
+  Scenario: I comment issue with an invalid @mention user on a single issue page
+    Given I visit issue page "Tumblr control"
+    When I leave a comment with an invalid @mention user
+    Then I should see a comment without a link
 
   Scenario: I comment issue with #1 on a single issue page
     Given I visit issue page "Tumblr control"
     And I leave a comment with a #1
     Then I should see a comment with an issue link
 
-  Scenario: I comment issue with !1 on a single issue page
+  Scenario: I comment issue with #123 that does not refer to an issue on a single issue page
+    Given I visit issue page "Tumblr control"
+    And I leave a comment with a #123
+    Then I should see a comment without an issue link
+
+  Scenario: I comment issue with !1 that refers to an existing merge request on a single issue page
+    Given I visit issue page "Tumblr control"
+    And merge request #1 exists
+    And I leave a comment with a !1
+    Then I should see a comment with a merge request link
+
+  Scenario: I comment issue with !12345 that does not refer to a merge request on a single issue page
     Given I visit issue page "Tumblr control"
     And I leave a comment with a !1
-    Then I should see a comment with a merge request
+    Then I should see a comment without a merge request link
 
-  Scenario: I comment issue with $1 on a single issue page
+  Scenario: I comment issue with $1 that refers to an existing code snippet on a single issue page
     Given I visit issue page "Tumblr control"
+    And code snippet #1 exists
     And I leave a comment with a $1
     Then I should see a comment with a snippet link
 
+  Scenario: I comment issue with $12345 that does not refer to an existing code snippet on a single issue page
+    Given I visit issue page "Tumblr control"
+    And I leave a comment with a $12345
+    Then I should see a comment without a snippet link
+
   Scenario: I comment issue with first 7 characters of a commit on a single issue page
     Given I visit issue page "Tumblr control"
-    And I leave a comment with the first 7 characters of a commit
+    And commit "5984d3d1" exists
+    And I leave a comment with "5984d3d1" exists
     Then I should see a comment with a commit link
 
   Scenario: I comment issue with +1 on a single issue page
@@ -392,10 +440,11 @@ Feature: Project Issues
     And I edit a comment with "!@#$%^&*()_+-=[]\{}|;':",./<>?`~'"
     Then I should see comment "!@#$%^&*()_+-=[]\{}|;':",./<>?`~'"
 
-  Scenario: I edit a comment with @mention
+  Scenario: I edit a comment with valid @mention user
     Given I visit issue page "Commented Issue"
-    And I edit a comment with an @mention
-    Then I should see comment with an @mention link
+    And user "John" exists
+    When I edit a comment with "@John"
+    Then I should see a comment with a link to John's profile page
 
   Scenario: I edit a comment with #1
     Given I visit issue page "Commented Issue"
@@ -404,17 +453,20 @@ Feature: Project Issues
 
   Scenario: I edit a comment with !1
     Given I visit issue page "Commented Issue"
-    And I edit a comment with a !1
+    And merge request #1 exists
+    When I edit a comment with a !1
     Then I should see a comment with a merge request link
 
   Scenario: I edit a comment with $1
     Given I visit issue page "Commented Issue"
-    And I edit a comment with a $1
+    And code snippet #1 exists
+    When I edit a comment with a $1
     Then I should see a comment with a snippet link
 
   Scenario: I edit a comment with the first 7 characters of a commit
     Given I visit issue page "Commented Issue"
-    And I edit a comment with the first 7 characters of a commit
+    And commit "5984d3d1" exists
+    When I edit a comment with "5984d3d1"
     Then I should see a comment with a commit link
 
   Scenario: I edit a comment with +1

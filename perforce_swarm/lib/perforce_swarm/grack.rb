@@ -7,13 +7,14 @@ module PerforceSwarm
       cmd, path, @reqfile, @rpc = match_routing
       @dir = get_git_dir(path)
 
-      system("echo EXTENZ! #{cmd} #{path} #{@dir} >> /tmp/itran")
-
       return super unless cmd == 'get_info_refs'
 
+      # if we have a 'mirror' remote, pull from it before proceeding
       Dir.chdir(@dir) do
-        unless system('git fetch mirror refs/*:refs/*')
-          return [500, { 'Content-Type' => 'text/plain' }, ['Update from mirror failed. You should fix that.']]
+        if (system('git config --get remote.mirror.url'))
+          unless system('git fetch mirror refs/*:refs/*')
+            return [500, { 'Content-Type' => 'text/plain' }, ['Pull from mirror failed. You should fix that.']]
+          end
         end
       end
 

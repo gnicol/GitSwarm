@@ -288,6 +288,7 @@ Feature: NavBar
     And I visit dashboard page
     And I click on the Recent Projects dropdown
     And I click on project "PerforceProject"
+    Then I should see the "PerforceProject" page
     When I click on the back button
     Then I should see the Dashboard page
 
@@ -298,8 +299,10 @@ Feature: NavBar
     Then I should see the "New Project" project page
     And the title of the dropdown should be "New Project"
     When I click on the back button
-    And I click on the Swarm icon
-    And I click on the Recent Projects dropdown
+    Then I should see the new project page
+    When I click on the Swarm icon
+    Then I should see the Dashboard page
+    When I click on the Recent Projects dropdown
     Then I should see "New Project" at the top of the list in the recent projects dropdown
 
   @javascript @automated @PGL-123
@@ -319,6 +322,7 @@ Feature: NavBar
     When I visit admin page
     And I click on the Recent Projects dropdown
     And I click on project "PerforceProject"
+    Then I should see the "PerforceProject" page
     When I click on the back button
     Then the title of the dropdown should be "Admin"
 
@@ -329,8 +333,8 @@ Feature: NavBar
     Then the title of the dropdown should be "Search"
     When I click on the Recent Projects dropdown
     And I click on the most recent project under "Recent Projects"
-    Then I should see a project page
-    And I click on the back button
+    Then I should see the "PerforceProject" page
+    When I click on the back button
     Then the title of the dropdown should be "Search"
 
   #########################

@@ -309,6 +309,11 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     find(:css, '.page-title').should have_content('Profile settings')
   end
 
+  step 'I should see the new project page' do
+    find('title').should have_content('New Project')
+    page.assert_selector('form.new_project')
+  end
+
   #########################
   # Top Nav
   #########################

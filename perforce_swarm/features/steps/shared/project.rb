@@ -42,7 +42,14 @@ module SharedProject
   #########################
 
   step 'I own project "PerforceProject"' do
-    @project ||= create(:project, name: 'PerforceProject', namespace: @user.namespace, snippets_enabled: true)
+    @project = Project.find_by(name: 'PerforceProject')
+    @project ||= create(
+      :project,
+      name:             'PerforceProject',
+      namespace:        @user.namespace,
+      path:             'perforce_project',
+      snippets_enabled: true
+    )
     @project.team << [@user, :master]
   end
 

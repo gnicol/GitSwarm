@@ -119,7 +119,12 @@ Feature: Project Issues
   Scenario: Attach a file other than jpg, png, or gif to an issue by dragging and dropping on the New Issue page
     Given I click link "New Issue"
     And I drag and drop the file
-    Then I should still be able to create an issue
+    Then I should see the error message, "You can't upload files of this type."
+
+  Scenario: Attach a file that is larger than 10MB.
+    Given I click link "New Issue"
+    And I drag and drop a file larger than 10MB.
+    Then I should see the error message, "File is too big.  Max filesize:  10MiB"
 
   #########################
   # New Issue Page - Markdown
@@ -279,6 +284,11 @@ Feature: Project Issues
     Given I click on "Edit" button
     And I change the milestone of an issue
     Then I should see issue with new milestone
+
+  Scenario: A milestone added on the Edit Issue page
+    Given I click on "Edit" button
+    And I add a milestone of an issue
+    Then I should see issue with a milestone
 
   Scenario: A milestone changed to unassigned on the Edit Issue page
     Given I click on "Edit" button
@@ -545,7 +555,12 @@ Feature: Project Issues
   Scenario: Attach a file other than jpg, png, or gif to an issue by dragging and dropping on a single issue page
     Given I visit issue page "Tumblr control"
     And I drag and drop the file
-    Then I should still be able to create an issue
+    Then I should see the error message, "You can't upload files of this type."
+
+  Scenario: Attach a file that is larger than 10MB on a single issue page
+    Given I visit issue page "Tumblr control"
+    And I drag and drop a file larger than 10MB.
+    Then I should see the error message, "File is too big.  Max filesize:  10MiB"
 
   #########################
   # Single Issue Page - Not the Edit Issue page
@@ -963,12 +978,49 @@ Feature: Project Issues
   Scenario:  Delete a user and verify that issues still appear in the project
     Given I logout and login as an admin
     And I delete a user from Project "Shop"
-    Then all issues from the user should still appear and not be deleted
+    Then all issues from the user should be "unassigned" and not be deleted
 
   Scenario:  Block a user and verify that issues still appear in the project
     Given I logout and login as an admin
     And I block a user from Project "Shop"
     Then all issues from the user should still appear and not be deleted
+
+  #########################
+  # Closing Issues Automatically
+  #########################
+
+  Scenario:  Close an issue in a merge request description
+    Given I create an issue "IssueToClose"
+    And I create a merge request with "close #1"
+    When I accept the merge request
+    Then "IssueToClose" should be closed
+
+  Scenario:  Close an issue using a commit
+    Given I create an issue "IssueToClose"
+    And I push a commit with a message "close #1"
+    Then "IssueToClose" should be closed
+
+  #########################
+  # Permissions-Related
+  #########################
+
+  Scenario:  As non-user on a public project, attempt to close or edit an issue.
+    Given I am logged out
+    And I visit the issues list page of a public project
+    When I click on an issue
+    Then there should be no "Close" or "Edit" button on the issue page
+
+  Scenario:  As non-user on a public project, attempt create an issue.
+    Given I am logged out
+    And I visit the issues list page of a public project
+    Then there should be no "New issue" button on the issues list pages
+    When I click on an issue
+    Then there should be no "New issue" button on the issue page
+
+  Scenario:  As guest on a public project, create an issue
+    Given I visit the issues list page of a public project
+    And I click on an issue
+    Then there should be no "Close" or "Edit" button on the issue page
 
   #########################
   # Back Button Behavior
@@ -978,13 +1030,21 @@ Feature: Project Issues
     Given I click link "New Issue"
     And I submit new issue
     And I click the back button
-    And I submit new issue
+    Then I should see the new issue page
+    When I submit new issue
     Then a different issue should be created
+
+  Scenario: I click the back button twice after creating an issue on the New Issue page
+    Given I click link "New Issue"
+    And I submit new issue
+    And I click the back button
+    And I click the back button again
+    Then I should see the issues list page
 
   Scenario: I click the back button after editing the description of an issue on the Edit Issue page
     Given I click on "Edit" button
     And I change the description of an issue "Different Description"
-    And I submit new issue
+    And I submit updated issue
     And I click the back button
     Then I should see issue with "Different Description"
 

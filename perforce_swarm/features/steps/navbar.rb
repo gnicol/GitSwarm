@@ -9,16 +9,6 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   include SharedProject
   include SharedSearch
 
-  # Clear local storage after each scenario
-  # We should be able to drop this when the 1.6 release of poltergiest comes out
-  # where they will do it for us after each test
-  after do
-    # This is only available when using the javascript driver
-    if ::Capybara.current_driver == :poltergeist
-      page.execute_script('window.localStorage.clear()')
-    end
-  end
-
   #########################
   # Data
   #########################

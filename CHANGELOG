@@ -21,7 +21,7 @@ v 7.8.0
   - 
   - 
   - Upgrade Sidekiq gem to version 3.3.0
-  - 
+  - Stop git zombie creation during force push check
   - 
   - 
   - Fix commits pagination
@@ -48,7 +48,7 @@ v 7.8.0
   - 
   - 
   - 
-  - 
+  - Add a new API function that retrieves all issues assigned to a single milestone (Justin Whear and Hannes Rosenögger)
   - 
   - 
   - 

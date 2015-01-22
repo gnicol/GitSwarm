@@ -44,7 +44,7 @@ module CommitsHelper
       parts = @path.split('/')
 
       parts.each_with_index do |part, i|
-        crumbs += content_tag(:li) do
+        crumbs << content_tag(:li) do
           # The text is just the individual part, but the link needs all the parts before it
           link_to part, project_commits_path(@project, tree_join(@ref, parts[0..i].join('/')))
         end
@@ -63,6 +63,12 @@ module CommitsHelper
   # Returns the sorted alphabetically links to branches, separated by a comma
   def commit_branches_links(project, branches)
     branches.sort.map { |branch| link_to(branch, project_tree_path(project, branch)) }.join(", ").html_safe
+  end
+
+  # Returns the sorted links to tags, separated by a comma
+  def commit_tags_links(project, tags)
+    sorted = VersionSorter.rsort(tags)
+    sorted.map { |tag| link_to(tag, project_commits_path(project, project.repository.find_tag(tag).name)) }.join(", ").html_safe
   end
 
   def link_to_browse_code(project, commit)

@@ -250,7 +250,8 @@ class MergeRequest < ActiveRecord::Base
   def closes_issues
     if target_branch == project.default_branch
       issues = commits.flat_map { |c| c.closes_issues(project) }
-      issues += Gitlab::ClosingIssueExtractor.closed_by_message_in_project(description, project)
+      issues.push(*Gitlab::ClosingIssueExtractor.
+                  closed_by_message_in_project(description, project))
       issues.uniq.sort_by(&:id)
     else
       []
@@ -330,7 +331,7 @@ class MergeRequest < ActiveRecord::Base
   end
 
   # Return array of possible target branches
-  # dependes on target project of MR
+  # depends on target project of MR
   def target_branches
     if target_project.nil?
       []
@@ -340,7 +341,7 @@ class MergeRequest < ActiveRecord::Base
   end
 
   # Return array of possible source branches
-  # dependes on source project of MR
+  # depends on source project of MR
   def source_branches
     if source_project.nil?
       []

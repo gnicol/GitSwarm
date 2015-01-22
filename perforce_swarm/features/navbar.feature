@@ -236,7 +236,8 @@ Feature: NavBar
   @javascript @automated @PGL-123
   Scenario: Click on "View All Projects" on Admin dropdown and verify that admin is taken to "Public Projects" page
     Given I logout
-    And I sign in as an admin
+    Then I should see the login page
+    When I sign in as an admin
     And I visit admin page
     When I click on the Recent Projects dropdown
     And I click on "View All Projects" link
@@ -246,7 +247,8 @@ Feature: NavBar
   @javascript @automated @PGL-123
   Scenario: Click on a project on the Admin dropdown and verify that admin is taken to the project page
     Given I logout
-    And I sign in as an admin
+    Then I should see the login page
+    When I sign in as an admin
     And I own project "Shop"
     And I own project "Forum"
     And I visit admin page
@@ -317,6 +319,7 @@ Feature: NavBar
   @javascript @automated @PGL-123
   Scenario: Click on the back button after navigating to a project from the Admin page and verify that admin is taken to the Admin page
     And I logout
+    Then I should see the login page
     When I sign in as an admin
     And I own project "PerforceProject"
     When I visit admin page
@@ -344,6 +347,7 @@ Feature: NavBar
   @javascript @automated @PGL-123
   Scenario: As an admin, transfer a project in the admin area to a different group, verify that the project name should be renamed in the Dashboard dropdown
     And I logout
+    Then I should see the login page
     When I sign in as an admin
     And I own project "PerforceProject"
     When I visit admin "PerforceProject" project page
@@ -356,6 +360,7 @@ Feature: NavBar
   @javascript @automated @PGL-123
   Scenario: As an admin, remove a project in the admin area, verify that the project is removed from the Dashboard dropdown
     And I logout
+    Then I should see the login page
     When I sign in as an admin
     And I own project "PerforceProject"
     When I visit admin projects page
@@ -366,6 +371,7 @@ Feature: NavBar
   @javascript @PGL-123
   Scenario: As an admin, click on the "Profile" link of the User Menu dropdown and verify that admin is taken to the admin user page
     And I logout
+    Then I should see the login page
     When I sign in as an admin
     When I click on the User Menu icon
     And I click on "Profile" link
@@ -374,6 +380,7 @@ Feature: NavBar
   @javascript @automated @PGL-123
   Scenario: As an admin, click on the "My Settings" link of the User Menu dropdown and verify that admin is taken to the admin settings page
     And I logout
+    Then I should see the login page
     When I sign in as an admin
     When I click on the User Menu icon
     And I click on "My Settings" link
@@ -383,6 +390,7 @@ Feature: NavBar
   @javascript @PGL-123
   Scenario: As an admin, click on the "Logout" link of the User Menu dropdown and verify that admin is logged out
     And I logout
+    Then I should see the login page
     When I sign in as an admin
     When I click on the User Menu icon
     And I click on "Logout" link

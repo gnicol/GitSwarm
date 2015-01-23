@@ -1004,23 +1004,57 @@ Feature: Project Issues
   # Permissions-Related
   #########################
 
-  Scenario:  As non-user on a public project, attempt to close or edit an issue.
+  Scenario:  As a non-authenticated user on a public/internal project, verify that user cannot close or edit an issue
     Given I am logged out
-    And I visit the issues list page of a public project
+    And I visit the issues list page of a project
     When I click on an issue
     Then there should be no "Close" or "Edit" button on the issue page
 
-  Scenario:  As non-user on a public project, attempt create an issue.
+  Scenario:  As a non-authenticated user on a public/internal project, verify that user cannot create an issue
     Given I am logged out
-    And I visit the issues list page of a public project
+    And I visit the issues list page of a project
     Then there should be no "New issue" button on the issues list pages
     When I click on an issue
     Then there should be no "New issue" button on the issue page
 
-  Scenario:  As guest on a public project, create an issue
-    Given I visit the issues list page of a public project
-    And I click on an issue
+  Scenario:  As a non-authenticated user on a public/internal project, verify that user can visit the issues list page
+    Given I am logged out
+    And I visit the issues list page of a project
+    Then I should see the issues list page
+
+  Scenario:  As a non-authenticated user on a private project, verify that user cannot visit the issues list page
+    Given I am logged out
+    And I visit the issues list page of a private project
+    Then I should see the issues list page
+
+  Scenario:  As guest user on a public/internal/private project, verify that user can visit the issues list page
+    Given I am a guest on a project
+    And I visit the issues list page of a project
+    Then I should see the issues list page
+
+  Scenario:  As guest user on a public/internal/private project, verify that user can create an issue and edit your own issue
+    Given I am a guest on a project
+    And I visit the issues list page of a project
+    Then I should create "New issue" button on the issues list pages
+    And I should be able to update the issue
+
+  Scenario:  As guest user on a public/internal/private project, verify that user cannot edit other member's issues
+    Given I am a guest on a project
+    And I visit the issues list page of a project
+    When I click on an issue
     Then there should be no "Close" or "Edit" button on the issue page
+
+  Scenario:  As reporter user on a public/internal/private project, verify that user cannot edit other member's issues
+    Given I am a reporter on a project
+    And I visit the issues list page of a project
+    When I click on an issue
+    Then there should be no "Close" or "Edit" button on the issue page
+
+  Scenario:  As developer user on a public/internal/private project, verify that user can edit other member's issues
+    Given I am a developer on a project
+    And I visit the issues list page of a project
+    When I click on an issue
+    Then there should be "Close" or "Edit" button on the issue page
 
   #########################
   # Back Button Behavior

@@ -53,6 +53,25 @@ module SharedProject
     @project.team << [@user, :master]
   end
 
+  step 'project "PerforceProject" has "Tumblr control" open issue' do
+    project = Project.find_by(name: 'PerforceProject')
+    create(:issue,
+           title: 'Tumblr control',
+           project: project,
+           description: 'automatic post feature',
+           author: project.users.first
+    )
+  end
+
+  step 'project "PerforceProject" has "HipChat" open issue' do
+    project = Project.find_by(name: 'PerforceProject')
+    create(:issue,
+           title: 'HipChat',
+           project: project,
+           author: project.users.first
+    )
+  end
+
   #########################
   # Navigations
   #########################

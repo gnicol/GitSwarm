@@ -11,7 +11,7 @@ module PerforceSwarm
 
       # if we have a 'mirror' remote, pull from it before proceeding
       Dir.chdir(@dir) do
-        if (system('git config --get remote.mirror.url'))
+        if system('git config --get remote.mirror.url')
           unless system('git fetch mirror refs/*:refs/*')
             return [500, { 'Content-Type' => 'text/plain' }, ['Pull from mirror failed. You should fix that.']]
           end
@@ -23,7 +23,7 @@ module PerforceSwarm
   end
 end
 
-require 'Grack'
+require 'grack'
 class Grack::Server
   prepend PerforceSwarm::GrackServerExtension
 end

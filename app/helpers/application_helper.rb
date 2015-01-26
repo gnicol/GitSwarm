@@ -5,8 +5,9 @@ module ApplicationHelper
   COLOR_SCHEMES = {
     1 => 'white',
     2 => 'dark',
-    3 => 'solarized-dark',
-    4 => 'monokai',
+    3 => 'solarized-light',
+    4 => 'solarized-dark',
+    5 => 'monokai',
   }
   COLOR_SCHEMES.default = 'white'
 
@@ -114,6 +115,10 @@ module ApplicationHelper
     Gitlab::Theme.css_class_by_id(current_user.try(:theme_id))
   end
 
+  def theme_type
+    Gitlab::Theme.type_css_class_by_id(current_user.try(:theme_id))
+  end
+
   def user_color_scheme_class
     COLOR_SCHEMES[current_user.try(:color_scheme_id)] if defined?(current_user)
   end
@@ -183,20 +188,6 @@ module ApplicationHelper
 
   def broadcast_message
     BroadcastMessage.current
-  end
-
-  def highlight_js(&block)
-    string = capture(&block)
-
-    content_tag :div, class: "highlighted-data #{user_color_scheme_class}" do
-      content_tag :div, class: 'highlight' do
-        content_tag :pre do
-          content_tag :code do
-            string.html_safe
-          end
-        end
-      end
-    end
   end
 
   def time_ago_with_tooltip(date, placement = 'top', html_class = 'time_ago')
@@ -270,5 +261,40 @@ module ApplicationHelper
 
   def promo_url
     'https://' + promo_host
+  end
+
+  def page_filter_path(options={})
+    exist_opts = {
+      state: params[:state],
+      scope: params[:scope],
+      label_name: params[:label_name],
+      milestone_id: params[:milestone_id],
+      assignee_id: params[:assignee_id],
+      author_id: params[:author_id],
+      sort: params[:sort],
+    }
+
+    options = exist_opts.merge(options)
+
+    path = request.path
+    path << "?#{options.to_param}"
+    path
+  end
+
+  def outdated_browser?
+    browser.ie? && browser.version.to_i < 10
+  end
+
+  def path_to_key(key, admin = false)
+    if admin
+      admin_user_key_path(@user, key)
+    else
+      profile_key_path(key)
+    end
+  end
+
+  def redirect_from_root?
+    request.env['rack.session']['user_return_to'] ==
+      '/'
   end
 end

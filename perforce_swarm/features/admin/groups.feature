@@ -1,6 +1,6 @@
 @admin
 Feature: Admin Groups
-  Background
+  Background:
     Given ...
 
   #########################

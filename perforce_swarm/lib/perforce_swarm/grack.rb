@@ -21,7 +21,7 @@ module PerforceSwarm
   end
 end
 
-require 'Grack'
+require 'grack'
 class Grack::Server
   prepend PerforceSwarm::GrackServerExtension
 end

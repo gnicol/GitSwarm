@@ -1,5 +1,11 @@
 module PerforceSwarm
   class Engine < ::Rails::Engine
+    # Gitlab requires all their libs in an initializer, (config/initializers/2_app.rb)
+    # So we will go ahead and do the same for ourselves
+    initializer 'swarm_load_libs' do
+      Dir["#{Rails.root}/perforce_swarm/lib/**/*.rb"].each { |file| require file }
+    end
+
     # We want our engine's migrations to be run when the main app runs db:migrate
     # It seems as though stand-alone initializers run too late so the logic is here
     initializer :append_migrations do |app|

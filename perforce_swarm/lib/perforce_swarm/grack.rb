@@ -9,7 +9,7 @@ module PerforceSwarm
 
       return super unless cmd == 'get_info_refs'
 
-      require_relative '../../../../gitlab-shell/perforce_swarm/mirror'
+      require File.join(Gitlab.config.gitlab_shell.path, 'perforce_swarm', 'mirror')
       begin
         PerforceSwarm::Mirror.fetch(@dir)
       rescue PerforceSwarm::Mirror::Exception => e

@@ -1,6 +1,6 @@
 require Rails.root.join('features', 'steps', 'project', 'team_management')
 class Spinach::Features::ProjectTeamManagement < Spinach::FeatureSteps
-  step 'I click link \'New Team Member\'' do
+  step 'I click link \'New project member\'' do
     click_link 'New project member'
   end
 
@@ -28,6 +28,10 @@ class Spinach::Features::ProjectTeamManagement < Spinach::FeatureSteps
   end
 
   step 'I should still be on the \'New project member(s)\' page' do
+    find(:css, '.page-title').should have_content('New project member(s)')
+  end
+
+  step 'I should see the \'New project member(s)\' page' do
     find(:css, '.page-title').should have_content('New project member(s)')
   end
 end

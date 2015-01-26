@@ -1,6 +1,6 @@
 @admin
 Feature: Admin Team Management
-  Background
+  Background:
     Given ...
 
   #########################

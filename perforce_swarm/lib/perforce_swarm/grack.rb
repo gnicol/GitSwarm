@@ -9,13 +9,11 @@ module PerforceSwarm
 
       return super unless cmd == 'get_info_refs'
 
-      # if we have a 'mirror' remote, pull from it before proceeding
-      Dir.chdir(@dir) do
-        if (system('git config --get remote.mirror.url'))
-          unless system('git fetch mirror refs/*:refs/*')
-            return [500, { 'Content-Type' => 'text/plain' }, ['Pull from mirror failed. You should fix that.']]
-          end
-        end
+      require_relative '../../../../gitlab-shell/perforce_swarm/mirror'
+      begin
+        PerforceSwarm::Mirror.fetch(@dir)
+      rescue PerforceSwarm::Mirror::Exception => e
+        return [500, { 'Content-Type' => 'text/plain' }, ["Pull from mirror failed.\n#{e.message}"]]
       end
 
       super

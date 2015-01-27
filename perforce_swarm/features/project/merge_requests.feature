@@ -1,6 +1,4 @@
 Feature: Project Merge Requests
-  Background:
-    Given ...
 
   #########################
   # Creating Merge Requests
@@ -37,11 +35,11 @@ Feature: Project Merge Requests
   Scenario: As the author of a merge request, I reply to a comment left by a reviewer.
     Given ...
 
-  Scenario: When creating a merge request, I add a participant to the review by at-mentioning another user in the description
+  Scenario: While creating a merge request, I add a participant to the review by at-mentioning another user in the description
     Given ...
 
   # Should we add a test that assigns (or reassigns) a merge request? Should we verify that the merge requests can be sorted this way?
-  
+
   ############################
   # Accepting a Merge Requests
   ############################

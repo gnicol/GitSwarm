@@ -58,7 +58,7 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
 
   step 'I can edit code' do
     set_new_content
-    evaluate_script('editor.getValue()').should == new_gitignore_content
+    evaluate_script('blob.editor.getValue()').should == new_gitignore_content
   end
 
   step 'I edit code' do
@@ -78,7 +78,7 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   end
 
   step 'I click link "Diff"' do
-    click_link 'Diff'
+    click_link 'Preview changes'
   end
 
   step 'I click on "Commit Changes"' do
@@ -103,7 +103,6 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
 
   step 'I can see new file page' do
     page.should have_content "New file"
-    page.should have_content "File name"
     page.should have_content "Commit message"
   end
 
@@ -170,7 +169,7 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   private
 
   def set_new_content
-    execute_script("editor.setValue('#{new_gitignore_content}')")
+    execute_script("blob.editor.setValue('#{new_gitignore_content}')")
   end
 
   # Content of the gitignore file on the seed repository.

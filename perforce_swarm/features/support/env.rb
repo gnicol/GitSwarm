@@ -1,13 +1,12 @@
-require 'simplecov' unless ENV['CI']
+require 'simplecov' if ENV['SIMPLECOV']
 
-if ENV['TRAVIS']
+if ENV['COVERALLS']
   require 'coveralls'
-  Coveralls.wear!
+  Coveralls.wear_merged!
 end
 
 ENV['RAILS_ENV'] = 'test'
 require './config/environment'
-
 require 'rspec'
 require 'rspec/expectations'
 require 'database_cleaner'
@@ -37,6 +36,21 @@ Capybara.default_wait_time = 60
 Capybara.ignore_hidden_elements = false
 
 DatabaseCleaner.strategy = :truncation
+
+Spinach.hooks.around_scenario do |_scenario_data, feature, &block|
+  block.call
+
+  # Cancel network requests by visiting the about:blank
+  # page when using the poltergeist driver
+  if ::Capybara.current_driver == :poltergeist
+    # Clear local storage after each scenario
+    # We should be able to drop this when the 1.6 release of poltergiest comes out
+    # where they will do it for us after each test
+    feature.page.execute_script('window.localStorage.clear()')
+    feature.visit 'about:blank'
+    feature.find(:css, 'body').text.should == ''
+  end
+end
 
 Spinach.hooks.before_scenario do
   DatabaseCleaner.start

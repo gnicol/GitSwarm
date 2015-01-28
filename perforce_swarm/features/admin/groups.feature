@@ -7,8 +7,8 @@ Feature: Admin Groups
   # Receiving membership from an admin through a group
   #########################
 
-  # Scenario partially automated in features/admin/group.feature
   Scenario: As an admin, add a developer to a group in the 'Add user(s) to the group:' section of the Admin area and verify that developer is able to pull and push changes to the project.
+  # Partially automated in features/admin/groups.feature; Scenario: Add user into projects in group
     Given ...
 
   Scenario: As an admin, attempt to add an invalid user to a group in the 'Add user(s) to the group:' section of the Admin area and verify that 'No matches are found'

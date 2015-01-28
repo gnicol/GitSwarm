@@ -34,4 +34,8 @@ class Spinach::Features::ProjectTeamManagement < Spinach::FeatureSteps
   step 'I should see the \'New project member(s)\' page' do
     find(:css, '.page-title').should have_content('New project member(s)')
   end
+
+  step 'I click on the remove button' do
+    find(:css, '.btn-remove').trigger('click')
+  end
 end

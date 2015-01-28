@@ -4,20 +4,31 @@ Feature: Project Merge Requests
   # Creating Merge Requests
   #########################
 
-  Scenario: As a member of a project, from the activity feed I create a merge request from a dev branch to master.
+  # These scenarios should be automated as assigned and unassigned
+
+  Scenario: As a member of a project, from the dashboard activity feed I create a merge request from a dev branch to master.
     # Partially automated in features/dashboard/dashboard.feature; Scenario: I should see last push widget
+    Given ...
+
+  Scenario: As a member of a project, from the project activity feed I create a merge request from a dev branch to master.
+    Given ...
+
+  Scenario: As a member of a project, from the commits>branches page I create a merge request from a dev branch to master.
     Given ...
 
   Scenario: As a member of a project, from the merge request page I create a merge request from a dev branch to master.
     # Automated (kinda) in features/project/merge_requests.feature; Scenario: I submit new unassigned merge request
     Given ...
 
+  Scenario: With a forked project, from the dashboard activity feed I create a merge request from the forked project to the source project.
+    Given ...
+
+  Scenario: With a forked project, from the project activity feed I create a merge request from the forked project to the source project.
+    Given ...
+
   Scenario: With a forked project, from the merge request page I create a merge request from the forked project to the source project.
     # Automated in features/project/forked_merge_requests.feature; Scenario: I submit new unassigned merge request to a forked project
     Given ...
-
-  # Should we add a test that checks that a non-member is unable to create a merge request?
-  # Should we add a test that creates assigned merge requests?
 
   #################################
   # Collaboration on Merge Requests
@@ -38,7 +49,11 @@ Feature: Project Merge Requests
   Scenario: While creating a merge request, I add a participant to the review by at-mentioning another user in the description
     Given ...
 
-  # Should we add a test that assigns (or reassigns) a merge request? Should we verify that the merge requests can be sorted this way?
+  Scenario: Assign a user to an unassigned merge request.
+    Given ...
+
+  Scenario: Reassign a merge request.
+    Given ...
 
   ############################
   # Accepting a Merge Requests
@@ -55,5 +70,4 @@ Feature: Project Merge Requests
   Scenario: As the reviewer of a merge request, I close the merge request.
     # Automated (kinda) in features/project/merge_requests.feature; Scenario: I close merge request page
     Given ...
-
 

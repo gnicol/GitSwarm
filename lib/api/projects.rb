@@ -96,7 +96,7 @@ module API
       # Parameters:
       #   id (required) - The ID of a project
       # Example Request:
-      #   GET /projects/:id
+      #   GET /projects/:id/events
       get ":id/events" do
         limit = (params[:per_page] || 20).to_i
         offset = (params[:page] || 0).to_i * limit
@@ -197,6 +197,49 @@ module API
           conflict!(@forked_project.errors.messages)
         else
           present @forked_project, with: Entities::Project
+        end
+      end
+
+      # Update an existing project
+      #
+      # Parameters:
+      #   id (required) - the id of a project
+      #   name (optional) - name of a project
+      #   path (optional) - path of a project
+      #   description (optional) - short project description
+      #   issues_enabled (optional)
+      #   merge_requests_enabled (optional)
+      #   wiki_enabled (optional)
+      #   snippets_enabled (optional)
+      #   public (optional) - if true same as setting visibility_level = 20
+      #   visibility_level (optional) - visibility level of a project
+      # Example Request
+      #   PUT /projects/:id
+      put ':id' do
+        attrs = attributes_for_keys [:name,
+                                     :path,
+                                     :description,
+                                     :default_branch,
+                                     :issues_enabled,
+                                     :merge_requests_enabled,
+                                     :wiki_enabled,
+                                     :snippets_enabled,
+                                     :public,
+                                     :visibility_level]
+        attrs = map_public_to_visibility_level(attrs)
+        authorize_admin_project
+        authorize! :rename_project, user_project if attrs[:name].present?
+        if attrs[:visibility_level].present?
+          authorize! :change_visibility_level, user_project
+        end
+
+        ::Projects::UpdateService.new(user_project,
+                                      current_user, attrs).execute
+
+        if user_project.valid?
+          present user_project, with: Entities::Project
+        else
+          render_validation_error!(user_project)
         end
       end
 

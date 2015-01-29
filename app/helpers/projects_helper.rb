@@ -86,7 +86,7 @@ module ProjectsHelper
 
   def link_to_toggle_star(title, starred, signed_in)
     cls = 'star-btn'
-    cls += ' disabled' unless signed_in
+    cls << ' disabled' unless signed_in
 
     toggle_html = content_tag('span', class: 'toggle') do
       toggle_text = if starred
@@ -234,8 +234,10 @@ module ProjectsHelper
 
   def hidden_pass_url(original_url)
     result = URI(original_url)
-    result.password = '*****' if result.password.present?
+    result.password = '*****' unless result.password.nil?
     result
+  rescue
+    original_url
   end
 
   def project_wiki_path_with_version(proj, page, version, is_newest)

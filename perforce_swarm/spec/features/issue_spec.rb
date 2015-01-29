@@ -4,7 +4,7 @@ describe 'Issues', js: true, feature: true do
   let(:project) { create(:project) }
 
   before do
-    @user = create(:user)
+    login_as :user
     project.team << [@user, :developer]
   end
 
@@ -12,7 +12,6 @@ describe 'Issues', js: true, feature: true do
     let(:issue) { create(:issue, project: project, author: @user, description: 'Bug in feature.') }
 
     before do
-      login_with @user
       visit project_issue_path(project, issue)
     end
 

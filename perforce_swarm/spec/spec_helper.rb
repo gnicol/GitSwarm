@@ -5,7 +5,7 @@ Capybara.register_driver :poltergeist do |app|
     app,
     js_errors: false,
     debug: true,
-    timeout: 90,
+    timeout: 10,
     phantomjs_options: ['--proxy-type=socks5', '--proxy=0.0.0.0:0', '--debug=true']
   )
 end

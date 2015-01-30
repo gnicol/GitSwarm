@@ -6,9 +6,21 @@ Feature: Project Merge Requests
 
   # These scenarios should be automated as assigned and unassigned
 
+  @automated
   Scenario: As a member of a project, from the dashboard activity feed I create a merge request from a dev branch to master.
+    # * Fully automate with assigned
     # Partially automated in features/dashboard/dashboard.feature; Scenario: I should see last push widget
-    Given ...
+    Given I sign in as a user
+    And I own project "Shop"
+    And project "Shop" has push event
+    And I visit dashboard page
+    Then I should see last push widget
+    And I click "Create Merge Request" link
+    And I see prefilled new Merge Request page
+    And I click button "Assign to me"
+    And I submit new merge request "Jira Integration"
+    Then I visit project "Shop" merge requests page
+    And I should see "Jira Integration" in merge requests
 
   Scenario: As a member of a project, from the project activity feed I create a merge request from a dev branch to master.
     Given ...
@@ -50,9 +62,11 @@ Feature: Project Merge Requests
     Given ...
 
   Scenario: Assign a user to an unassigned merge request.
+    # Partially automated in features/dashboard/merge_requests.feature; Scenario: I should see authored merge_requests
     Given ...
 
   Scenario: Reassign a merge request.
+    # Automated (as unit tests) in spec/models/merge_request_spec.rb; it 'returns true if the merge_request assignee has changed'
     Given ...
 
   ############################
@@ -65,6 +79,7 @@ Feature: Project Merge Requests
     Given ...
 
   Scenario: As a reviewer of a merge request, I accept the merge request and don't delete the source branch.
+    # *
     Given ...
 
   Scenario: As the reviewer of a merge request, I close the merge request.

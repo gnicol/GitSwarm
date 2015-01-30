@@ -4,6 +4,9 @@ module PerforceSwarm
     # So we will go ahead and do the same for ourselves
     initializer 'swarm_load_libs' do
       Dir["#{Rails.root}/perforce_swarm/lib/**/*.rb"].each { |file| require file }
+
+      # Autoload classes from shell when needed
+      PerforceSwarm.autoload :Mirror, File.join(Gitlab.config.gitlab_shell.path, 'perforce_swarm', 'mirror')
     end
 
     # We want our engine's migrations to be run when the main app runs db:migrate

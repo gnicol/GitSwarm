@@ -1,5 +1,6 @@
 if ENV['RAILS_ENV'] == 'test'
   require 'rspec'
+  require_relative '../../spec/support/test_env'
 
   # this file helps configure Rspec so that tests in the main application
   # can be skipped by overriding them with a test in the perforce_swarm engine

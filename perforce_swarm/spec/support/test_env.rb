@@ -1,4 +1,4 @@
-require Rails.root.join('spec', 'support', 'test_env')
+require_relative '../../../spec/support/test_env'
 
 module TestEnv
   def setup_gitlab_shell

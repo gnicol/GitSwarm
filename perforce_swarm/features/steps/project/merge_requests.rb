@@ -83,9 +83,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see merged request' do
-    within '.issue-box' do
-      page.should have_content 'Merged'
-    end
+    page.find('.issue-box').should have_content 'Merged'
   end
 
   step 'I visit merge request page "Dependency Fix"' do

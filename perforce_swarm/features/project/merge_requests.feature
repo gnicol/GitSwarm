@@ -8,6 +8,8 @@ Feature: Project Merge Requests
 
   # Considering automating these test cases as both assigned and unassigned
 
+  # To Do: Add more tests around group projects
+
   @automated
   Scenario: As a member of a project, from the dashboard activity feed I create an assigned merge request from a dev branch to master.
     # Partially automated in features/dashboard/dashboard.feature; Scenario: I should see last push widget
@@ -71,10 +73,12 @@ Feature: Project Merge Requests
     # Automated (as unit tests) in spec/models/merge_request_spec.rb; it 'returns true if the merge_request assignee has changed'
     Given ...
 
-  ############################
-  # Accepting a Merge Requests
-  ############################
+  ##########################
+  # Accepting Merge Requests
+  ##########################
 
+  #To Do: Add tests around merging to a protected branch
+  
   Scenario: I accept a merge request with custom commit message
     #Automated in features/project/merge_requests.featue; Scenario: I accept merge request with custom commit message
     Given ...
@@ -109,3 +113,15 @@ Feature: Project Merge Requests
     # The automation is not explicit about the role (author, participant) of the person closing the merge request
     Given ...
 
+  Scenario: As a member of a group project, I close a merge request.
+    # To Do: use a group project and step through the actual processes of closing a merge request
+    Given ...
+
+  Scenario: As a user with Master permissions in a project with a protected branch, I accept a merge request from a dev branch to the protected branch.
+    Given ...
+
+  ##################
+  # Compare Branches
+  ##################
+
+  # Add tests for the Compare branches for new merge requests?

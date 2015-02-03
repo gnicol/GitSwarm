@@ -1,5 +1,6 @@
 if ENV['RAILS_ENV'] == 'test'
   require 'spinach'
+  require_relative '../../spec/support/test_env'
 
   Spinach.hooks.before_run do
     # Creating a hash of all feature names (keys) and corresponding list of scenarios (values) that need to be SKIPPED

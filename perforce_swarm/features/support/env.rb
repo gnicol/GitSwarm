@@ -73,7 +73,6 @@ def wait_for_ajax
       active = page.evaluate_script('jQuery.active').to_i
       break if active == 0
     end
-    # else throw an exception when we exceed Capybara time limit
   end
 rescue
   raise "AJAX request took longer than #{Capybara.default_wait_time} seconds."

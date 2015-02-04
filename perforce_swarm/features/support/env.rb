@@ -74,6 +74,6 @@ def wait_for_ajax
       break if active == 0
     end
   end
-    rescue
-        puts "AJAX request took longer than #{Capybara.default_wait_time} seconds."
+  rescue
+    raise "AJAX request took longer than #{Capybara.default_wait_time} seconds."
 end

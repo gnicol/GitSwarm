@@ -17,6 +17,7 @@ Feature: Project Merge Requests
     And I own project "Shop"
     And project "Shop" has push event
     And I visit dashboard page
+    And I am on the dashboard page
     Then I should see last push widget
     And I click "Create Merge Request" link
     And I see prefilled new Merge Request page
@@ -90,7 +91,7 @@ Feature: Project Merge Requests
   Scenario: As a reviewer of a merge request, I accept the merge request and don't delete the source branch.
     Given I sign in as a user
     And I own project "Shop"
-    And gitlab user "Sam"
+    And there is a gitlab user "Sam"
     And "Sam" is "Shop" developer
     And project "Shop" has push event
     And I visit my project's merge requests page
@@ -98,11 +99,6 @@ Feature: Project Merge Requests
     And I fill out a "Compare branches for new Merge Request"
     And I submit new merge request "Dependency Fix"
     And merge request "Dependency Fix" is mergeable
-#    And I visit dashboard page
-#    Then I should see last push widget
-#    And I click "Create Merge Request" link
-#    And I see prefilled new Merge Request page
-#    And I submit new merge request "Dependency Fix"
     Then I logout
     And I should be redirected to sign in page
     And I sign in as "Sam"

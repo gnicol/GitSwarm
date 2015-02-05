@@ -7,6 +7,10 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   include Spinach::DSL
   include LoginHelpers
 
+  step 'I am on the dashboard page' do
+    current_path.should eq dashboard_path
+  end
+
   step 'I should see last push widget' do
     page.should have_content 'You pushed to fix'
     page.should have_link 'Create Merge Request'
@@ -32,19 +36,24 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I submit new merge request "Jira Integration"' do
+    page.find('h3.page-title').should have_content 'New merge request'
     fill_in 'merge_request_title', with: 'Jira Integration'
     click_button 'Submit merge request'
   end
 
   step 'I submit new merge request "Dependency Fix"' do
+    page.find('h3.page-title').should have_content 'New merge request'
     fill_in 'merge_request_title', with: 'Dependency Fix'
     click_button 'Submit merge request'
   end
+
   step 'I should see "Jira Integration" in merge requests' do
+    project = Project.find_by(name: 'Shop')
+    current_path.should eq project_merge_requests_path(project)
     page.should have_content 'Jira Integration'
   end
 
-  step 'gitlab user "Sam"' do
+  step 'there is a gitlab user "Sam"' do
     create(:user, name: 'Sam')
   end
 
@@ -55,7 +64,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should be redirected to sign in page' do
-    current_path.should == new_user_session_path
+    current_path.should eq new_user_session_path
   end
 
   step 'I sign in as "Sam"' do
@@ -63,6 +72,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I fill out a "Compare branches for new Merge Request"' do
+    page.find('h3.page-title').should have_content 'Compare branches for new Merge Request'
     select @project.path_with_namespace, from: 'merge_request_source_project_id'
     select @project.path_with_namespace, from: 'merge_request_target_project_id'
     select 'fix', from: 'merge_request_source_branch'
@@ -88,6 +98,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see merged request' do
+    # Page reloads here - I'm concerned that this may fail if it is called too early
     page.find('.issue-box').should have_content 'Merged'
   end
 
@@ -98,6 +109,10 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see project branch "Fix"' do
+    # Failing because the page has not yet loaded
+    sleep 5
+    project = Project.find_by(name: 'Shop')
+    current_path.should eq project_branches_path(project)
     page.find('.js-branch-fix').should have_content 'fix'
   end
 end

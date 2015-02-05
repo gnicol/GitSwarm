@@ -70,6 +70,11 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     click_button 'Compare branches'
   end
 
+  step 'merge request "Dependency Fix" is mergeable' do
+    merge_request = MergeRequest.find_by(title: 'Dependency Fix')
+    merge_request.mark_as_mergeable
+  end
+
   step 'merge request is mergeable' do
     page.should have_button 'Accept Merge Request'
   end

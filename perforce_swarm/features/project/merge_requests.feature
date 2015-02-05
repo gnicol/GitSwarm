@@ -93,11 +93,16 @@ Feature: Project Merge Requests
     And gitlab user "Sam"
     And "Sam" is "Shop" developer
     And project "Shop" has push event
-    And I visit dashboard page
-    Then I should see last push widget
-    And I click "Create Merge Request" link
-    And I see prefilled new Merge Request page
+    And I visit my project's merge requests page
+    Then I click link "New Merge Request"
+    And I fill out a "Compare branches for new Merge Request"
     And I submit new merge request "Dependency Fix"
+    And merge request "Dependency Fix" is mergeable
+#    And I visit dashboard page
+#    Then I should see last push widget
+#    And I click "Create Merge Request" link
+#    And I see prefilled new Merge Request page
+#    And I submit new merge request "Dependency Fix"
     Then I logout
     And I should be redirected to sign in page
     And I sign in as "Sam"

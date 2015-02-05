@@ -6,7 +6,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   include SharedProject
   include Spinach::DSL
   include LoginHelpers
-
+  
   step 'I am on the dashboard page' do
     current_path.should eq dashboard_path
   end

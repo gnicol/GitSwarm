@@ -33,6 +33,7 @@ gem 'omniauth-twitter'
 gem 'omniauth-github'
 gem 'omniauth-shibboleth'
 gem 'omniauth-kerberos'
+gem 'omniauth-gitlab'
 gem 'doorkeeper', '2.1.0'
 gem "rack-oauth2", "~> 1.0.5"
 

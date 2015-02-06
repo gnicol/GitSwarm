@@ -7,10 +7,6 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   include Spinach::DSL
   include LoginHelpers
 
-  step 'I am on the dashboard page' do
-    current_path.should eq dashboard_path
-  end
-
   step 'I should see last push widget' do
     page.should have_content 'You pushed to fix'
     page.should have_link 'Create Merge Request'
@@ -109,10 +105,8 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see project branch "Fix"' do
-    # Failing because the page has not yet loaded
-    sleep 5
+    page.find('.js-branch-fix').should have_content 'fix'
     project = Project.find_by(name: 'Shop')
     current_path.should eq project_branches_path(project)
-    page.find('.js-branch-fix').should have_content 'fix'
   end
 end

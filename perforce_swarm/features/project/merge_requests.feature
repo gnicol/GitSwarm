@@ -16,15 +16,14 @@ Feature: Project Merge Requests
     Given I sign in as a user
     And I own project "Shop"
     And project "Shop" has push event
-    And I visit dashboard page
-    And I am on the dashboard page
+    When I visit dashboard page
     Then I should see last push widget
-    And I click "Create Merge Request" link
+    When I click "Create Merge Request" link
     And I see prefilled new Merge Request page
     And I click button "Assign to me"
-    And I submit new merge request "Jira Integration"
-    Then I visit project "Shop" merge requests page
-    And I should see "Jira Integration" in merge requests
+    When I submit new merge request "Jira Integration"
+    And I visit project "Shop" merge requests page
+    Then I should see "Jira Integration" in merge requests
 
   Scenario: As a member of a project, from the project activity feed I create a merge request from a dev branch to master.
     Given ...
@@ -94,20 +93,20 @@ Feature: Project Merge Requests
     And there is a gitlab user "Sam"
     And "Sam" is "Shop" developer
     And project "Shop" has push event
-    And I visit my project's merge requests page
-    Then I click link "New Merge Request"
+    When I visit my project's merge requests page
+    And I click link "New Merge Request"
     And I fill out a "Compare branches for new Merge Request"
     And I submit new merge request "Dependency Fix"
     And merge request "Dependency Fix" is mergeable
-    Then I logout
-    And I should be redirected to sign in page
-    And I sign in as "Sam"
-    Then I visit merge request page "Dependency Fix"
+    When I logout
+    Then I should be redirected to sign in page
+    When I sign in as "Sam"
+    And I visit merge request page "Dependency Fix"
     And merge request is mergeable
-    And I accept this merge request
+    When I accept this merge request
     And I should see merged request
-    Then I visit project branches page
-    And I should see project branch "Fix"
+    When I visit project branches page
+    Then I should see project branch "Fix"
 
   Scenario: As the reviewer of a merge request, I close the merge request.
     # Automated in features/project/merge_requests.feature; Scenario: I close merge request page

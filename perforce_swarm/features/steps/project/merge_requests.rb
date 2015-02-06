@@ -94,7 +94,6 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see merged request' do
-    # Page reloads here - I'm concerned that this may fail if it is called too early
     page.find('.issue-box').should have_content 'Merged'
   end
 

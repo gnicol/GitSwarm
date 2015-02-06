@@ -1,4 +1,8 @@
 Feature: Project Merge Requests
+  Background:
+    Given I sign in as a user
+    And I own project "Shop"
+    And project "Shop" has push event
 
   # The following are test cases identified when testing collaboration and reviews
 
@@ -13,10 +17,7 @@ Feature: Project Merge Requests
   @automated
   Scenario: As a member of a project, from the dashboard activity feed I create an assigned merge request from a dev branch to master.
     # Partially automated in features/dashboard/dashboard.feature; Scenario: I should see last push widget
-    Given I sign in as a user
-    And I own project "Shop"
-    And project "Shop" has push event
-    When I visit dashboard page
+    Given I visit dashboard page
     Then I should see last push widget
     When I click "Create Merge Request" link
     And I see prefilled new Merge Request page
@@ -88,11 +89,8 @@ Feature: Project Merge Requests
 
   @automated @javascript
   Scenario: As a reviewer of a merge request, I accept the merge request and don't delete the source branch.
-    Given I sign in as a user
-    And I own project "Shop"
-    And there is a gitlab user "Sam"
+    Given there is a gitlab user "Sam"
     And "Sam" is "Shop" developer
-    And project "Shop" has push event
     When I visit my project's merge requests page
     And I click link "New Merge Request"
     And I fill out a "Compare branches for new Merge Request"

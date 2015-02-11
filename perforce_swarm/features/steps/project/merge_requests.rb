@@ -16,10 +16,6 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     click_link 'Create Merge Request'
   end
 
-  step 'I click link "New Merge Request"' do
-    click_link 'New Merge Request'
-  end
-
   step 'I see prefilled new Merge Request page' do
     current_path.should eq new_project_merge_request_path(@project)
     find('#merge_request_target_project_id').value.should eq @project.id.to_s
@@ -79,22 +75,6 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   step 'merge request "Dependency Fix" is mergeable' do
     merge_request = MergeRequest.find_by(title: 'Dependency Fix')
     merge_request.mark_as_mergeable
-  end
-
-  step 'merge request is mergeable' do
-    page.should have_button 'Accept Merge Request'
-  end
-
-  step 'I accept this merge request' do
-    Gitlab::Satellite::MergeAction.any_instance.stub(
-        merge!: true
-    )
-
-    click_button 'Accept Merge Request'
-  end
-
-  step 'I should see merged request' do
-    page.find('.issue-box').should have_content 'Merged'
   end
 
   step 'I visit merge request page "Dependency Fix"' do

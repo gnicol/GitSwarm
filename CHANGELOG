@@ -16,7 +16,7 @@ v 7.8.0 (unreleased)
   - Improve sorting logic in UI and API. Explicitly define what sorting method is used by default
   - Allow more variations for commit messages closing issues (Julien Bianchi and Hannes Rosenögger)
   - Fix overflow at sidebar when have several itens
-  - 
+  - Add notes for label changes in issue and merge requests
   - Show tags in commit view (Hannes Rosenögger)
   - Only count a user's vote once on a merge request or issue (Michael Clarke)
   - 
@@ -42,6 +42,7 @@ v 7.8.0 (unreleased)
   - 
   - Submit comment on command-enter
   - Notify all members of a group when that group is mentioned in a comment, for example: `@gitlab-org` or `@sales`.
+  - Extend issue clossing pattern to include "Resolve", "Resolves", "Resolved", "Resolving" and "Close"
   - 
   - Fix long broadcast message cut-off on left sidebar (Visay Keo)
   - Add Project Avatars (Steven Thonus and Hannes Rosenögger)
@@ -74,6 +75,7 @@ v 7.8.0 (unreleased)
   - Added support for firing system hooks on group create/destroy and adding/removing users to group (Boyan Tabakov)
   - Added persistent collapse button for left side nav bar (Jason Blanchard)
   - Prevent losing unsaved comments by automatically restoring them when comment page is loaded again.
+  - Don't allow page to be scaled on mobile.
 
 v 7.7.2
   - Update GitLab Shell to version 2.4.2 that fixes a bug when developers can push to protected branch

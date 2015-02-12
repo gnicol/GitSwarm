@@ -5,7 +5,10 @@ Feature: Help
   # Help
   #########################
 
-  Scenario: Click on the help button and verify that user is directed to the help page.
+  Scenario: Click on the help button on the top nav bar and verify that user is directed to the help page.
+    Given ...
+
+  Scenario: Click on the help link on the side panel and verify that user is directed to the help page.
     Given ...
 
   Scenario: Click on the "Install" link and then the "Installation" link and verify that user is taken to the Installation page.
@@ -16,23 +19,6 @@ Feature: Help
     Given ...
 
   # Any other important pages on the help page worth clicking through and testing?
-
-  #########################
-  # Search
-  #########################
-
-  Scenario: Enter a project in the search bar, and verify that results return as expected.
-  # Automated in features/search.feature; Scenario: I should see project I am looking for
-    Given ...
-
-  Scenario: Navigate to a specific project dashboard, and search for a file in the project.  Verify that results return as expected.
-  # Automated in features/project/source/search_code.feature; Scenario: Search for term "coffee" and
-  # automated in features/search.feature; Scenario: I should see project code I am looking for
-    Given ...
-
-  Scenario: Navigate to a specific project dashboard, and search for an issue in the project.  Verify that results return as expected.
-  # Automated in features/search.feature; Scenario: I should see project issues
-    Given ...
 
   #########################
   # Manual Testing - Check help links (Community issues files in https://gitlab.com/gitlab-org/gitlab-ce/issues/1064)

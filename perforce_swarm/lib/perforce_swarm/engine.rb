@@ -19,6 +19,11 @@ module PerforceSwarm
         end
       end
     end
+
+    # Engine's public folder is searched first for assets
+    initializer :static_assets do |app|
+      app.middleware.insert_before(::ActionDispatch::Static, ::ActionDispatch::Static, "#{root}/public")
+    end
   end
 
   module ConfigurationExtension

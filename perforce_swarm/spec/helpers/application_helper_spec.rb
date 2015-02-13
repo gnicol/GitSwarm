@@ -8,15 +8,15 @@ describe ApplicationHelper do
     end
 
     it 'returns true when route matches argument' do
-      current_route?('foo#foo').should be_true
+      current_route?('foo#foo').should be true
     end
 
     it 'returns false when controller does not match arguement' do
-      current_route?('bar#foo').should_not be_true
+      current_route?('bar#foo').should_not be true
     end
 
     it 'returns false when action does not match argument' do
-      current_route?('foo#bar').should_not be_true
+      current_route?('foo#bar').should_not be true
     end
   end
 end

@@ -40,6 +40,7 @@
 #  confirmation_sent_at     :datetime
 #  unconfirmed_email        :string(255)
 #  hide_no_ssh_key          :boolean          default(FALSE)
+#  hide_no_password         :boolean          default(FALSE)
 #  website_url              :string(255)      default(""), not null
 #  last_credential_check_at :datetime
 #  github_access_token      :string(255)
@@ -60,6 +61,7 @@ class User < ActiveRecord::Base
   default_value_for :can_create_group, gitlab_config.default_can_create_group
   default_value_for :can_create_team, false
   default_value_for :hide_no_ssh_key, false
+  default_value_for :hide_no_password, false
   default_value_for :projects_limit, current_application_settings.default_projects_limit
   default_value_for :theme_id, gitlab_config.default_theme
 
@@ -252,7 +254,7 @@ class User < ActiveRecord::Base
 
       counter = 0
       base = username
-      while by_login(username).present?
+      while User.by_login(username).present? || Namespace.by_path(username).present?
         counter += 1 
         username = "#{base}#{counter}"
       end
@@ -290,7 +292,8 @@ class User < ActiveRecord::Base
 
   def namespace_uniq
     namespace_name = self.username
-    if Namespace.find_by(path: namespace_name)
+    existing_namespace = Namespace.by_path(namespace_name)
+    if existing_namespace && existing_namespace != self.namespace
       self.errors.add :username, "already exists"
     end
   end

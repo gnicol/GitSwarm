@@ -278,11 +278,13 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the "QAProject" page' do
-    find('title').should have_content('QAProject')
+    project = Project.find_by(name: 'QAProject')
+    expect(page).to have_field('project_clone', with: project.url_to_repo)
   end
 
   step 'I should see the "PerforceProject" page' do
-    find('title').should have_content('PerforceProject')
+    project = Project.find_by(name: 'PerforceProject')
+    expect(page).to have_field('project_clone', with: project.url_to_repo)
   end
 
   step 'I should see a project page' do

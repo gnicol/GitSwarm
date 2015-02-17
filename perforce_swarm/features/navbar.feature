@@ -327,6 +327,7 @@ Feature: NavBar
     And I click on project "PerforceProject"
     Then I should see the "PerforceProject" page
     When I click on the back button
+    Then I should see the Admin area page
     Then the title of the dropdown should be "Admin"
 
   @javascript @automated @PGL-123
@@ -338,6 +339,7 @@ Feature: NavBar
     And I click on the most recent project under "Recent Projects"
     Then I should see the "PerforceProject" page
     When I click on the back button
+    Then I should see the Search page
     Then the title of the dropdown should be "Search"
 
   #########################

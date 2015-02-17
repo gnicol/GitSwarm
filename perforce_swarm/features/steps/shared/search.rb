@@ -9,5 +9,4 @@ module SharedSearch
   step 'I should see the Search page' do
     page.find(:css, '.btn-create').should have_content('Search')
   end
-
 end

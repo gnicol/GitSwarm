@@ -1,5 +1,3 @@
-require 'pry'
-
 module PerforceSwarm
   module GrackServerExtension
     def call(env)

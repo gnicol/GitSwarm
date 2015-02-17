@@ -1,3 +1,5 @@
+require 'pry'
+
 module PerforceSwarm
   module GrackServerExtension
     def call(env)
@@ -9,13 +11,16 @@ module PerforceSwarm
 
       return super unless cmd == 'get_info_refs'
 
-      begin
-        PerforceSwarm::Mirror.fetch(@dir)
-      rescue PerforceSwarm::Mirror::Exception => e
-        return [500, { 'Content-Type' => 'text/plain' }, ["Pull from mirror failed.\n#{e.message}"]]
+      # push errors are fatal but pull errors are ignorable
+      if @req.fullpath.match('(.*?)service=git-receive-pack$')
+        Mirror.fetch(@dir)
+      else
+        Mirror.safe_fetch(@dir)
       end
 
       super
+    rescue Mirror::Exception => e
+      return [500, { 'Content-Type' => 'text/plain' }, [e.message]]
     end
   end
 end

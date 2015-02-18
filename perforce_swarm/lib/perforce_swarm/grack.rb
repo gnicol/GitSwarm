@@ -10,7 +10,7 @@ module PerforceSwarm
       return super unless cmd == 'get_info_refs'
 
       # push errors are fatal but pull errors are ignorable
-      if @req.fullpath.match('(.*?)service=git-receive-pack$')
+      if @req['service'] == 'git-receive-pack'
         Mirror.fetch(@dir)
       else
         Mirror.safe_fetch(@dir)

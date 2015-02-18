@@ -27,7 +27,7 @@ class Spinach::Features::ProjectTeamManagement < Spinach::FeatureSteps
   end
 
   step 'I should see the "New project member(s)" page' do
-    page.find(:id, 'new_project_member').should have_content('Choose people you want in the project')
+    page.find('#new_project_member').should have_content('Choose people you want in the project')
   end
 
   step 'I click on the remove button' do

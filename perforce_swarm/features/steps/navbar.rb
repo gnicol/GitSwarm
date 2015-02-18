@@ -262,7 +262,11 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the Dashboard page' do
-    find('title').should have_content('Dashboard')
+    expect(page).to have_field('filter_projects', type: 'search')
+  end
+
+  step 'I should see the Dashboard page with no projects' do
+    find('a[href="/projects/new"]').should have_content('New Project')
   end
 
   step 'I should see the "Explore GitLab" page' do

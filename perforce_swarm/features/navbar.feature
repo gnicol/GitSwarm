@@ -56,7 +56,7 @@ Feature: NavBar
   Scenario: Click on the Swarm icon from the "Public Projects" page and verify that user is taken to the Dashboard page
     Given I visit the public projects area
     When I click on the Swarm icon
-    Then I should see the Dashboard page
+    Then I should see the Dashboard page with no projects
     And the title of the dropdown should be "Dashboard"
 
   @javascript @automated @PGL-123

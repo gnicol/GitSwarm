@@ -1,25 +1,26 @@
 !!! 5
 %html{ lang: 'en'}
   = render 'layouts/head'
-  %body.ui_basic.login-page
-    .container
+  %body.ui_mars.login-page.application
+    = render "layouts/broadcast"
+    = render "layouts/public_head_panel", title: ''
+    .container.navless-container
       .content
         = render 'layouts/flash'
-        .row
-          .col-md-5.brand-holder
+        .row.prepend-top-20
+          .col-sm-5.col-sm-offset-1.brand-holder
             - if brand_item
-              .brand-image
-                = brand_image
-              .brand_text
-                = brand_text
+              = brand_image
+              = brand_text
             - else
               .brand-image.default-brand-image.hidden-sm.hidden-xs
                 = image_tag 'brand_logo.png'
 
-          .col-md-6.login-holder
+            - if extra_sign_in_text.present?
+              = markdown(extra_sign_in_text)
+          .col-sm-5.login-holder
             = yield
             .footer-links
               = link_to 'Explore projects', explore_root_path
               = link_to 'Help', help_path
               = link_to 'About Swarm', 'http://www.perforce.com/swarm'
-          .col-md-1

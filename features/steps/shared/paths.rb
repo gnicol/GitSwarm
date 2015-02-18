@@ -171,6 +171,10 @@ module SharedPaths
     visit admin_application_settings_path
   end
 
+  step 'I visit applications page' do
+    visit admin_applications_path
+  end
+
   # ----------------------------------------
   # Generic Project
   # ----------------------------------------
@@ -280,11 +284,11 @@ module SharedPaths
   end
 
   step 'I am on the new file page' do
-    current_path.should eq(project_new_tree_path(@project, root_ref))
+    current_path.should eq(project_create_blob_path(@project, root_ref))
   end
 
   step 'I am on the ".gitignore" edit file page' do
-    current_path.should eq(project_edit_tree_path(
+    current_path.should eq(project_edit_blob_path(
       @project, File.join(root_ref, '.gitignore')))
   end
 

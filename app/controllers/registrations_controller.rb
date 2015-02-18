@@ -1,6 +1,10 @@
 class RegistrationsController < Devise::RegistrationsController
   before_filter :signup_enabled?
 
+  def new
+    redirect_to(new_user_session_path)
+  end
+
   def destroy
     current_user.destroy
 
@@ -15,11 +19,11 @@ class RegistrationsController < Devise::RegistrationsController
     super
   end
 
-  def after_sign_up_path_for(resource)
+  def after_sign_up_path_for(_resource)
     new_user_session_path
   end
 
-  def after_inactive_sign_up_path_for(resource)
+  def after_inactive_sign_up_path_for(_resource)
     new_user_session_path
   end
 

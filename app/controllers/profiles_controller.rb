@@ -16,6 +16,7 @@ class ProfilesController < ApplicationController
   def applications
     @applications = current_user.oauth_applications
     @authorized_tokens = current_user.oauth_authorized_tokens
+    @authorized_apps = @authorized_tokens.map(&:application).uniq
   end
 
   def update
@@ -67,7 +68,7 @@ class ProfilesController < ApplicationController
     params.require(:user).permit(
       :email, :password, :password_confirmation, :bio, :name, :username,
       :skype, :linkedin, :twitter, :website_url, :color_scheme_id, :theme_id,
-      :avatar, :hide_no_ssh_key,
+      :avatar, :hide_no_ssh_key, :hide_no_password
     )
   end
 end

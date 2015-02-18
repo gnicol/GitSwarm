@@ -19,7 +19,7 @@ describe Projects::CommitController do
       end
 
       it "should generate it" do
-        Commit.any_instance.should_receive(:"to_#{format}")
+        expect_any_instance_of(Commit).to receive(:"to_#{format}")
 
         get :show, project_id: project.to_param, id: commit.id, format: format
       end
@@ -31,7 +31,8 @@ describe Projects::CommitController do
       end
 
       it "should not escape Html" do
-        Commit.any_instance.stub(:"to_#{format}").and_return('HTML entities &<>" ')
+        allow_any_instance_of(Commit).to receive(:"to_#{format}").
+          and_return('HTML entities &<>" ')
 
         get :show, project_id: project.to_param, id: commit.id, format: format
 
@@ -68,6 +69,15 @@ describe Projects::CommitController do
 
         expect(response.body).to match(/^diff --git/)
       end
+    end
+  end
+
+  describe "#branches" do
+    it "contains branch and tags information" do
+      get :branches, project_id: project.to_param, id: commit.id
+
+      expect(assigns(:branches)).to include("master", "feature_conflict")
+      expect(assigns(:tags)).to include("v1.1.0")
     end
   end
 end

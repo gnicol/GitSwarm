@@ -55,7 +55,7 @@ module API
       expose :path, :path_with_namespace
       expose :issues_enabled, :merge_requests_enabled, :wiki_enabled, :snippets_enabled, :created_at, :last_activity_at
       expose :namespace
-      expose :forked_from_project, using: Entities::ForkedFromProject, :if => lambda{ | project, options | project.forked? }
+      expose :forked_from_project, using: Entities::ForkedFromProject, if: lambda{ | project, options | project.forked? }
     end
 
     class ProjectMember < UserBasic
@@ -65,7 +65,7 @@ module API
     end
 
     class Group < Grape::Entity
-      expose :id, :name, :path, :owner_id
+      expose :id, :name, :path, :owner_id, :description
     end
 
     class GroupDetail < Group
@@ -147,6 +147,11 @@ module API
       expose :state, :created_at, :updated_at
     end
 
+    class RepoDiff < Grape::Entity
+      expose :old_path, :new_path, :a_mode, :b_mode, :diff
+      expose :new_file, :renamed_file, :deleted_file
+    end
+
     class Milestone < ProjectEntity
       expose :due_date
     end
@@ -164,6 +169,12 @@ module API
       expose :label_names, as: :labels
       expose :description
       expose :milestone, using: Entities::Milestone
+    end
+
+    class MergeRequestChanges < MergeRequest
+      expose :diffs, as: :changes, using: Entities::RepoDiff do |compare, _|
+        compare.diffs
+      end
     end
 
     class SSHKey < Grape::Entity
@@ -236,11 +247,6 @@ module API
       expose :name, :color
     end
 
-    class RepoDiff < Grape::Entity
-      expose :old_path, :new_path, :a_mode, :b_mode, :diff
-      expose :new_file, :renamed_file, :deleted_file
-    end
-
     class Compare < Grape::Entity
       expose :commit, using: Entities::RepoCommit do |compare, options|
         Commit.decorate(compare.commits).last
@@ -263,6 +269,10 @@ module API
 
     class Contributor < Grape::Entity
       expose :name, :email, :commits, :additions, :deletions
+    end
+
+    class BroadcastMessage < Grape::Entity
+      expose :message, :starts_at, :ends_at, :color, :font
     end
   end
 end

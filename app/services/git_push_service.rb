@@ -1,5 +1,7 @@
 class GitPushService
   attr_accessor :project, :user, :push_data, :push_commits
+  include Gitlab::CurrentSettings
+  include Gitlab::Access
 
   # This method will be called after each git update
   # and only if the provided user and project is present in GitLab.
@@ -29,8 +31,12 @@ class GitPushService
         if is_default_branch?(ref)
           # Initial push to the default branch. Take the full history of that branch as "newly pushed".
           @push_commits = project.repository.commits(newrev)
-          # Default branch is protected by default
-          project.protected_branches.create({ name: project.default_branch })
+
+          # Set protection on the default branch if configured
+          if (current_application_settings.default_branch_protection != PROTECTION_NONE)
+            developers_can_push = current_application_settings.default_branch_protection == PROTECTION_DEV_CAN_PUSH ? true : false
+            project.protected_branches.create({ name: project.default_branch, developers_can_push: developers_can_push })
+          end
         else
           # Use the pushed commits that aren't reachable by the default branch
           # as a heuristic. This may include more commits than are actually pushed, but
@@ -46,22 +52,13 @@ class GitPushService
       end
 
       @push_data = post_receive_data(oldrev, newrev, ref)
-      create_push_event(@push_data)
+      EventCreateService.new.push(project, user, @push_data)
       project.execute_hooks(@push_data.dup, :push_hooks)
       project.execute_services(@push_data.dup)
     end
   end
 
   protected
-
-  def create_push_event(push_data)
-    Event.create!(
-      project: project,
-      action: Event::PUSHED,
-      data: push_data,
-      author_id: push_data[:user_id]
-    )
-  end
 
   # Extract any GFM references from the pushed commit messages. If the configured issue-closing regex is matched,
   # close the referenced Issue. Create cross-reference Notes corresponding to any other referenced Mentionables.
@@ -111,23 +108,23 @@ class GitPushService
     ref_parts = ref.split('/')
 
     # Return if this is not a push to a branch (e.g. new commits)
-    ref_parts[1] =~ /heads/ && oldrev != Gitlab::Git::BLANK_SHA
+    ref_parts[1].include?('heads') && oldrev != Gitlab::Git::BLANK_SHA
   end
 
   def push_to_new_branch?(ref, oldrev)
     ref_parts = ref.split('/')
 
-    ref_parts[1] =~ /heads/ && oldrev == Gitlab::Git::BLANK_SHA
+    ref_parts[1].include?('heads') && oldrev == Gitlab::Git::BLANK_SHA
   end
 
   def push_remove_branch?(ref, newrev)
     ref_parts = ref.split('/')
 
-    ref_parts[1] =~ /heads/ && newrev == Gitlab::Git::BLANK_SHA
+    ref_parts[1].include?('heads') && newrev == Gitlab::Git::BLANK_SHA
   end
 
   def push_to_branch?(ref)
-    ref =~ /refs\/heads/
+    ref.include?('refs/heads')
   end
 
   def is_default_branch?(ref)

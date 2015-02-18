@@ -55,14 +55,19 @@
   }
   .event-body {
     margin-left: 35px;
-    margin-right: 100px;
+    margin-right: 80px;
     color: #777;
 
     .event-note {
       margin-top: 5px;
+      word-wrap: break-word;
 
       .md {
         font-size: 13px;
+
+        iframe.twitter-share-button {
+          vertical-align: bottom;
+        }
       }
 
       pre {
@@ -71,6 +76,7 @@
         border-radius: 0;
         color: #777;
         margin: 0 20px;
+        overflow: hidden;
       }
 
       .note-image-attach {

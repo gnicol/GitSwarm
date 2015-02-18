@@ -55,6 +55,21 @@ module API
       end
     end
 
+    def find_group(id)
+      begin
+        group = Group.find(id)
+      rescue ActiveRecord::RecordNotFound
+        group = Group.find_by!(path: id)
+      end
+
+      if can?(current_user, :read_group, group)
+        group
+      else
+        forbidden!("#{current_user.username} lacks sufficient "\
+        "access to #{group.name}")
+      end
+    end
+
     def paginate(relation)
       per_page  = params[:per_page].to_i
       paginated = relation.page(params[:page]).per(per_page)
@@ -135,10 +150,32 @@ module API
       errors
     end
 
+    def validate_access_level?(level)
+      Gitlab::Access.options_with_owner.values.include? level.to_i
+    end
+
+    def issuable_order_by
+      if params["order_by"] == 'updated_at'
+        'updated_at'
+      else
+        'created_at'
+      end
+    end
+
+    def issuable_sort
+      if params["sort"] == 'asc'
+        :asc
+      else
+        :desc
+      end
+    end
+
     # error helpers
 
-    def forbidden!
-      render_api_error!('403 Forbidden', 403)
+    def forbidden!(reason = nil)
+      message = ['403 Forbidden']
+      message << " - #{reason}" if reason
+      render_api_error!(message.join(' '), 403)
     end
 
     def bad_request!(attribute)
@@ -173,7 +210,7 @@ module API
     end
 
     def render_api_error!(message, status)
-      error!({'message' => message}, status)
+      error!({ 'message' => message }, status)
     end
 
     private
@@ -200,6 +237,11 @@ module API
 
     def secret_token
       File.read(Rails.root.join('.gitlab_shell_secret'))
+    end
+
+    def handle_member_errors(errors)
+      error!(errors[:access_level], 422) if errors[:access_level].any?
+      not_found!(errors)
     end
   end
 end

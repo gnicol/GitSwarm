@@ -4,7 +4,6 @@ $ ->
 class Dispatcher
   constructor: () ->
     @initSearch()
-    @initHighlight()
     @initPageScripts()
 
   initPageScripts: ->
@@ -97,6 +96,7 @@ class Dispatcher
         new Profile()
       when 'projects'
         new Project()
+        new ProjectAvatar()
         switch path[1]
           when 'edit'
             shortcut_handler = new ShortcutsNavigation()
@@ -130,10 +130,3 @@ class Dispatcher
     project_ref = opts.data('autocomplete-project-ref')
 
     new SearchAutocomplete(path, project_id, project_ref)
-
-  initHighlight: ->
-    $('.highlight pre code').each (i, e) ->
-      $(e).html($.map($(e).html().split("\n"), (line, i) ->
-        "<span class='line' id='LC" + (i + 1) + "'>" + line + "</span>"
-      ).join("\n"))
-      hljs.highlightBlock(e)

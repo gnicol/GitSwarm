@@ -173,7 +173,9 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
       merge!: true,
     )
 
-    click_button "Accept Merge Request"
+    within '.can_be_merged' do
+      click_button "Accept Merge Request"
+    end
   end
 
   step 'I should see merged request' do
@@ -194,13 +196,13 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
   step 'I click link "Hide inline discussion" of the second file' do
     within '.files [id^=diff]:nth-child(2)' do
-      click_link "Diff comments"
+      click_link 'Show/Hide comments'
     end
   end
 
   step 'I click link "Show inline discussion" of the second file' do
     within '.files [id^=diff]:nth-child(2)' do
-      click_link "Diff comments"
+      click_link 'Show/Hide comments'
     end
   end
 

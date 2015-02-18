@@ -61,8 +61,12 @@ ul.notes {
       font-size: 14px;
     }
     .note-body {
-      @include md-typography;
       overflow: auto;
+      .note-text {
+        overflow: auto;
+        word-wrap: break-word;
+        @include md-typography;
+      }
     }
     .note-header {
       padding-bottom: 3px;
@@ -77,7 +81,7 @@ ul.notes {
 .diff-file .notes_holder {
   font-size: 13px;
   line-height: 18px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: $regular_font;
 
   td {
     border: 1px solid #ddd;

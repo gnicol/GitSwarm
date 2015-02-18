@@ -34,6 +34,19 @@ Feature: Project Source Browse Files
     Then I am redirected to the new file
     And I should see its new content
 
+  @javascript @tricky
+  Scenario: I can create file in empty repo
+    Given I own an empty project
+    And I visit my empty project page
+    And I create bare repo
+    When I click on "add a file" link
+    And I edit code
+    And I fill the new file name
+    And I fill the commit message
+    And I click on "Commit Changes"
+    Then I am redirected to the new file
+    And I should see its new content
+
   @javascript
   Scenario: If I enter an illegal file name I see an error message
     Given I click on "new file" link in repo

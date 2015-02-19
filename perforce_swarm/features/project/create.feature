@@ -43,6 +43,8 @@ Feature: Project Create
     # error message: Limit reached Your project limit is 0 projects! Please contact your administrator to increase it
     Given ...
 
+  # Note: project limit only applies to the user's namespace. They can create unlimited projects under a groups namespace
+
   ##############
   # Project Path
   ##############
@@ -93,6 +95,11 @@ Feature: Project Create
   Scenario: As a user, I receive an error message if I attempt to create a project with a path that has a space in it
     # Despite the error message that indicates you can have a space, this is not allowed.
     # Error message: Path can contain only letters, digits, '_', '-' and '.'. Cannot start with '-' or end in '.git'
+    Given ...
+
+  Scenario: As a user, I receive an error message if I attempt to create a project with a path that already exists.
+    # Error message: Name has already been taken
+    # Must use the same namespace for the error to appear
     Given ...
 
 

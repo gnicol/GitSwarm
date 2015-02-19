@@ -97,7 +97,7 @@ Feature: Project Create
     # Error message: Path can contain only letters, digits, '_', '-' and '.'. Cannot start with '-' or end in '.git'
     Given ...
 
-  Scenario: As a user, I receive an error message if I attempt to create a project with a path that already exists.
+  Scenario: As a user, I receive an error message if I attempt to create a project with a path that already exists
     # Error message: Name has already been taken
     # Must use the same namespace for the error to appear
     Given ...
@@ -107,15 +107,23 @@ Feature: Project Create
   # Namespace
   ###########
 
-  # There are unit tests that confirm that the namespace can be a user namespace or a group namespace at
-  # spec/services/projects/create_service_spec.rb
+  # A user will have access to their own namespace and any group that they are a master or owner of
 
-  Scenario: As a user, I should see only the namespaces that I have access to in the dropdown.
+  Scenario: As a user, I can create a project under my user namespace
+    # Automated in spec/services/projects/create_service_spec.rb; context 'user namespace'
+    Given ...
+
+  Scenario: As a user who is a master or owner of a group, I can create a project under a group namespace
+    #Automated in spec/services/projects/create_service_spec.rb; context 'group namespace'
+    Given ...
+
+  Scenario: As a user who does not have access to namespaces other than their own, I do not see the namespace dropdown when creating a project.
     # A user will have access to their own namespace and any group that they are a master or owner of
     # The dropdown will not appear unless you have access to multiple namespaces.
     Given ...
 
-  Scenario: As a user, I should not see group namespaces that I am not a master or owner of in the dropdown.
+  @critical
+  Scenario: As a user, I should not see group namespaces that I am not a master or owner of in the dropdown
     Given ...
 
   ######################
@@ -125,6 +133,7 @@ Feature: Project Create
   # Unit tests for GitHub integration are at spec/controllers/import/github_controller_spec.rb
   # Unit tests for GitLab integration are at spec/controllers/import/gitlab_controller_spec.rb
 
+  @critical
   Scenario: As a user, I should be able to import an existing repo
     Given ...
 
@@ -132,7 +141,7 @@ Feature: Project Create
   # Empty Project
   ###############
 
-  Scenario: As a user, I can create a new empty project.
+  Scenario: As a user, I can create a new empty project
     # Automated in features/project/create.feature; Scenario: User create a project
     # Fills in the path with "Empty" and then uses all the defaults for the rest
     Given ...
@@ -141,18 +150,19 @@ Feature: Project Create
   # Visibility
   ############
 
-  # Note: default is set to private
-
-  Scenario: As a user, I can create a private project.
+  Scenario: As a user, I can create a private project
+    # Note: default is set to private
+    # Automated in features/project/create.feature; Scenario: User create a project
     Given ...
 
-  Scenario: As a user, I can create an internal project.
+  Scenario: As a user, I can create an internal project
+    # The API unit tests check that the projects can be changed to internal
     Given ...
 
-  Scenario: As a user, I can create a public project.
+  Scenario: As a user, I can create a public project
+    # The API unit tests check that the projects can be changed to public
     Given ...
 
   ###########
   # Mirroring
   ###########
-  

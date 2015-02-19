@@ -1,0 +1,175 @@
+/* Custom navbar for our NavBar */
+header.navbar-gitlab .navbar-inner {
+  /* Swarm Logo */
+  .app_logo {
+    margin-right: 0;
+
+    a {
+      h1 {
+        background-image: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAbCAYAAACTHcTmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABLpJREFUeNqUVl1oHUUUPjM7u/fe/BGFJE0ebBsRTEOhjYpIaNUQrIYGWxTa+PemQbHW4oMIgogoKlVRUHzIgw9qGpuXFmyraBNbrVqlMcafShsMeTFGktw0yb13d2dn/Gb27r1Jmzxkw96ZnZ9vznznfOeE0VVPR/9ILRfOC47n7GcOv4FzRowx0rq4gK1cbz5lIMnPBcQ4Ozi0b9t7YgXgZ6PPeWn3NZFxPbM4wTEdVkQojRcnIxnR4vQi+Ys+1Wyo5mbMgt7VP8IcwfvTNZl9xrISVqTySulZABSWH84dvpk7jEdSUX4uR/8NXabKrY3GUiqBcs4PG0AzaAyIguiSktGjX9zf+iOt8nQMjI7j8OZIKZodnyGezcdWK52zoLByS6oqdchYaHiTvhw41d2y//b3zz11yztnjqhIN2hMGF6TO89MzGXiMaLajbX0z+RcmScDKjzxhuM61u4ojP6ygB+cOx7kw27LJWNl5+i4z0VMsPnLZX3a0L6JglxY8iJAnc5kE67cc0ff+V4JQBxmLXFctHyZx8xibU8r0QEWKHN9RdlSxnmaWUC1BA5H2vt+OgrL7WSqUpxlwtk73LN9htbxCFbkEhzNW6cJqmeOQzY+hfP8egEthlYx4eAuYwZg5aLwOMCtY56AGPh6Qdmu438EbsZ1DXiYD+pCP3oRBxyMKdSGpYBpnTc+4uBTGUtIz6OdxJ6PceLA6Z7t2RWgnYNjX6dr0h0Uy+2kLIS7OWOXyGHN1sNFv5Q2LPOTaaNQ+UpFr2ulXhnuaYvs9WUoXzZSM4vg8fscTzyjGbsJG/qgmitQmkKEaNCiTYu8QMgLxOFMfMOZbipdlXrJEeL7uz+9UFFKD52Dvw5CUQ/YaFFGUfJzFanHvtzTOrsaZ7uO/d4IBx/AAU87Lq8mHVtdWCicVYG8k8Xav+B5nvudV52+tXxFrRFmU9D+dDHsk0gN8fM3Dn0V637jgp8RKdEe5wpNS9lcbymCIVfPEU6fV+k9gpYlgjAdnaSkYuwnn9IPPzzVveXJrhMXL4OOG40xwVIww66+GsBbwO274HAn3hTjrCQench2WTKFPB9nTP/gZrwxM6VCRWytWAMlLppW7GxAa2PYBKwy+vBEb7o6dY85APli6kTXzY1dJy9Ow4g6cwuxFijCw2SIX1ZNff0jx2TBySOZu6gO9XHeUJO4VV0pn677YWwPPO9avuHOImgmiWeTTzVKSAgvqoS3FaWIrRwztOKaHtZbByL7j8ZlRW0mqWLQ4IpPKojcqvpqQqCXS0mimmUHJLUp8RWACig5e2HYs1pGmRhSSx4uBTQ1PE6FbA55UccZy4JC2UpL8yL725fQx4QEWA4V4jTejfmFQpMKo8OhLynyoVKljwoDwf9doKmxKWra1kQi4xVjUD781YNbj6xF646PfjbXehNcHoIh3OBAXQuoigfYbW9/o+e/naD63S0mPEgW4wwLJhjj2avLvY0Yra+DohotWJFwJy2CdIW7Y+ihtvMm81PtzmaTbchfkiWvyCDadM1/D8vKSFL4jDi8Km8SieXeoZ62P62jKhqqwIWkPBwG66hcOa8FSvpWZZyUcMWYm3HeQpn4BBVCJVv+F2AAUCdArzTXYv0AAAAASUVORK5CYII=");
+        background-size: 21px;
+      }
+    }
+  }
+
+  /* Fix Navbar height */
+  .app_logo a h1 {
+    height: 44px;
+  }
+
+  /* Style the dashboard title and dropdown */
+  .dashboard-menu {
+    position: relative;
+    float: left;
+    max-width: 37%;
+    display: inline-block;
+
+    .dropdown-menu {
+      margin-top: 0px;
+
+      .str-truncated {
+        max-width: 100%
+      }
+    }
+
+    li.current a {
+      font-weight: bold;
+    }
+
+    .title {
+      max-width: 100%;
+      float: none;
+      position: static;
+      height: 44px;
+      margin: 0;
+      padding-left: 10px;
+      padding-right: 10px;
+      line-height: 44px;
+    }
+
+    .caret {
+      margin-bottom: 1px;
+    }
+
+    &.dropdown {
+      .title {
+        cursor: pointer;
+      }
+    }
+  }
+
+  /* Center the sign-in button */
+  .btn-sign-in {
+    margin-top: 6px;
+  }
+
+  /* Center and properly size the nav area */
+  .nav {
+    > li {
+      > a {
+        padding: 6px 14px;
+
+        > i.fa {
+          width: 16px;
+          text-align: center;
+        }
+      }
+
+      .navbar-toggle {
+        border: none;
+      }
+
+      .caret {
+        margin-left: 4px;
+      }
+
+      .profile-pic {
+        padding: 9px;
+        line-height: 24px;
+        padding-right: 5px !important;
+        top: 0;
+        img {
+          width: 26px;
+          height: 26px;
+          margin: 0;
+          border-radius: 4px;
+        }
+      }
+
+      /* Hide tooltips when dropdowns are open */
+      &.dropdown.open .tooltip {
+        display: none !important;
+      }
+    }
+  }
+
+  .recent-project-access-icon {
+    padding-right: 2px;
+  }
+
+  @media (max-width: $screen-xs-max) {
+    /* Restore bootstrap defaults, as Gitlab's styles do some weird sizing here */
+    .navbar-nav {
+      margin: 0px;
+
+      > li {
+        display: list-item;
+        width: auto;
+        float: left;
+      }
+    }
+
+    /**
+    * Override small nav dropdown size rules, so that our
+    * dropdown menus still appear as regular dropdown.
+    * These rules are taken from the bootstrap sass files.
+    */
+    .open .dropdown-menu {
+      position: absolute;
+      float: left;
+      margin-top: 0;
+      background-color: $dropdown-bg;
+      border: 1px solid $dropdown-fallback-border; // IE8 fallback
+      border: 1px solid $dropdown-border;
+
+      .active > a {
+        color: #000;
+        background-color: transparent;
+        font-weight: bold;
+
+        &:hover, &:focus {
+          color: #FFF;
+          background: #446e9b;
+        }
+      }
+
+      li {
+        display: list-item;
+        width: 100%;
+      }
+
+      .dropdown-header, > li > a {
+        line-height: 18px;
+        padding: 5px 15px 5px 25px;
+      }
+
+      > li > a {
+        text-align: left;
+        &:hover,
+        &:focus {
+          background-image: none;
+        }
+      }
+    }
+    .navbar-right .dropdown-menu {
+      right: 0;
+      left: auto;
+    }
+  }
+}
+
+@media (max-width: $screen-xs-max) {
+  #nprogress .spinner {
+    display: none;
+  }
+}

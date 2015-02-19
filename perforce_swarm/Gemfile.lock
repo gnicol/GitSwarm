@@ -26,6 +26,7 @@ GEM
     json (1.8.1)
     minitest (5.4.1)
     multi_json (1.10.1)
+    p4ruby (2014.2.0.pre2)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -55,3 +56,4 @@ PLATFORMS
 
 DEPENDENCIES
   js-routes (~> 0.9.9)
+  p4ruby (~> 2014.2.0.pre2)

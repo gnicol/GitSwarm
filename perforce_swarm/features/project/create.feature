@@ -37,10 +37,10 @@ Feature: Project Create
   # Project Limit
   ###############
 
-  Scenario: As a user who cannot create projects, I receive an error when I attempt to create a new project
+  Scenario: As a user who has reached their project limit, I receive an error when I attempt to create a new project
     # Automated in spec/models/project_spec.rb; it 'should not allow new projects beyond user limits'
-    # cannot create projects == project limit of 0
-    # error message: Limit reached Your project limit is 0 projects! Please contact your administrator to increase it
+    # project default limit is set in gitlab.rb (default is 10). At user creation, the admin can change the project limit for a user.
+    # error message: Limit reached Your project limit is {project-limit} projects! Please contact your administrator to increase it
     Given ...
 
   # Note: project limit only applies to the user's namespace. They can create unlimited projects under a groups namespace
@@ -122,6 +122,9 @@ Feature: Project Create
   # Existing Repo Import
   ######################
 
+  # Unit tests for GitHub integration are at spec/controllers/import/github_controller_spec.rb
+  # Unit tests for GitLab integration are at spec/controllers/import/gitlab_controller_spec.rb
+
   Scenario: As a user, I should be able to import an existing repo
     Given ...
 
@@ -148,3 +151,8 @@ Feature: Project Create
 
   Scenario: As a user, I can create a public project.
     Given ...
+
+  ###########
+  # Mirroring
+  ###########
+  

@@ -79,9 +79,9 @@ Feature: Project Merge Requests
   ##########################
 
   #To Do: Add tests around merging to a protected branch
-  
+
   Scenario: I accept a merge request with custom commit message
-    #Automated in features/project/merge_requests.featue; Scenario: I accept merge request with custom commit message
+    #Automated in features/project/merge_requests.feature; Scenario: I accept merge request with custom commit message
     Given ...
 
   Scenario: As a reviewer of a merge request, I accept the merge request and concurrently delete the source branch.

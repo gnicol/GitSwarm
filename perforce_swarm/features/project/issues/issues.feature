@@ -915,22 +915,22 @@ Feature: Project Issues
     And I change the milestone in the milestone dropdown
     Then I should see the issue assigned to milestone in the issues list
 
-  Scenario:  I click on mulitiple checkboxes and update issues to closed
+  Scenario:  I click on multiple checkboxes and update issues to closed
     Given I click on multiple checkboxes
     And I change the status to closed
     Then I should see the multiple issues closed in the issues list
 
-  Scenario:  I click on mulitiple checkboxes and update issues to opened
+  Scenario:  I click on multiple checkboxes and update issues to opened
     Given I click on multiple checkboxes
     And I change the status to opened
     Then I should see the multiple issues opened in the issues list
 
-  Scenario:  I click on mulitiple checkboxes and update issues to assignee
+  Scenario:  I click on multiple checkboxes and update issues to assignee
     Given I click on multiple checkboxes
     And I change the assignee in the assignee dropdown
     Then I should see the multiple issues assigned to assignee in the issues list
 
-  Scenario:  I click on mulitiple checkboxes and update issues to milestone
+  Scenario:  I click on multiple checkboxes and update issues to milestone
     Given I click on multiple checkboxes
     And I change the milestone in the milestone dropdown
     Then I should see the multiple issues assigned to milestone in the issues list

@@ -16,6 +16,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
+    atomic (1.1.99)
     builder (3.2.2)
     erubis (2.7.0)
     hike (1.2.3)
@@ -54,4 +55,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  atomic
   js-routes (~> 0.9.9)

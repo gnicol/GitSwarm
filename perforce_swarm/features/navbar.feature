@@ -56,7 +56,7 @@ Feature: NavBar
   Scenario: Click on the Swarm icon from the "Public Projects" page and verify that user is taken to the Dashboard page
     Given I visit the public projects area
     When I click on the Swarm icon
-    Then I should see the Dashboard page
+    Then I should see the Dashboard page with no projects
     And the title of the dropdown should be "Dashboard"
 
   @javascript @automated @PGL-123
@@ -327,6 +327,7 @@ Feature: NavBar
     And I click on project "PerforceProject"
     Then I should see the "PerforceProject" page
     When I click on the back button
+    Then I should see the Admin area page
     Then the title of the dropdown should be "Admin"
 
   @javascript @automated @PGL-123
@@ -338,6 +339,7 @@ Feature: NavBar
     And I click on the most recent project under "Recent Projects"
     Then I should see the "PerforceProject" page
     When I click on the back button
+    Then I should see the Search page
     Then the title of the dropdown should be "Search"
 
   #########################

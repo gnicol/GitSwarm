@@ -11,6 +11,10 @@ module SharedAdmin
     find(:css, 'ul.nav.navbar-nav').should have_content('Admin Area')
   end
 
+  step 'I should see the Admin area page' do
+    page.find(:css, '.admin-dashboard').should have_content('New User')
+  end
+
   step 'I should see the admin user settings page' do
     find(:css, '.page-title').should have_content('Profile settings')
     find(:css, 'ul.nav.navbar-nav').should have_content('Admin Area')

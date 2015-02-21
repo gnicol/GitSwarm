@@ -27,9 +27,6 @@ module ApplicationHelper
     # do the work of the standard view
     content.gsub!('$your_email', current_user.email)
 
-    # make some page specific tweaks
-    content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure.md'
-
     # they talk about GitLab EE only features, nuke those lines
     content.gsub!(/^.*GitLab (EE|Enterprise Edition).*$/, '')
 
@@ -47,7 +44,11 @@ module ApplicationHelper
     # hit GitLab occurrences that look ok to update
     content.gsub!(/GitLab(?!\.com|\s+[Ff]lavored [Mm]arkdown| [Ff]low| [Ww]orkflow| CI)/, 'GitSwarm')
 
-    # the markdown page needs some finess to avoid taking undue credit
+    # do a variety of page specific touch-ups
+
+    content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure.md'
+
+    # the markdown page needs some finesse to avoid taking undue credit
     if file == 'markdown.md'
       content.gsub!('For GitSwarm we developed something we call', 'GitLab developed something called')
       content.gsub!('Here\'s our logo', 'Here\'s GitLab\'s logo')
@@ -59,12 +60,14 @@ module ApplicationHelper
     # unfair to steal their voice on this bit; put it back
     content.gsub!('At GitSwarm we are guilty', 'At GitLab we are guilty') if file == 'gitlab_flow.md'
 
+    # a few lines that refer to GitLab versions that pre-date our usage
     if file == 'ldap.md'
       content.gsub!(/Please note that before version.*$/, '')
       content.gsub!(/The old LDAP integration syntax still works in GitSwarm.*$/, '')
       content.gsub!(/^.*contains LDAP settings in both the old syntax and the new syntax.*$/, '')
     end
 
+    # this is a link to GitLab flow and should stay GitLab
     content.gsub!('[GitSwarm]', '[GitLab]') if file == 'omniauth.md'
 
     if file == 'custom_hooks.md'
@@ -72,6 +75,7 @@ module ApplicationHelper
       content.gsub!('administrators can add custom git hooks to any GitSwarm project.', '')
     end
 
+    # the cleanup page only applies to old versions; nuke the link from the index page
     content.gsub!(/^.*Cleaning up Redis sessions.*$/, '') if file == 'README.md' && category == 'operations'
 
     # return the munged string

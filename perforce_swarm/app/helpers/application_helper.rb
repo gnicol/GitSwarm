@@ -18,7 +18,7 @@ module ApplicationHelper
 
   def help_preprocess(category, file)
     # use our over-ride markdown if present, otherwise use their copy
-    if File.exists?(Rails.root.join('perforce_swarm', 'doc', category, file))
+    if File.exist?(Rails.root.join('perforce_swarm', 'doc', category, file))
       content = File.read(Rails.root.join('perforce_swarm', 'doc', category, file))
     else
       content = File.read(Rails.root.join('doc', category, file))
@@ -53,7 +53,6 @@ module ApplicationHelper
       content.gsub!('Here\'s our logo', 'Here\'s GitLab\'s logo')
     end
 
-
     # this section is just for EE users; nuke it
     content.gsub!(/## Managing group memberships via LDAP.*?(?!##)/m, '') if file == 'groups.md'
 
@@ -68,8 +67,10 @@ module ApplicationHelper
 
     content.gsub!('[GitSwarm]', '[GitLab]') if file == 'omniauth.md'
 
-    content.gsub!('As of gitlab-shell version 2.2.0 (which requires GitSwarm 7.5+), GitSwarm', '') if file == 'custom_hooks.md'
-    content.gsub!('administrators can add custom git hooks to any GitSwarm project.', '') if file == 'custom_hooks.md'
+    if file == 'custom_hooks.md'
+      content.gsub!('As of gitlab-shell version 2.2.0 (which requires GitSwarm 7.5+), GitSwarm', '')
+      content.gsub!('administrators can add custom git hooks to any GitSwarm project.', '')
+    end
 
     content.gsub!(/^.*Cleaning up Redis sessions.*$/, '') if file == 'README.md' && category == 'operations'
 

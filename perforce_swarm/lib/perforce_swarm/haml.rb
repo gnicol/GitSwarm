@@ -1,12 +1,17 @@
 module PerforceSwarm
   module HamlParserExtension
-    REPLACE_REGEX = /GitLab(?!\.com|\s+[Ff]lavored [Mm]arkdown)/
+    GITSWARM_REPLACE_REGEX = /GitLab(?!(\.com|\s+[Ff]lavored [Mm]arkdown|\$))/
     def parse_tag(line)
-      super line.gsub(REPLACE_REGEX, 'GitSwarm')
+      super translate(line)
     end
 
     def plain(text, escape_html = nil)
-      super text.gsub(REPLACE_REGEX, 'GitSwarm'), escape_html
+      super translate(text), escape_html
+    end
+
+    def translate(text)
+      # ensure that instances of $GitLab$ are escaped from the translation, and get replaced with GitLab
+      text.gsub(GITSWARM_REPLACE_REGEX, 'GitSwarm').gsub(/\$GitLab\$/, 'GitLab')
     end
   end
 end

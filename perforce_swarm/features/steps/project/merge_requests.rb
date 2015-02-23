@@ -86,6 +86,6 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   step 'I should see project branch "Fix"' do
     page.find('.js-branch-fix').should have_content 'fix'
     project = Project.find_by(name: 'Shop')
-    current_path.should eq project_branches_path(project)
+    current_path.should eq namespace_project_branches_path(project.namespace, project)
   end
 end

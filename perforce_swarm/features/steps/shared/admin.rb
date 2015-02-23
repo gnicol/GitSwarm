@@ -3,7 +3,7 @@ module SharedAdmin
 
   step 'I visit admin "PerforceProject" project page' do
     project_perforce = Project.find_by(name: 'PerforceProject')
-    visit admin_project_path(project_perforce)
+    visit admin_namespace_project_path(project_perforce.namespace, project_perforce)
   end
 
   step 'I should see the admin user page' do

@@ -30,9 +30,6 @@ module ApplicationHelper
     # they talk about GitLab EE only features, nuke those lines
     content.gsub!(/^.*GitLab (EE|Enterprise Edition).*$/, '')
 
-    # try to clarify its not our website
-    content.gsub!(/our website/i, "GitLab's website")
-
     # some pages need more a whitelist update instead of blacklist; do them first and return
     if file == 'maintenance.md'
       content.gsub!(/about (your )?GitLab/, 'about \1GitSwarm')
@@ -43,6 +40,9 @@ module ApplicationHelper
 
     # hit GitLab occurrences that look ok to update
     content.gsub!(/GitLab(?!\.com|\s+[Ff]lavored [Mm]arkdown| [Ff]low| [Ww]orkflow| CI)/, 'GitSwarm')
+
+    # try to clarify its not our website
+    content.gsub!(/our website/i, "GitLab's website")
 
     # do a variety of page specific touch-ups
 

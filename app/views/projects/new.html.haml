@@ -52,7 +52,7 @@
               %i.fa.fa-github
               Import projects from GitHub
             = render 'github_import_modal'
-      
+
       .project-import.form-group
         .col-sm-2
         .col-sm-10
@@ -60,11 +60,18 @@
             = link_to status_import_gitlab_path do
               %i.fa.fa-heart
               Import projects from GitLab.com
-          - else
+          - elsif request.host != 'gitlab.com'
             = link_to '#', class: 'how_to_import_link light' do
               %i.fa.fa-heart
               Import projects from GitLab.com
             = render 'gitlab_import_modal'
+
+      .project-import.form-group
+        .col-sm-2
+        .col-sm-10
+          = link_to new_import_gitorious_path do
+            %i.fa.fa-heart
+            Import projects from Gitorious.org
 
       %hr.prepend-botton-10
 

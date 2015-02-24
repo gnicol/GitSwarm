@@ -45,6 +45,7 @@
 #  last_credential_check_at :datetime
 #  github_access_token      :string(255)
 #  notification_email       :string(255)
+#  password_automatically_set :boolean        default(FALSE)
 #
 
 require 'carrierwave/orm/activerecord'
@@ -255,7 +256,7 @@ class User < ActiveRecord::Base
       counter = 0
       base = username
       while User.by_login(username).present? || Namespace.by_path(username).present?
-        counter += 1 
+        counter += 1
         username = "#{base}#{counter}"
       end
 
@@ -348,6 +349,10 @@ class User < ActiveRecord::Base
 
   def require_ssh_key?
     keys.count == 0
+  end
+
+  def require_password?
+    password_automatically_set? && !ldap_user?
   end
 
   def can_change_username?
@@ -459,7 +464,7 @@ class User < ActiveRecord::Base
 
   def set_notification_email
     if self.notification_email.blank? || !self.all_emails.include?(self.notification_email)
-      self.notification_email = self.email 
+      self.notification_email = self.email
     end
   end
 
@@ -606,5 +611,14 @@ class User < ActiveRecord::Base
 
   def oauth_authorized_tokens
     Doorkeeper::AccessToken.where(resource_owner_id: self.id, revoked_at: nil)
+  end
+
+  def contributed_projects_ids
+    Event.where(author_id: self).
+      where("created_at > ?", Time.now - 1.year).
+      code_push.
+      reorder(project_id: :desc).
+      select('DISTINCT(project_id)').
+      map(&:project_id)
   end
 end

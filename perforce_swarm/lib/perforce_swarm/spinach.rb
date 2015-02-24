@@ -1,6 +1,12 @@
 if ENV['RAILS_ENV'] == 'test'
   require 'spinach'
   require_relative '../../spec/support/test_env'
+  require_relative '../../features/support/rack_request_blocker'
+
+  PerforceSwarm::Engine.initializer 'request_blocker' do |app|
+    # Make sure the middleware is inserted first in middleware chain
+    app.middleware.insert_before('Gitlab::Middleware::Static', 'RackRequestBlocker')
+  end
 
   Spinach.hooks.before_run do
     # Creating a hash of all feature names (keys) and corresponding list of scenarios (values) that need to be SKIPPED

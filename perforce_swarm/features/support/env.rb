@@ -48,7 +48,8 @@ Spinach.hooks.around_scenario do |_scenario_data, feature, &block|
     # where they will do it for us after each test
     feature.page.execute_script('window.localStorage.clear()')
     feature.visit 'about:blank'
-    feature.find(:css, 'body').text.should == ''
+    feature.find(:css, 'body').text.should feature.eq('')
+    wait_for_requests
   end
 end
 
@@ -76,4 +77,13 @@ def wait_for_ajax
   end
 rescue
   raise "AJAX request took longer than #{Capybara.default_wait_time} seconds."
+end
+
+def wait_for_requests
+  RackRequestBlocker.block_requests!
+  Timeout.timeout(Capybara.default_wait_time) do
+    loop { break if RackRequestBlocker.num_active_requests == 0 }
+  end
+ensure
+  RackRequestBlocker.allow_requests!
 end

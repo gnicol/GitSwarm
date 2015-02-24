@@ -19,7 +19,7 @@ module PerforceSwarm
     # Engine's public folder is searched first for assets
     initializer :static_assets do |app|
       if app.config.serve_static_assets
-        app.middleware.insert_before(::ActionDispatch::Static, ::ActionDispatch::Static, "#{root}/public")
+        app.middleware.insert_before(Gitlab::Middleware::Static, ::ActionDispatch::Static, "#{root}/public")
       end
     end
   end

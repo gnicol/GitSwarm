@@ -19,10 +19,20 @@ module PerforceSwarm
                            .reorder('last_activity_at DESC, created_at DESC').non_archived.limit(5)
       end
     end
+
+    def render_404
+      render file: Rails.root.join("perforce_swarm", "public", "404"), layout: false, status: "404"
+    end
+
+    def render_500
+      render file: Rails.root.join("perforce_swarm", "public", "500"), layout: false, status: "500"
+    end
+
   end
 end
 
 class ApplicationController < ActionController::Base
   prepend PerforceSwarm::ApplicationControllerExtension
+  rescue_from Exception, :with => :render_500
   before_filter :load_recent_projects
 end

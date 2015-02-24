@@ -78,12 +78,12 @@ module SharedProject
 
   step 'I visit project "PerforceProject" issues page' do
     project_perforce = Project.find_by(name: 'PerforceProject')
-    visit project_issues_path(project_perforce)
+    visit namespace_project_issues_path(project_perforce.namespace, project_perforce)
   end
 
   step 'I visit project "PerforceProject" settings page' do
     project_perforce = Project.find_by(name: 'PerforceProject')
-    visit edit_project_path(project_perforce)
+    visit edit_namespace_project_path(project_perforce.namespace, project_perforce)
   end
 
   #########################

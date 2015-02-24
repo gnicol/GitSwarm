@@ -39,7 +39,7 @@ module ApplicationHelper
     end
 
     # hit GitLab occurrences that look ok to update
-    content.gsub!(/GitLab(?!\.com|\s+[Ff]lavored [Mm]arkdown| [Ff]low| [Ww]orkflow| CI)/, 'GitSwarm')
+    content = PerforceSwarm::Branding::rebrand(content)
 
     # try to clarify its not our website
     content.gsub!(/our website/i, "GitLab's website")

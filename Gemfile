@@ -54,7 +54,7 @@ gem 'gitlab_omniauth-ldap', '1.2.0', require: "omniauth-ldap"
 gem 'gollum-lib', '~> 4.0.0'
 
 # Language detection
-gem "gitlab-linguist", "~> 3.0.0", require: "linguist"
+gem "gitlab-linguist", "~> 3.0.1", require: "linguist"
 
 # API
 gem "grape", "~> 0.6.1"
@@ -251,8 +251,8 @@ group :development, :test do
 
   gem 'jasmine', '2.0.2'
 
-  gem "spring", '1.1.3'
-  gem "spring-commands-rspec", '1.0.1'
+  gem "spring", '1.3.1'
+  gem "spring-commands-rspec", '1.0.4'
   gem "spring-commands-spinach", '1.0.0'
 end
 

@@ -39,7 +39,7 @@ module ApplicationHelper
     end
 
     # hit GitLab occurrences that look ok to update
-    content = PerforceSwarm::Branding::rebrand(content)
+    content = PerforceSwarm::Branding.rebrand(content)
 
     # try to clarify its not our website
     content.gsub!(/our website/i, "GitLab's website")

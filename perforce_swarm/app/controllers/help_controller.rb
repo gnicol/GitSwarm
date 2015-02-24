@@ -23,10 +23,10 @@ module PerforceSwarm
 
         if asset_path && asset_path.start_with?(doc_path)
           send_file(
-              asset_path,
-              x_sendfile:   true,
-              type:         request.format,
-              disposition:  'inline'
+            asset_path,
+            x_sendfile:   true,
+            type:         request.format,
+            disposition:  'inline'
           )
           return
         end

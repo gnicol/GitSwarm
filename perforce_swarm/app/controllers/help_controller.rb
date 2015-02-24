@@ -25,7 +25,7 @@ module PerforceSwarm
           send_file(
             asset_path,
             x_sendfile:   true,
-            type:         request.format,
+            type:         request.format.symbol ? request.format : 'application/octet-stream',
             disposition:  'inline'
           )
           return

@@ -1,10 +1,10 @@
 @dashboard
 Feature: Event Filters
-  Background: 
+  Background:
     Given I sign in as a user
     And I own a project
-    
-  # These are test cases identified while testing the dashboard activity page 
+
+  # These are test cases identified while testing the dashboard activity page
 
   ###############
   # Activity Feed
@@ -32,7 +32,7 @@ Feature: Event Filters
   Scenario: Push a change to a project and verify that the 'Create Merge Request' push widget is shown in the actiivity feed. When the 'Create Merge Request' button is clicked, verify that a prefilled new Merge Request page is shown
     # Automated in features/dashboard/dashboard.feature; I should see last push widget
     Given ...
-   
+
   Scenario: Close an issue and verify that the closed issue event is shown in the activity feed
     # Similar test cases exist in spec/features/atom/dashboard_spec.rb
     Given ...
@@ -40,32 +40,32 @@ Feature: Event Filters
   Scenario: Open a merge request and verify that the new merge request event is shown in the activity feed
     # Similar test cases exist in spec/features/atom/dashboard_spec.rb
     Given ...
-    
+
   Scenario: Close a merge request event and verify that the closed merge request event is shown in the activity feed
     # Similar test cases exist in spec/features/atom/dashboard_spec.rb
     Given ...
 
   Scenario: Leave a comment on a commit and verify that the comment on commit event is shown in the activity feed
-    # Similar test cases exist in spec/features/atom/dashboard_spec.rb 
+    # Similar test cases exist in spec/features/atom/dashboard_spec.rb
     Given ...
 
   Scenario: Create a new branch and verify that the new branch event is shown in the activity feed
     Given ...
 
   Scenario: Delete a branch and verify that the branch delete event is shown in the activity feed
-    Given ... 
-    
+    Given ...
+
   Scenario: Hover over the timestamp of a commit event in the dashboard activity and verify that the tooltip appears
     Given ...
 
   ###############################
   # Username in the Activity Feed
   ###############################
-   
+
   Scenario: As a user with name 'John Doe' join a project named 'Shop'. Verify that the 'John Doe joined project at Shop' event is shown in the activity feed
     # Automated in features/dashboard/dashboard.feature; Scenario: I should see User joined Project event
     Given ...
- 
+
   Scenario: As User 'John Doe' leave project 'Shop' and verify that 'John Doe left project at Shop' event is shown in the activity feed
     # Similar test case is automated in features/dashboard/dashboard.feature
     Given ...

@@ -13,5 +13,8 @@
 /* Styles for our navbar */
 @import "perforce_swarm/navbar";
 
+/* Require login styles */
+@import "perforce_swarm/login";
+
 /* Theme additions and changes */
 @import "perforce_swarm/themes/*";

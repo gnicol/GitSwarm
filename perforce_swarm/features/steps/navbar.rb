@@ -258,7 +258,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'I should see the login page' do
-    find(:css, '.login-page').should have_content('Sign in')
+    find(:css, '.login-page').should have_button('Sign in')
   end
 
   step 'I should see the Dashboard page' do

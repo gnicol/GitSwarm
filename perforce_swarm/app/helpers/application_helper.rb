@@ -20,12 +20,11 @@ module ApplicationHelper
     # use our over-ride markdown if present, otherwise use their copy
     if File.exist?(Rails.root.join('perforce_swarm', 'doc', category, file))
       content = File.read(Rails.root.join('perforce_swarm', 'doc', category, file))
+      return content.gsub('$your_email', current_user.email)
     else
       content = File.read(Rails.root.join('doc', category, file))
+      content.gsub!('$your_email', current_user.email)
     end
-
-    # do the work of the standard view
-    content.gsub!('$your_email', current_user.email)
 
     # they talk about GitLab EE only features, nuke those lines
     content.gsub!(/^.*GitLab (EE|Enterprise Edition).*$/, '')

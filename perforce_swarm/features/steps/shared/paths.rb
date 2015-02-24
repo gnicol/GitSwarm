@@ -33,7 +33,7 @@ module SharedPaths
   end
 
   step 'I visit project "PerforceProject" files page' do
-    visit namespace_project_tree_path(perforce_project.namespec, perforce_project, root_ref)
+    visit namespace_project_tree_path(perforce_project.namespace, perforce_project, root_ref)
   end
 
   step 'I visit project "PerforceProject" hooks page' do

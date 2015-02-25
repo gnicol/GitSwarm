@@ -37,6 +37,10 @@ module ApplicationHelper
       return content
     end
 
+    if category == 'install' && file == 'README.md'
+      return content
+    end
+
     # hit GitLab occurrences that look ok to update
     content = PerforceSwarm::Branding.rebrand(content)
 

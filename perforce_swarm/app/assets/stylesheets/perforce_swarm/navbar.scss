@@ -108,7 +108,7 @@ header.navbar-gitlab .navbar-inner {
   }
 
   @media (max-width: $screen-xs-max) {
-    /* Restore bootstrap defaults, as Gitlab's styles do some weird sizing here */
+    /* Restore bootstrap defaults, as GitLab's styles do some weird sizing here */
     .navbar-nav {
       margin: 0px;
 

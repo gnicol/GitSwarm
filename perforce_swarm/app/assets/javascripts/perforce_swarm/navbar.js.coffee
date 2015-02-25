@@ -56,7 +56,7 @@ $ ->
   subnav   = $('.nav.nav-sidebar')
   username = gon.current_user_username
 
-  # Create the new subnav dropdown menu, clone the exisitng subnav if available
+  # Create the new subnav dropdown menu, clone the existing subnav if available
   subnavMenu = if subnav.length then subnav.clone() else $('<ul />')
   subnavMenu.removeClass().addClass('dropdown-menu').attr('role', 'menu')
 

@@ -16,11 +16,18 @@ module PerforceSwarm
       end
     end
 
-    # Engine's public folder is searched first for assets
-    initializer :static_assets do |app|
+    initializer :engine_middleware do |app|
+      # Engine's public folder is searched first for assets
       if app.config.serve_static_assets
         app.middleware.insert_before(Gitlab::Middleware::Static, ::ActionDispatch::Static, "#{root}/public")
       end
+
+      # Override error pages (500) with our own versions
+      app.middleware.insert_after(
+          ::ActionDispatch::ShowExceptions,
+          ::ActionDispatch::ShowExceptions,
+          ::ActionDispatch::PublicExceptions.new("#{root}/public")
+      )
     end
   end
 

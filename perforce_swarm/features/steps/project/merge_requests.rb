@@ -80,7 +80,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   step 'I visit merge request page "Dependency Fix"' do
     mr = MergeRequest.find_by(title: 'Dependency Fix')
     visit project_merge_request_path(mr.target_project, mr)
-    page.find('h3.issue-title').should have_content 'Dependency Fix'
+    page.find('h2.issue-title').should have_content 'Dependency Fix'
   end
 
   step 'I should see project branch "Fix"' do

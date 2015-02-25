@@ -45,7 +45,7 @@ gem "browser"
 gem "gitlab_git", '7.0.0.rc14'
 
 # Ruby/Rack Git Smart-HTTP Server Handler
-gem 'gitlab-grack', '~> 2.0.0.pre', require: 'grack'
+gem 'gitlab-grack', '~> 2.0.0.rc2', require: 'grack'
 
 # LDAP Auth
 gem 'gitlab_omniauth-ldap', '1.2.0', require: "omniauth-ldap"
@@ -54,7 +54,7 @@ gem 'gitlab_omniauth-ldap', '1.2.0', require: "omniauth-ldap"
 gem 'gollum-lib', '~> 4.0.0'
 
 # Language detection
-gem "gitlab-linguist", "~> 3.0.0", require: "linguist"
+gem "gitlab-linguist", "~> 3.0.1", require: "linguist"
 
 # API
 gem "grape", "~> 0.6.1"
@@ -180,9 +180,6 @@ gem 'ace-rails-ap'
 # Keyboard shortcuts
 gem 'mousetrap-rails'
 
-# Semantic UI Sass for Sidebar
-gem 'semantic-ui-sass', '~> 1.8.0'
-
 gem "sass-rails", '~> 4.0.2'
 gem "coffee-rails"
 gem "uglifier"
@@ -254,8 +251,8 @@ group :development, :test do
 
   gem 'jasmine', '2.0.2'
 
-  gem "spring", '1.1.3'
-  gem "spring-commands-rspec", '1.0.1'
+  gem "spring", '1.3.1'
+  gem "spring-commands-rspec", '1.0.4'
   gem "spring-commands-spinach", '1.0.0'
 end
 

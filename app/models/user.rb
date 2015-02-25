@@ -45,6 +45,7 @@
 #  last_credential_check_at :datetime
 #  github_access_token      :string(255)
 #  notification_email       :string(255)
+#  password_automatically_set :boolean        default(FALSE)
 #
 
 require 'carrierwave/orm/activerecord'
@@ -350,6 +351,10 @@ class User < ActiveRecord::Base
     keys.count == 0
   end
 
+  def require_password?
+    password_automatically_set? && !ldap_user?
+  end
+
   def can_change_username?
     gitlab_config.username_changing_enabled
   end
@@ -618,9 +623,10 @@ class User < ActiveRecord::Base
   def contributed_projects_ids
     Event.where(author_id: self).
       where("created_at > ?", Time.now - 1.year).
-      code_push.
+      where("action = :pushed OR (target_type = 'MergeRequest' AND action = :created)", 
+        pushed: Event::PUSHED, created: Event::CREATED).
       reorder(project_id: :desc).
-      select('DISTINCT(project_id)').
-      map(&:project_id)
+      select(:project_id).
+      uniq
   end
 end

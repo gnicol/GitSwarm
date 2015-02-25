@@ -3,7 +3,7 @@
     .container
       %div.app_logo
         = link_to root_path, class: 'home has_bottom_tooltip', title: 'Dashboard' do
-          %h1 SWARM
+          %div
       - if !@recent_projects.nil?
         %div.dropdown.dashboard-menu
           %h1.dropdown-toggle.title{'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', 'tabIndex' => '0' }

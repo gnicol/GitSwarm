@@ -5,7 +5,7 @@ if ENV['RAILS_ENV'] == 'test'
 
   PerforceSwarm::Engine.initializer 'request_blocker' do |app|
     # Make sure the middleware is inserted first in middleware chain
-    app.middleware.insert_before('ActionDispatch::Static', 'RackRequestBlocker')
+    app.middleware.insert_before('Gitlab::Middleware::Static', 'RackRequestBlocker')
   end
 
   Spinach.hooks.before_run do

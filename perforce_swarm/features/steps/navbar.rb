@@ -20,17 +20,17 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I visit empty project page' do
     project = Project.find_by(name: 'Empty Project')
-    visit project_path(project)
+    visit namespace_project_path(project.namespace, project)
   end
 
   step 'I visit project "Forum" page' do
     project = Project.find_by(name: 'Forum')
-    visit project_path(project)
+    visit namespace_project_path(project.namespace, project)
   end
 
   step 'I visit project "Shop" page' do
     project = Project.find_by(name: 'Shop')
-    visit project_path(project)
+    visit namespace_project_path(project.namespace, project)
   end
 
   #########################

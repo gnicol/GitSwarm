@@ -1,19 +1,28 @@
 /* Custom navbar for our NavBar */
 header.navbar-gitlab .navbar-inner {
+  .container {
+    padding-right: 15px;
+  }
+
   /* Swarm Logo */
   .app_logo {
     margin-right: 0;
 
     a {
-      h1 {
-        background-image: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAbCAYAAACTHcTmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABLpJREFUeNqUVl1oHUUUPjM7u/fe/BGFJE0ebBsRTEOhjYpIaNUQrIYGWxTa+PemQbHW4oMIgogoKlVRUHzIgw9qGpuXFmyraBNbrVqlMcafShsMeTFGktw0yb13d2dn/Gb27r1Jmzxkw96ZnZ9vznznfOeE0VVPR/9ILRfOC47n7GcOv4FzRowx0rq4gK1cbz5lIMnPBcQ4Ozi0b9t7YgXgZ6PPeWn3NZFxPbM4wTEdVkQojRcnIxnR4vQi+Ys+1Wyo5mbMgt7VP8IcwfvTNZl9xrISVqTySulZABSWH84dvpk7jEdSUX4uR/8NXabKrY3GUiqBcs4PG0AzaAyIguiSktGjX9zf+iOt8nQMjI7j8OZIKZodnyGezcdWK52zoLByS6oqdchYaHiTvhw41d2y//b3zz11yztnjqhIN2hMGF6TO89MzGXiMaLajbX0z+RcmScDKjzxhuM61u4ojP6ygB+cOx7kw27LJWNl5+i4z0VMsPnLZX3a0L6JglxY8iJAnc5kE67cc0ff+V4JQBxmLXFctHyZx8xibU8r0QEWKHN9RdlSxnmaWUC1BA5H2vt+OgrL7WSqUpxlwtk73LN9htbxCFbkEhzNW6cJqmeOQzY+hfP8egEthlYx4eAuYwZg5aLwOMCtY56AGPh6Qdmu438EbsZ1DXiYD+pCP3oRBxyMKdSGpYBpnTc+4uBTGUtIz6OdxJ6PceLA6Z7t2RWgnYNjX6dr0h0Uy+2kLIS7OWOXyGHN1sNFv5Q2LPOTaaNQ+UpFr2ulXhnuaYvs9WUoXzZSM4vg8fscTzyjGbsJG/qgmitQmkKEaNCiTYu8QMgLxOFMfMOZbipdlXrJEeL7uz+9UFFKD52Dvw5CUQ/YaFFGUfJzFanHvtzTOrsaZ7uO/d4IBx/AAU87Lq8mHVtdWCicVYG8k8Xav+B5nvudV52+tXxFrRFmU9D+dDHsk0gN8fM3Dn0V637jgp8RKdEe5wpNS9lcbymCIVfPEU6fV+k9gpYlgjAdnaSkYuwnn9IPPzzVveXJrhMXL4OOG40xwVIww66+GsBbwO274HAn3hTjrCQench2WTKFPB9nTP/gZrwxM6VCRWytWAMlLppW7GxAa2PYBKwy+vBEb7o6dY85APli6kTXzY1dJy9Ow4g6cwuxFijCw2SIX1ZNff0jx2TBySOZu6gO9XHeUJO4VV0pn677YWwPPO9avuHOImgmiWeTTzVKSAgvqoS3FaWIrRwztOKaHtZbByL7j8ZlRW0mqWLQ4IpPKojcqvpqQqCXS0mimmUHJLUp8RWACig5e2HYs1pGmRhSSx4uBTQ1PE6FbA55UccZy4JC2UpL8yL725fQx4QEWA4V4jTejfmFQpMKo8OhLynyoVKljwoDwf9doKmxKWra1kQi4xVjUD781YNbj6xF646PfjbXehNcHoIh3OBAXQuoigfYbW9/o+e/naD63S0mPEgW4wwLJhjj2avLvY0Yra+DohotWJFwJy2CdIW7Y+ihtvMm81PtzmaTbchfkiWvyCDadM1/D8vKSFL4jDi8Km8SieXeoZ62P62jKhqqwIWkPBwG66hcOa8FSvpWZZyUcMWYm3HeQpn4BBVCJVv+F2AAUCdArzTXYv0AAAAASUVORK5CYII=");
+      padding: 0px;
+      margin: 0 6px;
+      width: auto;
+      div {
+        background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAbCAYAAACTHcTmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABLpJREFUeNqUVl1oHUUUPjM7u/fe/BGFJE0ebBsRTEOhjYpIaNUQrIYGWxTa+PemQbHW4oMIgogoKlVRUHzIgw9qGpuXFmyraBNbrVqlMcafShsMeTFGktw0yb13d2dn/Gb27r1Jmzxkw96ZnZ9vznznfOeE0VVPR/9ILRfOC47n7GcOv4FzRowx0rq4gK1cbz5lIMnPBcQ4Ozi0b9t7YgXgZ6PPeWn3NZFxPbM4wTEdVkQojRcnIxnR4vQi+Ys+1Wyo5mbMgt7VP8IcwfvTNZl9xrISVqTySulZABSWH84dvpk7jEdSUX4uR/8NXabKrY3GUiqBcs4PG0AzaAyIguiSktGjX9zf+iOt8nQMjI7j8OZIKZodnyGezcdWK52zoLByS6oqdchYaHiTvhw41d2y//b3zz11yztnjqhIN2hMGF6TO89MzGXiMaLajbX0z+RcmScDKjzxhuM61u4ojP6ygB+cOx7kw27LJWNl5+i4z0VMsPnLZX3a0L6JglxY8iJAnc5kE67cc0ff+V4JQBxmLXFctHyZx8xibU8r0QEWKHN9RdlSxnmaWUC1BA5H2vt+OgrL7WSqUpxlwtk73LN9htbxCFbkEhzNW6cJqmeOQzY+hfP8egEthlYx4eAuYwZg5aLwOMCtY56AGPh6Qdmu438EbsZ1DXiYD+pCP3oRBxyMKdSGpYBpnTc+4uBTGUtIz6OdxJ6PceLA6Z7t2RWgnYNjX6dr0h0Uy+2kLIS7OWOXyGHN1sNFv5Q2LPOTaaNQ+UpFr2ulXhnuaYvs9WUoXzZSM4vg8fscTzyjGbsJG/qgmitQmkKEaNCiTYu8QMgLxOFMfMOZbipdlXrJEeL7uz+9UFFKD52Dvw5CUQ/YaFFGUfJzFanHvtzTOrsaZ7uO/d4IBx/AAU87Lq8mHVtdWCicVYG8k8Xav+B5nvudV52+tXxFrRFmU9D+dDHsk0gN8fM3Dn0V637jgp8RKdEe5wpNS9lcbymCIVfPEU6fV+k9gpYlgjAdnaSkYuwnn9IPPzzVveXJrhMXL4OOG40xwVIww66+GsBbwO274HAn3hTjrCQench2WTKFPB9nTP/gZrwxM6VCRWytWAMlLppW7GxAa2PYBKwy+vBEb7o6dY85APli6kTXzY1dJy9Ow4g6cwuxFijCw2SIX1ZNff0jx2TBySOZu6gO9XHeUJO4VV0pn677YWwPPO9avuHOImgmiWeTTzVKSAgvqoS3FaWIrRwztOKaHtZbByL7j8ZlRW0mqWLQ4IpPKojcqvpqQqCXS0mimmUHJLUp8RWACig5e2HYs1pGmRhSSx4uBTQ1PE6FbA55UccZy4JC2UpL8yL725fQx4QEWA4V4jTejfmFQpMKo8OhLynyoVKljwoDwf9doKmxKWra1kQi4xVjUD781YNbj6xF646PfjbXehNcHoIh3OBAXQuoigfYbW9/o+e/naD63S0mPEgW4wwLJhjj2avLvY0Yra+DohotWJFwJy2CdIW7Y+ihtvMm81PtzmaTbchfkiWvyCDadM1/D8vKSFL4jDi8Km8SieXeoZ62P62jKhqqwIWkPBwG66hcOa8FSvpWZZyUcMWYm3HeQpn4BBVCJVv+F2AAUCdArzTXYv0AAAAASUVORK5CYII=") no-repeat center center;
         background-size: 21px;
+        height: 44px;
+        width: 44px;
       }
     }
   }
 
   /* Fix Navbar height */
-  .app_logo a h1 {
+  .app_logo a {
     height: 44px;
   }
 
@@ -84,9 +93,11 @@ header.navbar-gitlab .navbar-inner {
       }
 
       .profile-pic {
-        padding: 9px;
+        padding: 9px 5px 9px 9px !important;
         line-height: 24px;
-        padding-right: 5px !important;
+        margin-left: 0;
+        width: auto;
+        height: auto;
         top: 0;
         img {
           width: 26px;
@@ -108,7 +119,7 @@ header.navbar-gitlab .navbar-inner {
   }
 
   @media (max-width: $screen-xs-max) {
-    /* Restore bootstrap defaults, as Gitlab's styles do some weird sizing here */
+    /* Restore bootstrap defaults, as GitLab's styles do some weird sizing here */
     .navbar-nav {
       margin: 0px;
 

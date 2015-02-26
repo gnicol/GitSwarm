@@ -78,7 +78,7 @@ Feature: NavBar
   Scenario: Click on "View All Projects" on Dashboard dropdown and verify that user is taken to "Public Projects" page
     Given I click on the Recent Projects dropdown
     And I click on "View All Projects" link
-    Then I should see the "Explore GitLab" page
+    Then I should see the "Explore" page
     And the title of the dropdown should be "Explore"
 
   #########################
@@ -107,7 +107,7 @@ Feature: NavBar
     When I visit project "PerforceProject" page
     And I click on the Recent Projects dropdown
     And I click on "View All Projects" link
-    Then I should see the "Explore GitLab" page
+    Then I should see the "Explore" page
     And the title of the dropdown should be "Explore"
 
   @javascript @automated @PGL-123
@@ -204,7 +204,7 @@ Feature: NavBar
     Given I visit dashboard search page
     And I click on the Recent Projects dropdown
     When I click on "View All Projects" link
-    Then I should see the "Explore GitLab" page
+    Then I should see the "Explore" page
     And the title of the dropdown should be "Explore"
 
   #########################
@@ -241,7 +241,7 @@ Feature: NavBar
     And I visit admin page
     When I click on the Recent Projects dropdown
     And I click on "View All Projects" link
-    Then I should see the "Explore GitLab" page
+    Then I should see the "Explore" page
     And the title of the dropdown should be "Explore"
 
   @javascript @automated @PGL-123

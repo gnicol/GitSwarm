@@ -258,7 +258,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'I should see the login page' do
-    find(:css, '.login-page').should have_content('Sign in')
+    find(:css, '.login-page').should have_button('Sign in')
   end
 
   step 'I should see the Dashboard page' do
@@ -269,8 +269,9 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     find('a[href="/projects/new"]').should have_content('New Project')
   end
 
-  step 'I should see the "Explore GitLab" page' do
-    find('title').should have_content('Explore | GitLab')
+  step 'I should see the "Explore" page' do
+    expect(find('title')).to have_content('Explore')
+    page.assert_selector('.explore-title')
   end
 
   step 'I should see the "Forum" page' do

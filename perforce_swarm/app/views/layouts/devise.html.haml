@@ -1,0 +1,25 @@
+!!! 5
+%html{ lang: 'en'}
+  = render 'layouts/head'
+  %body.ui_mars.login-page.application
+    = render "layouts/broadcast"
+    = render "layouts/public_head_panel", title: ''
+    .container.navless-container
+      .content
+        = render 'layouts/flash'
+        .row.prepend-top-20
+          .col-sm-5.col-sm-offset-1.brand-holder
+            - if brand_item
+              = brand_image
+              = brand_text
+            - else
+              .brand-image.default-brand-image.hidden-sm.hidden-xs
+                = image_tag 'brand_logo.png'
+
+            - if extra_sign_in_text.present?
+              = markdown(extra_sign_in_text)
+          .col-sm-5.login-holder
+            = yield
+            .footer-links
+              = link_to 'Explore projects', explore_root_path
+              = link_to 'Help', help_path

@@ -16,6 +16,11 @@ module ApplicationHelper
     'perforce.com'
   end
 
+  # Override the protocol to HTTP
+  def promo_url
+    'http://' + promo_host
+  end
+
   def help_preprocess(category, file)
     # use our over-ride markdown if present, otherwise use their copy
     if File.exist?(Rails.root.join('perforce_swarm', 'doc', category, file))

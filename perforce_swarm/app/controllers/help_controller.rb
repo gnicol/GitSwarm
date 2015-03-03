@@ -9,9 +9,21 @@ module PerforceSwarm
       @file     = params[:file]
       extension = request.path_parameters[:format]
 
+      return if try_path("perforce_swarm/doc", @category, @file, extension)
+      return if try_path("doc", @category, @file, extension)
+
+      # otherwise, show the appropriate error
+      if !extension.blank? && extension != 'md'
+        render nothing: true, status: 404
+      else
+        not_found!
+      end
+    end
+
+    def try_path(prefix, category, file, extension)
       # calculate the intended root and the requested path
-      doc_path  = File.realpath(Rails.root.join('doc'))
-      file_path = Rails.root.join('doc', @category, @file)
+      doc_path  = File.realpath(Rails.root.join(prefix))
+      file_path = Rails.root.join(prefix, category, file)
 
       # if we have a non-md extension try to render it as an image
       if !extension.blank? && extension != 'md'
@@ -28,10 +40,10 @@ module PerforceSwarm
             type:         request.format.symbol ? request.format : 'application/octet-stream',
             disposition:  'inline'
           )
-          return
+          return true
         end
 
-        render nothing: true, status: 404
+        return false
       end
 
       # looks like we have a markdown file; ensure its under the right path and render
@@ -43,11 +55,10 @@ module PerforceSwarm
 
       if md_path && md_path.start_with?(doc_path)
         render 'show'
-        return
+        return true
       end
 
-      # otherwise, show the appropriate error
-      not_found!
+      return false
     end
   end
 end

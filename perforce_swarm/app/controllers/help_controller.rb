@@ -9,8 +9,9 @@ module PerforceSwarm
       @file     = params[:file]
       extension = request.path_parameters[:format]
 
-      return if try_path("perforce_swarm/doc", @category, @file, extension)
-      return if try_path("doc", @category, @file, extension)
+      # try serving the file from our docs and the apps docs
+      return if attempt_show('perforce_swarm/doc', @category, @file, extension)
+      return if attempt_show('doc', @category, @file, extension)
 
       # otherwise, show the appropriate error
       if !extension.blank? && extension != 'md'
@@ -20,7 +21,7 @@ module PerforceSwarm
       end
     end
 
-    def try_path(prefix, category, file, extension)
+    def attempt_show(prefix, category, file, extension)
       # calculate the intended root and the requested path
       doc_path  = File.realpath(Rails.root.join(prefix))
       file_path = Rails.root.join(prefix, category, file)
@@ -58,7 +59,7 @@ module PerforceSwarm
         return true
       end
 
-      return false
+      false
     end
   end
 end

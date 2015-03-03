@@ -82,6 +82,8 @@ module ApplicationHelper
     # the cleanup page only applies to old versions; nuke the link from the index page
     content.gsub!(/^.*Cleaning up Redis sessions.*$/, '') if file == 'README.md' && category == 'operations'
 
+    content.gsub!('![backup banner](backup_hrz.png)', '')
+
     # return the munged string
     content
   end

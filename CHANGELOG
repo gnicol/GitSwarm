@@ -14,6 +14,7 @@ v 7.9.0 (unreleased)
   - Generalize image upload in drag and drop in markdown to all files (Hannes Rosenögger)
   - Fix mass-unassignment of issues (Robert Speicher)
   - Allow user confirmation to be skipped for new users via API
+  - Add a service to send updates to an Irker gateway (Romain Coltel)
 
 v 7.8.1
   - Fix run of custom post receive hooks
@@ -23,6 +24,7 @@ v 7.8.1
   - Fix urls for the issues when relative url was enabled
   - Add Bitbucket omniauth provider.
   - Add Bitbucket importer.
+  - Support referencing issues to a project whose name starts with a digit
 
 v 7.8.0
   - Fix access control and protection against XSS for note attachments and other uploads.
@@ -89,6 +91,7 @@ v 7.8.0
   - Improve database performance for GitLab
   - Add Asana service (Jeremy Benoist)
   - Improve project web hooks with extra data
+  - Slack username and channel options
 
 v 7.7.2
   - Update GitLab Shell to version 2.4.2 that fixes a bug when developers can push to protected branch

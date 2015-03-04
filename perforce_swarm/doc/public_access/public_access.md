@@ -53,7 +53,7 @@ entire GitSwarm installation to prevent people from making code public by
 accident.
 
 To do so, add (or modify) the following lines in the configuration file
-`/etc/gitlab/gitlab.rb`:
+`/etc/gitswarm/gitlab.rb`:
 
 ```
 # Control visibility of projects; default value is nil

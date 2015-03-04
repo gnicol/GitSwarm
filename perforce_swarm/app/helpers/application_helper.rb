@@ -48,6 +48,9 @@ module ApplicationHelper
     # try to clarify its not our website
     content.gsub!(/our website/i, "GitLab's website")
 
+    # point to our configuration file
+    content.gsub!(/\/etc\/gitlab/, "/etc/gitswarm")
+
     # do a variety of page specific touch-ups
 
     content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure.md'

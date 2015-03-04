@@ -41,7 +41,7 @@ module PerforceSwarm
 
       # Add our own directories as an rails autoload path. Gitlab adds theirs,
       # so doing ours first here allows our files to take precedence.
-      # The GitLab paths that wer are matching here can be found in their config/application.rb
+      # The GitLab paths that we are matching here can be found in their config/application.rb
       paths.add 'perforce_swarm/lib', autoload: true
       paths.add 'perforce_swarm/app/models/hooks', autoload: true
       paths.add 'perforce_swarm/app/models/concerns', autoload: true

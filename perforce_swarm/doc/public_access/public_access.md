@@ -4,7 +4,7 @@ GitSwarm allows you to open selected projects to be accessed **publicly**
 or **internally**.
 
 Projects with either of these visibility levels will be listed in the
-public access directory (`<gitswarm root>/public`).
+[public access directory](/public).
 
 Internal projects will only be available to authenticated users.
 
@@ -12,8 +12,7 @@ Internal projects will only be available to authenticated users.
 
 Public projects can be cloned **without any** authentication.
 
-It will also be listed on the public access directory
-(`<gitswarm root>/public`).
+It will also be listed on the [public access directory](/public).
 
 **Any logged in user** will have [Guest](../permissions/permissions.md)
 permissions on the repository.
@@ -22,8 +21,8 @@ permissions on the repository.
 
 Internal projects can be cloned by any logged in user.
 
-It will also be listed on the public access directory
-(`<gitswarm root>/public`) for logged in users.
+It will also be listed on the [public access directory](/public) for logged
+in users.
 
 Any logged in user will have [Guest](../permissions/permissions.md)
 permissions on the repository.

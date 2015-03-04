@@ -4,8 +4,8 @@
 
 ### Supported Unix distributions
 
-- Ubuntu
-- CentOS
+- Ubuntu 12.04 or 14.04
+- CentOS 6.6 or 7
 
 See the [installation instructions](README.md).
 

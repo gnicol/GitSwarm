@@ -84,6 +84,8 @@ module ApplicationHelper
 
     content.gsub!('![backup banner](backup_hrz.png)', '')
 
+    content.gsub!('GitSwarm support', 'GitLab support') if file == 'import_projects_from_gitlab_com.md'
+
     # return the munged string
     content
   end

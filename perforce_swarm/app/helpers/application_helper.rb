@@ -49,7 +49,7 @@ module ApplicationHelper
     content.gsub!(/our website/i, "GitLab's website")
 
     # point to our configuration file
-    content.gsub!(/\/etc\/gitlab/, "/etc/gitswarm")
+    content.gsub!('/etc/gitlab', '/etc/gitswarm')
 
     # do a variety of page specific touch-ups
 

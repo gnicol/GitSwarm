@@ -90,7 +90,9 @@ module ApplicationHelper
     content.gsub!('GitSwarm support', 'GitLab support') if file == 'import_projects_from_gitlab_com.md'
 
     # remove a link to GitLab on the web_hooks page
-    content.gsub!(/\[the certificate will not be verified\]\([^)]+\)/, "the certificate will not be verified") if file == 'web_hooks.md'
+    if file == 'web_hooks.md'
+      content.gsub!(/\[the certificate will not be verified\]\([^)]+\)/, 'the certificate will not be verified')
+    end
 
     # return the munged string
     content

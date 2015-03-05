@@ -5,7 +5,6 @@ module PerforceSwarm
     def help
       # remove the last line; it talks about gitlab-ee which doesn't apply
       super.sub(/\n[^\n]+$/, '')
-      'test!'
     end
   end
 end

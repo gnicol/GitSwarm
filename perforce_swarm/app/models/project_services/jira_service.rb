@@ -10,6 +10,6 @@ module PerforceSwarm
   end
 end
 
-class JiraService
+class JiraService < IssueTrackerService
   prepend PerforceSwarm::JiraServiceExtension
 end

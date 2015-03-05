@@ -16,7 +16,7 @@ module SharedAdmin
   end
 
   step 'I should see the admin user settings page' do
-    find(:css, '.page-title').should have_content('Profile settings')
+    find(:css, '.page-title').should have_content('Profile Settings')
     find(:css, 'ul.nav.navbar-nav').should have_content('Admin Area')
   end
 

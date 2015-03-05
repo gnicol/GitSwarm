@@ -9,6 +9,7 @@ module Gitlab
       #   ref: String,
       #   user_id: String,
       #   user_name: String,
+      #   user_email: String
       #   project_id: String,
       #   repository: {
       #     name: String,
@@ -29,12 +30,14 @@ module Gitlab
 
         # Hash to be passed as post_receive_data
         data = {
+          object_kind: "push",
           before: oldrev,
           after: newrev,
           ref: ref,
           checkout_sha: checkout_sha(project.repository, newrev, ref),
           user_id: user.id,
           user_name: user.name,
+          user_email: user.email,
           project_id: project.id,
           repository: {
             name: project.name,

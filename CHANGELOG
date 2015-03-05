@@ -19,6 +19,21 @@ v 7.9.0 (unreleased)
   - Add a service to send updates to an Irker gateway (Romain Coltel)
   - Add brakeman (security scanner for Ruby on Rails)
   - Slack username and channel options
+  - Add grouped milestones from all projects to dashboard.
+  - Web hook sends pusher email as well as commiter
+  - Add Bitbucket omniauth provider.
+  - Add Bitbucket importer.
+  - Support referencing issues to a project whose name starts with a digit
+
+v 7.8.2
+  - Fix service migration issue when upgrading from versions prior to 7.3
+  - Fix setting of the default use project limit via admin UI
+  - Fix showing of already imported projects for GitLab and Gitorious importers
+  - Fix response of push to repository to return "Not found" if user doesn't have access
+  - Fix check if user is allowed to view the file attachment
+  - Fix import check for case sensetive namespaces
+  - Added issue and merge request events to Slack service (Stan Hu)
+  - Increase timeout for Git-over-HTTP requests to 1 hour since large pulls/pushes can take a long time.
 
 v 7.8.1
   - Fix run of custom post receive hooks
@@ -26,9 +41,6 @@ v 7.8.1
   - Fix the warning for LDAP users about need to set password
   - Fix avatars which were not shown for non logged in users
   - Fix urls for the issues when relative url was enabled
-  - Add Bitbucket omniauth provider.
-  - Add Bitbucket importer.
-  - Support referencing issues to a project whose name starts with a digit
 
 v 7.8.0
   - Fix access control and protection against XSS for note attachments and other uploads.
@@ -47,7 +59,8 @@ v 7.8.0
   - Add notes for label changes in issue and merge requests
   - Show tags in commit view (Hannes Rosenögger)
   - Only count a user's vote once on a merge request or issue (Michael Clarke)
-  - Increate font size when browse source files and diffs
+  - Increase font size when browse source files and diffs
+  - Service Templates now let you set default values for all services
   - Create new file in empty repository using GitLab UI
   - Ability to clone project using oauth2 token
   - Upgrade Sidekiq gem to version 3.3.0

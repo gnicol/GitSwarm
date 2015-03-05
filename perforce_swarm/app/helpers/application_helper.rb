@@ -48,6 +48,9 @@ module ApplicationHelper
     # try to clarify its not our website
     content.gsub!(/our website/i, "GitLab's website")
 
+    # point to our configuration file
+    content.gsub!('/etc/gitlab', '/etc/gitswarm')
+
     # do a variety of page specific touch-ups
 
     content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure.md'
@@ -85,6 +88,9 @@ module ApplicationHelper
     content.gsub!('![backup banner](backup_hrz.png)', '')
 
     content.gsub!('GitSwarm support', 'GitLab support') if file == 'import_projects_from_gitlab_com.md'
+
+    # remove a link to GitLab on the web_hooks page
+    content.gsub!(/\[the certificate will not be verified\]\([^)]+\)/, "the certificate will not be verified") if file == 'web_hooks.md'
 
     # return the munged string
     content

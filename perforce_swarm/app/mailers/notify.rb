@@ -1,7 +1,7 @@
 require Rails.root.join('app', 'mailers', 'notify')
 
 module PerforceSwarm
-  class NotifyMailerExtension
+  module NotifyMailerExtension
     # The default email address to send emails from
     def default_sender_address
       address = Mail::Address.new(Gitlab.config.gitlab.email_from)

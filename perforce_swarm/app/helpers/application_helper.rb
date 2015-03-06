@@ -16,14 +16,19 @@ module ApplicationHelper
     'perforce.com'
   end
 
+  # Override the protocol to HTTP
+  def promo_url
+    'http://' + promo_host
+  end
+
   def help_preprocess(category, file)
     # use our over-ride markdown if present, otherwise use their copy
     if File.exist?(Rails.root.join('perforce_swarm', 'doc', category, file))
       content = File.read(Rails.root.join('perforce_swarm', 'doc', category, file))
-      return content.gsub('$your_email', current_user.email)
+      return content.gsub('$your_email', current_user ? current_user.email : 'user@example.com')
     else
       content = File.read(Rails.root.join('doc', category, file))
-      content.gsub!('$your_email', current_user.email)
+      content.gsub!('$your_email', current_user ? current_user.email : 'user@example.com')
     end
 
     # they talk about GitLab EE only features, nuke those lines
@@ -42,6 +47,9 @@ module ApplicationHelper
 
     # try to clarify its not our website
     content.gsub!(/our website/i, "GitLab's website")
+
+    # point to our configuration file
+    content.gsub!('/etc/gitlab', '/etc/gitswarm')
 
     # do a variety of page specific touch-ups
 
@@ -76,6 +84,15 @@ module ApplicationHelper
 
     # the cleanup page only applies to old versions; nuke the link from the index page
     content.gsub!(/^.*Cleaning up Redis sessions.*$/, '') if file == 'README.md' && category == 'operations'
+
+    content.gsub!('![backup banner](backup_hrz.png)', '')
+
+    content.gsub!('GitSwarm support', 'GitLab support') if file == 'import_projects_from_gitlab_com.md'
+
+    # remove a link to GitLab on the web_hooks page
+    if file == 'web_hooks.md'
+      content.gsub!(/\[the certificate will not be verified\]\([^)]+\)/, 'the certificate will not be verified')
+    end
 
     # return the munged string
     content

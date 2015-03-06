@@ -39,9 +39,14 @@ module PerforceSwarm
       # This allows our routes and asset_paths to take precedence
       @railties_order = [PerforceSwarm::Engine, :main_app, :all]
 
-      # Add our own lib directory as an rails autoload path. Gitlab adds theirs,
+      # Add our own directories as an rails autoload path. Gitlab adds theirs,
       # so doing ours first here allows our files to take precedence.
+      # The GitLab paths that we are matching here can be found in their config/application.rb
       paths.add 'perforce_swarm/lib', autoload: true
+      paths.add 'perforce_swarm/app/models/hooks', autoload: true
+      paths.add 'perforce_swarm/app/models/concerns', autoload: true
+      paths.add 'perforce_swarm/app/models/project_services', autoload: true
+      paths.add 'perforce_swarm/app/models/members', autoload: true
     end
   end
 end

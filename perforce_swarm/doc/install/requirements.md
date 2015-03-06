@@ -4,12 +4,8 @@
 
 ### Supported Unix distributions
 
-- Ubuntu
-- Debian
-- CentOS
-- Red Hat Enterprise Linux (please use the CentOS packages and instructions)
-- Scientific Linux (please use the CentOS packages and instructions)
-- Oracle Linux (please use the CentOS packages and instructions)
+- Ubuntu 12.04 or 14.04
+- CentOS 6.6 or 7
 
 See the [installation instructions](README.md).
 
@@ -23,27 +19,27 @@ See the [installation instructions](README.md).
 
 ### Non-Unix operating systems such as Windows
 
-GitLab is developed for Unix operating systems.
-GitLab does **not** run on Windows and we have no plans of supporting it in the near future.
-Please consider using a virtual machine to run GitLab.
+GitSwarm is developed for Unix operating systems.
+GitSwarm does **not** run on Windows and we have no plans of supporting it in the near future.
+Please consider using a virtual machine to run GitSwarm.
 
 ## Ruby versions
 
-GitLab requires Ruby (MRI) 2.0 or 2.1
+GitSwarm requires Ruby (MRI) 2.0 or 2.1
 You will have to use the standard MRI implementation of Ruby.
-We love [JRuby](http://jruby.org/) and [Rubinius](http://rubini.us/) but GitLab needs several Gems that have native extensions.
+We love [JRuby](http://jruby.org/) and [Rubinius](http://rubini.us/) but GitSwarm needs several Gems that have native extensions.
 
 ## Hardware requirements
 
 ### Storage
 
-The necessary hard drive space largely depends on the size of the repos you want to store in GitLab but as a *rule of thumb* you should have at least twice as much free space as all your repos combined take up. You need twice the storage because [GitLab satellites](structure.md) contain an extra copy of each repo.
+The necessary hard drive space largely depends on the size of the repos you want to store in GitSwarm but as a *rule of thumb* you should have at least twice as much free space as all your repos combined take up. You need twice the storage because [GitSwarm satellites](structure.md) contain an extra copy of each repo.
 
 If you want to be flexible about growing your hard drive space in the future consider mounting it using LVM so you can add more hard drives when you need them.
 
 Apart from a local hard drive you can also mount a volume that supports the network file system (NFS) protocol. This volume might be located on a file server, a network attached storage (NAS) device, a storage area network (SAN) or on an Amazon Web Services (AWS) Elastic Block Store (EBS) volume.
 
-If you have enough RAM memory and a recent CPU the speed of GitLab is mainly limited by hard drive seek times. Having a fast drive (7200 RPM and up) or a solid state drive (SSD) will improve the responsiveness of GitLab.
+If you have enough RAM memory and a recent CPU the speed of GitSwarm is mainly limited by hard drive seek times. Having a fast drive (7200 RPM and up) or a solid state drive (SSD) will improve the responsiveness of GitSwarm.
 
 ### CPU
 
@@ -57,8 +53,8 @@ If you have enough RAM memory and a recent CPU the speed of GitLab is mainly lim
 
 ### Memory
 
-You need at least 2GB of addressable memory (RAM + swap) to install and use GitLab!
-With less memory GitLab will give strange errors during the reconfigure run and 500 errors during usage.
+You need at least 2GB of addressable memory (RAM + swap) to install and use GitSwarm!
+With less memory GitSwarm will give strange errors during the reconfigure run and 500 errors during usage.
 
 - 512MB RAM + 1.5GB of swap is the absolute minimum but we strongly **advise against** this amount of memory. See the unicorn worker section below for more advise.
 - 1GB RAM + 1GB swap supports up to 100 users

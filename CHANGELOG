@@ -1,6 +1,9 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 7.9.0 (unreleased)
+  - Add tag push notifications and normalize HipChat and Slack messages to be consistent (Stan Hu)
+  - Add comment notification events to HipChat and Slack services (Stan Hu)
+  - Add issue and merge request events to HipChat and Slack services (Stan Hu)
   - Fix merge request URL passed to Webhooks. (Stan Hu)
   - Fix bug that caused a server error when editing a comment to "+1" or "-1" (Stan Hu)
   - Move labels/milestones tabs to sidebar
@@ -13,6 +16,7 @@ v 7.9.0 (unreleased)
   - Fix ordering of imported but unchanged projects (Marco Wessel)
   - Mobile UI improvements: make aside content expandable
   - Expose avatar_url in projects API
+  - Fix checkbox alignment on the application settings page.
   - Generalize image upload in drag and drop in markdown to all files (Hannes Rosenögger)
   - Fix mass-unassignment of issues (Robert Speicher)
   - Allow user confirmation to be skipped for new users via API
@@ -24,6 +28,9 @@ v 7.9.0 (unreleased)
   - Add Bitbucket omniauth provider.
   - Add Bitbucket importer.
   - Support referencing issues to a project whose name starts with a digit
+  - Condense commits already in target branch when updating merge request source branch.
+  - Send notifications and leave system comments when bulk updating issues.
+  - Automatically link commit ranges to compare page: sha1...sha4 or sha1..sha4 (includes sha1 in comparison)
 
 v 7.8.2
   - Fix service migration issue when upgrading from versions prior to 7.3
@@ -32,8 +39,8 @@ v 7.8.2
   - Fix response of push to repository to return "Not found" if user doesn't have access
   - Fix check if user is allowed to view the file attachment
   - Fix import check for case sensetive namespaces
-  - Added issue and merge request events to Slack service (Stan Hu)
   - Increase timeout for Git-over-HTTP requests to 1 hour since large pulls/pushes can take a long time.
+  - Properly handle autosave local storage exceptions.
 
 v 7.8.1
   - Fix run of custom post receive hooks

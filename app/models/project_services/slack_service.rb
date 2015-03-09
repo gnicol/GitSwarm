@@ -15,6 +15,7 @@
 #  issues_events         :boolean          default(TRUE)
 #  merge_requests_events :boolean          default(TRUE)
 #  tag_push_events       :boolean          default(TRUE)
+#  note_events           :boolean          default(TRUE), not null
 #
 
 class SlackService < Service
@@ -43,7 +44,7 @@ class SlackService < Service
   end
 
   def supported_events
-    %w(push issue merge_request)
+    %w(push issue merge_request note tag_push)
   end
 
   def execute(data)
@@ -63,12 +64,14 @@ class SlackService < Service
 
     message = \
       case object_kind
-      when "push"
+      when "push", "tag_push"
         PushMessage.new(data)
       when "issue"
         IssueMessage.new(data) unless is_update?(data)
       when "merge_request"
         MergeMessage.new(data) unless is_update?(data)
+      when "note"
+        NoteMessage.new(data)
       end
 
     opt = {}
@@ -99,3 +102,4 @@ end
 require "slack_service/issue_message"
 require "slack_service/push_message"
 require "slack_service/merge_message"
+require "slack_service/note_message"

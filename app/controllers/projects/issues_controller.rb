@@ -60,7 +60,7 @@ class Projects::IssuesController < Projects::ApplicationController
     respond_to do |format|
       format.html do
         if @issue.valid?
-          redirect_to project_issue_path(@project, @issue)
+          redirect_to issue_path(@issue)
         else
           render :new
         end
@@ -78,7 +78,7 @@ class Projects::IssuesController < Projects::ApplicationController
       format.js
       format.html do
         if @issue.valid?
-          redirect_to [@project, @issue]
+          redirect_to issue_path(@issue)
         else
           render :edit
         end
@@ -93,7 +93,7 @@ class Projects::IssuesController < Projects::ApplicationController
   end
 
   def bulk_update
-    result = Issues::BulkUpdateService.new(project, current_user, params).execute
+    result = Issues::BulkUpdateService.new(project, current_user, bulk_update_params).execute
     redirect_to :back, notice: "#{result[:count]} issues updated"
   end
 
@@ -128,7 +128,7 @@ class Projects::IssuesController < Projects::ApplicationController
     issue = @project.issues.find_by(id: params[:id])
 
     if issue
-      redirect_to project_issue_path(@project, issue)
+      redirect_to issue_path(issue)
       return
     else
       raise ActiveRecord::RecordNotFound.new
@@ -139,6 +139,15 @@ class Projects::IssuesController < Projects::ApplicationController
     params.require(:issue).permit(
       :title, :assignee_id, :position, :description,
       :milestone_id, :state_event, :task_num, label_ids: []
+    )
+  end
+
+  def bulk_update_params
+    params.require(:update).permit(
+      :issues_ids,
+      :assignee_id,
+      :milestone_id,
+      :state_event
     )
   end
 end

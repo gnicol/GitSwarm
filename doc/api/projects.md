@@ -1,5 +1,23 @@
 # Projects
 
+
+### Project visibility level
+
+Project in GitLab has be either private, internal or public.
+You can determine it by `visibility_level` field in project. 
+
+Constants for project visibility levels are next:
+
+* Private. `visibility_level` is `0`. 
+  Project access must be granted explicitly for each user.
+
+* Internal. `visibility_level` is `10`.
+  The project can be cloned by any logged in user.
+ 
+* Public. `visibility_level` is `20`.
+  The project can be cloned without any authentication.
+
+
 ## List projects
 
 Get a list of projects accessible by the authenticated user.
@@ -50,7 +68,8 @@ Parameters:
       "path": "diaspora",
       "updated_at": "2013-09-30T13: 46: 02Z"
     },
-    "archived": false
+    "archived": false,
+    "avatar_url": "http://example.com/uploads/project/avatar/4/uploads/avatar.png"
   },
   {
     "id": 6,
@@ -85,7 +104,8 @@ Parameters:
       "path": "brightbox",
       "updated_at": "2013-09-30T13:46:02Z"
     },
-    "archived": false
+    "archived": false,
+    "avatar_url": null
   }
 ]
 ```
@@ -177,7 +197,8 @@ Parameters:
       "notification_level": 3
     }
   },
-  "archived": false
+  "archived": false,
+  "avatar_url": "http://example.com/uploads/project/avatar/3/uploads/avatar.png"
 }
 ```
 

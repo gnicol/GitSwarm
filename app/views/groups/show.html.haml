@@ -9,14 +9,13 @@
           = escaped_autolink(@group.description)
   %hr
   .row
-    %section.activities.col-md-8.hidden-sm.hidden-xs
+    %section.activities.col-md-8
       - if current_user
         = render "events/event_last_push", event: @last_push
         = render 'shared/event_filter'
-      - if @events.any?
-        .content_list
-      - else
-        .nothing-here-block Project activity will be displayed here
+      .content_list
       = spinner
     %aside.side.col-md-4
       = render "projects", projects: @projects
+    = link_to '#aside', class: 'show-aside' do
+      %i.fa.fa-angle-left

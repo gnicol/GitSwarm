@@ -101,11 +101,11 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I switch to the diff tab' do
-    visit diffs_project_merge_request_path(project, merge_request)
+    visit diffs_namespace_project_merge_request_path(project.namespace, project, merge_request)
   end
 
   step 'I switch to the merge request\'s comments tab' do
-    visit project_merge_request_path(project, merge_request)
+    visit namespace_project_merge_request_path(project.namespace, project, merge_request)
   end
 
   step 'I click on the commit in the merge request' do
@@ -213,7 +213,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see a comment like "Line is wrong" in the second file' do
-    within '.files [id^=diff]:nth-child(2) .note-text' do
+    within '.files [id^=diff]:nth-child(2) .note-body > .note-text' do
       page.should have_visible_content "Line is wrong"
     end
   end
@@ -225,7 +225,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see a comment like "Line is wrong here" in the second file' do
-    within '.files [id^=diff]:nth-child(2) .note-text' do
+    within '.files [id^=diff]:nth-child(2) .note-body > .note-text' do
       page.should have_visible_content "Line is wrong here"
     end
   end
@@ -238,7 +238,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
       click_button "Add Comment"
     end
 
-    within ".files [id^=diff]:nth-child(1) .note-text" do
+    within ".files [id^=diff]:nth-child(1) .note-body > .note-text" do
       page.should have_content "Line is correct"
     end
   end
@@ -253,7 +253,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should still see a comment like "Line is correct" in the first file' do
-    within '.files [id^=diff]:nth-child(1) .note-text' do
+    within '.files [id^=diff]:nth-child(1) .note-body > .note-text' do
       page.should have_visible_content "Line is correct"
     end
   end
@@ -271,7 +271,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see comments on the side-by-side diff page' do
-    within '.files [id^=diff]:nth-child(1) .parallel .note-text' do
+    within '.files [id^=diff]:nth-child(1) .parallel .note-body > .note-text' do
       page.should have_visible_content "Line is correct"
     end
   end

@@ -20,11 +20,18 @@ module PerforceSwarm
       end
     end
 
-    # Engine's public folder is searched first for assets
-    initializer :static_assets do |app|
+    initializer :engine_middleware do |app|
+      # Engine's public folder is searched first for assets
       if app.config.serve_static_assets
-        app.middleware.insert_before(::ActionDispatch::Static, ::ActionDispatch::Static, "#{root}/public")
+        app.middleware.insert_before(Gitlab::Middleware::Static, ::ActionDispatch::Static, "#{root}/public")
       end
+
+      # Override error pages (500) with our own versions
+      app.middleware.insert_after(
+          ::ActionDispatch::ShowExceptions,
+          ::ActionDispatch::ShowExceptions,
+          ::ActionDispatch::PublicExceptions.new("#{root}/public")
+      )
     end
   end
 
@@ -36,9 +43,14 @@ module PerforceSwarm
       # This allows our routes and asset_paths to take precedence
       @railties_order = [PerforceSwarm::Engine, :main_app, :all]
 
-      # Add our own lib directory as an rails autoload path. Gitlab adds theirs,
+      # Add our own directories as an rails autoload path. Gitlab adds theirs,
       # so doing ours first here allows our files to take precedence.
+      # The GitLab paths that we are matching here can be found in their config/application.rb
       paths.add 'perforce_swarm/lib', autoload: true
+      paths.add 'perforce_swarm/app/models/hooks', autoload: true
+      paths.add 'perforce_swarm/app/models/concerns', autoload: true
+      paths.add 'perforce_swarm/app/models/project_services', autoload: true
+      paths.add 'perforce_swarm/app/models/members', autoload: true
     end
   end
 end

@@ -14,6 +14,7 @@ module Gitlab
   #   * !123 for merge requests
   #   * $123 for snippets
   #   * 123456 for commits
+  #   * 123456...7890123 for commit ranges (comparisons)
   #
   # It also parses Emoji codes to insert images. See
   # http://www.emoji-cheat-sheet.com/ for a list of the supported icons.
@@ -121,7 +122,7 @@ module Gitlab
       text
     end
 
-    NAME_STR = '[a-zA-Z][a-zA-Z0-9_\-\.]*'
+    NAME_STR = '[a-zA-Z0-9_][a-zA-Z0-9_\-\.]*'
     PROJ_STR = "(?<project>#{NAME_STR}/#{NAME_STR})"
 
     REFERENCE_PATTERN = %r{
@@ -133,13 +134,14 @@ module Gitlab
         |#{PROJ_STR}?\#(?<issue>([a-zA-Z\-]+-)?\d+) # Issue ID
         |#{PROJ_STR}?!(?<merge_request>\d+)  # MR ID
         |\$(?<snippet>\d+)                   # Snippet ID
+        |(#{PROJ_STR}@)?(?<commit_range>[\h]{6,40}\.{2,3}[\h]{6,40}) # Commit range
         |(#{PROJ_STR}@)?(?<commit>[\h]{6,40}) # Commit ID
         |(?<skip>gfm-extraction-[\h]{6,40})  # Skip gfm extractions. Otherwise will be parsed as commit
       )
       (?<suffix>\W)?                         # Suffix
     }x.freeze
 
-    TYPES = [:user, :issue, :label, :merge_request, :snippet, :commit].freeze
+    TYPES = [:user, :issue, :label, :merge_request, :snippet, :commit, :commit_range].freeze
 
     def parse_references(text, project = @project)
       # parse reference links
@@ -202,7 +204,7 @@ module Gitlab
         )
 
       if identifier == "all"
-        link_to("@all", project_url(project), options)
+        link_to("@all", namespace_project_url(project.namespace, project), options)
       elsif namespace = Namespace.find_by(path: identifier)
         url =
           if namespace.type == "Group"
@@ -222,7 +224,7 @@ module Gitlab
         )
         link_to(
           render_colored_label(label),
-          project_issues_path(project, label_name: label.name),
+          namespace_project_issues_path(project.namespace, project, label_name: label.name),
           options
         )
       end
@@ -255,7 +257,8 @@ module Gitlab
           title: "Merge Request: #{merge_request.title}",
           class: "gfm gfm-merge_request #{html_options[:class]}"
         )
-        url = project_merge_request_url(project, merge_request)
+        url = namespace_project_merge_request_url(project.namespace, project,
+                                                  merge_request)
         link_to("#{prefix_text}!#{identifier}", url, options)
       end
     end
@@ -266,8 +269,11 @@ module Gitlab
           title: "Snippet: #{snippet.title}",
           class: "gfm gfm-snippet #{html_options[:class]}"
         )
-        link_to("$#{identifier}", project_snippet_url(project, snippet),
-                options)
+        link_to(
+          "$#{identifier}",
+          namespace_project_snippet_url(project.namespace, project, snippet),
+          options
+        )
       end
     end
 
@@ -280,7 +286,31 @@ module Gitlab
         prefix_text = "#{prefix_text}@" if prefix_text
         link_to(
           "#{prefix_text}#{identifier}",
-          project_commit_url(project, commit),
+          namespace_project_commit_url(project.namespace, project, commit),
+          options
+        )
+      end
+    end
+
+    def reference_commit_range(identifier, project = @project, prefix_text = nil)
+      from_id, to_id = identifier.split(/\.{2,3}/, 2)
+
+      inclusive = identifier !~ /\.{3}/
+      from_id << "^" if inclusive
+
+      if project.valid_repo? && 
+          from = project.repository.commit(from_id) && 
+          to = project.repository.commit(to_id)
+
+        options = html_options.merge(
+          title: "Commits #{from_id} through #{to_id}",
+          class: "gfm gfm-commit_range #{html_options[:class]}"
+        )
+        prefix_text = "#{prefix_text}@" if prefix_text
+
+        link_to(
+          "#{prefix_text}#{identifier}",
+          namespace_project_compare_url(project.namespace, project, from: from_id, to: to_id),
           options
         )
       end

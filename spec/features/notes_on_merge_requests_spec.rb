@@ -12,7 +12,7 @@ describe 'Comments' do
 
     before do
       login_as :admin
-      visit project_merge_request_path(project, merge_request)
+      visit namespace_project_merge_request_path(project.namespace, project, merge_request)
     end
 
     subject { page }
@@ -81,7 +81,7 @@ describe 'Comments' do
           within("#note_#{note.id}") do
             expect(find('.current-note-edit-form', visible: true)).to be_visible
             expect(find('.note-edit-form', visible: true)).to be_visible
-            expect(find(:css, '.note-text', visible: false)).not_to be_visible
+            expect(find(:css, '.note-body > .note-text', visible: false)).not_to be_visible
           end
         end
 
@@ -136,7 +136,7 @@ describe 'Comments' do
 
     before do
       login_as :admin
-      visit diffs_project_merge_request_path(project, merge_request)
+      visit diffs_namespace_project_merge_request_path(project.namespace, project, merge_request)
     end
 
     subject { page }

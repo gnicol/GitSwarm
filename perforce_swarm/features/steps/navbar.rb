@@ -20,17 +20,17 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I visit empty project page' do
     project = Project.find_by(name: 'Empty Project')
-    visit project_path(project)
+    visit namespace_project_path(project.namespace, project)
   end
 
   step 'I visit project "Forum" page' do
     project = Project.find_by(name: 'Forum')
-    visit project_path(project)
+    visit namespace_project_path(project.namespace, project)
   end
 
   step 'I visit project "Shop" page' do
     project = Project.find_by(name: 'Shop')
-    visit project_path(project)
+    visit namespace_project_path(project.namespace, project)
   end
 
   #########################
@@ -44,7 +44,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see "Forum" at the top of the list in the recent projects dropdown' do
-    all('ul.dropdown-menu li')[1].text.should have_content('Forum')
+    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('Forum')
   end
 
   step 'I should see "Forum" in the recent projects dropdown' do
@@ -66,8 +66,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see "PerforceProject" with "QA" group name in the recent projects dropdown' do
-    all('ul.dropdown-menu li')[1].text.should have_content('QA')
-    all('ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
+    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QA')
+    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
   end
 
   step 'I should see "Recent Projects" in the recent projects dropdown' do
@@ -120,25 +120,25 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I should see "New Project" at the top of the list in the recent projects dropdown' do
     within '.navbar-gitlab' do
-      all('ul.dropdown-menu li')[1].text.should have_content('new-project')
-      all('ul.dropdown-menu li')[2].text.should_not have_content('new-project')
+      all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('new-project')
+      all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('new-project')
     end
   end
 
   step 'I should see "PerforceProject" at the top of the list in the recent projects dropdown' do
-    all('ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
+    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
   end
 
   step 'I should see "QAProject" at the top of the list in the recent projects dropdown' do
-    all('ul.dropdown-menu li')[1].text.should have_content('QAProject')
+    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QAProject')
   end
 
   step 'I should see the project with the project name over 100 characters at the top of the list' do
-    all('ul.dropdown-menu li')[1].text.should have_content(long_project_name + long_project_name)
+    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content(long_project_name + long_project_name)
   end
 
   step 'I should not see "PerforceProject" second on the list in the recent projects dropdown' do
-    all('ul.dropdown-menu li')[2].text.should_not have_content('PerforceProject')
+    all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('PerforceProject')
   end
 
   #########################
@@ -191,7 +191,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I click on the most recent project under "Recent Projects"' do
     within '.navbar-gitlab .dashboard-menu' do
-      first('ul.dropdown-menu li a').trigger('click')
+      first('.dashboard-menu ul.dropdown-menu li a').trigger('click')
     end
   end
 
@@ -258,15 +258,20 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'I should see the login page' do
-    find(:css, '.login-page').should have_content('Sign in')
+    find(:css, '.login-page').should have_button('Sign in')
   end
 
   step 'I should see the Dashboard page' do
-    find('title').should have_content('Dashboard')
+    expect(page).to have_field('filter_projects', type: 'search')
   end
 
-  step 'I should see the "Explore GitLab" page' do
-    find('title').should have_content('Explore | GitLab')
+  step 'I should see the Dashboard page with no projects' do
+    find('a[href="/projects/new"]').should have_content('New Project')
+  end
+
+  step 'I should see the "Explore" page' do
+    expect(find('title')).to have_content('Explore')
+    page.assert_selector('.explore-title')
   end
 
   step 'I should see the "Forum" page' do
@@ -278,11 +283,13 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the "QAProject" page' do
-    find('title').should have_content('QAProject')
+    project = Project.find_by(name: 'QAProject')
+    expect(page).to have_field('project_clone', with: project.url_to_repo)
   end
 
   step 'I should see the "PerforceProject" page' do
-    find('title').should have_content('PerforceProject')
+    project = Project.find_by(name: 'PerforceProject')
+    expect(page).to have_field('project_clone', with: project.url_to_repo)
   end
 
   step 'I should see a project page' do
@@ -296,7 +303,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the user settings page' do
-    find(:css, '.page-title').should have_content('Profile settings')
+    find(:css, '.page-title').should have_content('Profile Settings')
   end
 
   step 'I should see the new project page' do

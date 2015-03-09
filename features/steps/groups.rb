@@ -29,7 +29,7 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
 
   step 'I select user "Mary Jane" from list with role "Reporter"' do
     user = User.find_by(name: "Mary Jane") || create(:user, name: "Mary Jane")
-    click_link 'Add members'
+    click_button 'Add members'
     within ".users-group-form" do
       select2(user.id, from: "#user_ids", multiple: true)
       select "Reporter", from: "access_level"
@@ -110,7 +110,7 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
   end
 
   step 'I should see new group "Owned" avatar' do
-    Group.find_by(name: "Owned").avatar.should be_instance_of AttachmentUploader
+    Group.find_by(name: "Owned").avatar.should be_instance_of AvatarUploader
     Group.find_by(name: "Owned").avatar.url.should == "/uploads/group/avatar/#{ Group.find_by(name:"Owned").id }/gitlab_logo.png"
   end
 
@@ -194,8 +194,8 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
   step 'I should see group milestone with all issues and MRs assigned to that milestone' do
     page.should have_content('Milestone GL-113')
     page.should have_content('Progress: 0 closed – 4 open')
-    page.should have_link(@issue1.title, href: project_issue_path(@project1, @issue1))
-    page.should have_link(@mr3.title, href: project_merge_request_path(@project3, @mr3))
+    page.should have_link(@issue1.title, href: namespace_project_issue_path(@project1.namespace, @project1, @issue1))
+    page.should have_link(@mr3.title, href: namespace_project_merge_request_path(@project3.namespace, @project3, @mr3))
   end
 
   protected

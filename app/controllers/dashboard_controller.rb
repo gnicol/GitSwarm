@@ -5,27 +5,27 @@ class DashboardController < ApplicationController
   before_filter :event_filter, only: :show
 
   def show
-    # Fetch only 30 projects.
-    # If user needs more - point to Dashboard#projects page
-    @projects_limit = 30
-
+    @projects_limit = 20
     @groups = current_user.authorized_groups.order_name_asc
     @has_authorized_projects = @projects.count > 0
     @projects_count = @projects.count
-    @projects = @projects.limit(@projects_limit)
-
-    @events = Event.in_projects(current_user.authorized_projects.pluck(:id))
-    @events = @event_filter.apply_filter(@events)
-    @events = @events.limit(20).offset(params[:offset] || 0)
-
+    @projects = @projects.includes(:namespace)
     @last_push = current_user.recent_push
 
     @publicish_project_count = Project.publicish(current_user).count
 
     respond_to do |format|
       format.html
-      format.json { pager_json("events/_events", @events.count) }
-      format.atom { render layout: false }
+
+      format.json do
+        load_events
+        pager_json("events/_events", @events.count)
+      end
+
+      format.atom do
+        load_events
+        render layout: false
+      end
     end
   end
 
@@ -43,7 +43,7 @@ class DashboardController < ApplicationController
 
     @projects = @projects.where(namespace_id: Group.find_by(name: params[:group])) if params[:group].present?
     @projects = @projects.where(visibility_level: params[:visibility_level]) if params[:visibility_level].present?
-    @projects = @projects.includes(:namespace)
+    @projects = @projects.includes(:namespace, :forked_from_project, :tags)
     @projects = @projects.tagged_with(params[:tag]) if params[:tag].present?
     @projects = @projects.sort(@sort = params[:sort])
     @projects = @projects.page(params[:page]).per(30)
@@ -73,5 +73,11 @@ class DashboardController < ApplicationController
 
   def load_projects
     @projects = current_user.authorized_projects.sorted_by_activity.non_archived
+  end
+
+  def load_events
+    @events = Event.in_projects(current_user.authorized_projects.pluck(:id))
+    @events = @event_filter.apply_filter(@events).with_associations
+    @events = @events.limit(20).offset(params[:offset] || 0)
   end
 end

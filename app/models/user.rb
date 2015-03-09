@@ -2,49 +2,53 @@
 #
 # Table name: users
 #
-#  id                       :integer          not null, primary key
-#  email                    :string(255)      default(""), not null
-#  encrypted_password       :string(255)      default(""), not null
-#  reset_password_token     :string(255)
-#  reset_password_sent_at   :datetime
-#  remember_created_at      :datetime
-#  sign_in_count            :integer          default(0)
-#  current_sign_in_at       :datetime
-#  last_sign_in_at          :datetime
-#  current_sign_in_ip       :string(255)
-#  last_sign_in_ip          :string(255)
-#  created_at               :datetime
-#  updated_at               :datetime
-#  name                     :string(255)
-#  admin                    :boolean          default(FALSE), not null
-#  projects_limit           :integer          default(10)
-#  skype                    :string(255)      default(""), not null
-#  linkedin                 :string(255)      default(""), not null
-#  twitter                  :string(255)      default(""), not null
-#  authentication_token     :string(255)
-#  theme_id                 :integer          default(1), not null
-#  bio                      :string(255)
-#  failed_attempts          :integer          default(0)
-#  locked_at                :datetime
-#  username                 :string(255)
-#  can_create_group         :boolean          default(TRUE), not null
-#  can_create_team          :boolean          default(TRUE), not null
-#  state                    :string(255)
-#  color_scheme_id          :integer          default(1), not null
-#  notification_level       :integer          default(1), not null
-#  password_expires_at      :datetime
-#  created_by_id            :integer
-#  avatar                   :string(255)
-#  confirmation_token       :string(255)
-#  confirmed_at             :datetime
-#  confirmation_sent_at     :datetime
-#  unconfirmed_email        :string(255)
-#  hide_no_ssh_key          :boolean          default(FALSE)
-#  hide_no_password         :boolean          default(FALSE)
-#  website_url              :string(255)      default(""), not null
-#  last_credential_check_at :datetime
-#  github_access_token      :string(255)
-#  notification_email       :string(255)
+#  id                            :integer          not null, primary key
+#  email                         :string(255)      default(""), not null
+#  encrypted_password            :string(255)      default(""), not null
+#  reset_password_token          :string(255)
+#  reset_password_sent_at        :datetime
+#  remember_created_at           :datetime
+#  sign_in_count                 :integer          default(0)
+#  current_sign_in_at            :datetime
+#  last_sign_in_at               :datetime
+#  current_sign_in_ip            :string(255)
+#  last_sign_in_ip               :string(255)
+#  created_at                    :datetime
+#  updated_at                    :datetime
+#  name                          :string(255)
+#  admin                         :boolean          default(FALSE), not null
+#  projects_limit                :integer          default(10)
+#  skype                         :string(255)      default(""), not null
+#  linkedin                      :string(255)      default(""), not null
+#  twitter                       :string(255)      default(""), not null
+#  authentication_token          :string(255)
+#  theme_id                      :integer          default(1), not null
+#  bio                           :string(255)
+#  failed_attempts               :integer          default(0)
+#  locked_at                     :datetime
+#  username                      :string(255)
+#  can_create_group              :boolean          default(TRUE), not null
+#  can_create_team               :boolean          default(TRUE), not null
+#  state                         :string(255)
+#  color_scheme_id               :integer          default(1), not null
+#  notification_level            :integer          default(1), not null
+#  password_expires_at           :datetime
+#  created_by_id                 :integer
+#  last_credential_check_at      :datetime
+#  avatar                        :string(255)
+#  confirmation_token            :string(255)
+#  confirmed_at                  :datetime
+#  confirmation_sent_at          :datetime
+#  unconfirmed_email             :string(255)
+#  hide_no_ssh_key               :boolean          default(FALSE)
+#  website_url                   :string(255)      default(""), not null
+#  github_access_token           :string(255)
+#  gitlab_access_token           :string(255)
+#  notification_email            :string(255)
+#  hide_no_password              :boolean          default(FALSE)
+#  password_automatically_set    :boolean          default(FALSE)
+#  bitbucket_access_token        :string(255)
+#  bitbucket_access_token_secret :string(255)
 #
 
 require 'carrierwave/orm/activerecord'
@@ -55,14 +59,13 @@ class User < ActiveRecord::Base
   include Gitlab::ConfigHelper
   include TokenAuthenticatable
   extend Gitlab::ConfigHelper
-  extend Gitlab::CurrentSettings
+  include Gitlab::CurrentSettings
 
   default_value_for :admin, false
   default_value_for :can_create_group, gitlab_config.default_can_create_group
   default_value_for :can_create_team, false
   default_value_for :hide_no_ssh_key, false
   default_value_for :hide_no_password, false
-  default_value_for :projects_limit, current_application_settings.default_projects_limit
   default_value_for :theme_id, gitlab_config.default_theme
 
   devise :database_authenticatable, :lockable, :async,
@@ -141,6 +144,7 @@ class User < ActiveRecord::Base
 
   before_save :ensure_authentication_token
   after_save :ensure_namespace_correct
+  after_initialize :set_projects_limit
   after_create :post_create_hook
   after_destroy :post_destroy_hook
 
@@ -177,7 +181,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  mount_uploader :avatar, AttachmentUploader
+  mount_uploader :avatar, AvatarUploader
 
   # Scopes
   scope :admins, -> { where(admin:  true) }
@@ -255,7 +259,7 @@ class User < ActiveRecord::Base
       counter = 0
       base = username
       while User.by_login(username).present? || Namespace.by_path(username).present?
-        counter += 1 
+        counter += 1
         username = "#{base}#{counter}"
       end
 
@@ -348,6 +352,10 @@ class User < ActiveRecord::Base
 
   def require_ssh_key?
     keys.count == 0
+  end
+
+  def require_password?
+    password_automatically_set? && !ldap_user?
   end
 
   def can_change_username?
@@ -459,8 +467,15 @@ class User < ActiveRecord::Base
 
   def set_notification_email
     if self.notification_email.blank? || !self.all_emails.include?(self.notification_email)
-      self.notification_email = self.email 
+      self.notification_email = self.email
     end
+  end
+
+  def set_projects_limit
+    connection_default_value_defined = new_record? && !projects_limit_changed?
+    return unless self.projects_limit.nil? || connection_default_value_defined
+
+    self.projects_limit = current_application_settings.default_projects_limit
   end
 
   def requires_ldap_check?
@@ -559,7 +574,7 @@ class User < ActiveRecord::Base
 
   def post_create_hook
     log_info("User \"#{self.name}\" (#{self.email}) was created")
-    notification_service.new_user(self, @reset_token)
+    notification_service.new_user(self, @reset_token) if self.created_by_id
     system_hook_service.execute_hooks_for(self, :create)
   end
 
@@ -606,5 +621,16 @@ class User < ActiveRecord::Base
 
   def oauth_authorized_tokens
     Doorkeeper::AccessToken.where(resource_owner_id: self.id, revoked_at: nil)
+  end
+
+  def contributed_projects_ids
+    Event.where(author_id: self).
+      where("created_at > ?", Time.now - 1.year).
+      where("action = :pushed OR (target_type = 'MergeRequest' AND action = :created)", 
+        pushed: Event::PUSHED, created: Event::CREATED).
+      reorder(project_id: :desc).
+      select(:project_id).
+      uniq
+      .map(&:project_id)
   end
 end

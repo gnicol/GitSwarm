@@ -32,11 +32,10 @@ $ ->
   if recentProjects.length
     projectMenuItems = $('<li role="presentation" class="dropdown-header">Recent Projects</li>')
     for project in recentProjects
-      slug             = (project.namespace?.path || '') + '/' + project.path
       namespace        = if project.namespace then (project.namespace.human_name + ' / ') else ''
       projectMenuItems = projectMenuItems.add("""
         <li role="menuitem">
-          <a href="#{Routes.project_path(slug)}">
+          <a href="#{Routes.namespace_project_path(project.namespace?.path, project.path)}">
             <span class="recent-project-access-icon">
               <i class="fa #{getVisibilityIconClass(project.visibility_level)}"></i>
             </span>
@@ -57,7 +56,7 @@ $ ->
   subnav   = $('.nav.nav-sidebar')
   username = gon.current_user_username
 
-  # Create the new subnav dropdown menu, clone the exisitng subnav if available
+  # Create the new subnav dropdown menu, clone the existing subnav if available
   subnavMenu = if subnav.length then subnav.clone() else $('<ul />')
   subnavMenu.removeClass().addClass('dropdown-menu').attr('role', 'menu')
 

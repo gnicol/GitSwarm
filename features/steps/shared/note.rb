@@ -116,7 +116,7 @@ module SharedNote
   end
 
   step 'The comment with the header should not have an ID' do
-    within(".note-text") do
+    within(".note-body > .note-text") do
       page.should     have_content("Comment with a header")
       page.should_not have_css("#comment-with-a-header")
     end
@@ -134,5 +134,22 @@ module SharedNote
     expect(page).not_to have_selector(
       'li.note div.timeline-content input[type="checkbox"]'
     )
+  end
+
+  step 'I edit the last comment with a +1' do
+    find(".note").hover
+    find('.js-note-edit').click
+
+    within(".current-note-edit-form") do
+      fill_in 'note[note]', with: '+1 Awesome!'
+      click_button 'Save Comment'
+      sleep 0.05
+    end
+  end
+
+  step 'I should see +1 in the description' do
+    within(".note") do
+      page.should have_content("+1 Awesome!")
+    end
   end
 end

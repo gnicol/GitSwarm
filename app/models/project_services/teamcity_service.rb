@@ -2,15 +2,20 @@
 #
 # Table name: services
 #
-#  id         :integer          not null, primary key
-#  type       :string(255)
-#  title      :string(255)
-#  project_id :integer
-#  created_at :datetime
-#  updated_at :datetime
-#  active     :boolean          default(FALSE), not null
-#  properties :text
-#  template   :boolean          default(FALSE)
+#  id                    :integer          not null, primary key
+#  type                  :string(255)
+#  title                 :string(255)
+#  project_id            :integer
+#  created_at            :datetime
+#  updated_at            :datetime
+#  active                :boolean          default(FALSE), not null
+#  properties            :text
+#  template              :boolean          default(FALSE)
+#  push_events           :boolean          default(TRUE)
+#  issues_events         :boolean          default(TRUE)
+#  merge_requests_events :boolean          default(TRUE)
+#  tag_push_events       :boolean          default(TRUE)
+#  note_events           :boolean          default(TRUE), not null
 #
 
 class TeamcityService < CiService
@@ -55,6 +60,10 @@ class TeamcityService < CiService
 
   def to_param
     'teamcity'
+  end
+
+  def supported_events
+    %w(push)
   end
 
   def fields
@@ -116,12 +125,14 @@ class TeamcityService < CiService
   end
 
   def execute(data)
+    return unless supported_events.include?(data[:object_kind])
+
     auth = {
       username: username,
       password: password,
     }
 
-    branch = data[:ref]
+    branch = data[:ref].gsub('refs/heads/', '')
 
     self.class.post("#{teamcity_url}/httpAuth/app/rest/buildQueue",
                     body: "<build branchName=\"#{branch}\">"\

@@ -39,9 +39,6 @@ class @Notes
     # reset main target form after submit
     $(document).on "ajax:complete", ".js-main-target-form", @resetMainTargetForm
 
-    # attachment button
-    $(document).on "click", ".js-choose-note-attachment-button", @chooseNoteAttachment
-
     # update the file name when an attachment is selected
     $(document).on "change", ".js-note-attachment-input", @updateFormAttachment
 
@@ -73,11 +70,10 @@ class @Notes
     $(document).off "click", ".js-note-delete"
     $(document).off "click", ".js-note-attachment-delete"
     $(document).off "ajax:complete", ".js-main-target-form"
-    $(document).off "click", ".js-choose-note-attachment-button"
     $(document).off "click", ".js-discussion-reply-button"
     $(document).off "click", ".js-add-diff-note-button"
     $(document).off "visibilitychange"
-    $(document).off "keypress", @notes_forms
+    $(document).off "keydown", @notes_forms
     $(document).off "keyup", ".js-note-text"
     $(document).off "click", ".js-note-target-reopen"
     $(document).off "click", ".js-note-target-close"
@@ -174,15 +170,6 @@ class @Notes
     form.find(".js-note-text").data("autosave").reset()
 
   ###
-  Called when clicking the "Choose File" button.
-
-  Opens the file selection dialog.
-  ###
-  chooseNoteAttachment: ->
-    form = $(this).closest("form")
-    form.find(".js-note-attachment-input").click()
-
-  ###
   Shows the main form and does some setup on it.
 
   Sets some hidden fields in the form.
@@ -272,7 +259,7 @@ class @Notes
     note_li = $(".note-row-" + note.id)
     note_li.replaceWith(note.html)
     note_li.find('.note-edit-form').hide()
-    note_li.find('.note-text').show()
+    note_li.find('.note-body > .note-text').show()
 
   ###
   Called in response to clicking the edit note link
@@ -284,7 +271,7 @@ class @Notes
   showEditForm: (e) ->
     e.preventDefault()
     note = $(this).closest(".note")
-    note.find(".note-text").hide()
+    note.find(".note-body > .note-text").hide()
     note.find(".note-header").hide()
     base_form = note.find(".note-edit-form")
     form = base_form.clone().insertAfter(base_form)
@@ -311,7 +298,7 @@ class @Notes
   cancelEdit: (e) ->
     e.preventDefault()
     note = $(this).closest(".note")
-    note.find(".note-text").show()
+    note.find(".note-body > .note-text").show()
     note.find(".note-header").show()
     note.find(".current-note-edit-form").remove()
 
@@ -345,7 +332,7 @@ class @Notes
   removeAttachment: ->
     note = $(this).closest(".note")
     note.find(".note-attachment").remove()
-    note.find(".note-text").show()
+    note.find(".note-body > .note-text").show()
     note.find(".js-note-attachment-delete").hide()
     note.find(".note-edit-form").hide()
 

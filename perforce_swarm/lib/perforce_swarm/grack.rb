@@ -11,9 +11,9 @@ module PerforceSwarm
 
       # push errors are fatal but pull errors are ignorable
       if @req['service'] == 'git-receive-pack'
-        Mirror.fetch(@dir)
+        Mirror.fetch!(@dir)
       else
-        Mirror.safe_fetch(@dir)
+        Mirror.fetch(@dir)
       end
 
       super

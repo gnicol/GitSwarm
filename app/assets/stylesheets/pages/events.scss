@@ -46,7 +46,6 @@
   border-bottom: 1px solid #eee;
   .event-title {
     @include str-truncated(72%);
-    color: #333;
     font-weight: 500;
     font-size: 14px;
     .author_name {
@@ -54,6 +53,7 @@
     }
   }
   .event-body {
+    font-size: 13px;
     margin-left: 35px;
     margin-right: 80px;
     color: #777;
@@ -185,11 +185,10 @@
 }
 
 .event_filter {
-  
   li a {
+    font-size: 13px;
     padding: 5px 10px;
     background: rgba(0,0,0,0.045);
     margin-left: 4px;
   }
-
 }

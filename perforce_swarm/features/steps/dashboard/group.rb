@@ -1,6 +1,6 @@
-require Rails.root.join('features', 'steps', 'profile', 'group')
+require Rails.root.join('features', 'steps', 'dashboard', 'group')
 
-class Spinach::Features::ProfileGroup < Spinach::FeatureSteps
+class Spinach::Features::DashboardGroup < Spinach::FeatureSteps
   step 'I click on the "Leave" button for group "Owned"' do
     find(:css, '.content li', text: 'Owner').find(:css, 'i.fa.fa-sign-out').click
   end

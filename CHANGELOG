@@ -7,6 +7,7 @@ v 7.9.0 (unreleased)
   - Add issue and merge request events to HipChat and Slack services (Stan Hu)
   - Fix merge request URL passed to Webhooks. (Stan Hu)
   - Fix bug that caused a server error when editing a comment to "+1" or "-1" (Stan Hu)
+  - Fix code preview theme setting for comments, issues, merge requests, and snippets (Stan Hu)
   - Move labels/milestones tabs to sidebar
   - Upgrade Rails gem to version 4.1.9.
   - Improve error messages for file edit failures
@@ -47,8 +48,20 @@ v 7.9.0 (unreleased)
   - Fix highliht of selected lines in file
   - Reject access to group/project avatar if the user doesn't have access.
   - Add database migration to clean group duplicates with same path and name (Make sure you have a backup before update)
+  - Add GitLab active users count to rake gitlab:check
   - Starred projects page at dashboard
   - Make email display name configurable
+  - Improve json validation in hook data
+  - Use Emoji One
+
+  - Updated emoji help documentation to properly reference EmojiOne.
+v 7.8.4
+  - Fix issue_tracker_id substitution in custom issue trackers
+  - Fix path and name duplication in namespaces
+
+v 7.8.3
+  - Bump version of gitlab_git fixing annotated tags without message
+  - Allow smb:// links in Markdown text.
 
 v 7.8.2
   - Fix service migration issue when upgrading from versions prior to 7.3
@@ -59,6 +72,7 @@ v 7.8.2
   - Fix import check for case sensetive namespaces
   - Increase timeout for Git-over-HTTP requests to 1 hour since large pulls/pushes can take a long time.
   - Properly handle autosave local storage exceptions.
+  - Escape wildcards when searching LDAP by username.
 
 v 7.8.1
   - Fix run of custom post receive hooks

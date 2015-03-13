@@ -5,7 +5,8 @@ module PerforceSwarm
     def check_if_can_be_merged
       # Fetch from mirror
       success = Mirror.fetch(target_project.repository.path_to_repo)
-      # If target and souce projects don't match, we are on a fork and
+
+      # If target and source projects don't match, we are on a fork and
       # we should try a mirror fetch on the source branch as well
       if success && source_project && source_project.id != target_project.id
         success = Mirror.fetch(source_project.repository.path_to_repo)

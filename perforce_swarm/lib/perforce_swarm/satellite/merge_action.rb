@@ -5,7 +5,8 @@ module PerforceSwarm
     def merge!(merge_commit_message = nil)
       # Fetch from mirror before merge
       Mirror.fetch!(merge_request.target_project.repository.path_to_repo)
-      # If target and souce projects don't match, we are on a fork and
+
+      # If target and source projects don't match, we are on a fork and
       # we should try a mirror fetch on the source branch as well
       if merge_request.source_project && merge_request.source_project.id != merge_request.target_project.id
         Mirror.fetch!(merge_request.source_project.repository.path_to_repo)

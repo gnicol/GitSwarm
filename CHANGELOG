@@ -1,6 +1,7 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 7.9.0 (unreleased)
+  - Update documentation for object_kind field in Webhook push and tag push Webhooks (Stan Hu)
   - Fix broken email images (Hannes Rosenögger)
   - Fix mass SQL statements on initial push (Hannes Rosenögger)
   - Add tag push notifications and normalize HipChat and Slack messages to be consistent (Stan Hu)
@@ -59,6 +60,7 @@ v 7.9.0 (unreleased)
   - Added blue thmeme
   - Remove annoying notice messages when create/update merge request
   - Allow smb:// links in Markdown text.
+  - Filter merge request by title or description at Merge Requests page
   - Block user if he/she was blocked in Active Directory
 
 v 7.8.4

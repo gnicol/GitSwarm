@@ -1,8 +1,10 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 7.9.0 (unreleased)
+  - Add HipChat integration documentation (Stan Hu)
   - Update documentation for object_kind field in Webhook push and tag push Webhooks (Stan Hu)
   - Fix broken email images (Hannes Rosenögger)
+  - Automatically config git if user forgot, where possible (Zeger-Jan van de Weg)
   - Fix mass SQL statements on initial push (Hannes Rosenögger)
   - Add tag push notifications and normalize HipChat and Slack messages to be consistent (Stan Hu)
   - Add comment notification events to HipChat and Slack services (Stan Hu)
@@ -15,6 +17,8 @@ v 7.9.0 (unreleased)
   - Improve error messages for file edit failures
   - Improve UI for commits, issues and merge request lists
   - Fix commit comments on first line of diff not rendering in Merge Request Discussion view.
+  - Allow admins to override restricted project visibility settings.
+  - Move restricted visibility settings from gitlab.yml into the web UI.
   - Improve trigger merge request hook when source project branch has been updated (Kirill Zaitsev)
   - Save web edit in new branch
   - Fix ordering of imported but unchanged projects (Marco Wessel)
@@ -69,6 +73,7 @@ v 7.9.0 (unreleased)
   - Block and unblock user if he/she was blocked/unblocked in Active Directory
   - Raise recommended number of unicorn workers from 2 to 3
   - Use same layout and interactivity for project members as group members.
+  - Prevent gitlab-shell character encoding issues by receiving its changes as raw data.
 
 v 7.8.4
   - Fix issue_tracker_id substitution in custom issue trackers

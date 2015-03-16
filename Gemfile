@@ -181,6 +181,9 @@ gem 'ace-rails-ap'
 # Keyboard shortcuts
 gem 'mousetrap-rails'
 
+# Detect and convert string character encoding
+gem 'charlock_holmes'
+
 # Shutting down requests that take too long
 gem "slowpoke"
 
@@ -272,7 +275,6 @@ end
 
 group :production do
   gem "gitlab_meta", '7.0'
-  gem "therubyracer"
 end
 
 gem "newrelic_rpm"

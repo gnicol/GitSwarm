@@ -16,7 +16,7 @@
               = link_to root_path do
                 Dashboard
             %li{role: 'menuitem', class: current_route?('dashboard#projects') ? 'current' : ''}
-              = link_to projects_dashboard_path do
+              = link_to dashboard_path do
                 View My Projects
             %li{role: 'menuitem', class: current_route?('projects#index') ? 'current' : ''}
               = link_to explore_projects_path do

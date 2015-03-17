@@ -21,9 +21,21 @@ module PerforceSwarm
       return [500, { 'Content-Type' => 'text/plain' }, [e.message]]
     end
   end
+
+  module GrackGitExtension
+    def command(command)
+      return super unless [*command].first == 'receive-pack'
+      shell_path = File.expand_path(Gitlab.config.gitlab_shell.path)
+      [File.join(shell_path, 'perforce_swarm', 'bin', 'swarm-receive-pack').to_s] + [*command][1..-1]
+    end
+  end
 end
 
 require 'grack'
 class Grack::Server
   prepend PerforceSwarm::GrackServerExtension
+end
+
+class Grack::Git
+  prepend PerforceSwarm::GrackGitExtension
 end

@@ -1,7 +1,5 @@
 require File.expand_path('../../../spec/spec_helper', __FILE__)
 
-# Increase the timeout for the swarm specs, as they may start with JS enabled
-# tests right from the start, and need to give rails some time to load
-Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app, js_errors: false, timeout: 90)
-end
+# Increase the timeout for all tests, not just JS tests
+Capybara.default_wait_time = 90
+

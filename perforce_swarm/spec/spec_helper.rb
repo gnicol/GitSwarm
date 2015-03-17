@@ -5,3 +5,9 @@ require File.expand_path('../../../spec/spec_helper', __FILE__)
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app, js_errors: false, timeout: 90)
 end
+
+RSpec.configure do
+  # Fixes Rack::Timeout::RequestTimeoutError by
+  # waiting longer than the default for our engine
+  Slowpoke.timeout = 90
+end

@@ -69,10 +69,10 @@ Feature: NavBar
     And the title of the dropdown should be "Forum"
 
   @javascript @automated @PGL-123
-  Scenario: Click on "View My Projects" on Dashboard dropdown and verify that user is taken to "My Projects" page
+  Scenario: Click on "View My Starred Projects" on Dashboard dropdown and verify that user is taken to "My Starred Projects" page
     Given I click on the Recent Projects dropdown
-    And I click on "View My Projects" link
-    Then I should see "My Projects" page
+    And I click on "View My Starred Projects" link
+    Then I should see an empty "My Starred Projects" page
 
   @javascript @automated @PGL-123
   Scenario: Click on "View All Projects" on Dashboard dropdown and verify that user is taken to "Public Projects" page
@@ -94,12 +94,12 @@ Feature: NavBar
     Then I should see the Dashboard page
 
   @javascript @automated @PGL-123
-  Scenario: Click on "View My Projects" on Project dropdown and verify that user is taken to "My Projects" page
+  Scenario: Click on "View My Starred Projects" on Project dropdown and verify that user is taken to "My Starred Projects" page
     Given I own project "PerforceProject"
     When I visit project "PerforceProject" page
     And I click on the Recent Projects dropdown
-    And I click on "View My Projects" link
-    Then I should see "My Projects" page
+    And I click on "View My Starred Projects" link
+    Then I should see an empty "My Starred Projects" page
 
   @javascript @automated @PGL-123
   Scenario: Click on "View All Projects" on Project dropdown and verify that user is taken to "Public Projects" page
@@ -212,12 +212,12 @@ Feature: NavBar
   #########################
 
   @javascript @automated @PGL-123
-  Scenario: Click on "View My Projects" on Snippet dropdown and verify that user is taken to "My Projects" page
+  Scenario: Click on "View My Starred Projects" on Snippet dropdown and verify that user is taken to "My Starred Projects" page
     Given I own project "Shop"
     And I visit project "Shop" snippets page
     When I click on the Recent Projects dropdown
-    And I click on "View My Projects" link
-    Then I should see "My Projects" page
+    And I click on "View My Starred Projects" link
+    Then I should see an empty "My Starred Projects" page
 
   @javascript @automated @PGL-123
   Scenario: Click on a project on the Snippet dropdown and verify that user is taken to the project page
@@ -584,7 +584,7 @@ Feature: NavBar
     Given I resize the browser window to various smaller sizes
     And I click on the Swarm icon
     And I click on the Recent Projects dropdown
-    Then I should see "Recent Projects", "Dashboard", "View My Projects" and "View All Projects"
+    Then I should see "Recent Projects", "Dashboard", "View My Starred Projects" and "View All Projects"
 
   @PGL-123
   Scenario: Resize browser window on Project page and verify that Project dropdown appears and functions as expected
@@ -593,7 +593,7 @@ Feature: NavBar
     And I click on a project link
     Then I should see the project dashboard
     And I click on the dropdown of the project dashboard
-    Then I should see "Recent Projects", "Dashboard", "View My Projects" and "View All Projects"
+    Then I should see "Recent Projects", "Dashboard", "View My Starred Projects" and "View All Projects"
 
   @PGL-123
   Scenario: Resize browser window on User settings page and verify that User Menu dropdown appears and functions as expected

@@ -23,11 +23,6 @@ Feature: Project Create
   Scenario: As a new user who cannot create projects, I do not see "New Project" button on the "Welcome to GitLab" dashboard page
     # cannot create projects == project limit of 0
     # message on front page reads: You don't have access to any projects right now.
-    # The user can still attempt to create a project from the my projects page
-    Given ...
-
-  Scenario: As a user, I click button "New Project" from my projects page
-    # Automated in features/project/create.feature; Scenario: User create a project
     Given ...
 
   Scenario: As a user, I click button "New Project" from the group dashboard page

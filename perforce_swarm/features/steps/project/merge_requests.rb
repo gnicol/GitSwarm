@@ -89,4 +89,16 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     project = Project.find_by(name: 'Shop')
     current_path.should eq namespace_project_branches_path(project.namespace, project)
   end
+
+  step 'I accept this merge request' do
+    module PerforceSwarm::GitlabSatelliteMergeAction
+      def merge!(_merge_commit_message = nil)
+        true
+      end
+    end
+
+    within '.can_be_merged' do
+      click_button 'Accept Merge Request'
+    end
+  end
 end

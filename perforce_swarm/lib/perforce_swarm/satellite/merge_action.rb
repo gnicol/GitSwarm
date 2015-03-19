@@ -3,21 +3,25 @@ require Rails.root.join('lib', 'gitlab', 'satellite', 'merge_action')
 module PerforceSwarm
   module GitlabSatelliteMergeAction
     def merge!(merge_commit_message = nil)
-      # Fetch from mirror before merge
-      Mirror.fetch!(merge_request.target_project.repository.path_to_repo)
-
       # If target and source projects don't match, we are on a fork and
       # we should try a mirror fetch on the source branch as well
       if merge_request.source_project && merge_request.source_project.id != merge_request.target_project.id
-        Mirror.fetch!(merge_request.source_project.repository.path_to_repo)
+        source_thread = Thread.new { Mirror.fetch!(merge_request.source_project.repository.path_to_repo) }
       end
+
+      # Fetch from mirror before merge
+      Mirror.fetch!(merge_request.target_project.repository.path_to_repo)
+
+      # If we started a source_thread, wait for it to complete
+      source_thread.join if source_thread
+
       super
-    rescue Errno::ENOMEM => e
-      handle_exception(e)
     rescue Mirror::Exception => e
-      # Mark the request as unmergable if fetch failed
-      merge_request.mark_as_unmergeable
+      # Log the exception
       handle_exception(e)
+
+      # Re-raise the exception in order to mark the request as unmergable
+      raise e
     end
   end
 end

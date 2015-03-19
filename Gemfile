@@ -43,13 +43,13 @@ gem "browser"
 
 # Extracting information from a git repository
 # Provide access to Gitlab::Git library
-gem "gitlab_git", '7.0.1'
+gem "gitlab_git", '~> 7.1.0'
 
 # Ruby/Rack Git Smart-HTTP Server Handler
 gem 'gitlab-grack', '~> 2.0.0.rc2', require: 'grack'
 
 # LDAP Auth
-gem 'gitlab_omniauth-ldap', '1.2.0', require: "omniauth-ldap"
+gem 'gitlab_omniauth-ldap', '1.2.1', require: "omniauth-ldap"
 
 # Git Wiki
 gem 'gollum-lib', '~> 4.0.0'
@@ -92,7 +92,7 @@ gem "six"
 gem "seed-fu"
 
 # Markup pipeline for GitLab
-gem 'html-pipeline-gitlab', '~> 0.1.0'
+gem 'html-pipeline-gitlab', '~> 0.1'
 
 # Markdown to HTML
 gem "github-markup"
@@ -181,6 +181,9 @@ gem 'ace-rails-ap'
 # Keyboard shortcuts
 gem 'mousetrap-rails'
 
+# Detect and convert string character encoding
+gem 'charlock_holmes'
+
 # Shutting down requests that take too long
 gem "slowpoke"
 
@@ -198,7 +201,7 @@ gem "jquery-scrollto-rails"
 gem "raphael-rails", "~> 2.1.2"
 gem 'bootstrap-sass', '~> 3.0'
 gem "font-awesome-rails", '~> 4.2'
-gem "gitlab_emoji", "~> 0.0.1.1"
+gem "gitlab_emoji", "~> 0.1"
 gem "gon", '~> 5.0.0'
 gem 'nprogress-rails'
 gem 'request_store'
@@ -272,7 +275,6 @@ end
 
 group :production do
   gem "gitlab_meta", '7.0'
-  gem "therubyracer"
 end
 
 gem "newrelic_rpm"

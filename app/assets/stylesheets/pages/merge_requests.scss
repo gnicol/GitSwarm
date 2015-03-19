@@ -12,14 +12,8 @@
   }
 
   .accept-merge-holder {
-    margin-top: 5px;
-
     .accept-action {
       display: inline-block;
-
-      .accept_merge_request {
-        padding: 10px 20px;
-      }
     }
 
     .accept-control {
@@ -96,6 +90,7 @@
 
     .merge-request-info {
       color: #999;
+      font-size: 13px;
 
       .merge-request-labels {
         display: inline-block;
@@ -122,7 +117,8 @@
 }
 
 .mr-state-widget {
-  background: $box_bg;
+  font-size: 13px;
+  background: #F9F9F9;
   margin-bottom: 20px;
   color: #666;
   border: 1px solid #EEE;
@@ -133,7 +129,7 @@
     font-size: 15px;
     border-bottom: 1px solid #BBB;
     color: #777;
-    background-color: #F5F5F5;
+    background-color: $background-color;
 
     &.ci-success {
       color: $gl-success;

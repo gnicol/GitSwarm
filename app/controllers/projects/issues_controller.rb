@@ -1,6 +1,6 @@
 class Projects::IssuesController < Projects::ApplicationController
   before_filter :module_enabled
-  before_filter :issue, only: [:edit, :update, :show]
+  before_filter :issue, only: [:edit, :update, :show, :toggle_subscription]
 
   # Allow read any issue
   before_filter :authorize_read_issue!
@@ -20,7 +20,7 @@ class Projects::IssuesController < Projects::ApplicationController
     terms = params['issue_search']
     @issues = get_issues_collection
     @issues = @issues.full_search(terms) if terms.present?
-    @issues = @issues.page(params[:page]).per(20)
+    @issues = @issues.page(params[:page]).per(PER_PAGE)
 
     respond_to do |format|
       format.html
@@ -95,6 +95,12 @@ class Projects::IssuesController < Projects::ApplicationController
   def bulk_update
     result = Issues::BulkUpdateService.new(project, current_user, bulk_update_params).execute
     redirect_to :back, notice: "#{result[:count]} issues updated"
+  end
+
+  def toggle_subscription
+    @issue.toggle_subscription(current_user)
+    
+    render nothing: true
   end
 
   protected

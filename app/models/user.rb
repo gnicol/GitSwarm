@@ -154,24 +154,6 @@ class User < ActiveRecord::Base
   delegate :path, to: :namespace, allow_nil: true, prefix: true
 
   state_machine :state, initial: :active do
-    after_transition any => :blocked do |user, transition|
-      # Remove user from all projects and
-      user.project_members.find_each do |membership|
-        # skip owned resources
-        next if membership.project.owner == user
-
-        return false unless membership.destroy
-      end
-
-      # Remove user from all groups
-      user.group_members.find_each do |membership|
-        # skip owned resources
-        next if membership.group.last_owner?(user)
-
-        return false unless membership.destroy
-      end
-    end
-
     event :block do
       transition active: :blocked
     end
@@ -187,11 +169,8 @@ class User < ActiveRecord::Base
   scope :admins, -> { where(admin:  true) }
   scope :blocked, -> { with_state(:blocked) }
   scope :active, -> { with_state(:active) }
-  scope :in_team, ->(team){ where(id: team.member_ids) }
-  scope :not_in_team, ->(team){ where('users.id NOT IN (:ids)', ids: team.member_ids) }
   scope :not_in_project, ->(project) { project.users.present? ? where("id not in (:ids)", ids: project.users.map(&:id) ) : all }
   scope :without_projects, -> { where('id NOT IN (SELECT DISTINCT(user_id) FROM members)') }
-  scope :potential_team_members, ->(team) { team.members.any? ? active.not_in_team(team) : active  }
 
   #
   # Class methods
@@ -425,7 +404,7 @@ class User < ActiveRecord::Base
   end
 
   def tm_of(project)
-    project.team_member_by_id(self.id)
+    project.project_member_by_id(self.id)
   end
 
   def already_forked?(project)
@@ -626,7 +605,7 @@ class User < ActiveRecord::Base
   def contributed_projects_ids
     Event.where(author_id: self).
       where("created_at > ?", Time.now - 1.year).
-      where("action = :pushed OR (target_type = 'MergeRequest' AND action = :created)", 
+      where("action = :pushed OR (target_type = 'MergeRequest' AND action = :created)",
         pushed: Event::PUSHED, created: Event::CREATED).
       reorder(project_id: :desc).
       select(:project_id).

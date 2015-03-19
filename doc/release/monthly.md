@@ -51,6 +51,7 @@ Xth: (5 working days before the 22nd)
 Xth: (4 working days before the 22nd)
 
 - [ ] Update GitLab.com with rc1 (#LINK) (https://dev.gitlab.org/cookbooks/chef-repo/blob/master/doc/administration.md#deploy-the-package)
+- [ ] Update ci.gitLab.com with rc1 (#LINK) (https://dev.gitlab.org/cookbooks/chef-repo/blob/master/doc/administration.md#deploy-the-package)
 - [ ] Create regression issues (CE, CI) (#LINK)
 - [ ] Tweet about rc1 (#LINK)
 
@@ -68,6 +69,7 @@ Xth: (1 working day before the 22nd)
 - [ ] Create CE, EE, CI stable versions (#LINK)
 - [ ] Create Omnibus tags and build packages
 - [ ] Update GitLab.com with the stable version (#LINK)
+- [ ] Update ci.gitLab.com with the stable version (#LINK)
 
 22nd:
 
@@ -176,6 +178,10 @@ Update [installation.md](/doc/install/installation.md) to the newest version in 
 Follow the [release doc in the Omnibus repository](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/release.md).
 This can happen before tagging because Omnibus uses tags in its own repo and SHA1's to refer to the GitLab codebase.
 
+## Update GitLab.com with the stable version
+
+- Deploy the package (should not need downtime because of the small difference with RC1)
+- Deploy the package for ci.gitlab.com
 
 ## Release CE, EE and CI
 
@@ -197,6 +203,10 @@ Proposed tweet "Release of GitLab X.X & CI Y.Y! FEATURE, FEATURE and FEATURE &lt
 
 Consider creating a post on Hacker News.
 
-## Update GitLab.com with the stable version
+## Release new AMIs
 
-- Deploy the package (should not need downtime because of the small difference with RC1)
+[Follow this guide](https://dev.gitlab.org/gitlab/AMI/blob/master/README.md)
+
+## Create a WIP blogpost for the next release
+
+Create a WIP blogpost using [release blog template](https://gitlab.com/gitlab-com/www-gitlab-com/blob/master/doc/release_blog_template.md).

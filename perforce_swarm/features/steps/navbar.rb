@@ -171,9 +171,9 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     end
   end
 
-  step 'I click on "View My Projects" link' do
+  step 'I click on "View My Starred Projects" link' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'View My Projects').trigger('click')
+      find(:link, 'View My Starred Projects').trigger('click')
     end
   end
 
@@ -278,8 +278,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     find('title').should have_content('Forum')
   end
 
-  step 'I should see "My Projects" page' do
-    find(:css, '.page-title').should have_content('My Projects')
+  step 'I should see an empty "My Starred Projects" page' do
+    expect(page).to have_content('You dont have starred projects yet')
   end
 
   step 'I should see the "QAProject" page' do

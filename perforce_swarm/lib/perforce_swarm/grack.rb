@@ -5,15 +5,15 @@ module PerforceSwarm
       @req = Rack::Request.new(env)
 
       cmd, path, @reqfile, @rpc = match_routing
-      @dir = get_git_dir(path)
+      @git = get_git(path)
 
       return super unless cmd == 'get_info_refs'
 
       # push errors are fatal but pull errors are ignorable
       if @req['service'] == 'git-receive-pack'
-        Mirror.fetch!(@dir)
+        Mirror.fetch!(@git.repo)
       else
-        Mirror.fetch(@dir)
+        Mirror.fetch(@git.repo)
       end
 
       super

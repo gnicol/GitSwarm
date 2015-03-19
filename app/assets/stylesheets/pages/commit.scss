@@ -30,7 +30,8 @@
   color: #666;
   font-size: 14px;
   font-weight: normal;
-  padding: 10px 0;
+  padding: 3px 0;
+  margin-bottom: 10px;
 }
 
 .commit-info-row {
@@ -42,15 +43,6 @@
   .commit-author-link {
     color: #444;
     font-weight: bold;
-  }
-}
-
-.commit-committer-link,
-.commit-author-link {
-  font-size: 13px;
-  color: #555;
-  &:hover {
-    color: #999;
   }
 }
 

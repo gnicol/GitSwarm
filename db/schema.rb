@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150225065047) do
+ActiveRecord::Schema.define(version: 20150313012111) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,8 +25,9 @@ ActiveRecord::Schema.define(version: 20150225065047) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "home_page_url"
-    t.integer  "default_branch_protection", default: 2
-    t.boolean  "twitter_sharing_enabled",   default: true
+    t.integer  "default_branch_protection",    default: 2
+    t.boolean  "twitter_sharing_enabled",      default: true
+    t.text     "restricted_visibility_levels"
   end
 
   create_table "broadcast_messages", force: true do |t|
@@ -242,9 +243,9 @@ ActiveRecord::Schema.define(version: 20150225065047) do
   end
 
   add_index "namespaces", ["created_at", "id"], name: "index_namespaces_on_created_at_and_id", using: :btree
-  add_index "namespaces", ["name"], name: "index_namespaces_on_name", using: :btree
+  add_index "namespaces", ["name"], name: "index_namespaces_on_name", unique: true, using: :btree
   add_index "namespaces", ["owner_id"], name: "index_namespaces_on_owner_id", using: :btree
-  add_index "namespaces", ["path"], name: "index_namespaces_on_path", using: :btree
+  add_index "namespaces", ["path"], name: "index_namespaces_on_path", unique: true, using: :btree
   add_index "namespaces", ["type"], name: "index_namespaces_on_type", using: :btree
 
   create_table "notes", force: true do |t|
@@ -397,6 +398,17 @@ ActiveRecord::Schema.define(version: 20150225065047) do
   add_index "snippets", ["project_id"], name: "index_snippets_on_project_id", using: :btree
   add_index "snippets", ["visibility_level"], name: "index_snippets_on_visibility_level", using: :btree
 
+  create_table "subscriptions", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "subscribable_id"
+    t.string   "subscribable_type"
+    t.boolean  "subscribed"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "subscriptions", ["subscribable_id", "subscribable_type", "user_id"], name: "subscriptions_user_id_and_ref_fields", unique: true, using: :btree
+
   create_table "taggings", force: true do |t|
     t.integer  "tag_id"
     t.integer  "taggable_id"
@@ -446,7 +458,6 @@ ActiveRecord::Schema.define(version: 20150225065047) do
     t.integer  "notification_level",            default: 1,     null: false
     t.datetime "password_expires_at"
     t.integer  "created_by_id"
-    t.datetime "last_credential_check_at"
     t.string   "avatar"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
@@ -454,6 +465,7 @@ ActiveRecord::Schema.define(version: 20150225065047) do
     t.string   "unconfirmed_email"
     t.boolean  "hide_no_ssh_key",               default: false
     t.string   "website_url",                   default: "",    null: false
+    t.datetime "last_credential_check_at"
     t.string   "github_access_token"
     t.string   "gitlab_access_token"
     t.string   "notification_email"

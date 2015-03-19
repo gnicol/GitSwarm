@@ -34,6 +34,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I submit new merge request "Dependency Fix"' do
+    page.should have_selector('.merge-request-form-info')
     page.find('h3.page-title').should have_content 'New merge request'
     fill_in 'merge_request_title', with: 'Dependency Fix'
     click_button 'Submit merge request'

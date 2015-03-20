@@ -1,4 +1,5 @@
 class ProjectsController < ApplicationController
+  prepend_before_filter :render_go_import, only: [:show]
   skip_before_filter :authenticate_user!, only: [:show]
   before_filter :project, except: [:new, :create]
   before_filter :repository, except: [:new, :create]
@@ -22,7 +23,10 @@ class ProjectsController < ApplicationController
     @project = ::Projects::CreateService.new(current_user, project_params).execute
 
     if @project.saved?
-      redirect_to project_path(@project), notice: 'Project was successfully created.'
+      redirect_to(
+        project_path(@project),
+        notice: 'Project was successfully created.'
+      )
     else
       render 'new'
     end
@@ -34,7 +38,12 @@ class ProjectsController < ApplicationController
     respond_to do |format|
       if status
         flash[:notice] = 'Project was successfully updated.'
-        format.html { redirect_to edit_project_path(@project), notice: 'Project was successfully updated.' }
+        format.html do
+          redirect_to(
+            edit_project_path(@project),
+            notice: 'Project was successfully updated.'
+          )
+        end
         format.js
       else
         format.html { render 'edit', layout: 'project_settings' }
@@ -44,7 +53,8 @@ class ProjectsController < ApplicationController
   end
 
   def transfer
-    ::Projects::TransferService.new(project, current_user, project_params).execute
+    transfer_params = params.permit(:new_namespace_id)
+    ::Projects::TransferService.new(project, current_user, transfer_params).execute
     if @project.errors[:namespace_id].present?
       flash[:alert] = @project.errors[:namespace_id].first
     end
@@ -52,7 +62,7 @@ class ProjectsController < ApplicationController
 
   def show
     if @project.import_in_progress?
-      redirect_to project_import_path(@project)
+      redirect_to namespace_project_import_path(@project.namespace, @project)
       return
     end
 
@@ -93,9 +103,9 @@ class ProjectsController < ApplicationController
         flash[:alert] = 'Project deleted.'
 
         if request.referer.include?('/admin')
-          redirect_to admin_projects_path
+          redirect_to admin_namespaces_projects_path
         else
-          redirect_to projects_dashboard_path
+          redirect_to dashboard_path
         end
       end
     end
@@ -124,7 +134,7 @@ class ProjectsController < ApplicationController
     @project.archive!
 
     respond_to do |format|
-      format.html { redirect_to @project }
+      format.html { redirect_to project_path(@project) }
     end
   end
 
@@ -133,19 +143,7 @@ class ProjectsController < ApplicationController
     @project.unarchive!
 
     respond_to do |format|
-      format.html { redirect_to @project }
-    end
-  end
-
-  def upload_image
-    link_to_image = ::Projects::ImageService.new(repository, params, root_url).execute
-
-    respond_to do |format|
-      if link_to_image
-        format.json { render json: { link: link_to_image } }
-      else
-        format.json { render json: 'Invalid file.', status: :unprocessable_entity }
-      end
+      format.html { redirect_to project_path(@project) }
     end
   end
 
@@ -160,15 +158,6 @@ class ProjectsController < ApplicationController
   end
 
   private
-
-  def upload_path
-    base_dir = FileUploader.generate_dir
-    File.join(repository.path_with_namespace, base_dir)
-  end
-
-  def accepted_images
-    %w(png jpg jpeg gif)
-  end
 
   def set_title
     @title = 'New Project'
@@ -187,13 +176,23 @@ class ProjectsController < ApplicationController
   end
 
   def autocomplete_emojis
-    Rails.cache.fetch("autocomplete-emoji-#{Emoji::VERSION}") do
-      Emoji.names.map do |e|
+    Rails.cache.fetch("autocomplete-emoji-#{Gemojione::VERSION}") do
+      Emoji.emojis.map do |name, emoji|
         {
-          name: e,
-          path: view_context.image_url("emoji/#{e}.png")
+          name: name,
+          path: view_context.image_url("emoji/#{emoji["unicode"]}.png")
         }
       end
     end
+  end
+
+  def render_go_import
+    return unless params["go-get"] == "1"
+
+    @namespace = params[:namespace_id]
+    @id = params[:project_id] || params[:id]
+    @id = @id.gsub(/\.git\Z/, "")
+
+    render "go_import", layout: false
   end
 end

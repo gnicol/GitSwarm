@@ -1,10 +1,13 @@
-# GitLab OAuth2 OmniAuth Provider
+# Integrate your server with GitLab.com
 
-To enable the GitLab OmniAuth provider you must register your application with GitLab. GitLab will generate a client ID and secret key for you to use.
+Import projects from GitLab.com and login to your GitLab instance with your GitLab.com account.
 
-1.  Sign in to GitLab.
+To enable the GitLab.com OmniAuth provider you must register your application with GitLab.com. 
+GitLab.com will generate an application ID and secret key for you to use.
 
-1.  Navigate to your settings.
+1.  Sign in to GitLab.com
+
+1.  Navigate to your profile settings.
 
 1.  Select "Applications" in the left menu.
 
@@ -15,17 +18,17 @@ To enable the GitLab OmniAuth provider you must register your application with G
     - Redirect URI:
 
     ```
-    http://gitlab.example.com/import/gitlab/callback
-    http://gitlab.example.com/users/auth/gitlab/callback
+    http://your-gitlab.example.com/import/gitlab/callback
+    http://your-gitlab.example.com/users/auth/gitlab/callback
     ```
 
     The first link is required for the importer and second for the authorization.
 
 1.  Select "Submit".
 
-1.  You should now see a Application ID and Secret. Keep this page open as you continue configuration.
-
-1.  You should now see a Client ID and Client Secret near the top right of the page (see screenshot). Keep this page open as you continue configuration. ![GitHub app](github_app.png)
+1.  You should now see a Client ID and Client Secret near the top right of the page (see screenshot). 
+    Keep this page open as you continue configuration. 
+    ![GitLab app](gitlab_app.png)
 
 1.  On your GitLab server, open the configuration file.
 
@@ -43,7 +46,7 @@ To enable the GitLab OmniAuth provider you must register your application with G
       sudo -u git -H editor config/gitlab.yml
     ```
 
-1.  See [Initial OmniAuth Configuration](README.md#initial-omniauth-configuration) for inital settings.
+1.  See [Initial OmniAuth Configuration](omniauth.md#initial-omniauth-configuration) for initial settings.
 
 1.  Add the provider configuration:
 
@@ -53,9 +56,9 @@ To enable the GitLab OmniAuth provider you must register your application with G
       gitlab_rails['omniauth_providers'] = [
         {
           "name" => "gitlab",
-          "app_id" => "YOUR APP ID",
-          "app_secret" => "YOUR APP SECRET",
-          "args" => { "scope" => "api" } }
+          "app_id" => "YOUR_APP_ID",
+          "app_secret" => "YOUR_APP_SECRET",
+          "args" => { "scope" => "api" }
         }
       ]
     ```
@@ -63,17 +66,19 @@ To enable the GitLab OmniAuth provider you must register your application with G
     For installations from source:
 
     ```
-      - { name: 'gitlab', app_id: 'YOUR APP ID',
-        app_secret: 'YOUR APP SECRET',
+      - { name: 'gitlab', app_id: 'YOUR_APP_ID',
+        app_secret: 'YOUR_APP_SECRET',
         args: { scope: 'api' } }
     ```
 
-1.  Change 'YOUR APP ID' to the Application ID from the GitLab application page.
+1.  Change 'YOUR_APP_ID' to the Application ID from the GitLab.com application page.
 
-1.  Change 'YOUR APP SECRET' to the secret from the GitLab application page.
+1.  Change 'YOUR_APP_SECRET' to the secret from the GitLab.com application page.
 
 1.  Save the configuration file.
 
 1.  Restart GitLab for the changes to take effect.
 
-On the sign in page there should now be a GitLab icon below the regular sign in form. Click the icon to begin the authentication process. GitLab will ask the user to sign in and authorize the GitLab application. If everything goes well the user will be returned to your GitLab instance and will be signed in.
+On the sign in page there should now be a GitLab.com icon below the regular sign in form. 
+Click the icon to begin the authentication process. GitLab.com will ask the user to sign in and authorize the GitLab application. 
+If everything goes well the user will be returned to your GitLab instance and will be signed in.

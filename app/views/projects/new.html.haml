@@ -34,37 +34,51 @@
               %span Import existing git repo
             .col-sm-10
               = f.text_field :import_url, class: 'form-control', placeholder: 'https://github.com/randx/six.git'
-              .bs-callout.bs-callout-info
+              .alert.alert-info.prepend-top-10
                 This URL must be publicly accessible or you can add a username and password like this: https://username:password@gitlab.com/company/project.git.
                 %br
                 The import will time out after 4 minutes. For big repositories, use a clone/push combination.
                 For SVN repositories, check #{link_to "this migrating from SVN doc.", "http://doc.gitlab.com/ce/workflow/migrating_from_svn.html"}
 
-      .project-import.form-group
-        .col-sm-2
-        .col-sm-10
-          - if github_import_enabled?
-            = link_to status_import_github_path do
-              %i.fa.fa-github
-              Import projects from GitHub
-          - else
-            = link_to '#', class: 'how_to_import_link light' do
-              %i.fa.fa-github
-              Import projects from GitHub
-            = render 'github_import_modal'
 
       .project-import.form-group
-        .col-sm-2
+        %label.control-label Import projects from
         .col-sm-10
-          - if gitlab_import_enabled?
-            = link_to status_import_gitlab_path do
-              %i.fa.fa-heart
-              Import projects from GitLab.com
-          - elsif request.host != 'gitlab.com'
-            = link_to '#', class: 'how_to_import_link light' do
-              %i.fa.fa-heart
-              Import projects from GitLab.com
-            = render 'gitlab_import_modal'
+          - if github_import_enabled?
+            = link_to status_import_github_path, class: 'btn' do
+              %i.fa.fa-github
+              GitHub
+          - else
+            = link_to '#', class: 'how_to_import_link light btn' do
+              %i.fa.fa-github
+              GitHub
+            = render 'github_import_modal'
+
+
+          - if bitbucket_import_enabled?
+            = link_to status_import_bitbucket_path, class: 'btn' do
+              %i.fa.fa-bitbucket
+              Bitbucket
+          - else
+            = link_to '#', class: 'how_to_import_link light btn' do
+              %i.fa.fa-bitbucket
+              Bitbucket
+            = render 'bitbucket_import_modal'
+
+          - unless request.host == 'gitlab.com'
+            - if gitlab_import_enabled?
+              = link_to status_import_gitlab_path, class: 'btn' do
+                %i.fa.fa-heart
+                GitLab.com
+            - else
+              = link_to '#', class: 'how_to_import_link light btn' do
+                %i.fa.fa-heart
+                GitLab.com
+              = render 'gitlab_import_modal'
+
+          = link_to new_import_gitorious_path, class: 'btn' do
+            %i.icon-gitorious.icon-gitorious-small
+            Gitorious.org
 
       .project-import.form-group
         .col-sm-2
@@ -90,7 +104,7 @@
           .pull-right
             .light
               Need a group for several dependent projects?
-              = link_to new_group_path, class: "btn btn-tiny" do
+              = link_to new_group_path, class: "btn btn-xs" do
                 Create a group
 
 .save-project-loader.hide

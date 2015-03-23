@@ -26,7 +26,7 @@ module PerforceSwarm
     def command(command)
       return super unless [*command].first == 'receive-pack'
       shell_path = File.expand_path(Gitlab.config.gitlab_shell.path)
-      [File.join(shell_path, 'perforce_swarm', 'bin', 'swarm-receive-pack').to_s] + [*command][1..-1]
+      [File.join(shell_path, 'perforce_swarm', 'bin', 'swarm-receive-pack')] + [*command][1..-1]
     end
   end
 end

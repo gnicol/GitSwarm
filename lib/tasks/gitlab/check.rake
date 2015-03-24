@@ -29,6 +29,7 @@ namespace :gitlab do
       check_redis_version
       check_ruby_version
       check_git_version
+      check_active_users
 
       finished_checking "GitLab"
     end
@@ -328,16 +329,20 @@ namespace :gitlab do
       if correct_options.all?
         puts "yes".green
       else
-        puts "no".red
-        try_fixing_it(
-          sudo_gitlab("\"#{Gitlab.config.git.bin_path}\" config --global user.name  \"#{options["user.name"]}\""),
-          sudo_gitlab("\"#{Gitlab.config.git.bin_path}\" config --global user.email \"#{options["user.email"]}\""),
-          sudo_gitlab("\"#{Gitlab.config.git.bin_path}\" config --global core.autocrlf \"#{options["core.autocrlf"]}\"")
-        )
-        for_more_information(
-          see_installation_guide_section "GitLab"
-        )
-        fix_and_rerun
+        print "Trying to fix Git error automatically. ..."
+        if auto_fix_git_config(options)
+          puts "Success".green
+        else
+          puts "Failed".red
+          try_fixing_it(
+            sudo_gitlab("\"#{Gitlab.config.git.bin_path}\" config --global user.name  \"#{options["user.name"]}\""),
+            sudo_gitlab("\"#{Gitlab.config.git.bin_path}\" config --global user.email \"#{options["user.email"]}\""),
+            sudo_gitlab("\"#{Gitlab.config.git.bin_path}\" config --global core.autocrlf \"#{options["core.autocrlf"]}\"")
+          )
+          for_more_information(
+            see_installation_guide_section "GitLab"
+          )
+        end
       end
     end
   end
@@ -781,6 +786,10 @@ namespace :gitlab do
     end
   end
 
+  def check_active_users
+    puts "Active users: #{User.active.count}"
+  end
+
   def omnibus_gitlab?
     Dir.pwd == '/opt/gitlab/embedded/service/gitlab-rails'
   end
@@ -801,3 +810,4 @@ namespace :gitlab do
     end
   end
 end
+

@@ -1,10 +1,10 @@
 module MergeRequests
   class RefreshService < MergeRequests::BaseService
     def execute(oldrev, newrev, ref)
-      return true unless ref =~ /heads/
+      return true unless Gitlab::Git.branch_ref?(ref)
 
       @oldrev, @newrev = oldrev, newrev
-      @branch_name = ref.gsub("refs/heads/", "")
+      @branch_name = Gitlab::Git.ref_name(ref)
       @fork_merge_requests = @project.fork_merge_requests.opened
       @commits = @project.repository.commits_between(oldrev, newrev)
 
@@ -53,7 +53,7 @@ module MergeRequests
 
         if merge_request.source_branch == @branch_name || force_push?
           merge_request.reload_code
-          merge_request.mark_as_unchecked
+          update_merge_request(merge_request)
         else
           mr_commit_ids = merge_request.commits.map(&:id)
           push_commit_ids = @commits.map(&:id)
@@ -61,12 +61,18 @@ module MergeRequests
 
           if matches.any?
             merge_request.reload_code
-            merge_request.mark_as_unchecked
+            update_merge_request(merge_request)
           else
-            merge_request.mark_as_unchecked
+            update_merge_request(merge_request)
           end
         end
       end
+    end
+
+    def update_merge_request(merge_request)
+      MergeRequests::UpdateService.new(
+        merge_request.target_project,
+        @current_user, merge_status: 'unchecked').execute(merge_request)
     end
 
     # Add comment about pushing new commits to merge requests
@@ -76,8 +82,14 @@ module MergeRequests
       merge_requests = filter_merge_requests(merge_requests)
 
       merge_requests.each do |merge_request|
+        mr_commit_ids = Set.new(merge_request.commits.map(&:id))
+
+        new_commits, existing_commits = @commits.partition do |commit|
+          mr_commit_ids.include?(commit.id)
+        end
+
         Note.create_new_commits_note(merge_request, merge_request.project,
-                                     @current_user, @commits)
+                                     @current_user, new_commits, existing_commits, @oldrev)
       end
     end
 

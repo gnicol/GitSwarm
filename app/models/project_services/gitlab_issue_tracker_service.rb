@@ -2,15 +2,20 @@
 #
 # Table name: services
 #
-#  id         :integer          not null, primary key
-#  type       :string(255)
-#  title      :string(255)
-#  project_id :integer
-#  created_at :datetime
-#  updated_at :datetime
-#  active     :boolean          default(FALSE), not null
-#  properties :text
-#  template   :boolean          default(FALSE)
+#  id                    :integer          not null, primary key
+#  type                  :string(255)
+#  title                 :string(255)
+#  project_id            :integer
+#  created_at            :datetime
+#  updated_at            :datetime
+#  active                :boolean          default(FALSE), not null
+#  properties            :text
+#  template              :boolean          default(FALSE)
+#  push_events           :boolean          default(TRUE)
+#  issues_events         :boolean          default(TRUE)
+#  merge_requests_events :boolean          default(TRUE)
+#  tag_push_events       :boolean          default(TRUE)
+#  note_events           :boolean          default(TRUE), not null
 #
 
 class GitlabIssueTrackerService < IssueTrackerService
@@ -27,15 +32,15 @@ class GitlabIssueTrackerService < IssueTrackerService
   end
 
   def project_url
-    "#{gitlab_url}#{project_issues_path(project)}"
+    "#{gitlab_url}#{namespace_project_issues_path(project.namespace, project)}"
   end
 
   def new_issue_url
-    "#{gitlab_url}#{new_project_issue_path(project_id: project)}"
+    "#{gitlab_url}#{new_namespace_project_issue_path(namespace_id: project.namespace, project_id: project)}"
   end
 
   def issue_url(iid)
-    "#{gitlab_url}#{project_issue_path(project_id: project, id: iid)}"
+    "#{gitlab_url}#{namespace_project_issue_path(namespace_id: project.namespace, project_id: project, id: iid)}"
   end
 
   private

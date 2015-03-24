@@ -136,8 +136,8 @@ class Repository
         commit = Gitlab::Git::Commit.new(rugged_commit)
 
         {
-          author_name: commit.author_name.force_encoding('UTF-8'),
-          author_email: commit.author_email.force_encoding('UTF-8'),
+          author_name: commit.author_name,
+          author_email: commit.author_email,
           additions: commit.stats.additions,
           deletions: commit.stats.deletions,
         }
@@ -146,7 +146,8 @@ class Repository
   end
 
   def timestamps_by_user_log(user)
-    args = %W(git log --author=#{user.email} --since=#{(Date.today - 1.year).to_s} --pretty=format:%cd --date=short)
+    author_emails = '(' + user.all_emails.map{ |e| Regexp.escape(e) }.join('|') + ')'
+    args = %W(git log -E --author=#{author_emails} --since=#{(Date.today - 1.year).to_s} --branches --pretty=format:%cd --date=short)
     dates = Gitlab::Popen.popen(args, path_to_repo).first.split("\n")
 
     if dates.present?
@@ -238,7 +239,7 @@ class Repository
   end
 
   def last_commit_for_path(sha, path)
-    args = %W(git rev-list --max-count 1 #{sha} -- #{path})
+    args = %W(git rev-list --max-count=1 #{sha} -- #{path})
     sha = Gitlab::Popen.popen(args, path_to_repo).first.strip
     commit(sha)
   end

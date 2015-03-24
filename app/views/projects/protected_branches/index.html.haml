@@ -2,7 +2,7 @@
 %p.light Keep stable branches secure and force developers to use Merge Requests
 %hr
 
-.bs-callout.bs-callout-info
+.alert.alert-info
   %p Protected branches are designed to
   %ul
     %li prevent pushes from everybody except #{link_to "masters", help_page_path("permissions", "permissions"), class: "vlink"}
@@ -11,7 +11,7 @@
   %p Read more about #{link_to "project permissions", help_page_path("permissions", "permissions"), class: "underlined-link"}
 
 - if can? current_user, :admin_project, @project
-  = form_for [@project, @protected_branch], html: { class: 'form-horizontal' } do |f|
+  = form_for [@project.namespace.becomes(Namespace), @project, @protected_branch], html: { class: 'form-horizontal' } do |f|
     -if @protected_branch.errors.any?
       .alert.alert-danger
         %ul

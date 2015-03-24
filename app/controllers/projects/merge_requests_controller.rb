@@ -2,7 +2,7 @@ require 'gitlab/satellite/satellite'
 
 class Projects::MergeRequestsController < Projects::ApplicationController
   before_filter :module_enabled
-  before_filter :merge_request, only: [:edit, :update, :show, :diffs, :automerge, :automerge_check, :ci_status]
+  before_filter :merge_request, only: [:edit, :update, :show, :diffs, :automerge, :automerge_check, :ci_status, :toggle_subscription]
   before_filter :closes_issues, only: [:edit, :update, :show, :diffs]
   before_filter :validates_merge_request, only: [:show, :diffs]
   before_filter :define_show_vars, only: [:show, :diffs]
@@ -17,8 +17,19 @@ class Projects::MergeRequestsController < Projects::ApplicationController
   before_filter :authorize_modify_merge_request!, only: [:close, :edit, :update, :sort]
 
   def index
+    terms = params['issue_search']
     @merge_requests = get_merge_requests_collection
-    @merge_requests = @merge_requests.page(params[:page]).per(20)
+    @merge_requests = @merge_requests.full_search(terms) if terms.present?
+    @merge_requests = @merge_requests.page(params[:page]).per(PER_PAGE)
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: {
+          html: view_to_html_string("projects/merge_requests/_merge_requests")
+        }
+      end
+    end
   end
 
   def show
@@ -78,7 +89,7 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     @merge_request = MergeRequests::CreateService.new(project, current_user, merge_request_params).execute
 
     if @merge_request.valid?
-      redirect_to project_merge_request_path(@merge_request.target_project, @merge_request), notice: 'Merge request was successfully created.'
+      redirect_to(merge_request_path(@merge_request))
     else
       @source_project = @merge_request.source_project
       @target_project = @merge_request.target_project
@@ -93,7 +104,14 @@ class Projects::MergeRequestsController < Projects::ApplicationController
       respond_to do |format|
         format.js
         format.html do
-          redirect_to [@merge_request.target_project, @merge_request], notice: 'Merge request was successfully updated.'
+          redirect_to([@merge_request.target_project.namespace.becomes(Namespace),
+                       @merge_request.target_project, @merge_request])
+        end
+        format.json do
+          render json: {
+            saved: @merge_request.valid?,
+            assignee_avatar_url: @merge_request.assignee.try(:avatar_url)
+          }
         end
       end
     else
@@ -154,6 +172,12 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     }
 
     render json: response
+  end
+
+  def toggle_subscription
+    @merge_request.toggle_subscription(current_user)
+    
+    render nothing: true
   end
 
   protected

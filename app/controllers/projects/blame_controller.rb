@@ -2,12 +2,12 @@
 class Projects::BlameController < Projects::ApplicationController
   include ExtractsPath
 
+  before_filter :require_non_empty_project
   before_filter :assign_ref_vars
   before_filter :authorize_download_code!
-  before_filter :require_non_empty_project
 
   def show
-    @blob = @repository.blob_at(@commit.id, @path)
-    @blame = Gitlab::Git::Blame.new(project.repository, @commit.id, @path)
+    @blame = Gitlab::Git::Blame.new(@repository, @commit.id, @path)
+    @blob = @blame.blob
   end
 end

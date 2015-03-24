@@ -184,7 +184,11 @@ Gitlab::Application.routes.draw do
     end
 
     scope module: :profiles do
-      resource :account, only: [:show, :update]
+      resource :account, only: [:show, :update] do
+        member do
+          delete :unlink
+        end
+      end
       resource :notifications, only: [:show, :update]
       resource :password, only: [:new, :create, :edit, :update] do
         member do
@@ -242,7 +246,7 @@ Gitlab::Application.routes.draw do
       resources :group_members, only: [:index, :create, :update, :destroy] do
         delete :leave, on: :collection
       end
-      
+
       resource :avatar, only: [:destroy]
       resources :milestones, only: [:index, :show, :update]
     end
@@ -318,14 +322,6 @@ Gitlab::Application.routes.draw do
             as: :tree
           )
         end
-        resource  :avatar,    only: [:show, :destroy]
-
-        resources :commit,    only: [:show], constraints: { id: /[[:alnum:]]{6,40}/ } do
-          get :branches, on: :member
-        end
-
-        resources :commits,   only: [:show], constraints: { id: /(?:[^.]|\.(?!atom$))+/, format: /atom/ }
-        resources :compare,   only: [:index, :create]
 
         scope do
           get(
@@ -336,8 +332,24 @@ Gitlab::Application.routes.draw do
           )
         end
 
-        resources :network,   only: [:show], constraints: { id: /(?:[^.]|\.(?!json$))+/, format: /json/ }
-        resources :graphs,    only: [:show], constraints: { id: /(?:[^.]|\.(?!json$))+/, format: /json/ } do
+        scope do
+          get(
+            '/commits/*id',
+            to: 'commits#show',
+            constraints: { id: /(?:[^.]|\.(?!atom$))+/, format: /atom/ },
+            as: :commits
+          )
+        end
+
+        resource  :avatar, only: [:show, :destroy]
+        resources :commit, only: [:show], constraints: { id: /[[:alnum:]]{6,40}/ } do
+          get :branches, on: :member
+        end
+
+        resources :compare, only: [:index, :create]
+        resources :network, only: [:show], constraints: { id: /(?:[^.]|\.(?!json$))+/, format: /json/ }
+
+        resources :graphs, only: [:show], constraints: { id: /(?:[^.]|\.(?!json$))+/, format: /json/ } do
           member do
             get :commits
           end

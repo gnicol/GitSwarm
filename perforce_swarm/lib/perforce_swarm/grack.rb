@@ -7,6 +7,15 @@ module PerforceSwarm
       cmd, path, @reqfile, @rpc = match_routing
       @git = get_git(path)
 
+      return super unless Mirror.mirror_url(@git.repo)
+
+      # Fail if the service user hasn't been setup
+      return [
+        500,
+        { 'Content-Type' => 'text/plain' },
+        ['Mirror fetch failed because the gitswarm user doesn\'t exist in GitSwarm']
+      ] unless User.find_by(username: 'gitswarm')
+
       return super unless cmd == 'get_info_refs'
 
       # push errors are fatal but pull errors are ignorable

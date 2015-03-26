@@ -1,5 +1,10 @@
 module PerforceSwarm
   class Engine < ::Rails::Engine
+    # Require our api changes before GitLab's in order to influence the api before it is mounted
+    config.before_initialize do
+      Dir["#{Rails.root}/perforce_swarm/lib/api/*.rb"].each { |file| require file }
+    end
+
     # Gitlab requires all their libs in an initializer, (config/initializers/2_app.rb)
     # So we will go ahead and do the same for ourselves
     initializer 'swarm_load_libs' do

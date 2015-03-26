@@ -25,8 +25,11 @@ module PerforceSwarm
   module GrackGitExtension
     def command(command)
       return super unless [*command].first == 'receive-pack'
-      shell_path = File.expand_path(Gitlab.config.gitlab_shell.path)
-      [File.join(shell_path, 'perforce_swarm', 'bin', 'swarm-receive-pack')] + [*command][1..-1]
+
+      git_path            = @git_path || 'git'
+      shell_path          = File.expand_path(Gitlab.config.gitlab_shell.path)
+      swarm_receive_pack  = File.join(shell_path, 'perforce_swarm', 'bin', 'swarm-receive-pack')
+      [swarm_receive_pack, "--git-path=#{git_path}"] + [*command][1..-1]
     end
   end
 end

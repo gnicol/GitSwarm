@@ -74,6 +74,17 @@ wget http://preview.perforce.com/gitswarm/perforce-gitswarm_2015.1.beta.el7.x86_
 sudo rpm -i perforce-gitswarm_2015.1.beta.el7.x86_64.rpm
         ```
 
+1.  **Specify the GitSwarm URL**:
+
+    The URL that is used to reach GitSwarm needs to be specified in
+    GitSwarm's configuration file, so that repository clone links can be
+    displayed properly. Edit the following line to
+    `/etc/gitswarm/gitlab.rb`:
+
+    ```
+external_url "http://gitswarm.example.com"
+    ```
+
 1.  **Configure and start GitSwarm.**
 
     ```

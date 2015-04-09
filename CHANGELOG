@@ -1,6 +1,7 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 7.10.0 (unreleased)
+  - Fix bug where Wiki pages that included a '/' were no longer accessible (Stan Hu)
   - Fix bug where error messages from Dropzone would not be displayed on the issues page (Stan Hu)
   - Add ability to configure Reply-To address in gitlab.yml (Stan Hu)
   - Fix broken side-by-side diff view on merge request page (Stan Hu)
@@ -63,6 +64,7 @@ v 7.10.0 (unreleased)
   - Fixed link paths for HTTP and SSH on the admin project view (Jeremy Maziarz)
   - Fix and improve help rendering (Sullivan Sénéchal)
   - Fix final line in EmailsOnPush email diff being rendered as error.
+  - Authometic setup GitLab CI project for forks if origin project has GitLab CI enabled
 
 v 7.9.3
   - Contains no changes

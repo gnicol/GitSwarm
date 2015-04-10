@@ -25,10 +25,6 @@ if ENV['RAILS_ENV'] == 'test'
   end
 
   Spinach.hooks.before_run do
-    # Fixes Rack::Timeout::RequestTimeoutError by
-    # waiting longer than the default for our engine
-    Slowpoke.timeout = 90
-
     # Creating a hash of all feature names (keys) and corresponding list of scenarios (values) that need to be SKIPPED
     # All scenarios in parent application that need to be skipped should be marked with a '@skip-parent' tag
     # in the rails engine, for a dummy scenario with the same name & feature location as the parent

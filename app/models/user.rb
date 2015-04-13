@@ -414,8 +414,16 @@ class User < ActiveRecord::Base
     @ldap_identity ||= identities.find_by(["provider LIKE ?", "ldap%"])
   end
 
+  def project_deploy_keys
+    DeployKey.in_projects(self.authorized_projects.pluck(:id))
+  end
+
   def accessible_deploy_keys
-    DeployKey.in_projects(self.authorized_projects.pluck(:id)).uniq
+    @accessible_deploy_keys ||= begin
+      key_ids = project_deploy_keys.pluck(:id)
+      key_ids.push(*DeployKey.are_public.pluck(:id))
+      DeployKey.where(id: key_ids)
+    end
   end
 
   def created_by
@@ -486,13 +494,13 @@ class User < ActiveRecord::Base
   end
 
   def full_website_url
-    return "http://#{website_url}" if website_url !~ /^https?:\/\//
+    return "http://#{website_url}" if website_url !~ /\Ahttps?:\/\//
 
     website_url
   end
 
   def short_website_url
-    website_url.gsub(/https?:\/\//, '')
+    website_url.sub(/\Ahttps?:\/\//, '')
   end
 
   def all_ssh_keys

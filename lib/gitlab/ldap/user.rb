@@ -1,4 +1,4 @@
-require 'gitlab/oauth/user'
+require 'gitlab/o_auth/user'
 
 # LDAP extension for User model
 #
@@ -13,7 +13,7 @@ module Gitlab
         def find_by_uid_and_provider(uid, provider)
           # LDAP distinguished name is case-insensitive
           identity = ::Identity.
-            where(provider: [provider, :ldap]).
+            where(provider: provider).
             where('lower(extern_uid) = ?', uid.downcase).last
           identity && identity.user
         end
@@ -39,6 +39,7 @@ module Gitlab
       end
 
       def update_user_attributes
+        gl_user.skip_reconfirmation!
         gl_user.email = auth_hash.email
 
         # Build new identity only if we dont have have same one

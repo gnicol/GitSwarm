@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150328132231) do
+ActiveRecord::Schema.define(version: 20150413192223) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -132,6 +132,7 @@ ActiveRecord::Schema.define(version: 20150328132231) do
     t.string   "title"
     t.string   "type"
     t.string   "fingerprint"
+    t.boolean  "public",      default: false, null: false
   end
 
   add_index "keys", ["created_at", "id"], name: "index_keys_on_created_at_and_id", using: :btree
@@ -459,6 +460,7 @@ ActiveRecord::Schema.define(version: 20150328132231) do
     t.integer  "notification_level",            default: 1,     null: false
     t.datetime "password_expires_at"
     t.integer  "created_by_id"
+    t.datetime "last_credential_check_at"
     t.string   "avatar"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
@@ -466,7 +468,6 @@ ActiveRecord::Schema.define(version: 20150328132231) do
     t.string   "unconfirmed_email"
     t.boolean  "hide_no_ssh_key",               default: false
     t.string   "website_url",                   default: "",    null: false
-    t.datetime "last_credential_check_at"
     t.string   "github_access_token"
     t.string   "gitlab_access_token"
     t.string   "notification_email"
@@ -475,6 +476,7 @@ ActiveRecord::Schema.define(version: 20150328132231) do
     t.string   "bitbucket_access_token"
     t.string   "bitbucket_access_token_secret"
     t.string   "location"
+    t.string   "public_email",                  default: "",    null: false
   end
 
   add_index "users", ["admin"], name: "index_users_on_admin", using: :btree

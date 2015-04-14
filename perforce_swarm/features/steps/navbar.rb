@@ -279,7 +279,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see an empty "My Starred Projects" page' do
-    expect(page).to have_content('You dont have starred projects yet')
+    expect(page).to have_content('You don\'t have starred projects yet')
   end
 
   step 'I should see the "QAProject" page' do

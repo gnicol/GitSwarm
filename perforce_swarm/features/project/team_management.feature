@@ -36,10 +36,10 @@ Feature: Project Team Management
     Then I should still be on the "New project member(s)" form
 
   @javascript @automated @PGL-537
-  Scenario: Attempt to add '*$%&@^!()' in the user field where adding users in a public/internal/private project and verify that 'No matches are found' and page remains the same.
+  Scenario: Attempt to add '*$%&^!()' in the user field where adding users in a public/internal/private project and verify that 'No matches are found' and page remains the same.
     Given I click the button "Add members"
     Then I should see the "New project member(s)" form
-    When I attempt to add "*$%&@^!()" in the People field
+    When I attempt to add "*$%&^!()" in the People field
     Then I should see "No matches found"
     When I click on the "Add users" button
     Then I should see the "New project member(s)" form

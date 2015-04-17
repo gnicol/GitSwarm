@@ -33,9 +33,9 @@ module PerforceSwarm
 
       # Override error pages (500) with our own versions
       app.middleware.insert_after(
-          ::ActionDispatch::ShowExceptions,
-          ::ActionDispatch::ShowExceptions,
-          ::ActionDispatch::PublicExceptions.new("#{root}/public")
+        ::ActionDispatch::ShowExceptions,
+        ::ActionDispatch::ShowExceptions,
+        ::ActionDispatch::PublicExceptions.new("#{root}/public")
       )
     end
   end

@@ -316,7 +316,7 @@ GEM
       turbolinks
     jquery-ui-rails (4.2.1)
       railties (>= 3.2.16)
-    js-routes (1.0.0)
+    js-routes (1.0.1)
       railties (>= 3.2)
       sprockets-rails
     json (1.8.2)

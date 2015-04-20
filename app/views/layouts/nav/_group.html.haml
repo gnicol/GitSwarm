@@ -24,13 +24,13 @@
         Merge Requests
         - if current_user
           %span.count= MergeRequest.opened.of_group(@group).count
-  = nav_link(path: 'groups#members') do
-    = link_to members_group_path(@group), title: 'Members' do
+  = nav_link(controller: [:group_members]) do
+    = link_to group_group_members_path(@group), title: 'Members' do
       %i.fa.fa-users
       %span
         Members
 
-  - if can?(current_user, :manage_group, @group)
+  - if can?(current_user, :admin_group, @group)
     = nav_link(html_options: { class: "#{"active" if group_settings_page?} separate-item" }) do
       = link_to edit_group_path(@group), title: 'Settings', class: "tab no-highlight" do
         %i.fa.fa-cogs

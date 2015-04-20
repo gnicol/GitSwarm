@@ -1,65 +1,23 @@
 require Rails.root.join('app', 'controllers', 'help_controller')
 
 module PerforceSwarm
-  # Override the CE help controller to handle non-Markdown files
-  # (e.g. images) within the /doc path
+  # Override the CE help controller to search the swarm directory for files
   module HelpControllerExtension
-    def show
-      @category = params[:category]
-      @file     = params[:file]
-      extension = request.path_parameters[:format]
-
-      # try serving the file from our docs and the apps docs
-      return if attempt_show('perforce_swarm/doc', @category, @file, extension)
-      return if attempt_show('doc', @category, @file, extension)
-
-      # otherwise, show the appropriate error
-      if !extension.blank? && extension != 'md'
-        render nothing: true, status: 404
+    def render_doc
+      if File.exist?(Rails.root.join('perforce_swarm', 'doc', @filepath + '.md'))
+        render 'show.html.haml'
       else
-        not_found!
+        super
       end
     end
 
-    def attempt_show(prefix, category, file, extension)
-      # calculate the intended root and the requested path
-      doc_path  = File.realpath(Rails.root.join(prefix))
-      file_path = Rails.root.join(prefix, category, file)
-
-      # if we have a non-md extension try to render it as an image
-      if !extension.blank? && extension != 'md'
-        begin
-          asset_path = File.realpath("#{file_path}.#{extension}")
-        rescue Errno::ENOENT
-          asset_path = false
-        end
-
-        if asset_path && asset_path.start_with?(doc_path)
-          send_file(
-            asset_path,
-            x_sendfile:   true,
-            type:         request.format.symbol ? request.format : 'application/octet-stream',
-            disposition:  'inline'
-          )
-          return true
-        end
-
-        return false
+    def send_file_data
+      path = Rails.root.join('perforce_swarm', 'doc', "#{@filepath}.#{@format}")
+      if File.exist?(path)
+        send_file(path, disposition: 'inline')
+      else
+        super
       end
-
-      # looks like we have a markdown file; ensure its under the right path and render
-      begin
-        md_path = File.realpath("#{file_path}.md")
-      rescue Errno::ENOENT
-        md_path = false
-      end
-
-      if md_path && md_path.start_with?(doc_path)
-        render 'show'
-        return true
-      end
-
-      false
     end
   end
 end

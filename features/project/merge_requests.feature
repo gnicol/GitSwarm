@@ -166,6 +166,13 @@ Feature: Project Merge Requests
     And I click Side-by-side Diff tab
     Then I should see comments on the side-by-side diff page
 
+  @javascript
+  Scenario: I view diffs on a merge request
+    Given project "Shop" have "Bug NS-05" open merge request with diffs inside
+    And I visit merge request page "Bug NS-05"
+    And I click on the Changes tab via Javascript
+    Then I should see the proper Inline and Side-by-side links
+
   # Task status in issues list
 
   Scenario: Merge requests list should display task status
@@ -218,3 +225,17 @@ Feature: Project Merge Requests
     And I click link "Edit" for the merge request
     And I preview a description text like "Bug fixed :smile:"
     Then I should see the Markdown write tab
+
+  @javascript
+  Scenario: I search merge request
+    Given I click link "All"
+    When I fill in merge request search with "Fe"
+    Then I should see "Feature NS-03" in merge requests
+    And I should not see "Bug NS-04" in merge requests
+
+  @javascript
+  Scenario: I can unsubscribe from merge request
+    Given I visit merge request page "Bug NS-04"
+    Then I should see that I am subscribed
+    When I click button "Unsubscribe"
+    Then I should see that I am unsubscribed

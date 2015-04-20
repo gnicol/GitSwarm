@@ -20,11 +20,16 @@ class @MergeRequest
     if $("a.btn-close").length
       $("li.task-list-item input:checkbox").prop("disabled", false)
 
-    $('.issuable-affix').affix offset:
-      top: ->
-        @top = $('.merge-request-details').outerHeight(true) + 70
-      bottom: ->
-        @bottom = $('.footer').outerHeight(true)
+    $('.merge-request-details').waitForImages ->
+      $('.issuable-affix').affix offset:
+        top: ->
+          @top = ($('.issuable-affix').offset().top - 70)
+        bottom: ->
+          @bottom = $('.footer').outerHeight(true)
+      $('.issuable-affix').on 'affix.bs.affix', ->
+        $(@).width($(@).outerWidth())
+      .on 'affixed-top.bs.affix affixed-bottom.bs.affix', ->
+        $(@).width('')
 
   # Local jQuery finder
   $: (selector) ->
@@ -80,12 +85,8 @@ class @MergeRequest
       this.$('.remove_source_branch_in_progress').hide()
       this.$('.remove_source_branch_widget.failed').show()
 
-    $(".task-list-item input:checkbox").on(
-      "click"
-      null
-      "merge_request"
-      updateTaskState
-    )
+    $('.task-list-item input:checkbox').off('change')
+    $('.task-list-item input:checkbox').change('merge_request', updateTaskState)
 
   activateTab: (action) ->
     this.$('.merge-request-tabs li').removeClass 'active'
@@ -95,6 +96,7 @@ class @MergeRequest
         this.$('.merge-request-tabs .diffs-tab').addClass 'active'
         this.loadDiff() unless @diffs_loaded
         this.$('.diffs').show()
+        $(".diff-header").trigger("sticky_kit:recalc")
       when 'commits'
         this.$('.merge-request-tabs .commits-tab').addClass 'active'
         this.$('.commits').show()
@@ -108,11 +110,17 @@ class @MergeRequest
 
   showCiState: (state) ->
     $('.ci_widget').hide()
-    allowed_states = ["failed", "running", "pending", "success"]
+    allowed_states = ["failed", "canceled", "running", "pending", "success"]
     if state in allowed_states
       $('.ci_widget.ci-' + state).show()
+      switch state
+        when "failed", "canceled"
+          @setMergeButtonClass('btn-danger')
+        when "running", "pending"
+          @setMergeButtonClass('btn-warning')
     else
       $('.ci_widget.ci-error').show()
+      @setMergeButtonClass('btn-danger')
 
   showCiCoverage: (coverage) ->
     cov_html = $('<span>')
@@ -123,7 +131,7 @@ class @MergeRequest
   loadDiff: (event) ->
     $.ajax
       type: 'GET'
-      url: this.$('.merge-request-tabs .diffs-tab a').attr('href')
+      url: this.$('.merge-request-tabs .diffs-tab a').attr('href') + ".json"
       beforeSend: =>
         this.$('.mr-loading-status .loading').show()
       complete: =>
@@ -142,6 +150,9 @@ class @MergeRequest
     this.$('.merge-in-progress').hide()
     this.$('.automerge_widget.already_cannot_be_merged').show()
 
+  setMergeButtonClass: (css_class) ->
+    $('.accept_merge_request').removeClass("btn-create").addClass(css_class)
+
   mergeInProgress: ->
     $.ajax
       type: 'GET'
@@ -153,4 +164,3 @@ class @MergeRequest
           else
             setTimeout(merge_request.mergeInProgress, 3000)
       dataType: 'json'
-

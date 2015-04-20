@@ -20,6 +20,13 @@ Please treat our volunteers with courtesy and respect, it will go a long way tow
 
 Issues and merge requests should be in English and contain appropriate language for audiences of all ages.
 
+## Helping others
+
+Please help other GitLab users when you can.
+The channnels people will reach out on can be found on the [getting help page](https://about.gitlab.com/getting-help/).
+Sign up for the mailinglist, answer GitLab questions on StackOverflow or respond in the irc channel.
+You can also sign up on [CodeTriage](http://www.codetriage.com/gitlabhq/gitlabhq) to help with one issue every day.
+
 ## Issue tracker
 
 To get support for your particular problem please use the channels as detailed in the [getting help section of the readme](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/README.md#getting-help). Professional [support subscriptions](http://about.gitlab.com/subscription/) and [consulting services](http://about.gitlab.com/consultancy/) are available from [GitLab.com](http://about.gitlab.com/).
@@ -56,13 +63,15 @@ Merge requests can be filed either at [gitlab.com](https://gitlab.com/gitlab-org
 
 If you are new to GitLab development (or web development in general), search for the label `easyfix` ([gitlab.com](https://gitlab.com/gitlab-org/gitlab-ce/issues?label_name=easyfix), [github](https://github.com/gitlabhq/gitlabhq/labels/easyfix)). Those are issues easy to fix, marked by the GitLab core-team. If you are unsure how to proceed but want to help, mention one of the core-team members to give you a hint.
 
+To start with GitLab download the [GitLab Development Kit](https://gitlab.com/gitlab-org/gitlab-development-kit) and see [Development section](doc/development/README.md) in the help file. 
+
 ### Merge request guidelines
 
 If you can, please submit a merge request with the fix or improvements including tests. If you don't know how to fix the issue but can write a test that exposes the issue we will accept that as well. In general bug fixes that include a regression test are merged quickly while new features without proper tests are least likely to receive timely feedback. The workflow to make a merge request is as follows:
 
 1. Fork the project on GitLab Cloud
 1. Create a feature branch
-1. Write [tests](README.md#run-the-tests) and code
+1. Write [tests](https://gitlab.com/gitlab-org/gitlab-development-kit#running-the-tests) and code
 1. Add your changes to the [CHANGELOG](CHANGELOG)
 1. If you are changing the README, some documentation or other things which have no effect on the tests, add `[ci skip]` somewhere in the commit message
 1. If you have multiple commits please combine them into one commit by [squashing them](http://git-scm.com/book/en/Git-Tools-Rewriting-History#Squashing-Commits)

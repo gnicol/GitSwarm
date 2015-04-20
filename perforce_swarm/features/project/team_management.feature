@@ -28,21 +28,21 @@ Feature: Project Team Management
 
   @javascript @automated @PGL-537
   Scenario: Attempt to add a invalid user to a public/internal/private project and verify that "No matches are found" and page remains the same.
-    Given I click link "New project member"
-    Then I should see the "New project member(s)" page
+    Given I click the button "Add members"
+    Then I should see the "New project member(s)" form
     When I attempt to add a non-existent user in the People field
     Then I should see "No matches found"
     When I click on the "Add users" button
-    Then I should still be on the "New project member(s)" page
+    Then I should still be on the "New project member(s)" form
 
   @javascript @automated @PGL-537
-  Scenario: Attempt to add '*$%&@^!()' in the user field where adding users in a public/internal/private project and verify that 'No matches are found' and page remains the same.
-    Given I click link "New project member"
-    Then I should see the "New project member(s)" page
-    When I attempt to add "*$%&@^!()" in the People field
+  Scenario: Attempt to add '*$%&^!()' in the user field where adding users in a public/internal/private project and verify that 'No matches are found' and page remains the same.
+    Given I click the button "Add members"
+    Then I should see the "New project member(s)" form
+    When I attempt to add "*$%&^!()" in the People field
     Then I should see "No matches found"
     When I click on the "Add users" button
-    Then I should see the "New project member(s)" page
+    Then I should see the "New project member(s)" form
 
   #########################
   # Receiving membership from the project owner through 'Import members' button.
@@ -71,5 +71,6 @@ Feature: Project Team Management
     And "Sam" is "Shop" developer
     And I visit project "Shop" team page
     Then I should see "Sam" in team list
-    When I click on the remove button
+    When I click cancel link for "Sam"
+    And I visit project "Shop" team page
     Then I should not see "Sam" in team list

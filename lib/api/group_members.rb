@@ -9,8 +9,7 @@ module API
       #  GET /groups/:id/members
       get ":id/members" do
         group = find_group(params[:id])
-        members = group.group_members
-        users = (paginate members).collect(&:user)
+        users = group.users
         present users, with: Entities::GroupMember, group: group
       end
 
@@ -24,7 +23,7 @@ module API
       #  POST /groups/:id/members
       post ":id/members" do
         group = find_group(params[:id])
-        authorize! :manage_group, group
+        authorize! :admin_group, group
         required_attributes! [:user_id, :access_level]
 
         unless validate_access_level?(params[:access_level])
@@ -35,7 +34,7 @@ module API
           render_api_error!("Already exists", 409)
         end
 
-        group.add_users([params[:user_id]], params[:access_level])
+        group.add_users([params[:user_id]], params[:access_level], current_user)
         member = group.group_members.find_by(user_id: params[:user_id])
         present member.user, with: Entities::GroupMember, group: group
       end
@@ -50,17 +49,17 @@ module API
       #   PUT /groups/:id/members/:user_id
       put ':id/members/:user_id' do
         group = find_group(params[:id])
-        authorize! :manage_group, group
+        authorize! :admin_group, group
         required_attributes! [:access_level]
 
-        team_member = group.group_members.find_by(user_id: params[:user_id])
-        not_found!('User can not be found') if team_member.nil?
+        group_member = group.group_members.find_by(user_id: params[:user_id])
+        not_found!('User can not be found') if group_member.nil?
 
-        if team_member.update_attributes(access_level: params[:access_level])
-          @member = team_member.user
+        if group_member.update_attributes(access_level: params[:access_level])
+          @member = group_member.user
           present @member, with: Entities::GroupMember, group: group
         else
-          handle_member_errors team_member.errors
+          handle_member_errors group_member.errors
         end
       end
 
@@ -74,7 +73,7 @@ module API
       #   DELETE /groups/:id/members/:user_id
       delete ":id/members/:user_id" do
         group = find_group(params[:id])
-        authorize! :manage_group, group
+        authorize! :admin_group, group
         member = group.group_members.find_by(user_id: params[:user_id])
 
         if member.nil?

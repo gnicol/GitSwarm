@@ -1,10 +1,14 @@
 module ProjectsHelper
-  def remove_from_project_team_message(project, user)
-    "You are going to remove #{user.name} from #{project.name} project team. Are you sure?"
+  def remove_from_project_team_message(project, member)
+    if member.user
+      "You are going to remove #{member.user.name} from #{project.name} project team. Are you sure?"
+    else
+      "You are going to revoke the invitation for #{member.invite_email} to join #{project.name} project team. Are you sure?"
+    end
   end
 
   def link_to_project(project)
-    link_to project do
+    link_to [project.namespace.becomes(Namespace), project] do
       title = content_tag(:span, project.name, class: 'project-name')
 
       if project.namespace
@@ -42,12 +46,20 @@ module ProjectsHelper
   def project_title(project)
     if project.group
       content_tag :span do
-        link_to(simple_sanitize(project.group.name), group_path(project.group)) + ' / ' + link_to(simple_sanitize(project.name), project_path(project))
+        link_to(
+          simple_sanitize(project.group.name), group_path(project.group)
+        ) + ' / ' +
+          link_to(simple_sanitize(project.name),
+                  project_path(project))
       end
     else
       owner = project.namespace.owner
       content_tag :span do
-        link_to(simple_sanitize(owner.name), user_path(owner)) + ' / ' + link_to(simple_sanitize(project.name), project_path(project))
+        link_to(
+          simple_sanitize(owner.name), user_path(owner)
+        ) + ' / ' +
+          link_to(simple_sanitize(project.name),
+                  project_path(project))
       end
     end
   end
@@ -72,17 +84,17 @@ module ProjectsHelper
     @project.milestones.active.order("due_date, title ASC")
   end
 
-  def link_to_toggle_star(title, starred, signed_in)
-    cls = 'star-btn'
-    cls << ' disabled' unless signed_in
+  def link_to_toggle_star(title, starred)
+    cls = 'star-btn btn btn-sm btn-default'
+
+    toggle_text =
+      if starred
+        ' Unstar'
+      else
+        ' Star'
+      end
 
     toggle_html = content_tag('span', class: 'toggle') do
-      toggle_text = if starred
-                      ' Unstar'
-                    else
-                      ' Star'
-                    end
-
       icon('star') + toggle_text
     end
 
@@ -98,19 +110,32 @@ module ProjectsHelper
       data: { type: 'json' }
     }
 
+    path = toggle_star_namespace_project_path(@project.namespace, @project)
 
     content_tag 'span', class: starred ? 'turn-on' : 'turn-off' do
-      link_to toggle_star_project_path(@project), link_opts do
+      link_to(path, link_opts) do
         toggle_html + ' ' + count_html
       end
     end
   end
 
   def link_to_toggle_fork
-    out = icon('code-fork')
-    out << ' Fork'
-    out << content_tag(:span, class: 'count') do
+    html = content_tag('span') do
+      icon('code-fork') + ' Fork'
+    end
+
+    count_html = content_tag(:span, class: 'count') do
       @project.forks_count.to_s
+    end
+
+    html + count_html
+  end
+
+  def project_for_deploy_key(deploy_key)
+    if deploy_key.projects.include?(@project)
+      @project
+    else
+      deploy_key.projects.find { |project| can?(current_user, :read_project, project) }
     end
   end
 
@@ -133,6 +158,10 @@ module ProjectsHelper
 
     [:issues, :wiki, :snippets].each do |feature|
       nav_tabs << feature if project.send :"#{feature}_enabled"
+    end
+
+    if project.issues_enabled || project.merge_requests_enabled
+      nav_tabs << [:milestones, :labels]
     end
 
     nav_tabs.flatten
@@ -221,8 +250,46 @@ module ProjectsHelper
   end
 
   def contribution_guide_url(project)
-    if project && project.repository.contribution_guide
-      project_blob_path(project, tree_join(project.default_branch, project.repository.contribution_guide.name))
+    if project && contribution_guide = project.repository.contribution_guide
+      namespace_project_blob_path(
+        project.namespace,
+        project,
+        tree_join(project.default_branch,
+                  contribution_guide.name)
+      )
+    end
+  end
+
+  def changelog_url(project)
+    if project && changelog = project.repository.changelog
+      namespace_project_blob_path(
+        project.namespace,
+        project,
+        tree_join(project.default_branch,
+                  changelog.name)
+      )
+    end
+  end
+
+  def license_url(project)
+    if project && license = project.repository.license
+      namespace_project_blob_path(
+        project.namespace,
+        project,
+        tree_join(project.default_branch,
+                  license.name)
+      )
+    end
+  end
+
+  def version_url(project)
+    if project && version = project.repository.version
+      namespace_project_blob_path(
+        project.namespace,
+        project,
+        tree_join(project.default_branch,
+                  version.name)
+      )
     end
   end
 
@@ -236,7 +303,7 @@ module ProjectsHelper
 
   def project_wiki_path_with_version(proj, page, version, is_newest)
     url_params = is_newest ? {} : { version_id: version }
-    project_wiki_path(proj, page, url_params)
+    namespace_project_wiki_path(proj.namespace, proj, page, url_params)
   end
 
   def project_status_css_class(status)
@@ -250,11 +317,13 @@ module ProjectsHelper
     end
   end
 
-  def github_import_enabled?
-    enabled_oauth_providers.include?(:github)
-  end
+  def service_field_value(type, value)
+    return value unless type == 'password'
 
-  def gitlab_import_enabled?
-    enabled_oauth_providers.include?(:gitlab)
+    if value.present?
+      "***********"
+    else
+      nil
+    end
   end
 end

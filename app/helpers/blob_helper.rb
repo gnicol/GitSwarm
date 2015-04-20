@@ -17,7 +17,7 @@ module BlobHelper
   end
 
   def no_highlight_files
-    %w(credits changelog copying copyright license authors)
+    %w(credits changelog news copying copyright license authors)
   end
 
   def edit_blob_link(project, ref, path, options = {})
@@ -36,8 +36,12 @@ module BlobHelper
       link_opts[:from_merge_request_id] = from_mr if from_mr
       cls = 'btn btn-small'
       if allowed_tree_edit?(project, ref)
-        link_to text, project_edit_blob_path(project, tree_join(ref, path),
-                                             link_opts), class: cls
+        link_to(text,
+                namespace_project_edit_blob_path(project.namespace, project,
+                                                 tree_join(ref, path),
+                                                 link_opts),
+                class: cls
+               )
       else
         content_tag :span, text, class: cls + ' disabled'
       end + after.html_safe
@@ -56,5 +60,13 @@ module BlobHelper
     else
       'Preview changes'
     end
+  end
+
+  # Return an image icon depending on the file mode and extension
+  #
+  # mode - File unix mode
+  # mode - File name
+  def blob_icon(mode, name)
+    icon("#{file_type_icon_class('file', mode, name)} fw")
   end
 end

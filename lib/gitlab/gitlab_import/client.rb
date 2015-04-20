@@ -9,7 +9,7 @@ module Gitlab
         @client = ::OAuth2::Client.new(
           config.app_id,
           config.app_secret,
-          github_options
+          gitlab_options
         )
 
         if access_token
@@ -26,6 +26,10 @@ module Gitlab
 
       def get_token(code, redirect_uri)
         client.auth_code.get_token(code, redirect_uri: redirect_uri).token
+      end
+
+      def user
+        api.get("/api/v3/user").parsed
       end
 
       def issues(project_identifier)
@@ -70,12 +74,8 @@ module Gitlab
         Gitlab.config.omniauth.providers.find{|provider| provider.name == "gitlab"}
       end
 
-      def github_options
-        {
-          site: 'https://gitlab.com/',
-          authorize_url: 'oauth/authorize',
-          token_url: 'oauth/token'
-        }
+      def gitlab_options
+        OmniAuth::Strategies::GitLab.default_options[:client_options].symbolize_keys
       end
     end
   end

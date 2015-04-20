@@ -23,8 +23,14 @@ Metrics/PerceivedComplexity:
 Style/ClassAndModuleChildren:
   Enabled: false
 
+Style/ClosingParenthesisIndentation:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
 Style/GuardClause:
+  Enabled: false
+
+Style/SpaceAroundOperators:
   Enabled: false

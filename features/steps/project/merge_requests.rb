@@ -56,6 +56,18 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     page.should_not have_content "Bug NS-04"
   end
 
+  step 'I should see that I am subscribed' do
+    find(".subscribe-button span").text.should == "Unsubscribe"
+  end
+
+  step 'I should see that I am unsubscribed' do
+    find(".subscribe-button span").should have_content("Subscribe")
+  end
+
+  step 'I click button "Unsubscribe"' do
+    click_on "Unsubscribe"
+  end
+
   step 'I click link "Close"' do
     first(:css, '.close-mr-link').click
   end
@@ -101,11 +113,25 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I switch to the diff tab' do
-    visit diffs_project_merge_request_path(project, merge_request)
+    visit diffs_namespace_project_merge_request_path(project.namespace, project, merge_request)
+  end
+
+  step 'I click on the Changes tab via Javascript' do
+    find('.diffs-tab').click
+    sleep 2
+  end
+
+  step 'I should see the proper Inline and Side-by-side links' do
+    buttons = all('#commit-diff-viewtype')
+    expect(buttons.count).to eq(2)
+
+    buttons.each do |b|
+      expect(b['href']).should_not have_content('json')
+    end
   end
 
   step 'I switch to the merge request\'s comments tab' do
-    visit project_merge_request_path(project, merge_request)
+    visit namespace_project_merge_request_path(project.namespace, project, merge_request)
   end
 
   step 'I click on the commit in the merge request' do
@@ -196,13 +222,13 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
   step 'I click link "Hide inline discussion" of the second file' do
     within '.files [id^=diff]:nth-child(2)' do
-      click_link 'Show/Hide comments'
+      find('.js-toggle-diff-comments').click
     end
   end
 
   step 'I click link "Show inline discussion" of the second file' do
     within '.files [id^=diff]:nth-child(2)' do
-      click_link 'Show/Hide comments'
+      find('.js-toggle-diff-comments').click
     end
   end
 
@@ -213,7 +239,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see a comment like "Line is wrong" in the second file' do
-    within '.files [id^=diff]:nth-child(2) .note-text' do
+    within '.files [id^=diff]:nth-child(2) .note-body > .note-text' do
       page.should have_visible_content "Line is wrong"
     end
   end
@@ -225,7 +251,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see a comment like "Line is wrong here" in the second file' do
-    within '.files [id^=diff]:nth-child(2) .note-text' do
+    within '.files [id^=diff]:nth-child(2) .note-body > .note-text' do
       page.should have_visible_content "Line is wrong here"
     end
   end
@@ -238,7 +264,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
       click_button "Add Comment"
     end
 
-    within ".files [id^=diff]:nth-child(1) .note-text" do
+    within ".files [id^=diff]:nth-child(1) .note-body > .note-text" do
       page.should have_content "Line is correct"
     end
   end
@@ -274,6 +300,10 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     within '.files [id^=diff]:nth-child(1) .parallel .note-body > .note-text' do
       page.should have_visible_content "Line is correct"
     end
+  end
+
+  step 'I fill in merge request search with "Fe"' do
+    fill_in 'issue_search', with: "Fe"
   end
 
   def merge_request

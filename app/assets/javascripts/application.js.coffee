@@ -16,6 +16,7 @@
 #= require jquery.scrollTo
 #= require jquery.blockUI
 #= require jquery.turbolinks
+#= require jquery.sticky-kit.min
 #= require turbolinks
 #= require autosave
 #= require bootstrap
@@ -32,7 +33,6 @@
 #= require nprogress
 #= require nprogress-turbolinks
 #= require dropzone
-#= require semantic-ui/sidebar
 #= require mousetrap
 #= require mousetrap/pause
 #= require shortcuts
@@ -115,9 +115,8 @@ if location.hash
 window.addEventListener "hashchange", shiftWindow
 
 $ ->
-
-  # Click a .one_click_select field, select the contents
-  $(".one_click_select").on 'click', -> $(@).select()
+  # Click a .js-select-on-focus field, select the contents
+  $(".js-select-on-focus").on "focusin", -> $(this).select()
 
   $('.remove-row').bind 'ajax:success', ->
     $(this).closest('li').fadeOut()
@@ -170,9 +169,7 @@ $ ->
 
   # Show/hide comments on diff
   $("body").on "click", ".js-toggle-diff-comments", (e) ->
-    $(@).find('i').
-      toggleClass('fa fa-chevron-down').
-      toggleClass('fa fa-chevron-up')
+    $(@).toggleClass('active')
     $(@).closest(".diff-file").find(".notes_holder").toggle()
     e.preventDefault()
 
@@ -182,6 +179,8 @@ $ ->
     text = btn.data("confirm-danger-message")
     form = btn.closest("form")
     new ConfirmDangerModal(form, text)
+
+  new Aside()
 
 (($) ->
   # Disable an element and add the 'disabled' Bootstrap class

@@ -22,6 +22,7 @@ require 'file_size_validator'
 
 class Note < ActiveRecord::Base
   include Mentionable
+  include Gitlab::CurrentSettings
 
   default_value_for :system, false
 
@@ -36,7 +37,8 @@ class Note < ActiveRecord::Base
 
   validates :note, :project, presence: true
   validates :line_code, format: { with: /\A[a-z0-9]+_\d+_\d+\Z/ }, allow_blank: true
-  validates :attachment, file_size: { maximum: 10.megabytes.to_i }
+  # Attachments are deprecated and are handled by Markdown uploader
+  validates :attachment, file_size: { maximum: :max_attachment_size }
 
   validates :noteable_id, presence: true, if: ->(n) { n.noteable_type.present? && n.noteable_type != 'Commit' }
   validates :commit_id, presence: true, if: ->(n) { n.noteable_type == 'Commit' }
@@ -48,6 +50,7 @@ class Note < ActiveRecord::Base
   scope :inline, ->{ where("line_code IS NOT NULL") }
   scope :not_inline, ->{ where(line_code: [nil, '']) }
   scope :system, ->{ where(system: true) }
+  scope :user, ->{ where(system: false) }
   scope :common, ->{ where(noteable_type: ["", nil]) }
   scope :fresh, ->{ order(created_at: :asc, id: :asc) }
   scope :inc_author_project, ->{ includes(:project, :author) }
@@ -59,7 +62,7 @@ class Note < ActiveRecord::Base
 
   class << self
     def create_status_change_note(noteable, project, author, status, source)
-      body = "_Status changed to #{status}#{' by ' + source.gfm_reference if source}_"
+      body = "Status changed to #{status}#{' by ' + source.gfm_reference if source}"
 
       create(
         noteable: noteable,
@@ -95,9 +98,9 @@ class Note < ActiveRecord::Base
 
     def create_milestone_change_note(noteable, project, author, milestone)
       body = if milestone.nil?
-               '_Milestone removed_'
+               'Milestone removed'
              else
-               "_Milestone changed to #{milestone.title}_"
+               "Milestone changed to #{milestone.title}"
              end
 
       create(
@@ -110,7 +113,7 @@ class Note < ActiveRecord::Base
     end
 
     def create_assignee_change_note(noteable, project, author, assignee)
-      body = assignee.nil? ? '_Assignee removed_' : "_Reassigned to @#{assignee.username}_"
+      body = assignee.nil? ? 'Assignee removed' : "Reassigned to @#{assignee.username}"
 
       create({
         noteable: noteable,
@@ -140,7 +143,7 @@ class Note < ActiveRecord::Base
       end
 
       message << ' ' << 'label'.pluralize(labels_count)
-      body = "_#{message.capitalize}_"
+      body = "#{message.capitalize}"
 
       create(
         noteable: noteable,
@@ -151,18 +154,45 @@ class Note < ActiveRecord::Base
       )
     end
 
-    def create_new_commits_note(noteable, project, author, commits)
-      commits_text = ActionController::Base.helpers.pluralize(commits.size, 'new commit')
+    def create_new_commits_note(merge_request, project, author, new_commits, existing_commits = [], oldrev = nil)
+      total_count = new_commits.length + existing_commits.length
+      commits_text = ActionController::Base.helpers.pluralize(total_count, 'commit')
       body = "Added #{commits_text}:\n\n"
 
-      commits.each do |commit|
+      if existing_commits.length > 0
+        commit_ids =
+          if existing_commits.length == 1
+            existing_commits.first.short_id
+          else
+            if oldrev
+              "#{Commit.truncate_sha(oldrev)}...#{existing_commits.last.short_id}"
+            else
+              "#{existing_commits.first.short_id}..#{existing_commits.last.short_id}"
+            end
+          end
+
+        commits_text = ActionController::Base.helpers.pluralize(existing_commits.length, 'commit')
+
+        branch =
+          if merge_request.for_fork?
+            "#{merge_request.target_project_namespace}:#{merge_request.target_branch}"
+          else
+            merge_request.target_branch
+          end
+
+        message = "* #{commit_ids} - #{commits_text} from branch `#{branch}`"
+        body << message
+        body << "\n"
+      end
+
+      new_commits.each do |commit|
         message = "* #{commit.short_id} - #{commit.title}"
         body << message
         body << "\n"
       end
 
       create(
-        noteable: noteable,
+        noteable: merge_request,
         project: project,
         author: author,
         note: body,
@@ -213,7 +243,7 @@ class Note < ActiveRecord::Base
                 where(noteable_id: noteable.id)
               end
 
-      notes.where('note like ?', cross_reference_note_content(gfm_reference)).
+      notes.where('note like ?', cross_reference_note_pattern(gfm_reference)).
         system.any?
     end
 
@@ -222,13 +252,18 @@ class Note < ActiveRecord::Base
     end
 
     def cross_reference_note_prefix
-      '_mentioned in '
+      'mentioned in '
     end
 
     private
 
     def cross_reference_note_content(gfm_reference)
-      cross_reference_note_prefix + "#{gfm_reference}_"
+      cross_reference_note_prefix + "#{gfm_reference}"
+    end
+
+    def cross_reference_note_pattern(gfm_reference)
+      # Older cross reference notes contained underscores for emphasis
+      "%" + cross_reference_note_content(gfm_reference) + "%"
     end
 
     # Prepend the mentioner's namespaced project path to the GFM reference for
@@ -288,6 +323,10 @@ class Note < ActiveRecord::Base
     end
   end
 
+  def max_attachment_size
+    current_application_settings.max_attachment_size.megabytes.to_i
+  end
+
   def commit_author
     @commit_author ||=
       project.team.users.find_by(email: noteable.author_email) ||
@@ -308,10 +347,14 @@ class Note < ActiveRecord::Base
     end
   end
 
+  def hook_attrs
+    attributes
+  end
+
   def set_diff
     # First lets find notes with same diff
     # before iterating over all mr diffs
-    diff = Note.where(noteable_id: self.noteable_id, noteable_type: self.noteable_type, line_code: self.line_code).last.try(:diff)
+    diff = diff_for_line_code unless for_merge_request?
     diff ||= find_diff
 
     self.st_diff = diff.to_hash if diff
@@ -319,6 +362,10 @@ class Note < ActiveRecord::Base
 
   def diff
     @diff ||= Gitlab::Git::Diff.new(st_diff) if st_diff.respond_to?(:map)
+  end
+
+  def diff_for_line_code
+    Note.where(noteable_id: noteable_id, noteable_type: noteable_type, line_code: line_code).last.try(:diff)
   end
 
   # Check if such line of code exists in merge request diff
@@ -409,19 +456,19 @@ class Note < ActiveRecord::Base
     prev_lines = []
 
     diff_lines.each do |line|
-      if generate_line_code(line) != self.line_code
-        if line.type == "match"
-          prev_lines.clear
-          prev_match_line = line
-        else
-          prev_lines.push(line)
-          prev_lines.shift if prev_lines.length >= max_number_of_lines
-        end
+      if line.type == "match"
+        prev_lines.clear
+        prev_match_line = line
       else
         prev_lines << line
-        return prev_lines
+
+        break if generate_line_code(line) == self.line_code
+
+        prev_lines.shift if prev_lines.length >= max_number_of_lines
       end
     end
+
+    prev_lines
   end
 
   def diff_lines
@@ -464,6 +511,10 @@ class Note < ActiveRecord::Base
 
   def for_merge_request_diff_line?
     for_merge_request? && for_diff_line?
+  end
+
+  def for_project_snippet?
+    noteable_type == "Snippet"
   end
 
   # override to return commits, which are not active record

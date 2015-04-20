@@ -21,12 +21,18 @@ module Gitlab
       #   total_commits_count: Fixnum
       # }
       #
-      def build(project, user, oldrev, newrev, ref, commits = [])
+      def build(project, user, oldrev, newrev, ref, commits = [], message = nil)
         # Total commits count
         commits_count = commits.size
 
         # Get latest 20 commits ASC
         commits_limited = commits.last(20)
+        
+        # For performance purposes maximum 20 latest commits
+        # will be passed as post receive hook data.
+        commit_attrs = commits_limited.map do |commit|
+          commit.hook_attrs(project)
+        end
 
         # For performance purposes maximum 20 latest commits
         # will be passed as post receive hook data.
@@ -42,6 +48,7 @@ module Gitlab
           after: newrev,
           ref: ref,
           checkout_sha: checkout_sha(project.repository, newrev, ref),
+          message: message,
           user_id: user.id,
           user_name: user.name,
           user_email: user.email,
@@ -71,7 +78,8 @@ module Gitlab
       end
 
       def checkout_sha(repository, newrev, ref)
-        if newrev != Gitlab::Git::BLANK_SHA && Gitlab::Git.tag_ref?(ref)
+        # Find sha for tag, except when it was deleted.
+        if Gitlab::Git.tag_ref?(ref) && !Gitlab::Git.blank_ref?(newrev)
           tag_name = Gitlab::Git.ref_name(ref)
           tag = repository.find_tag(tag_name)
 

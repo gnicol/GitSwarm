@@ -5,10 +5,43 @@ v 7.10.0 (unreleased)
   - Fix bug where Wiki pages that included a '/' were no longer accessible (Stan Hu)
   - Fix bug where error messages from Dropzone would not be displayed on the issues page (Stan Hu)
   - Add ability to configure Reply-To address in gitlab.yml (Stan Hu)
+v 7.11.0 (unreleased)
+  - Fix clone URL field and X11 Primary selection (Dmitry Medvinsky)
+  - Ignore invalid lines in .gitmodules
+  -
+  -
+  -
+  -
+  -
+  -
+  -
+
+v 7.10.0 (unreleased)
+  - Allow projects to be imported from Google Code.
+  - Allow users to be invited by email to join a group or project.
+  - Don't crash when project repository doesn't exist.
+  - Add config var to block auto-created LDAP users.
+  - Don't use HTML ellipsis in EmailsOnPush subject truncated commit message.
+  - Set EmailsOnPush reply-to address to committer email when enabled.
+  - Fix broken file browsing with a submodule that contains a relative link (Stan Hu)
+  - Fix persistent XSS vulnerability around profile website URLs.
+  - Fix project import URL regex to prevent arbitary local repos from being imported.
+  - Fix directory traversal vulnerability around uploads routes.
+  - Fix directory traversal vulnerability around help pages.
+  - Don't leak existence of project via search autocomplete.
+  - Don't leak existence of group or project via search.
+  - Fix bug where Wiki pages that included a '/' were no longer accessible (Stan Hu)
+  - Fix bug where error messages from Dropzone would not be displayed on the issues page (Stan Hu)
+  - Add a rake task to check repository integrity with `git fsck`
+  - Add ability to configure Reply-To address in gitlab.yml (Stan Hu)
+  - Move current user to the top of the list in assignee/author filters (Stan Hu)
   - Fix broken side-by-side diff view on merge request page (Stan Hu)
   - Set Application controller default URL options to ensure all url_for calls are consistent (Stan Hu)
   - Allow HTML tags in Markdown input
   - Fix code unfold not working on Compare commits page (Stan Hu)
+  - Fix generating SSH key fingerprints with OpenSSH 6.8. (Sašo Stanovnik)
+  - Include missing events and fix save functionality in admin service template settings form (Stan Hu)
+  - Fix "Import projects from" button to show the correct instructions (Stan Hu)
   - Fix dots in Wiki slugs causing errors (Stan Hu)
   - Make maximum attachment size configurable via Application Settings (Stan Hu)
   - Update poltergeist to version 1.6.0 to support PhantomJS 2.0 (Zeger-Jan van de Weg)
@@ -65,6 +98,16 @@ v 7.10.0 (unreleased)
   - Fixed link paths for HTTP and SSH on the admin project view (Jeremy Maziarz)
   - Fix and improve help rendering (Sullivan Sénéchal)
   - Fix final line in EmailsOnPush email diff being rendered as error.
+  - Authometic setup GitLab CI project for forks if origin project has GitLab CI enabled
+  - Prevent duplicate Buildkite service creation.
+  - Fix git over ssh errors 'fatal: protocol error: bad line length character' 
+  - Automatically setup GitLab CI project for forks if origin project has GitLab CI enabled
+  - Bust group page project list cache when namespace name or path changes.
+  - Explicitly set image alt-attribute to prevent graphical glitches if gravatars could not be loaded
+  - Allow user to choose a public email to show on public profile
+  - Remove truncation from issue titles on milestone page (Jason Blanchard)
+  - Fix stuck Merge Request merging events from old installations (Ben Bodenmiller)
+  - Fix merge request comments on files with multiple commits
 
 v 7.9.4
   - Security: Fix project import URL regex to prevent arbitary local repos from being imported
@@ -74,6 +117,13 @@ v 7.9.4
 v 7.9.3
   - Contains no changes
   - Add icons to Add dropdown items.
+  - Allow admin to create public deploy keys that are accessible to any project.
+  - Warn when gitlab-shell version doesn't match requirement.
+  - Skip email confirmation when set by admin or via LDAP.
+  - Only allow users to reference groups, projects, issues, MRs, commits they have access to.
+
+v 7.9.3
+  - Contains no changes
 
 v 7.9.2
   - Contains no changes
@@ -166,6 +216,10 @@ v 7.9.0
   - Fix invalid Atom feeds when using emoji, horizontal rules, or images (Christian Walther)
   - Backup of repositories with tar instead of git bundle (only now are git-annex files included in the backup)
   - Add canceled status for CI
+  - Send EmailsOnPush email when branch or tag is created or deleted.
+  - Faster merge request processing for large repository
+  - Prevent doubling AJAX request with each commit visit via Turbolink
+  - Prevent unnecessary doubling of js events on import pages and user calendar
 
 v 7.8.4
   - Fix issue_tracker_id substitution in custom issue trackers
@@ -204,7 +258,6 @@ v 7.8.0
   - Add API endpoint to fetch all changes on a MergeRequest (Jeroen van Baarsen)
   - View note image attachments in new tab when clicked instead of downloading them
   - Improve sorting logic in UI and API. Explicitly define what sorting method is used by default
-  - Allow more variations for commit messages closing issues (Julien Bianchi and Hannes Rosenögger)
   - Fix overflow at sidebar when have several items
   - Add notes for label changes in issue and merge requests
   - Show tags in commit view (Hannes Rosenögger)
@@ -226,7 +279,7 @@ v 7.8.0
   - Add a commit calendar to the user profile (Hannes Rosenögger)
   - Submit comment on command-enter
   - Notify all members of a group when that group is mentioned in a comment, for example: `@gitlab-org` or `@sales`.
-  - Extend issue clossing pattern to include "Resolve", "Resolves", "Resolved", "Resolving" and "Close"
+  - Extend issue clossing pattern to include "Resolve", "Resolves", "Resolved", "Resolving" and "Close" (Julien Bianchi and Hannes Rosenögger)
   - Fix long broadcast message cut-off on left sidebar (Visay Keo)
   - Add Project Avatars (Steven Thonus and Hannes Rosenögger)
   - Password reset token validity increased from 2 hours to 2 days since it is also send on account creation.

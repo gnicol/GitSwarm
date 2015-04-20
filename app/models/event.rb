@@ -55,6 +55,12 @@ class Event < ActiveRecord::Base
         order('id DESC').limit(100).
         update_all(updated_at: Time.now)
     end
+
+    def contributions
+      where("action = ? OR (target_type in (?) AND action in (?))",
+            Event::PUSHED, ["MergeRequest", "Issue"],
+            [Event::CREATED, Event::CLOSED, Event::MERGED])
+    end
   end
 
   def proper?
@@ -177,7 +183,11 @@ class Event < ActiveRecord::Base
     elsif commented?
       "commented on"
     elsif created_project?
-      "created"
+      if project.import?
+        "imported"
+      else
+        "created"
+      end
     else
       "opened"
     end
@@ -247,7 +257,7 @@ class Event < ActiveRecord::Base
   end
 
   def push_with_commits?
-    md_ref? && commits.any? && commit_from && commit_to
+    !commits.empty? && commit_from && commit_to
   end
 
   def last_push_to_non_root?

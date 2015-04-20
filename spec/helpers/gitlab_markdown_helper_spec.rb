@@ -4,6 +4,11 @@ describe GitlabMarkdownHelper do
   include ApplicationHelper
   include IssuesHelper
 
+  # TODO: Properly test this
+  def can?(*)
+    true
+  end
+
   let!(:project) { create(:project) }
   let(:empty_project) { create(:empty_project) }
 
@@ -14,6 +19,9 @@ describe GitlabMarkdownHelper do
   let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
   let(:snippet)       { create(:project_snippet, project: project) }
   let(:member)        { project.project_members.where(user_id: user).first }
+
+  # Helper expects a current_user method.
+  let(:current_user) { user }
 
   def url_helper(image_name)
     File.join(root_url, 'assets', image_name)
@@ -651,7 +659,7 @@ describe GitlabMarkdownHelper do
     end
 
     it "should leave ref-like href of 'manual' links untouched" do
-      expect(markdown("why not [inspect !#{merge_request.iid}](http://example.tld/#!#{merge_request.iid})")).to eq("<p>why not <a href=\"http://example.tld/#!#{merge_request.iid}\">inspect </a><a class=\"gfm gfm-merge_request \" href=\"#{namespace_project_merge_request_url(project.namespace, project, merge_request)}\" title=\"Merge Request: #{merge_request.title}\">!#{merge_request.iid}</a><a href=\"http://example.tld/#!#{merge_request.iid}\"></a></p>\n")
+      expect(markdown("why not [inspect !#{merge_request.iid}](http://example.tld/#!#{merge_request.iid})")).to eq("<p>why not <a href=\"http://example.tld/#!#{merge_request.iid}\">inspect </a><a class=\"gfm gfm-merge_request \" href=\"#{namespace_project_merge_request_path(project.namespace, project, merge_request)}\" title=\"Merge Request: #{merge_request.title}\">!#{merge_request.iid}</a><a href=\"http://example.tld/#!#{merge_request.iid}\"></a></p>\n")
     end
 
     it "should leave ref-like src of images untouched" do
@@ -725,6 +733,36 @@ describe GitlabMarkdownHelper do
      it "should not handle malformed relative urls in reference links for a file in master" do
       actual = "[GitLab readme]: doc/api/README.md\n"
       expected = ""
+      expect(markdown(actual)).to match(expected)
+    end
+
+    it 'should allow whitelisted HTML tags from the user' do
+      actual = '<dl><dt>Term</dt><dd>Definition</dd></dl>'
+      expect(markdown(actual)).to match(actual)
+    end
+
+    it 'should sanitize tags that are not whitelisted' do
+      actual = '<textarea>no inputs allowed</textarea> <blink>no blinks</blink>'
+      expected = 'no inputs allowed no blinks'
+      expect(markdown(actual)).to match(expected)
+      expect(markdown(actual)).not_to match('<.textarea>')
+      expect(markdown(actual)).not_to match('<.blink>')
+    end
+
+    it 'should allow whitelisted tag attributes from the user' do
+      actual = '<a class="custom">link text</a>'
+      expect(markdown(actual)).to match(actual)
+    end
+
+    it 'should sanitize tag attributes that are not whitelisted' do
+      actual = '<a href="http://example.com/bar.html" foo="bar">link text</a>'
+      expected = '<a href="http://example.com/bar.html">link text</a>'
+      expect(markdown(actual)).to match(expected)
+    end
+
+    it 'should sanitize javascript in attributes' do
+      actual = %q(<a href="javascript:alert('foo')">link text</a>)
+      expected = '<a>link text</a>'
       expect(markdown(actual)).to match(expected)
     end
   end
@@ -814,6 +852,17 @@ EOT
       )
       expect(rendered_text).to match(
         /<input.*checkbox.*valid uppercase checked task/
+      )
+    end
+
+    it 'should render checkboxes for nested tasks' do
+      rendered_text = markdown(@source_text_asterisk, parse_tasks: true)
+
+      expect(rendered_text).to match(
+        /<input.*checkbox.*valid unchecked nested task/
+      )
+      expect(rendered_text).to match(
+        /<input.*checkbox.*valid checked nested task/
       )
     end
 

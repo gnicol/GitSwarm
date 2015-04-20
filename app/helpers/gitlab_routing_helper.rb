@@ -29,6 +29,10 @@ module GitlabRoutingHelper
     namespace_project_merge_request_path(entity.project.namespace, entity.project, entity, *args)
   end
 
+  def milestone_path(entity, *args)
+    namespace_project_milestone_path(entity.project.namespace, entity.project, entity, *args)
+  end
+
   def project_url(project, *args)
     namespace_project_url(project.namespace, project, *args)
   end
@@ -47,6 +51,5 @@ module GitlabRoutingHelper
 
   def project_snippet_url(entity, *args)
     namespace_project_snippet_url(entity.project.namespace, entity.project, entity, *args)
-
   end
 end

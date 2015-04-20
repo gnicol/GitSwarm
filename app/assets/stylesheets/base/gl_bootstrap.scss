@@ -152,6 +152,8 @@
  */
 .panel {
   .panel-heading {
+    font-weight: bold;
+
     .panel-head-actions {
       position: relative;
       top: -5px;
@@ -180,6 +182,7 @@
     .panel-heading {
       padding: 6px 15px;
       font-size: 13px;
+      font-weight: normal;
       a {
         color: #777;
       }

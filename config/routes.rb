@@ -8,6 +8,11 @@ Gitlab::Application.routes.draw do
                 authorizations: 'oauth/authorizations'
   end
 
+  # Autocomplete
+  get '/autocomplete/users' => 'autocomplete#users'
+  get '/autocomplete/users/:id' => 'autocomplete#user'
+
+
   # Search
   get 'search' => 'search#show'
   get 'search/autocomplete' => 'search#autocomplete', as: :search_autocomplete
@@ -34,9 +39,9 @@ Gitlab::Application.routes.draw do
 
   # Help
   get 'help'                  => 'help#index'
-  get 'help/:category/:file'  => 'help#show', as: :help_page
   get 'help/shortcuts'
   get 'help/ui'               => 'help#ui'
+  get 'help/:filepath'        => 'help#show', as: :help_page, constraints: { filepath: /[^\.]+/ }
 
   #
   # Global snippets
@@ -48,6 +53,16 @@ Gitlab::Application.routes.draw do
   end
   get '/s/:username' => 'snippets#user_index', as: :user_snippets, constraints: { username: /.*/ }
 
+  #
+  # Invites
+  #
+
+  resources :invites, only: [:show], constraints: { id: /[A-Za-z0-9_-]+/ } do
+    member do
+      post :accept
+      match :decline, via: [:get, :post]
+    end
+  end
 
   #
   # Import
@@ -76,6 +91,15 @@ Gitlab::Application.routes.draw do
       get :callback
       get :jobs
     end
+
+    resource :google_code, only: [:create, :new], controller: :google_code do
+      get :status
+      post :callback
+      get :jobs
+
+      get   :new_user_map,    path: :user_map
+      post  :create_user_map, path: :user_map
+    end
   end
 
   #
@@ -86,18 +110,18 @@ Gitlab::Application.routes.draw do
     # Note attachments and User/Group/Project avatars
     get ":model/:mounted_as/:id/:filename",
         to:           "uploads#show",
-        constraints:  { model: /note|user|group|project/, mounted_as: /avatar|attachment/, filename: /.+/ }
+        constraints:  { model: /note|user|group|project/, mounted_as: /avatar|attachment/, filename: /[^\/]+/ }
 
     # Project markdown uploads
     get ":namespace_id/:project_id/:secret/:filename",
       to:           "projects/uploads#show",
-      constraints:  { namespace_id: /[a-zA-Z.0-9_\-]+/, project_id: /[a-zA-Z.0-9_\-]+/, filename: /.+/ }
+      constraints:  { namespace_id: /[a-zA-Z.0-9_\-]+/, project_id: /[a-zA-Z.0-9_\-]+/, filename: /[^\/]+/ }
   end
 
   # Redirect old note attachments path to new uploads path.
   get "files/note/:id/:filename",
     to:           redirect("uploads/note/attachment/%{id}/%{filename}"),
-    constraints:  { filename: /.+/ }
+    constraints:  { filename: /[^\/]+/ }
 
   #
   # Explore area
@@ -139,6 +163,8 @@ Gitlab::Application.routes.draw do
         put :members_update
       end
     end
+
+    resources :deploy_keys, only: [:index, :show, :new, :create, :destroy]
 
     resources :hooks, only: [:index, :create, :destroy] do
       get :test
@@ -184,7 +210,11 @@ Gitlab::Application.routes.draw do
     end
 
     scope module: :profiles do
-      resource :account, only: [:show, :update]
+      resource :account, only: [:show, :update] do
+        member do
+          delete :unlink
+        end
+      end
       resource :notifications, only: [:show, :update]
       resource :password, only: [:new, :create, :edit, :update] do
         member do
@@ -198,7 +228,10 @@ Gitlab::Application.routes.draw do
   end
 
   get 'u/:username/calendar' => 'users#calendar', as: :user_calendar,
-      constraints: { username: /(?:[^.]|\.(?!atom$))+/, format: /atom/ }
+      constraints: { username: /.*/ }
+
+  get 'u/:username/calendar_activities' => 'users#calendar_activities', as: :user_calendar_activities,
+      constraints: { username: /.*/ }
 
   get '/u/:username' => 'users#show', as: :user,
       constraints: { username: /(?:[^.]|\.(?!atom$))+/, format: /atom/ }
@@ -237,6 +270,7 @@ Gitlab::Application.routes.draw do
 
     scope module: :groups do
       resources :group_members, only: [:index, :create, :update, :destroy] do
+        post :resend_invite, on: :member
         delete :leave, on: :collection
       end
 
@@ -315,13 +349,6 @@ Gitlab::Application.routes.draw do
             as: :tree
           )
         end
-        resource  :avatar,    only: [:show, :destroy]
-
-        resources :commit,    only: [:show], constraints: { id: /[[:alnum:]]{6,40}/ } do
-          get :branches, on: :member
-        end
-
-        resources :compare,   only: [:index, :create]
 
         scope do
           get(
@@ -341,8 +368,15 @@ Gitlab::Application.routes.draw do
           )
         end
 
-        resources :network,   only: [:show], constraints: { id: /(?:[^.]|\.(?!json$))+/, format: /json/ }
-        resources :graphs,    only: [:show], constraints: { id: /(?:[^.]|\.(?!json$))+/, format: /json/ } do
+        resource  :avatar, only: [:show, :destroy]
+        resources :commit, only: [:show], constraints: { id: /[[:alnum:]]{6,40}/ } do
+          get :branches, on: :member
+        end
+
+        resources :compare, only: [:index, :create]
+        resources :network, only: [:show], constraints: { id: /(?:[^.]|\.(?!json$))+/, format: /json/ }
+
+        resources :graphs, only: [:show], constraints: { id: /(?:[^.]|\.(?!json$))+/, format: /json/ } do
           member do
             get :commits
           end
@@ -381,7 +415,7 @@ Gitlab::Application.routes.draw do
           end
         end
 
-        resources :deploy_keys, constraints: { id: /\d+/ } do
+        resources :deploy_keys, constraints: { id: /\d+/ }, only: [:index, :show, :new, :create] do
           member do
             put :enable
             put :disable
@@ -463,6 +497,10 @@ Gitlab::Application.routes.draw do
             get :import
             post :apply_import
           end
+
+          member do
+            post :resend_invite
+          end
         end
 
         resources :notes, only: [:index, :create, :destroy, :update], constraints: { id: /\d+/ } do
@@ -473,7 +511,7 @@ Gitlab::Application.routes.draw do
 
         resources :uploads, only: [:create] do
           collection do
-            get ":secret/:filename", action: :show, as: :show, constraints: { filename: /.+/ }
+            get ":secret/:filename", action: :show, as: :show, constraints: { filename: /[^\/]+/ }
           end
         end
       end

@@ -81,7 +81,7 @@ class Project < ActiveRecord::Base
   has_one :asana_service, dependent: :destroy
   has_one :gemnasium_service, dependent: :destroy
   has_one :slack_service, dependent: :destroy
-  has_one :buildbox_service, dependent: :destroy
+  has_one :buildkite_service, dependent: :destroy
   has_one :bamboo_service, dependent: :destroy
   has_one :teamcity_service, dependent: :destroy
   has_one :pushover_service, dependent: :destroy
@@ -89,6 +89,7 @@ class Project < ActiveRecord::Base
   has_one :redmine_service, dependent: :destroy
   has_one :custom_issue_tracker_service, dependent: :destroy
   has_one :gitlab_issue_tracker_service, dependent: :destroy
+  has_one :external_wiki_service, dependent: :destroy
 
   has_one :forked_project_link, dependent: :destroy, foreign_key: "forked_to_project_id"
 
@@ -113,6 +114,8 @@ class Project < ActiveRecord::Base
   has_many :users_star_projects, dependent: :destroy
   has_many :starrers, through: :users_star_projects, source: :user
 
+  has_one :import_data, dependent: :destroy, class_name: "ProjectImportData"
+
   delegate :name, to: :owner, allow_nil: true, prefix: true
   delegate :members, to: :team, prefix: true
 
@@ -123,12 +126,12 @@ class Project < ActiveRecord::Base
     presence: true,
     length: { within: 0..255 },
     format: { with: Gitlab::Regex.project_name_regex,
-              message: Gitlab::Regex.project_regex_message }
+              message: Gitlab::Regex.project_name_regex_message }
   validates :path,
     presence: true,
     length: { within: 0..255 },
-    format: { with: Gitlab::Regex.path_regex,
-              message: Gitlab::Regex.path_regex_message }
+    format: { with: Gitlab::Regex.project_path_regex,
+              message: Gitlab::Regex.project_path_regex_message }
   validates :issues_enabled, :merge_requests_enabled,
             :wiki_enabled, inclusion: { in: [true, false] }
   validates :issues_tracker_id, length: { maximum: 255 }, allow_blank: true
@@ -184,6 +187,7 @@ class Project < ActiveRecord::Base
     state :failed
 
     after_transition any => :started, do: :add_import_job
+    after_transition any => :finished, do: :clear_import_data
   end
 
   class << self
@@ -259,6 +263,10 @@ class Project < ActiveRecord::Base
 
   def add_import_job
     RepositoryImportWorker.perform_in(2.seconds, id)
+  end
+
+  def clear_import_data
+    self.import_data.destroy if self.import_data
   end
 
   def import?

@@ -95,16 +95,25 @@ class MergeRequest < ActiveRecord::Base
     end
 
     event :mark_as_mergeable do
-      transition unchecked: :can_be_merged
+      transition [:unchecked, :cannot_be_merged] => :can_be_merged
     end
 
     event :mark_as_unmergeable do
-      transition unchecked: :cannot_be_merged
+      transition [:unchecked, :can_be_merged] => :cannot_be_merged
     end
 
     state :unchecked
     state :can_be_merged
     state :cannot_be_merged
+
+    around_transition do |merge_request, transition, block|
+      merge_request.record_timestamps = false
+      begin
+        block.call
+      ensure
+        merge_request.record_timestamps = true
+      end
+    end
   end
 
   validates :source_project, presence: true, unless: :allow_broken
@@ -248,11 +257,11 @@ class MergeRequest < ActiveRecord::Base
   end
 
   # Return the set of issues that will be closed if this merge request is accepted.
-  def closes_issues
+  def closes_issues(current_user = self.author)
     if target_branch == project.default_branch
-      issues = commits.flat_map { |c| c.closes_issues(project) }
-      issues.push(*Gitlab::ClosingIssueExtractor.
-                  closed_by_message_in_project(description, project))
+      issues = commits.flat_map { |c| c.closes_issues(project, current_user) }
+      issues.push(*Gitlab::ClosingIssueExtractor.new(project, current_user).
+                  closed_by_message(description))
       issues.uniq.sort_by(&:id)
     else
       []
@@ -352,6 +361,8 @@ class MergeRequest < ActiveRecord::Base
   end
 
   def locked_long_ago?
-    locked_at && locked_at < (Time.now - 1.day)
+    return false unless locked?
+
+    locked_at.nil? || locked_at < (Time.now - 1.day)
   end
 end

@@ -6,7 +6,7 @@
 
 * [Newlines](#newlines)
 * [Multiple underscores in words](#multiple-underscores-in-words)
-* [URL auto-linking](#url-autolinking)
+* [URL auto-linking](#url-auto-linking)
 * [Code and Syntax Highlighting](#code-and-syntax-highlighting)
 * [Emoji](#emoji)
 * [Special GitLab references](#special-gitlab-references)
@@ -46,14 +46,15 @@ You can also use other rich text files in GitLab. You might have to install a de
 
 GFM honors the markdown specification in how [paragraphs and line breaks are handled](http://daringfireball.net/projects/markdown/syntax#p).
 
-A paragraph is simply one or more consecutive lines of text, separated by one or more blank lines.:
+A paragraph is simply one or more consecutive lines of text, separated by one or more blank lines.  
+Line-breaks, or softreturns, are rendered if you end a line with two or more spaces
 
-    Roses are red
+    Roses are red [followed by two or more spaces]  
     Violets are blue
 
     Sugar is sweet
 
-Roses are red
+Roses are red  
 Violets are blue
 
 Sugar is sweet
@@ -420,7 +421,7 @@ Quote break.
 
 You can also use raw HTML in your Markdown, and it'll mostly work pretty well.
 
-Note that inline HTML is disabled in the default Gitlab configuration, although it is [possible](https://github.com/gitlabhq/gitlabhq/pull/8007/commits) for the system administrator to enable it.
+See the documentation for HTML::Pipeline's [SanitizationFilter](http://www.rubydoc.info/gems/html-pipeline/HTML/Pipeline/SanitizationFilter#WHITELIST-constant) class for the list of allowed HTML tags and attributes.  In addition to the default `SanitizationFilter` whitelist, GitLab allows the `class`, `id`, and `style` attributes.
 
 ```no-highlight
 <dl>

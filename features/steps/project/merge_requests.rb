@@ -61,8 +61,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see that I am unsubscribed' do
-    sleep 0.2
-    find(".subscribe-button span").text.should == "Subscribe"
+    find(".subscribe-button span").should have_content("Subscribe")
   end
 
   step 'I click button "Unsubscribe"' do
@@ -115,6 +114,20 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
   step 'I switch to the diff tab' do
     visit diffs_namespace_project_merge_request_path(project.namespace, project, merge_request)
+  end
+
+  step 'I click on the Changes tab via Javascript' do
+    find('.diffs-tab').click
+    sleep 2
+  end
+
+  step 'I should see the proper Inline and Side-by-side links' do
+    buttons = all('#commit-diff-viewtype')
+    expect(buttons.count).to eq(2)
+
+    buttons.each do |b|
+      expect(b['href']).should_not have_content('json')
+    end
   end
 
   step 'I switch to the merge request\'s comments tab' do
@@ -209,13 +222,13 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
   step 'I click link "Hide inline discussion" of the second file' do
     within '.files [id^=diff]:nth-child(2)' do
-      click_link 'Show/Hide comments'
+      find('.js-toggle-diff-comments').click
     end
   end
 
   step 'I click link "Show inline discussion" of the second file' do
     within '.files [id^=diff]:nth-child(2)' do
-      click_link 'Show/Hide comments'
+      find('.js-toggle-diff-comments').click
     end
   end
 

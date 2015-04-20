@@ -16,6 +16,7 @@
 #  default_branch_protection    :integer          default(2)
 #  twitter_sharing_enabled      :boolean          default(TRUE)
 #  restricted_visibility_levels :text
+#  max_attachment_size          :integer          default(10)
 #
 
 class ApplicationSetting < ActiveRecord::Base
@@ -23,7 +24,7 @@ class ApplicationSetting < ActiveRecord::Base
 
   validates :home_page_url,
     allow_blank: true,
-    format: { with: URI::regexp(%w(http https)), message: "should be a valid url" },
+    format: { with: /\A#{URI.regexp(%w(http https))}\z/, message: "should be a valid url" },
     if: :home_page_url_column_exist
 
   validates_each :restricted_visibility_levels do |record, attr, value|
@@ -49,7 +50,8 @@ class ApplicationSetting < ActiveRecord::Base
       twitter_sharing_enabled: Settings.gitlab['twitter_sharing_enabled'],
       gravatar_enabled: Settings.gravatar['enabled'],
       sign_in_text: Settings.extra['sign_in_text'],
-      restricted_visibility_levels: Settings.gitlab['restricted_visibility_levels']
+      restricted_visibility_levels: Settings.gitlab['restricted_visibility_levels'],
+      max_attachment_size: Settings.gitlab['max_attachment_size']
     )
   end
 

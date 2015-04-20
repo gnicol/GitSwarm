@@ -23,42 +23,40 @@ class GitPushService
     project.repository.expire_cache
     project.update_repository_size
 
-    if push_to_branch?(ref)
-      if push_remove_branch?(ref, newrev)
-        @push_commits = []
-      elsif push_to_new_branch?(ref, oldrev)
-        # Re-find the pushed commits.
-        if is_default_branch?(ref)
-          # Initial push to the default branch. Take the full history of that branch as "newly pushed".
-          @push_commits = project.repository.commits(newrev)
+    if push_remove_branch?(ref, newrev)
+      @push_commits = []
+    elsif push_to_new_branch?(ref, oldrev)
+      # Re-find the pushed commits.
+      if is_default_branch?(ref)
+        # Initial push to the default branch. Take the full history of that branch as "newly pushed".
+        @push_commits = project.repository.commits(newrev)
 
-          # Set protection on the default branch if configured
-          if (current_application_settings.default_branch_protection != PROTECTION_NONE)
-            developers_can_push = current_application_settings.default_branch_protection == PROTECTION_DEV_CAN_PUSH ? true : false
-            project.protected_branches.create({ name: project.default_branch, developers_can_push: developers_can_push })
-          end
-        else
-          # Use the pushed commits that aren't reachable by the default branch
-          # as a heuristic. This may include more commits than are actually pushed, but
-          # that shouldn't matter because we check for existing cross-references later.
-          @push_commits = project.repository.commits_between(project.default_branch, newrev)
-
-          # don't process commits for the initial push to the default branch
-          process_commit_messages(ref)
+        # Set protection on the default branch if configured
+        if (current_application_settings.default_branch_protection != PROTECTION_NONE)
+          developers_can_push = current_application_settings.default_branch_protection == PROTECTION_DEV_CAN_PUSH ? true : false
+          project.protected_branches.create({ name: project.default_branch, developers_can_push: developers_can_push })
         end
-      elsif push_to_existing_branch?(ref, oldrev)
-        # Collect data for this git push
-        @push_commits = project.repository.commits_between(oldrev, newrev)
-        project.update_merge_requests(oldrev, newrev, ref, @user)
+      else
+        # Use the pushed commits that aren't reachable by the default branch
+        # as a heuristic. This may include more commits than are actually pushed, but
+        # that shouldn't matter because we check for existing cross-references later.
+        @push_commits = project.repository.commits_between(project.default_branch, newrev)
+
+        # don't process commits for the initial push to the default branch
         process_commit_messages(ref)
       end
-
-      @push_data = build_push_data(oldrev, newrev, ref)
-
-      EventCreateService.new.push(project, user, @push_data)
-      project.execute_hooks(@push_data.dup, :push_hooks)
-      project.execute_services(@push_data.dup, :push_hooks)
+    elsif push_to_existing_branch?(ref, oldrev)
+      # Collect data for this git push
+      @push_commits = project.repository.commits_between(oldrev, newrev)
+      project.update_merge_requests(oldrev, newrev, ref, @user)
+      process_commit_messages(ref)
     end
+
+    @push_data = build_push_data(oldrev, newrev, ref)
+
+    EventCreateService.new.push(project, user, @push_data)
+    project.execute_hooks(@push_data.dup, :push_hooks)
+    project.execute_services(@push_data.dup, :push_hooks)
   end
 
   protected
@@ -72,7 +70,7 @@ class GitPushService
       # Close issues if these commits were pushed to the project's default branch and the commit message matches the
       # closing regex. Exclude any mentioned Issues from cross-referencing even if the commits are being pushed to
       # a different branch.
-      issues_to_close = commit.closes_issues(project)
+      issues_to_close = commit.closes_issues(project, user)
 
       # Load commit author only if needed.
       # For push with 1k commits it prevents 900+ requests in database
@@ -89,7 +87,7 @@ class GitPushService
       # Create cross-reference notes for any other references. Omit any issues that were referenced in an
       # issue-closing phrase, or have already been mentioned from this commit (probably from this commit
       # being pushed to a different branch).
-      refs = commit.references(project) - issues_to_close
+      refs = commit.references(project, user) - issues_to_close
       refs.reject! { |r| commit.has_mentioned?(r) }
 
       if refs.present?
@@ -109,7 +107,7 @@ class GitPushService
 
   def push_to_existing_branch?(ref, oldrev)
     # Return if this is not a push to a branch (e.g. new commits)
-    Gitlab::Git.branch_ref?(ref) && oldrev != Gitlab::Git::BLANK_SHA
+    Gitlab::Git.branch_ref?(ref) && !Gitlab::Git.blank_ref?(oldrev)
   end
 
   def push_to_new_branch?(ref, oldrev)
@@ -129,6 +127,6 @@ class GitPushService
   end
 
   def commit_user(commit)
-    User.find_for_commit(commit.author_email, commit.author_name) || user
+    commit.author || user
   end
 end

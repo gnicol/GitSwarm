@@ -101,7 +101,7 @@ module DiffHelper
   end
 
   def line_comments
-    @line_comments ||= @line_notes.group_by(&:line_code)
+    @line_comments ||= @line_notes.select(&:active?).group_by(&:line_code)
   end
 
   def organize_comments(type_left, type_right, line_code_left, line_code_right)
@@ -121,8 +121,10 @@ module DiffHelper
   def inline_diff_btn
     params_copy = params.dup
     params_copy[:view] = 'inline'
+    # Always use HTML to handle case where JSON diff rendered this button
+    params_copy.delete(:format)
 
-    link_to url_for(params_copy), id: "commit-diff-viewtype", class: (params[:view] != 'parallel' ? 'btn active' : 'btn') do
+    link_to url_for(params_copy), id: "commit-diff-viewtype", class: (params[:view] != 'parallel' ? 'btn btn-sm active' : 'btn btn-sm') do
       'Inline'
     end
   end
@@ -130,8 +132,10 @@ module DiffHelper
   def parallel_diff_btn
     params_copy = params.dup
     params_copy[:view] = 'parallel'
+    # Always use HTML to handle case where JSON diff rendered this button
+    params_copy.delete(:format)
 
-    link_to url_for(params_copy), id: "commit-diff-viewtype", class: (params[:view] == 'parallel' ? 'btn active' : 'btn') do
+    link_to url_for(params_copy), id: "commit-diff-viewtype", class: (params[:view] == 'parallel' ? 'btn active btn-sm' : 'btn btn-sm') do
       'Side-by-side'
     end
   end

@@ -49,6 +49,7 @@ describe GitPushService do
 
     subject { @push_data }
 
+    it { is_expected.to include(object_kind: 'push') }
     it { is_expected.to include(before: @oldrev) }
     it { is_expected.to include(after: @newrev) }
     it { is_expected.to include(ref: @ref) }
@@ -79,7 +80,17 @@ describe GitPushService do
         it { is_expected.to include(id: @commit.id) }
         it { is_expected.to include(message: @commit.safe_message) }
         it { is_expected.to include(timestamp: @commit.date.xmlschema) }
-        it { is_expected.to include(url: "#{Gitlab.config.gitlab.url}/#{project.to_param}/commit/#{@commit.id}") }
+        it do
+          is_expected.to include(
+            url: [
+              Gitlab.config.gitlab.url,
+              project.namespace.to_param,
+              project.to_param,
+              'commit',
+              @commit.id
+            ].join('/')
+          )
+        end
 
         context "with a author" do
           subject { @push_data[:commits].first[:author] }
@@ -134,11 +145,6 @@ describe GitPushService do
         expect(project).to receive(:execute_hooks)
         service.execute(project, user, 'oldrev', 'newrev', 'refs/heads/master')
       end
-
-      it "when pushing tags" do
-        expect(project).not_to receive(:execute_hooks)
-        service.execute(project, user, 'newrev', 'newrev', 'refs/tags/v1.0.0')
-      end
     end
   end
 
@@ -185,15 +191,6 @@ describe GitPushService do
       expect(Note).to receive(:create_cross_reference_note).with(issue, commit, commit_author, project)
 
       service.execute(project, user, @blankrev, @newrev, 'refs/heads/other')
-    end
-
-    it "finds references in the first push to a default branch" do
-      allow(project.repository).to receive(:commits_between).with(@blankrev, @newrev).and_return([])
-      allow(project.repository).to receive(:commits).with(@newrev).and_return([commit])
-
-      expect(Note).to receive(:create_cross_reference_note).with(issue, commit, commit_author, project)
-
-      service.execute(project, user, @blankrev, @newrev, 'refs/heads/master')
     end
   end
 

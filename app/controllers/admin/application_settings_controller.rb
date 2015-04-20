@@ -20,6 +20,15 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
   end
 
   def application_setting_params
+    restricted_levels = params[:application_setting][:restricted_visibility_levels]
+    if restricted_levels.nil?
+      params[:application_setting][:restricted_visibility_levels] = []
+    else
+      restricted_levels.map! do |level|
+        level.to_i
+      end
+    end
+
     params.require(:application_setting).permit(
       :default_projects_limit,
       :default_branch_protection,
@@ -28,7 +37,9 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
       :gravatar_enabled,
       :twitter_sharing_enabled,
       :sign_in_text,
-      :home_page_url
+      :home_page_url,
+      :max_attachment_size,
+      restricted_visibility_levels: []
     )
   end
 end

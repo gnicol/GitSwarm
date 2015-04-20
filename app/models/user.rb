@@ -2,50 +2,54 @@
 #
 # Table name: users
 #
-#  id                       :integer          not null, primary key
-#  email                    :string(255)      default(""), not null
-#  encrypted_password       :string(255)      default(""), not null
-#  reset_password_token     :string(255)
-#  reset_password_sent_at   :datetime
-#  remember_created_at      :datetime
-#  sign_in_count            :integer          default(0)
-#  current_sign_in_at       :datetime
-#  last_sign_in_at          :datetime
-#  current_sign_in_ip       :string(255)
-#  last_sign_in_ip          :string(255)
-#  created_at               :datetime
-#  updated_at               :datetime
-#  name                     :string(255)
-#  admin                    :boolean          default(FALSE), not null
-#  projects_limit           :integer          default(10)
-#  skype                    :string(255)      default(""), not null
-#  linkedin                 :string(255)      default(""), not null
-#  twitter                  :string(255)      default(""), not null
-#  authentication_token     :string(255)
-#  theme_id                 :integer          default(1), not null
-#  bio                      :string(255)
-#  failed_attempts          :integer          default(0)
-#  locked_at                :datetime
-#  username                 :string(255)
-#  can_create_group         :boolean          default(TRUE), not null
-#  can_create_team          :boolean          default(TRUE), not null
-#  state                    :string(255)
-#  color_scheme_id          :integer          default(1), not null
-#  notification_level       :integer          default(1), not null
-#  password_expires_at      :datetime
-#  created_by_id            :integer
-#  avatar                   :string(255)
-#  confirmation_token       :string(255)
-#  confirmed_at             :datetime
-#  confirmation_sent_at     :datetime
-#  unconfirmed_email        :string(255)
-#  hide_no_ssh_key          :boolean          default(FALSE)
-#  hide_no_password         :boolean          default(FALSE)
-#  website_url              :string(255)      default(""), not null
-#  last_credential_check_at :datetime
-#  github_access_token      :string(255)
-#  notification_email       :string(255)
-#  password_automatically_set :boolean        default(FALSE)
+#  id                            :integer          not null, primary key
+#  email                         :string(255)      default(""), not null
+#  encrypted_password            :string(255)      default(""), not null
+#  reset_password_token          :string(255)
+#  reset_password_sent_at        :datetime
+#  remember_created_at           :datetime
+#  sign_in_count                 :integer          default(0)
+#  current_sign_in_at            :datetime
+#  last_sign_in_at               :datetime
+#  current_sign_in_ip            :string(255)
+#  last_sign_in_ip               :string(255)
+#  created_at                    :datetime
+#  updated_at                    :datetime
+#  name                          :string(255)
+#  admin                         :boolean          default(FALSE), not null
+#  projects_limit                :integer          default(10)
+#  skype                         :string(255)      default(""), not null
+#  linkedin                      :string(255)      default(""), not null
+#  twitter                       :string(255)      default(""), not null
+#  authentication_token          :string(255)
+#  theme_id                      :integer          default(1), not null
+#  bio                           :string(255)
+#  failed_attempts               :integer          default(0)
+#  locked_at                     :datetime
+#  username                      :string(255)
+#  can_create_group              :boolean          default(TRUE), not null
+#  can_create_team               :boolean          default(TRUE), not null
+#  state                         :string(255)
+#  color_scheme_id               :integer          default(1), not null
+#  notification_level            :integer          default(1), not null
+#  password_expires_at           :datetime
+#  created_by_id                 :integer
+#  last_credential_check_at      :datetime
+#  avatar                        :string(255)
+#  confirmation_token            :string(255)
+#  confirmed_at                  :datetime
+#  confirmation_sent_at          :datetime
+#  unconfirmed_email             :string(255)
+#  hide_no_ssh_key               :boolean          default(FALSE)
+#  website_url                   :string(255)      default(""), not null
+#  github_access_token           :string(255)
+#  gitlab_access_token           :string(255)
+#  notification_email            :string(255)
+#  hide_no_password              :boolean          default(FALSE)
+#  password_automatically_set    :boolean          default(FALSE)
+#  bitbucket_access_token        :string(255)
+#  bitbucket_access_token_secret :string(255)
+#  public_email                  :string(255)      default(""), not null
 #
 
 require 'carrierwave/orm/activerecord'
@@ -107,6 +111,7 @@ class User < ActiveRecord::Base
   has_many :notes,                    dependent: :destroy, foreign_key: :author_id
   has_many :merge_requests,           dependent: :destroy, foreign_key: :author_id
   has_many :events,                   dependent: :destroy, foreign_key: :author_id,   class_name: "Event"
+  has_many :subscriptions,            dependent: :destroy
   has_many :recent_events, -> { order "id DESC" }, foreign_key: :author_id,   class_name: "Event"
   has_many :assigned_issues,          dependent: :destroy, foreign_key: :assignee_id, class_name: "Issue"
   has_many :assigned_merge_requests,  dependent: :destroy, foreign_key: :assignee_id, class_name: "MergeRequest"
@@ -119,14 +124,15 @@ class User < ActiveRecord::Base
   validates :name, presence: true
   validates :email, presence: true, email: { strict_mode: true }, uniqueness: true
   validates :notification_email, presence: true, email: { strict_mode: true }
+  validates :public_email, presence: true, email: { strict_mode: true }, allow_blank: true, uniqueness: true
   validates :bio, length: { maximum: 255 }, allow_blank: true
   validates :projects_limit, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :username,
     presence: true,
     uniqueness: { case_sensitive: false },
     exclusion: { in: Gitlab::Blacklist.path },
-    format: { with: Gitlab::Regex.username_regex,
-              message: Gitlab::Regex.username_regex_message }
+    format: { with: Gitlab::Regex.namespace_regex,
+              message: Gitlab::Regex.namespace_regex_message }
 
   validates :notification_level, inclusion: { in: Notification.notification_levels }, presence: true
   validate :namespace_uniq, if: ->(user) { user.username_changed? }
@@ -138,6 +144,7 @@ class User < ActiveRecord::Base
   before_validation :generate_password, on: :create
   before_validation :sanitize_attrs
   before_validation :set_notification_email, if: ->(user) { user.email_changed? }
+  before_validation :set_public_email, if: ->(user) { user.public_email_changed? }
 
   before_save :ensure_authentication_token
   after_save :ensure_namespace_correct
@@ -151,24 +158,6 @@ class User < ActiveRecord::Base
   delegate :path, to: :namespace, allow_nil: true, prefix: true
 
   state_machine :state, initial: :active do
-    after_transition any => :blocked do |user, transition|
-      # Remove user from all projects and
-      user.project_members.find_each do |membership|
-        # skip owned resources
-        next if membership.project.owner == user
-
-        return false unless membership.destroy
-      end
-
-      # Remove user from all groups
-      user.group_members.find_each do |membership|
-        # skip owned resources
-        next if membership.group.last_owner?(user)
-
-        return false unless membership.destroy
-      end
-    end
-
     event :block do
       transition active: :blocked
     end
@@ -178,17 +167,14 @@ class User < ActiveRecord::Base
     end
   end
 
-  mount_uploader :avatar, AttachmentUploader
+  mount_uploader :avatar, AvatarUploader
 
   # Scopes
   scope :admins, -> { where(admin:  true) }
   scope :blocked, -> { with_state(:blocked) }
   scope :active, -> { with_state(:active) }
-  scope :in_team, ->(team){ where(id: team.member_ids) }
-  scope :not_in_team, ->(team){ where('users.id NOT IN (:ids)', ids: team.member_ids) }
   scope :not_in_project, ->(project) { project.users.present? ? where("id not in (:ids)", ids: project.users.map(&:id) ) : all }
   scope :without_projects, -> { where('id NOT IN (SELECT DISTINCT(user_id) FROM members)') }
-  scope :potential_team_members, ->(team) { team.members.any? ? active.not_in_team(team) : active  }
 
   #
   # Class methods
@@ -245,22 +231,6 @@ class User < ActiveRecord::Base
 
     def build_user(attrs = {})
       User.new(attrs)
-    end
-
-    def clean_username(username)
-      username.gsub!(/@.*\z/,             "")
-      username.gsub!(/\.git\z/,           "")
-      username.gsub!(/\A-/,               "")
-      username.gsub!(/[^a-zA-Z0-9_\-\.]/, "")
-
-      counter = 0
-      base = username
-      while User.by_login(username).present? || Namespace.by_path(username).present?
-        counter += 1
-        username = "#{base}#{counter}"
-      end
-
-      username
     end
   end
 
@@ -422,7 +392,7 @@ class User < ActiveRecord::Base
   end
 
   def tm_of(project)
-    project.team_member_by_id(self.id)
+    project.project_member_by_id(self.id)
   end
 
   def already_forked?(project)
@@ -447,8 +417,16 @@ class User < ActiveRecord::Base
     @ldap_identity ||= identities.find_by(["provider LIKE ?", "ldap%"])
   end
 
+  def project_deploy_keys
+    DeployKey.in_projects(self.authorized_projects.pluck(:id))
+  end
+
   def accessible_deploy_keys
-    DeployKey.in_projects(self.authorized_projects.pluck(:id)).uniq
+    @accessible_deploy_keys ||= begin
+      key_ids = project_deploy_keys.pluck(:id)
+      key_ids.push(*DeployKey.are_public.pluck(:id))
+      DeployKey.where(id: key_ids)
+    end
   end
 
   def created_by
@@ -465,6 +443,12 @@ class User < ActiveRecord::Base
   def set_notification_email
     if self.notification_email.blank? || !self.all_emails.include?(self.notification_email)
       self.notification_email = self.email
+    end
+  end
+
+  def set_public_email
+    if self.public_email.blank? || !self.all_emails.include?(self.public_email)
+      self.public_email = ''
     end
   end
 
@@ -519,13 +503,13 @@ class User < ActiveRecord::Base
   end
 
   def full_website_url
-    return "http://#{website_url}" if website_url !~ /^https?:\/\//
+    return "http://#{website_url}" if website_url !~ /\Ahttps?:\/\//
 
     website_url
   end
 
   def short_website_url
-    website_url.gsub(/https?:\/\//, '')
+    website_url.sub(/\Ahttps?:\/\//, '')
   end
 
   def all_ssh_keys
@@ -621,11 +605,10 @@ class User < ActiveRecord::Base
   end
 
   def contributed_projects_ids
-    Event.where(author_id: self).
+    Event.contributions.where(author_id: self).
       where("created_at > ?", Time.now - 1.year).
-      code_push.
       reorder(project_id: :desc).
-      select('DISTINCT(project_id)').
-      map(&:project_id)
+      select(:project_id).
+      uniq.map(&:project_id)
   end
 end

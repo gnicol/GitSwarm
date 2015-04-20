@@ -1,9 +1,18 @@
 module PerforceSwarm
   class Engine < ::Rails::Engine
+    # Require our api changes before GitLab's in order to influence the api before it is mounted
+    config.before_initialize do
+      Dir["#{Rails.root}/perforce_swarm/lib/api/*.rb"].each { |file| require file }
+    end
+
     # Gitlab requires all their libs in an initializer, (config/initializers/2_app.rb)
     # So we will go ahead and do the same for ourselves
     initializer 'swarm_load_libs' do
       Dir["#{Rails.root}/perforce_swarm/lib/**/*.rb"].each { |file| require file }
+
+      # Autoload classes from shell when needed
+      shell_path = File.expand_path(Gitlab.config.gitlab_shell.path)
+      PerforceSwarm.autoload :Mirror, File.join(shell_path, 'perforce_swarm', 'mirror')
     end
 
     # We want our engine's migrations to be run when the main app runs db:migrate
@@ -24,9 +33,9 @@ module PerforceSwarm
 
       # Override error pages (500) with our own versions
       app.middleware.insert_after(
-          ::ActionDispatch::ShowExceptions,
-          ::ActionDispatch::ShowExceptions,
-          ::ActionDispatch::PublicExceptions.new("#{root}/public")
+        ::ActionDispatch::ShowExceptions,
+        ::ActionDispatch::ShowExceptions,
+        ::ActionDispatch::PublicExceptions.new("#{root}/public")
       )
     end
   end

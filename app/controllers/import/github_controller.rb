@@ -1,4 +1,5 @@
 class Import::GithubController < Import::BaseController
+  before_filter :verify_github_import_enabled
   before_filter :github_auth, except: :callback
 
   rescue_from Octokit::Unauthorized, with: :github_unauthorized
@@ -13,7 +14,7 @@ class Import::GithubController < Import::BaseController
   def status
     @repos = client.repos
     client.orgs.each do |org|
-      @repos += client.repos(org.login)
+      @repos += client.org_repos(org.login)
     end
 
     @already_added_projects = current_user.created_projects.where(import_type: "github")
@@ -30,8 +31,11 @@ class Import::GithubController < Import::BaseController
   def create
     @repo_id = params[:repo_id].to_i
     repo = client.repo(@repo_id)
-    @target_namespace = params[:new_namespace].presence || repo.owner.login
     @project_name = repo.name
+
+    repo_owner = repo.owner.login
+    repo_owner = current_user.username if repo_owner == client.user.login
+    @target_namespace = params[:new_namespace].presence || repo_owner
     
     namespace = get_or_create_namespace || (render and return)
 
@@ -42,6 +46,10 @@ class Import::GithubController < Import::BaseController
 
   def client
     @client ||= Gitlab::GithubImport::Client.new(current_user.github_access_token)
+  end
+
+  def verify_github_import_enabled
+    not_found! unless github_import_enabled?
   end
 
   def github_auth

@@ -3,23 +3,35 @@ class GitTagPushService
 
   def execute(project, user, oldrev, newrev, ref)
     @project, @user = project, user
-    @push_data = create_push_data(oldrev, newrev, ref)
+
+    @push_data = build_push_data(oldrev, newrev, ref)
 
     EventCreateService.new.push(project, user, @push_data)
-    project.repository.expire_cache
     project.execute_hooks(@push_data.dup, :tag_push_hooks)
+    project.execute_services(@push_data.dup, :tag_push_hooks)
 
-    if project.gitlab_ci?
-      project.gitlab_ci_service.async_execute(@push_data)
-    end
+    project.repository.expire_cache
 
     true
   end
 
   private
 
-  def create_push_data(oldrev, newrev, ref)
+  def build_push_data(oldrev, newrev, ref)
+    commits = []
+    message = nil
+
+    if !Gitlab::Git.blank_ref?(newrev)
+      tag_name = Gitlab::Git.ref_name(ref)
+      tag = project.repository.find_tag(tag_name)
+      if tag && tag.target == newrev
+        commit = project.repository.commit(tag.target)
+        commits = [commit].compact
+        message = tag.message
+      end
+    end
+
     Gitlab::PushDataBuilder.
-      build(project, user, oldrev, newrev, ref, [])
+      build(project, user, oldrev, newrev, ref, commits, message)
   end
 end

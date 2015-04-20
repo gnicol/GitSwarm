@@ -11,7 +11,7 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   end
 
   step 'I should see files from repository for "6d39438"' do
-    current_path.should == project_tree_path(@project, "6d39438")
+    current_path.should == namespace_project_tree_path(@project.namespace, @project, "6d39438")
     page.should have_content ".gitignore"
     page.should have_content "LICENSE"
   end
@@ -69,8 +69,12 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     fill_in :file_name, with: new_file_name
   end
 
+  step 'I fill the new branch name' do
+    fill_in :new_branch, with: 'new_branch_name'
+  end
+
   step 'I fill the new file name with an illegal name' do
-    fill_in :file_name, with: '.git'
+    fill_in :file_name, with: 'Spaces Not Allowed'
   end
 
   step 'I fill the commit message' do
@@ -141,21 +145,33 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   end
 
   step 'I am redirected to the files URL' do
-    current_path.should == project_tree_path(@project, 'master')
+    current_path.should == namespace_project_tree_path(@project.namespace, @project, 'master')
   end
 
   step 'I am redirected to the ".gitignore"' do
-    expect(current_path).to eq(project_blob_path(@project, 'master/.gitignore'))
+    expect(current_path).to eq(namespace_project_blob_path(@project.namespace, @project, 'master/.gitignore'))
+  end
+
+  step 'I am redirected to the ".gitignore" on new branch' do
+    expect(current_path).to eq(namespace_project_blob_path(@project.namespace, @project, 'new_branch_name/.gitignore'))
   end
 
   step 'I am redirected to the permalink URL' do
-    expect(current_path).to eq(project_blob_path(
-      @project, @project.repository.commit.sha + '/.gitignore'))
+    expect(current_path).to(
+      eq(namespace_project_blob_path(@project.namespace, @project,
+                                     @project.repository.commit.sha +
+                                     '/.gitignore'))
+    )
   end
 
   step 'I am redirected to the new file' do
-    expect(current_path).to eq(project_blob_path(
-      @project, 'master/' + new_file_name))
+    expect(current_path).to eq(namespace_project_blob_path(
+      @project.namespace, @project, 'master/' + new_file_name))
+  end
+
+  step 'I am redirected to the new file on new branch' do
+    expect(current_path).to eq(namespace_project_blob_path(
+      @project.namespace, @project, 'new_branch_name/' + new_file_name))
   end
 
   step "I don't see the permalink link" do
@@ -174,7 +190,7 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     click_link 'add a file'
 
     # Remove pre-receive hook so we can push without auth
-    FileUtils.rm(File.join(@project.repository.path, 'hooks', 'pre-receive'))
+    FileUtils.rm_f(File.join(@project.repository.path, 'hooks', 'pre-receive'))
   end
 
   private

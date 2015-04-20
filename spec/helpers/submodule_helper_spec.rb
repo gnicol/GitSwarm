@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe SubmoduleHelper do
+  include RepoHelpers
+
   describe 'submodule links' do
     let(:submodule_item) { double(id: 'hash', path: 'rack') }
     let(:config) { Gitlab.config.gitlab }
@@ -19,28 +21,28 @@ describe SubmoduleHelper do
         Gitlab.config.gitlab_shell.stub(ssh_port: 22) # set this just to be sure
         Gitlab.config.gitlab_shell.stub(ssh_path_prefix: Settings.send(:build_gitlab_shell_ssh_path_prefix))
         stub_url([ config.user, '@', config.host, ':gitlab-org/gitlab-ce.git' ].join(''))
-        expect(submodule_links(submodule_item)).to eq([ project_path('gitlab-org/gitlab-ce'), project_tree_path('gitlab-org/gitlab-ce', 'hash') ])
+        expect(submodule_links(submodule_item)).to eq([ namespace_project_path('gitlab-org', 'gitlab-ce'), namespace_project_tree_path('gitlab-org', 'gitlab-ce', 'hash') ])
       end
 
       it 'should detect ssh on non-standard port' do
         Gitlab.config.gitlab_shell.stub(ssh_port: 2222)
         Gitlab.config.gitlab_shell.stub(ssh_path_prefix: Settings.send(:build_gitlab_shell_ssh_path_prefix))
         stub_url([ 'ssh://', config.user, '@', config.host, ':2222/gitlab-org/gitlab-ce.git' ].join(''))
-        expect(submodule_links(submodule_item)).to eq([ project_path('gitlab-org/gitlab-ce'), project_tree_path('gitlab-org/gitlab-ce', 'hash') ])
+        expect(submodule_links(submodule_item)).to eq([ namespace_project_path('gitlab-org', 'gitlab-ce'), namespace_project_tree_path('gitlab-org', 'gitlab-ce', 'hash') ])
       end
 
       it 'should detect http on standard port' do
         Gitlab.config.gitlab.stub(port: 80)
         Gitlab.config.gitlab.stub(url: Settings.send(:build_gitlab_url))
         stub_url([ 'http://', config.host, '/gitlab-org/gitlab-ce.git' ].join(''))
-        expect(submodule_links(submodule_item)).to eq([ project_path('gitlab-org/gitlab-ce'), project_tree_path('gitlab-org/gitlab-ce', 'hash') ])
+        expect(submodule_links(submodule_item)).to eq([ namespace_project_path('gitlab-org', 'gitlab-ce'), namespace_project_tree_path('gitlab-org', 'gitlab-ce', 'hash') ])
       end
 
       it 'should detect http on non-standard port' do
         Gitlab.config.gitlab.stub(port: 3000)
         Gitlab.config.gitlab.stub(url: Settings.send(:build_gitlab_url))
         stub_url([ 'http://', config.host, ':3000/gitlab-org/gitlab-ce.git' ].join(''))
-        expect(submodule_links(submodule_item)).to eq([ project_path('gitlab-org/gitlab-ce'), project_tree_path('gitlab-org/gitlab-ce', 'hash') ])
+        expect(submodule_links(submodule_item)).to eq([ namespace_project_path('gitlab-org', 'gitlab-ce'), namespace_project_tree_path('gitlab-org', 'gitlab-ce', 'hash') ])
       end
 
       it 'should work with relative_url_root' do
@@ -48,7 +50,7 @@ describe SubmoduleHelper do
         Gitlab.config.gitlab.stub(relative_url_root: '/gitlab/root')
         Gitlab.config.gitlab.stub(url: Settings.send(:build_gitlab_url))
         stub_url([ 'http://', config.host, '/gitlab/root/gitlab-org/gitlab-ce.git' ].join(''))
-        expect(submodule_links(submodule_item)).to eq([ project_path('gitlab-org/gitlab-ce'), project_tree_path('gitlab-org/gitlab-ce', 'hash') ])
+        expect(submodule_links(submodule_item)).to eq([ namespace_project_path('gitlab-org', 'gitlab-ce'), namespace_project_tree_path('gitlab-org', 'gitlab-ce', 'hash') ])
       end
     end
 
@@ -109,6 +111,39 @@ describe SubmoduleHelper do
 
         stub_url('http://mygitserver.com/gitlab-org/gitlab-ce.git')
         expect(submodule_links(submodule_item)).to eq([ repo.submodule_url_for, nil ])
+      end
+    end
+
+    context 'submodules with relative links' do
+      let(:group) { create(:group) }
+      let(:project) { create(:project, group: group) }
+
+      before do
+        self.instance_variable_set(:@project, project)
+      end
+
+      it 'one level down' do
+        commit_id = sample_commit[:id]
+        result = relative_self_links('../test.git', commit_id)
+        expect(result).to eq(["/#{group.path}/test", "/#{group.path}/test/tree/#{commit_id}"])
+      end
+
+      it 'two levels down' do
+        commit_id = sample_commit[:id]
+        result = relative_self_links('../../test.git', commit_id)
+        expect(result).to eq(["/#{group.path}/test", "/#{group.path}/test/tree/#{commit_id}"])
+      end
+
+      it 'one level down with namespace and repo' do
+        commit_id = sample_commit[:id]
+        result = relative_self_links('../foobar/test.git', commit_id)
+        expect(result).to eq(["/foobar/test", "/foobar/test/tree/#{commit_id}"])
+      end
+
+      it 'two levels down with namespace and repo' do
+        commit_id = sample_commit[:id]
+        result = relative_self_links('../foobar/baz/test.git', commit_id)
+        expect(result).to eq(["/baz/test", "/baz/test/tree/#{commit_id}"])
       end
     end
   end

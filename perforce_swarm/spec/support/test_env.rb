@@ -3,11 +3,9 @@ require_relative '../../../spec/support/test_env'
 module PerforceSwarm
   module TestEnvSelf
     def setup_gitlab_shell
-      return super unless ENV['GITLAB_SHELL_REPO']
-
-      default_version = File.read(Rails.root.join('GITLAB_SHELL_VERSION')).strip
-      ref = ENV['GITLAB_SHELL_REF'] || "v#{default_version}"
-      `rake gitlab:shell:install['#{ref}','#{ENV['GITLAB_SHELL_REPO']}']`
+      repo = ENV['GITLAB_SHELL_REPO'] || 'http://gitlab.perforce.com/p4gitlab/gitlab-shell.git'
+      ref  = ENV['GITLAB_SHELL_REF']  || File.read(Rails.root.join('perforce_swarm', '.codeline'))
+      `rake gitlab:shell:install['#{ref.strip}','#{repo.strip}']`
     end
   end
 end

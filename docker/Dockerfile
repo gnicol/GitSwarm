@@ -11,7 +11,7 @@ RUN apt-get update -q \
 # If the Omnibus package version below is outdated please contribute a merge request to update it.
 # If you run GitLab Enterprise Edition point it to a location where you have downloaded it.
 RUN TMP_FILE=$(mktemp); \
-    wget -q -O $TMP_FILE https://downloads-packages.s3.amazonaws.com/ubuntu-14.04/gitlab_7.7.2-omnibus.5.4.2.ci-1_amd64.deb \
+    wget -q -O $TMP_FILE https://downloads-packages.s3.amazonaws.com/ubuntu-14.04/gitlab_7.9.2-omnibus-1_amd64.deb \
     && dpkg -i $TMP_FILE \
     && rm -f $TMP_FILE
 
@@ -26,9 +26,8 @@ RUN mkdir -p /opt/gitlab/sv/sshd/supervise \
 # Expose web & ssh
 EXPOSE 80 22
 
-# Volume & configuration
-VOLUME ["/var/opt/gitlab", "/var/log/gitlab", "/etc/gitlab"]
-ADD gitlab.rb /etc/gitlab/
+# Copy assets
+COPY assets/wrapper /usr/local/bin/
 
-# Default is to run runit & reconfigure
-CMD gitlab-ctl reconfigure & /opt/gitlab/embedded/bin/runsvdir-start
+# Wrapper to handle signal, trigger runit and reconfigure GitLab
+CMD ["/usr/local/bin/wrapper"]

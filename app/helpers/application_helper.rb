@@ -58,10 +58,8 @@ module ApplicationHelper
         Project.find_with_namespace(project_id)
       end
 
-    if project.avatar.present?
-      image_tag project.avatar.url, options
-    elsif project.avatar_in_git
-      image_tag project_avatar_path(project), options
+    if project.avatar_url
+      image_tag project.avatar_url, options
     else # generated icon
       project_identicon(project, options)
     end
@@ -85,15 +83,6 @@ module ApplicationHelper
 
     content_tag(:div, class: options[:class], style: style) do
       project.name[0, 1].upcase
-    end
-  end
-
-  def group_icon(group_path)
-    group = Group.find_by(path: group_path)
-    if group && group.avatar.present?
-      group.avatar.url
-    else
-      image_path('no_group_avatar.png')
     end
   end
 
@@ -136,7 +125,7 @@ module ApplicationHelper
 
     # If reference is commit id - we should add it to branch/tag selectbox
     if(@ref && !options.flatten.include?(@ref) &&
-       @ref =~ /^[0-9a-zA-Z]{6,52}$/)
+       @ref =~ /\A[0-9a-zA-Z]{6,52}\z/)
       options << ['Commit', [@ref]]
     end
 
@@ -185,15 +174,9 @@ module ApplicationHelper
     Digest::SHA1.hexdigest string
   end
 
-  def authbutton(provider, size = 64)
-    file_name = "#{provider.to_s.split('_').first}_#{size}.png"
-    image_tag(image_path("authbuttons/#{file_name}"), alt: "Sign in with #{provider.to_s.titleize}")
-  end
-
   def simple_sanitize(str)
     sanitize(str, tags: %w(a span))
   end
-
 
   def body_data_page
     path = controller.controller_path.split('/')
@@ -253,31 +236,33 @@ module ApplicationHelper
     Gitlab::MarkdownHelper.gitlab_markdown?(filename)
   end
 
-  def link_to(name = nil, options = nil, html_options = nil, &block)
-    begin
-      uri = URI(options)
-      host = uri.host
-      absolute_uri = uri.absolute?
-    rescue URI::InvalidURIError, ArgumentError
-      host = nil
-      absolute_uri = nil
-    end
-
-    # Add 'nofollow' only to external links
-    if host && host != Gitlab.config.gitlab.host && absolute_uri
-      if html_options
-        if html_options[:rel]
-          html_options[:rel] << ' nofollow'
-        else
-          html_options.merge!(rel: 'nofollow')
-        end
-      else
-        html_options = Hash.new
-        html_options[:rel] = 'nofollow'
+  # Overrides ActionView::Helpers::UrlHelper#link_to to add `rel="nofollow"` to
+  # external links
+  def link_to(name = nil, options = nil, html_options = {})
+    if options.kind_of?(String)
+      if !options.start_with?('#', '/')
+        html_options = add_nofollow(options, html_options)
       end
     end
 
     super
+  end
+
+  # Add `"rel=nofollow"` to external links
+  #
+  # link         - String link to check
+  # html_options - Hash of `html_options` passed to `link_to`
+  #
+  # Returns `html_options`, adding `rel: nofollow` for external links
+  def add_nofollow(link, html_options = {})
+    uri = URI(link)
+
+    if uri && uri.absolute? && uri.host != Gitlab.config.gitlab.host
+      rel = html_options.fetch(:rel, '')
+      html_options[:rel] = (rel + ' nofollow').strip
+    end
+
+    html_options
   end
 
   def escaped_autolink(text)
@@ -292,7 +277,9 @@ module ApplicationHelper
     'https://' + promo_host
   end
 
-  def page_filter_path(options={})
+  def page_filter_path(options = {})
+    without = options.delete(:without)
+
     exist_opts = {
       state: params[:state],
       scope: params[:scope],
@@ -304,6 +291,12 @@ module ApplicationHelper
     }
 
     options = exist_opts.merge(options)
+
+    if without.present?
+      without.each do |key|
+        options.delete(key)
+      end
+    end
 
     path = request.path
     path << "?#{options.to_param}"

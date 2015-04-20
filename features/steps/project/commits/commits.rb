@@ -24,7 +24,7 @@ class Spinach::Features::ProjectCommits < Spinach::FeatureSteps
   end
 
   step 'I click on commit link' do
-    visit project_commit_path(@project, sample_commit.id)
+    visit namespace_project_commit_path(@project.namespace, @project, sample_commit.id)
   end
 
   step 'I see commit info' do
@@ -36,6 +36,18 @@ class Spinach::Features::ProjectCommits < Spinach::FeatureSteps
     fill_in "from", with: sample_commit.parent_id
     fill_in "to",   with: sample_commit.id
     click_button "Compare"
+  end
+
+  step 'I unfold diff' do
+    @diff = first('.js-unfold')
+    @diff.click
+    sleep 2
+  end
+
+  step 'I should see additional file lines' do
+    within @diff.parent do
+      first('.new_line').text.should_not have_content "..."
+    end
   end
 
   step 'I see compared refs' do
@@ -58,7 +70,7 @@ class Spinach::Features::ProjectCommits < Spinach::FeatureSteps
 
   step 'I visit big commit page' do
     Commit::DIFF_SAFE_FILES = 20
-    visit project_commit_path(@project, sample_big_commit.id)
+    visit namespace_project_commit_path(@project.namespace, @project, sample_big_commit.id)
   end
 
   step 'I see big commit warning' do
@@ -68,7 +80,7 @@ class Spinach::Features::ProjectCommits < Spinach::FeatureSteps
   end
 
   step 'I visit a commit with an image that changed' do
-    visit project_commit_path(@project, sample_image_commit.id)
+    visit namespace_project_commit_path(@project.namespace, @project, sample_image_commit.id)
   end
 
   step 'The diff links to both the previous and current image' do

@@ -5,9 +5,13 @@ describe Notify do
   include EmailSpec::Matchers
   include RepoHelpers
 
+  let(:gitlab_sender_display_name) { Gitlab.config.gitlab.email_display_name }
   let(:gitlab_sender) { Gitlab.config.gitlab.email_from }
+  let(:gitlab_sender_reply_to) { Gitlab.config.gitlab.email_reply_to }
   let(:recipient) { create(:user, email: 'recipient@example.com') }
   let(:project) { create(:project) }
+
+  around(:each) { ActionMailer::Base.deliveries.clear }
 
   before(:each) do
     email = recipient.emails.create(email: "notifications@example.com")
@@ -23,8 +27,13 @@ describe Notify do
   shared_examples 'an email sent from GitLab' do
     it 'is sent from GitLab' do
       sender = subject.header[:from].addrs[0]
-      expect(sender.display_name).to eq('GitLab')
+      expect(sender.display_name).to eq(gitlab_sender_display_name)
       expect(sender.address).to eq(gitlab_sender)
+    end
+
+    it 'has a Reply-To address' do
+      reply_to = subject.header[:reply_to].addresses
+      expect(reply_to).to eq([gitlab_sender_reply_to])
     end
   end
 
@@ -194,7 +203,7 @@ describe Notify do
           end
 
           it 'contains a link to the new issue' do
-            is_expected.to have_body_text /#{project_issue_path project, issue}/
+            is_expected.to have_body_text /#{namespace_project_issue_path project.namespace, project, issue}/
           end
         end
 
@@ -231,7 +240,7 @@ describe Notify do
           end
 
           it 'contains a link to the issue' do
-            is_expected.to have_body_text /#{project_issue_path project, issue}/
+            is_expected.to have_body_text /#{namespace_project_issue_path project.namespace, project, issue}/
           end
         end
 
@@ -260,7 +269,7 @@ describe Notify do
           end
 
           it 'contains a link to the issue' do
-            is_expected.to have_body_text /#{project_issue_path project, issue}/
+            is_expected.to have_body_text /#{namespace_project_issue_path project.namespace, project, issue}/
           end
         end
 
@@ -282,7 +291,7 @@ describe Notify do
           end
 
           it 'contains a link to the new merge request' do
-            is_expected.to have_body_text /#{project_merge_request_path(project, merge_request)}/
+            is_expected.to have_body_text /#{namespace_project_merge_request_path(project.namespace, project, merge_request)}/
           end
 
           it 'contains the source branch for the merge request' do
@@ -331,7 +340,7 @@ describe Notify do
           end
 
           it 'contains a link to the merge request' do
-            is_expected.to have_body_text /#{project_merge_request_path project, merge_request}/
+            is_expected.to have_body_text /#{namespace_project_merge_request_path project.namespace, project, merge_request}/
           end
         end
 
@@ -360,7 +369,7 @@ describe Notify do
           end
 
           it 'contains a link to the merge request' do
-            is_expected.to have_body_text /#{project_merge_request_path project, merge_request}/
+            is_expected.to have_body_text /#{namespace_project_merge_request_path project.namespace, project, merge_request}/
           end
         end
 
@@ -385,7 +394,7 @@ describe Notify do
           end
 
           it 'contains a link to the merge request' do
-            is_expected.to have_body_text /#{project_merge_request_path project, merge_request}/
+            is_expected.to have_body_text /#{namespace_project_merge_request_path project.namespace, project, merge_request}/
           end
         end
       end
@@ -477,7 +486,7 @@ describe Notify do
 
       describe 'on a merge request' do
         let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
-        let(:note_on_merge_request_path) { project_merge_request_path(project, merge_request, anchor: "note_#{note.id}") }
+        let(:note_on_merge_request_path) { namespace_project_merge_request_path(project.namespace, project, merge_request, anchor: "note_#{note.id}") }
         before(:each) { allow(note).to receive(:noteable).and_return(merge_request) }
 
         subject { Notify.note_merge_request_email(recipient.id, note.id) }
@@ -496,7 +505,7 @@ describe Notify do
 
       describe 'on an issue' do
         let(:issue) { create(:issue, project: project) }
-        let(:note_on_issue_path) { project_issue_path(project, issue, anchor: "note_#{note.id}") }
+        let(:note_on_issue_path) { namespace_project_issue_path(project.namespace, project, issue, anchor: "note_#{note.id}") }
         before(:each) { allow(note).to receive(:noteable).and_return(issue) }
 
         subject { Notify.note_issue_email(recipient.id, note.id) }
@@ -563,14 +572,12 @@ describe Notify do
     end
   end
 
-  describe 'email on push with multiple commits' do
+  describe 'email on push for a created branch' do
     let(:example_site_path) { root_path }
     let(:user) { create(:user) }
-    let(:compare) { Gitlab::Git::Compare.new(project.repository.raw_repository, sample_image_commit.id, sample_commit.id) }
-    let(:commits) { Commit.decorate(compare.commits) }
-    let(:diff_path) { project_compare_path(project, from: commits.first, to: commits.last) }
+    let(:tree_path) { namespace_project_tree_path(project.namespace, project, "master") }
 
-    subject { Notify.repository_push_email(project.id, 'devs@company.name', user.id, 'master', compare) }
+    subject { Notify.repository_push_email(project.id, 'devs@company.name', author_id: user.id, ref: 'refs/heads/master', action: :create) }
 
     it 'is sent as the author' do
       sender = subject.header[:from].addrs[0]
@@ -583,7 +590,104 @@ describe Notify do
     end
 
     it 'has the correct subject' do
-      is_expected.to have_subject /#{commits.length} new commits pushed to repository/
+      is_expected.to have_subject /Pushed new branch master/
+    end
+
+    it 'contains a link to the branch' do
+      is_expected.to have_body_text /#{tree_path}/
+    end
+  end
+
+  describe 'email on push for a created tag' do
+    let(:example_site_path) { root_path }
+    let(:user) { create(:user) }
+    let(:tree_path) { namespace_project_tree_path(project.namespace, project, "v1.0") }
+
+    subject { Notify.repository_push_email(project.id, 'devs@company.name', author_id: user.id, ref: 'refs/tags/v1.0', action: :create) }
+
+    it 'is sent as the author' do
+      sender = subject.header[:from].addrs[0]
+      expect(sender.display_name).to eq(user.name)
+      expect(sender.address).to eq(gitlab_sender)
+    end
+
+    it 'is sent to recipient' do
+      is_expected.to deliver_to 'devs@company.name'
+    end
+
+    it 'has the correct subject' do
+      is_expected.to have_subject /Pushed new tag v1\.0/
+    end
+
+    it 'contains a link to the tag' do
+      is_expected.to have_body_text /#{tree_path}/
+    end
+  end
+
+  describe 'email on push for a deleted branch' do
+    let(:example_site_path) { root_path }
+    let(:user) { create(:user) }
+
+    subject { Notify.repository_push_email(project.id, 'devs@company.name', author_id: user.id, ref: 'refs/heads/master', action: :delete) }
+
+    it 'is sent as the author' do
+      sender = subject.header[:from].addrs[0]
+      expect(sender.display_name).to eq(user.name)
+      expect(sender.address).to eq(gitlab_sender)
+    end
+
+    it 'is sent to recipient' do
+      is_expected.to deliver_to 'devs@company.name'
+    end
+
+    it 'has the correct subject' do
+      is_expected.to have_subject /Deleted branch master/
+    end
+  end
+
+  describe 'email on push for a deleted tag' do
+    let(:example_site_path) { root_path }
+    let(:user) { create(:user) }
+
+    subject { Notify.repository_push_email(project.id, 'devs@company.name', author_id: user.id, ref: 'refs/tags/v1.0', action: :delete) }
+
+    it 'is sent as the author' do
+      sender = subject.header[:from].addrs[0]
+      expect(sender.display_name).to eq(user.name)
+      expect(sender.address).to eq(gitlab_sender)
+    end
+
+    it 'is sent to recipient' do
+      is_expected.to deliver_to 'devs@company.name'
+    end
+
+    it 'has the correct subject' do
+      is_expected.to have_subject /Deleted tag v1\.0/
+    end
+  end
+
+  describe 'email on push with multiple commits' do
+    let(:example_site_path) { root_path }
+    let(:user) { create(:user) }
+    let(:compare) { Gitlab::Git::Compare.new(project.repository.raw_repository, sample_image_commit.id, sample_commit.id) }
+    let(:commits) { Commit.decorate(compare.commits) }
+    let(:diff_path) { namespace_project_compare_path(project.namespace, project, from: Commit.new(compare.base), to: Commit.new(compare.head)) }
+    let(:send_from_committer_email) { false }
+
+    subject { Notify.repository_push_email(project.id, 'devs@company.name', author_id: user.id, ref: 'refs/heads/master', action: :push, compare: compare, reverse_compare: false, send_from_committer_email: send_from_committer_email) }
+
+    it 'is sent as the author' do
+      sender = subject.header[:from].addrs[0]
+      expect(sender.display_name).to eq(user.name)
+      expect(sender.address).to eq(gitlab_sender)
+    end
+
+    it 'is sent to recipient' do
+      is_expected.to deliver_to 'devs@company.name'
+    end
+
+    it 'has the correct subject' do
+      is_expected.to have_subject /\[#{project.path_with_namespace}\]\[master\] #{commits.length} commits:/
     end
 
     it 'includes commits list' do
@@ -597,6 +701,73 @@ describe Notify do
     it 'contains a link to the diff' do
       is_expected.to have_body_text /#{diff_path}/
     end
+
+    it 'doesn not contain the misleading footer' do
+      is_expected.not_to have_body_text /you are a member of/
+    end
+
+    context "when set to send from committer email if domain matches" do
+
+      let(:send_from_committer_email) { true }
+
+      before do
+        allow(Gitlab.config.gitlab).to receive(:host).and_return("gitlab.corp.company.com")
+      end
+
+      context "when the committer email domain is within the GitLab domain" do
+
+        before do
+          user.update_attribute(:email, "user@company.com")
+          user.confirm!
+        end
+
+        it "is sent from the committer email" do
+          sender = subject.header[:from].addrs[0]
+          expect(sender.address).to eq(user.email)
+        end
+
+        it "is set to reply to the committer email" do
+          sender = subject.header[:reply_to].addrs[0]
+          expect(sender.address).to eq(user.email)
+        end
+      end
+
+      context "when the committer email domain is not completely within the GitLab domain" do
+
+        before do
+          user.update_attribute(:email, "user@something.company.com")
+          user.confirm!
+        end
+
+        it "is sent from the default email" do
+          sender = subject.header[:from].addrs[0]
+          expect(sender.address).to eq(gitlab_sender)
+        end
+
+        it "is set to reply to the default email" do
+          sender = subject.header[:reply_to].addrs[0]
+          expect(sender.address).to eq(gitlab_sender_reply_to)
+        end
+      end
+
+      context "when the committer email domain is outside the GitLab domain" do
+
+        before do
+          user.update_attribute(:email, "user@mpany.com")
+          user.confirm!
+        end
+
+        it "is sent from the default email" do
+          sender = subject.header[:from].addrs[0]
+          expect(sender.address).to eq(gitlab_sender)
+        end
+
+        it "is set to reply to the default email" do
+          sender = subject.header[:reply_to].addrs[0]
+          expect(sender.address).to eq(gitlab_sender_reply_to)
+        end
+      end
+    end
   end
 
   describe 'email on push with a single commit' do
@@ -604,9 +775,9 @@ describe Notify do
     let(:user) { create(:user) }
     let(:compare) { Gitlab::Git::Compare.new(project.repository.raw_repository, sample_commit.parent_id, sample_commit.id) }
     let(:commits) { Commit.decorate(compare.commits) }
-    let(:diff_path) { project_commit_path(project, commits.first) }
+    let(:diff_path) { namespace_project_commit_path(project.namespace, project, commits.first) }
 
-    subject { Notify.repository_push_email(project.id, 'devs@company.name', user.id, 'master', compare) }
+    subject { Notify.repository_push_email(project.id, 'devs@company.name', author_id: user.id, ref: 'refs/heads/master', action: :push, compare: compare) }
 
     it 'is sent as the author' do
       sender = subject.header[:from].addrs[0]

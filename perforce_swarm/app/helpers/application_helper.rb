@@ -21,21 +21,14 @@ module ApplicationHelper
     'http://' + promo_host
   end
 
-  def help_preprocess(filepath)
-    # use our over-ride markdown if present, otherwise use their copy
-    if File.exist?(Rails.root.join('perforce_swarm', 'doc', filepath))
-      content = File.read(Rails.root.join('perforce_swarm', 'doc', filepath))
-      return content.gsub('$your_email', current_user ? current_user.email : 'user@example.com')
-    else
-      content = File.read(Rails.root.join('doc', filepath))
-      content.gsub!('$your_email', current_user ? current_user.email : 'user@example.com')
-    end
+  def help_preprocess(category, file)
+    content = File.read(Rails.root.join('doc', category, "#{file}.md"))
 
     # they talk about GitLab EE only features, nuke those lines
     content.gsub!(/^.*GitLab (EE|Enterprise Edition).*$/, '')
 
     # some pages need more a whitelist update instead of blacklist; do them first and return
-    if filepath == 'raketasks/maintenance.md'
+    if file == 'maintenance'
       content.gsub!(/about (your )?GitLab/, 'about \1GitSwarm')
       content.gsub!('Check GitLab configuration', 'Check GitSwarm configuration')
       content.gsub!('look at our ', 'look at GitLab\'s ')
@@ -53,44 +46,44 @@ module ApplicationHelper
 
     # do a variety of page specific touch-ups
 
-    content.gsub!(/To see a more in-depth overview see the.*$/, '') if filepath == 'install/structure.md'
+    content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure'
 
     # the markdown page needs some finesse to avoid taking undue credit
-    if filepath == 'markdown/markdown.md'
+    if file == 'markdown'
       content.gsub!('For GitSwarm we developed something we call', 'GitLab developed something called')
       content.gsub!('Here\'s our logo', 'Here\'s GitLab\'s logo')
     end
 
     # this section is just for EE users; nuke it
-    content.gsub!(/## Managing group memberships via LDAP.*?(?!##)/m, '') if filepath == 'workflow/groups.md'
+    content.gsub!(/## Managing group memberships via LDAP.*?(?!##)/m, '') if category == 'workflow' && file == 'groups'
 
     # unfair to steal their voice on this bit; put it back
-    content.gsub!('At GitSwarm we are guilty', 'At GitLab we are guilty') if filepath == 'workflow/gitlab_flow.md'
+    content.gsub!('At GitSwarm we are guilty', 'At GitLab we are guilty') if file == 'gitlab_flow'
 
     # a few lines that refer to GitLab versions that pre-date our usage
-    if filepath == 'integration/ldap.md'
+    if file == 'ldap'
       content.gsub!(/Please note that before version.*$/, '')
       content.gsub!(/The old LDAP integration syntax still works in GitSwarm.*$/, '')
       content.gsub!(/^.*contains LDAP settings in both the old syntax and the new syntax.*$/, '')
     end
 
     # this is a link to GitLab flow and should stay GitLab
-    content.gsub!('[GitSwarm]', '[GitLab]') if filepath == 'integration/omniauth.md'
+    content.gsub!('[GitSwarm]', '[GitLab]') if file == 'omniauth'
 
-    if filepath == 'hooks/custom_hooks.md'
+    if file == 'custom_hooks'
       content.gsub!('As of gitlab-shell version 2.2.0 (which requires GitSwarm 7.5+), GitSwarm', '')
       content.gsub!('administrators can add custom git hooks to any GitSwarm project.', '')
     end
 
     # the cleanup page only applies to old versions; nuke the link from the index page
-    content.gsub!(/^.*Cleaning up Redis sessions.*$/, '') if filepath == 'operations/README.md'
+    content.gsub!(/^.*Cleaning up Redis sessions.*$/, '') if category == 'operations' && file == 'README'
 
     content.gsub!('![backup banner](backup_hrz.png)', '')
 
-    content.gsub!('GitSwarm support', 'GitLab support') if filepath == 'workflow/import_projects_from_gitlab_com.md'
+    content.gsub!('GitSwarm support', 'GitLab support') if file == 'import_projects_from_gitlab_com'
 
     # remove a link to GitLab on the web_hooks page
-    if filepath == 'web_hooks/web_hooks.md'
+    if category == 'web_hooks' && file == 'web_hooks'
       content.gsub!(/\[the certificate will not be verified\]\([^)]+\)/, 'the certificate will not be verified')
     end
 

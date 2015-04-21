@@ -46,7 +46,7 @@ gem "browser"
 gem "gitlab_git", '~> 7.1.10'
 
 # Ruby/Rack Git Smart-HTTP Server Handler
-gem 'gitlab-grack', '~> 2.0.0.rc2', require: 'grack'
+gem 'gitlab-grack', '~> 2.0.1', require: 'grack'
 
 # LDAP Auth
 gem 'gitlab_omniauth-ldap', '1.2.1', require: "omniauth-ldap"
@@ -147,7 +147,7 @@ gem "redis-rails"
 gem 'tinder', '~> 1.9.2'
 
 # HipChat integration
-gem "hipchat", "~> 1.4.0"
+gem 'hipchat', '~> 1.5.0'
 
 # Flowdock integration
 gem "gitlab-flowdock-git-hook", "~> 0.4.2"

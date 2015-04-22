@@ -1,10 +1,8 @@
 #!/bin/bash
 #
-# merge_prep.sh
-#
-# Merges the 'P4GitLab/gitlab-ce' integration-prep-ce branch to prep
-# Called as a result of a successful integration-prep-ce Jenkins test
-
+# Merge one branch into another, and push back to repo.
+# relies on SRC_BRANCH and DST_BRANCH be set in the
+# environment.  For use by Jenkins.
 
 function bomb_if_bad {
 	"$@" 2>&1 
@@ -45,3 +43,6 @@ echo "::: Merging ${SRC_BRANCH} into ${DST_BRANCH} :::"
 git checkout $DST_BRANCH
 bomb_if_bad git merge $SRC_BRANCH -m "Merging ${SRC_BRANCH} into ${DST_BRANCH}"
 
+# Push back to origin
+echo "::: Pushing ${DST_BRANCH} to origin :::"
+git push origin $DST_BRANCH

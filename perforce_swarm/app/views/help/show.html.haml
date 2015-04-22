@@ -1,2 +1,2 @@
 .documentation.wiki
-  = markdown help_preprocess @filepath + '.md'
+  = markdown @markdown.gsub('$your_email', current_user ? current_user.email : 'user@example.com')

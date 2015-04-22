@@ -13,6 +13,8 @@
 class Label < ActiveRecord::Base
   DEFAULT_COLOR = '#428BCA'
 
+  default_value_for :color, DEFAULT_COLOR
+
   belongs_to :project
   has_many :label_links, dependent: :destroy
   has_many :issues, through: :label_links, source: :target, source_type: 'Issue'
@@ -25,7 +27,7 @@ class Label < ActiveRecord::Base
   # Don't allow '?', '&', and ',' for label titles
   validates :title,
             presence: true,
-            format: { with: /\A[^&\?,&]+\z/ },
+            format: { with: /\A[^&\?,]+\z/ },
             uniqueness: { scope: :project_id }
 
   default_scope { order(title: :asc) }

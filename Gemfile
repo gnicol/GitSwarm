@@ -43,10 +43,10 @@ gem "browser"
 
 # Extracting information from a git repository
 # Provide access to Gitlab::Git library
-gem "gitlab_git", '~> 7.1.9'
+gem "gitlab_git", '~> 7.1.10'
 
 # Ruby/Rack Git Smart-HTTP Server Handler
-gem 'gitlab-grack', '~> 2.0.0.rc2', require: 'grack'
+gem 'gitlab-grack', '~> 2.0.2', require: 'grack'
 
 # LDAP Auth
 gem 'gitlab_omniauth-ldap', '1.2.1', require: "omniauth-ldap"
@@ -92,7 +92,7 @@ gem "six"
 gem "seed-fu"
 
 # Markup pipeline for GitLab
-gem 'html-pipeline-gitlab', '~> 0.1'
+gem 'html-pipeline', '~> 1.11.0'
 
 # Markdown to HTML
 gem "github-markup"
@@ -147,7 +147,7 @@ gem "redis-rails"
 gem 'tinder', '~> 1.9.2'
 
 # HipChat integration
-gem "hipchat", "~> 1.4.0"
+gem 'hipchat', '~> 1.5.0'
 
 # Flowdock integration
 gem "gitlab-flowdock-git-hook", "~> 0.4.2"
@@ -260,7 +260,7 @@ group :development, :test do
   gem "spring", '~> 1.3.1'
   gem "spring-commands-rspec", '1.0.4'
   gem "spring-commands-spinach", '1.0.0'
-  
+
   gem "byebug"
 end
 

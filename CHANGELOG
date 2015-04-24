@@ -5,18 +5,24 @@ v 7.11.0 (unreleased)
   - Ignore invalid lines in .gitmodules
   - Fix "Cannot move project" error message from popping up after a successful transfer (Stan Hu)
   - Redirect to sign in page after signing out.
+  - Fix "Hello @username." references not working by no longer allowing usernames to end in period.
   -
   - Add "Reply quoting selected text" shortcut key (`r`)
   - Fix bug causing `@whatever` inside an issue's first code block to be picked up as a user mention.
   - Fix bug causing `@whatever` inside an inline code snippet (backtick-style) to be picked up as a user mention.
   -
+  - Show Atom feed buttons everywhere where applicable.
+  - Add project activity atom feed.
+  - Don't crash when an MR from a fork has a cross-reference comment from the target project on of its commits.
+  - Include commit comments in MR from a forked project.
   -
   -
-  -
+  - Fix bug where Slack service channel was not saved in admin template settings. (Stan Hu)
   - Move snippets UI to fluid layout
   - Improve UI for sidebar. Increase separation between navigation and content
   - Improve new project command options (Ben Bodenmiller)
   - Prevent sending empty messages to HipChat (Chulki Lee)
+  - Improve UI for mobile phones on dashboard and project pages
 
 v 7.10.0 (unreleased)
   - Ignore submodules that are defined in .gitmodules but are checked in as directories.

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Commit do
   let(:project) { create :project }
-  let(:commit) { project.repository.commit }
+  let(:commit) { project.commit }
 
   describe '#title' do
     it "returns no_commit_message when safe_message is blank" do
@@ -58,19 +58,20 @@ eos
 
     it 'detects issues that this commit is marked as closing' do
       commit.stub(safe_message: "Fixes ##{issue.iid}")
-      expect(commit.closes_issues(project)).to eq([issue])
+      expect(commit.closes_issues).to eq([issue])
     end
 
     it 'does not detect issues from other projects' do
       ext_ref = "#{other_project.path_with_namespace}##{other_issue.iid}"
       commit.stub(safe_message: "Fixes #{ext_ref}")
-      expect(commit.closes_issues(project)).to be_empty
+      expect(commit.closes_issues).to be_empty
     end
   end
 
   it_behaves_like 'a mentionable' do
-    let(:subject) { commit }
-    let(:mauthor) { create :user, email: commit.author_email }
+    subject { commit }
+
+    let(:author) { create(:user, email: commit.author_email) }
     let(:backref_text) { "commit #{subject.id}" }
     let(:set_mentionable_text) { ->(txt){ subject.stub(safe_message: txt) } }
 

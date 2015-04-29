@@ -1,9 +1,10 @@
-%header.navbar.navbar-fixed-top.navbar-gitlab
+%header.navbar.navbar-fixed-top.navbar-gitlab{ class: nav_header_class }
   .navbar-inner
     .container
       %div.app_logo
         = link_to root_path, class: 'home has_bottom_tooltip', title: 'Dashboard' do
           %div
+          %h3 GitSwarm
       - if !@recent_projects.nil?
         %div.dropdown.dashboard-menu
           %h1.dropdown-toggle.title{'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', 'tabIndex' => '0' }
@@ -57,3 +58,5 @@
             %li{role: 'menuitem'}
               = link_to destroy_user_session_path, class: 'logout', method: :delete do
                 Log out
+
+= render 'shared/outdated_browser'

@@ -101,4 +101,10 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
       click_button 'Accept Merge Request'
     end
   end
+
+  step 'I click link "All"' do
+    within '.content-wrapper' do
+      click_link 'All'
+    end
+  end
 end

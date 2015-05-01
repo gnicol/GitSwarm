@@ -269,9 +269,9 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     find('a[href="/projects/new"]').should have_content('New Project')
   end
 
-  step 'I should see the "Explore" page' do
+  step 'I should see the "All Projects" page' do
     expect(find('title')).to have_content('Explore')
-    page.assert_selector('.explore-title')
+    page.assert_selector('.public-projects')
   end
 
   step 'I should see the "Forum" page' do

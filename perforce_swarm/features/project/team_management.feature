@@ -67,10 +67,10 @@ Feature: Project Team Management
   @javascript @automated
   Scenario: Remove a user from a public/internal/private project and verify that user cannot pull from the project
   # 'verify that user cannot pull from the project' is automated in spec/lib/gitlab/git_access_spec.rb; describe 'without access to project'
-    Given there is a gitlab user "Sam"
-    And "Sam" is "Shop" developer
+    Given gitlab user "Dmitriy"
+    And "Dmitriy" is "Shop" developer
     And I visit project "Shop" team page
-    Then I should see "Sam" in team list
+    Then I should see "Dmitriy" in team list
     When I click cancel link for "Sam"
     And I visit project "Shop" team page
-    Then I should not see "Sam" in team list
+    Then I should not see "Dmitriy" in team list

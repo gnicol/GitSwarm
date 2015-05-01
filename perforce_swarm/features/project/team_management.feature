@@ -71,6 +71,6 @@ Feature: Project Team Management
     And "Dmitriy" is "Shop" developer
     And I visit project "Shop" team page
     Then I should see "Dmitriy" in team list
-    When I click cancel link for "Sam"
+    When I click cancel link for "Dmitriy"
     And I visit project "Shop" team page
     Then I should not see "Dmitriy" in team list

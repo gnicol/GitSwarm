@@ -53,11 +53,15 @@ class RackRequestBlocker
     [503, {}, []]
   end
 
+  def clear_active_requests
+    self.class.active_requests.update { 0 }
+  end
+
   def increment_active_requests
     self.class.active_requests.update { |v| v + 1 }
   end
 
   def decrement_active_requests
-    self.class.active_requests.update { |v| v - 1 }
+    self.class.active_requests.update { |v| v > 0 ? v -1 : 0 }
   end
 end

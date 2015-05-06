@@ -28,6 +28,10 @@ class RackRequestBlocker
     @block_requests.value = false
   end
 
+  def self.clear_active_requests
+    @active_requests.update { 0 }
+  end
+
   def initialize(app)
     @app = app
   end
@@ -51,10 +55,6 @@ class RackRequestBlocker
 
   def block_request(_env)
     [503, {}, []]
-  end
-
-  def clear_active_requests
-    self.class.active_requests.update { 0 }
   end
 
   def increment_active_requests

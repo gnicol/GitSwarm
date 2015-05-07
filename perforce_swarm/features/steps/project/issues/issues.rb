@@ -40,4 +40,10 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   step 'I should see the issue closed' do
     page.should have_selector('.issue-box-closed')
   end
+
+  step 'I click link "All"' do
+    within '.content-wrapper' do
+      click_link 'All'
+    end
+  end
 end

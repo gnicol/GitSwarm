@@ -9,6 +9,7 @@ if ENV['RAILS_ENV'] == 'test'
   end
 
   Spinach.hooks.around_scenario do |_scenario_data, feature, &block|
+    RackRequestBlocker.clear_active_requests
     block.call
 
     # Cancel network requests by visiting the about:blank
@@ -61,7 +62,7 @@ if ENV['RAILS_ENV'] == 'test'
 
   def wait_for_requests
     RackRequestBlocker.block_requests!
-    Timeout.timeout(Capybara.default_wait_time) do
+    Timeout.timeout(Capybara.default_wait_time * RackRequestBlocker.num_active_requests) do
       loop { break if RackRequestBlocker.num_active_requests == 0 }
     end
   ensure

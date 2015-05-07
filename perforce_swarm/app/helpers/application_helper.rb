@@ -7,7 +7,7 @@ module ApplicationHelper
   def current_route?(route)
     return current_page?(route) unless route.include?('#')
 
-    controller, action, _ = route.split('#')
+    controller, action = route.split('#')
     current_controller?(controller) && current_action?(action)
   end
 

@@ -32,18 +32,23 @@ gem 'omniauth-google-oauth2'
 gem 'omniauth-twitter'
 gem 'omniauth-github'
 gem 'omniauth-shibboleth'
-gem 'omniauth-kerberos'
+gem 'omniauth-kerberos', group: :kerberos
 gem 'omniauth-gitlab'
 gem 'omniauth-bitbucket'
 gem 'doorkeeper', '2.1.3'
 gem "rack-oauth2", "~> 1.0.5"
+
+# Two-factor authentication
+gem 'devise-two-factor'
+gem 'rqrcode-rails3'
+gem 'attr_encrypted', '1.3.4'
 
 # Browser detection
 gem "browser"
 
 # Extracting information from a git repository
 # Provide access to Gitlab::Git library
-gem "gitlab_git", '~> 7.1.10'
+gem "gitlab_git", '~> 7.1.11'
 
 # Ruby/Rack Git Smart-HTTP Server Handler
 gem 'gitlab-grack', '~> 2.0.2', require: 'grack'

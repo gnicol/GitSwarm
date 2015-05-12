@@ -87,6 +87,12 @@ module ApplicationHelper
       content.gsub!(/\[the certificate will not be verified\]\([^)]+\)/, 'the certificate will not be verified')
     end
 
+    # we do not accept contributions, so remove "contribute" section
+    if file == 'migrating_from_svn'
+        content.gsub!('Contribute to this guide', '')
+        content.gsub!(/^We welcome all.+control systems\.$/, '')
+    end
+
     # return the munged string
     content
   end

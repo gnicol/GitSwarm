@@ -12,6 +12,10 @@
 # See docs/integration_steps.txt for additional details.
 #
 
+# Make sure we use the Ruby version in rbenv
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+
 function bomb_if_bad {
 	"$@" 2>&1 
 	local status=$?
@@ -29,9 +33,9 @@ REPO="gitlab-ce"
 
 # Logs
 now=$(date "+%Y-%m-%d-%H%M")
-ruby_loc=$(which ruby)
-ruby_ver=$(ruby -v)
-bundle_loc=$(which bundle)
+ruby_loc=`which ruby`
+ruby_ver=`ruby -v`
+bundle_loc=`which bundle`
 echo "::: ${now} Integrating Community master/stable into ${REPO} :::"
 echo "::: Using ${ruby_ver} from ${ruby_loc} :::"
 echo "::: Bundler is at: ${bundle_loc} :::"

@@ -29,9 +29,9 @@ REPO="gitlab-ce"
 
 # Logs
 now=$(date "+%Y-%m-%d-%H%M")
-ruby_loc=$(which ruby)
-ruby_ver=$(ruby -v)
-bundle_loc=$(which bundle)
+ruby_loc=`which ruby`
+ruby_ver=`ruby -v`
+bundle_loc=`which bundle`
 echo "::: ${now} Integrating Community master/stable into ${REPO} :::"
 echo "::: Using ${ruby_ver} from ${ruby_loc} :::"
 echo "::: Bundler is at: ${bundle_loc} :::"

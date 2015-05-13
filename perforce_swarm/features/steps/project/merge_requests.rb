@@ -65,7 +65,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I fill out a "Compare branches for new Merge Request"' do
-    page.find('h3.page-title').should have_content 'Compare branches for new Merge Request'
+    page.find('.lead').should have_content 'Compare branches for new Merge Request'
     select @project.path_with_namespace, from: 'merge_request_source_project_id'
     select @project.path_with_namespace, from: 'merge_request_target_project_id'
     select 'fix', from: 'merge_request_source_branch'

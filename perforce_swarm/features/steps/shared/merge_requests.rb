@@ -10,7 +10,7 @@ module SharedMergeRequests
     select 'master', from: 'merge_request_target_branch'
     click_button 'Compare branches'
     fill_in 'merge_request_title', with: 'PerforceProject Merge Request'
-    click_button 'Submit merge request'
+    click_button 'Submit new merge request'
   end
 
   step 'I should see merge request "PerforceProject Merge Request"' do

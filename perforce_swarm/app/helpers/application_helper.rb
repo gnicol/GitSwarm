@@ -44,6 +44,9 @@ module ApplicationHelper
     # point to our configuration file
     content.gsub!('/etc/gitlab', '/etc/gitswarm')
 
+    # point to our configuration file
+    content.gsub!('gitlab-rake', 'gitswarm-rake')
+
     # do a variety of page specific touch-ups
 
     content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure'

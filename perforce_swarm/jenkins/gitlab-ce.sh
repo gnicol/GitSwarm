@@ -12,6 +12,10 @@
 # See docs/integration_steps.txt for additional details.
 #
 
+# Make sure we use the Ruby version in rbenv
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+
 function bomb_if_bad {
 	"$@" 2>&1 
 	local status=$?

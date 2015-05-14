@@ -92,8 +92,8 @@ module ApplicationHelper
 
     # we do not accept contributions, so remove "contribute" section
     if file == 'migrating_from_svn'
-        content.gsub!('Contribute to this guide', '')
-        content.gsub!(/^We welcome all.+control systems\.$/, '')
+      content.gsub!('Contribute to this guide', '')
+      content.gsub!(/^We welcome all.+control systems\.$/, '')
     end
 
     # return the munged string

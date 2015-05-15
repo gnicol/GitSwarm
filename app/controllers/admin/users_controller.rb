@@ -24,7 +24,7 @@ class Admin::UsersController < Admin::ApplicationController
 
   def block
     if user.block
-      redirect_to :back, alert: "Successfully blocked"
+      redirect_to :back, notice: "Successfully blocked"
     else
       redirect_to :back, alert: "Error occurred. User was not blocked"
     end
@@ -32,7 +32,7 @@ class Admin::UsersController < Admin::ApplicationController
 
   def unblock
     if user.activate
-      redirect_to :back, alert: "Successfully unblocked"
+      redirect_to :back, notice: "Successfully unblocked"
     else
       redirect_to :back, alert: "Error occurred. User was not unblocked"
     end
@@ -72,8 +72,8 @@ class Admin::UsersController < Admin::ApplicationController
     end
 
     respond_to do |format|
+      user.skip_reconfirmation!
       if user.update_attributes(user_params_with_pass)
-        user.confirm!
         format.html { redirect_to [:admin, user], notice: 'User was successfully updated.' }
         format.json { head :ok }
       else

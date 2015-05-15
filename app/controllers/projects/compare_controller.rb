@@ -1,14 +1,16 @@
+require 'addressable/uri'
+
 class Projects::CompareController < Projects::ApplicationController
   # Authorize
-  before_filter :authorize_download_code!
   before_filter :require_non_empty_project
+  before_filter :authorize_download_code!
 
   def index
   end
 
   def show
-    base_ref = params[:from]
-    head_ref = params[:to]
+    base_ref = Addressable::URI.unescape(params[:from])
+    head_ref = Addressable::URI.unescape(params[:to])
 
     compare_result = CompareService.new.execute(
       current_user,
@@ -25,6 +27,7 @@ class Projects::CompareController < Projects::ApplicationController
   end
 
   def create
-    redirect_to project_compare_path(@project, params[:from], params[:to])
+    redirect_to namespace_project_compare_path(@project.namespace, @project,
+                                               params[:from], params[:to])
   end
 end

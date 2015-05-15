@@ -37,22 +37,6 @@ Capybara.ignore_hidden_elements = false
 
 DatabaseCleaner.strategy = :truncation
 
-Spinach.hooks.around_scenario do |_scenario_data, feature, &block|
-  block.call
-
-  # Cancel network requests by visiting the about:blank
-  # page when using the poltergeist driver
-  if ::Capybara.current_driver == :poltergeist
-    # Clear local storage after each scenario
-    # We should be able to drop this when the 1.6 release of poltergiest comes out
-    # where they will do it for us after each test
-    feature.page.execute_script('window.localStorage.clear()')
-    feature.visit 'about:blank'
-    feature.find(:css, 'body').text.should feature.eq('')
-    wait_for_requests
-  end
-end
-
 Spinach.hooks.before_scenario do
   DatabaseCleaner.start
 end
@@ -77,13 +61,4 @@ def wait_for_ajax
   end
 rescue
   raise "AJAX request took longer than #{Capybara.default_wait_time} seconds."
-end
-
-def wait_for_requests
-  RackRequestBlocker.block_requests!
-  Timeout.timeout(Capybara.default_wait_time) do
-    loop { break if RackRequestBlocker.num_active_requests == 0 }
-  end
-ensure
-  RackRequestBlocker.allow_requests!
 end

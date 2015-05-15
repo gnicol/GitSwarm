@@ -20,17 +20,17 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I visit empty project page' do
     project = Project.find_by(name: 'Empty Project')
-    visit project_path(project)
+    visit namespace_project_path(project.namespace, project)
   end
 
   step 'I visit project "Forum" page' do
     project = Project.find_by(name: 'Forum')
-    visit project_path(project)
+    visit namespace_project_path(project.namespace, project)
   end
 
   step 'I visit project "Shop" page' do
     project = Project.find_by(name: 'Shop')
-    visit project_path(project)
+    visit namespace_project_path(project.namespace, project)
   end
 
   #########################
@@ -171,9 +171,9 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     end
   end
 
-  step 'I click on "View My Projects" link' do
+  step 'I click on "View My Starred Projects" link' do
     within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'View My Projects').trigger('click')
+      find(:link, 'View My Starred Projects').trigger('click')
     end
   end
 
@@ -278,8 +278,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     find('title').should have_content('Forum')
   end
 
-  step 'I should see "My Projects" page' do
-    find(:css, '.page-title').should have_content('My Projects')
+  step 'I should see an empty "My Starred Projects" page' do
+    expect(page).to have_content('You don\'t have starred projects yet')
   end
 
   step 'I should see the "QAProject" page' do
@@ -303,7 +303,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the user settings page' do
-    find(:css, '.page-title').should have_content('Profile settings')
+    find(:css, '.page-title').should have_content('Profile Settings')
   end
 
   step 'I should see the new project page' do

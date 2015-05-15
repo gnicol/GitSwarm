@@ -3,7 +3,7 @@
     .container
       %div.app_logo
         = link_to root_path, class: "home has_bottom_tooltip", title: "Dashboard" do
-          %h1 GITLAB
+          = brand_header_logo
       %h1.title= title
 
       %button.navbar-toggle{"data-target" => ".navbar-collapse", "data-toggle" => "collapse", type: "button"}
@@ -25,7 +25,7 @@
             = link_to explore_root_path, title: "Explore", class: 'has_bottom_tooltip', 'data-original-title' => 'Public area' do
               %i.fa.fa-globe
           %li
-            = link_to user_snippets_path(current_user), title: "My snippets", class: 'has_bottom_tooltip', 'data-original-title' => 'My snippets' do
+            = link_to user_snippets_path(current_user), title: "Your snippets", class: 'has_bottom_tooltip', 'data-original-title' => 'Your snippets' do
               %i.fa.fa-clipboard
           - if current_user.is_admin?
             %li
@@ -39,10 +39,10 @@
             = link_to profile_path, title: "Profile settings", class: 'has_bottom_tooltip', 'data-original-title' => 'Profile settings"'  do
               %i.fa.fa-user
           %li
-            = link_to destroy_user_session_path, class: "logout", method: :delete, title: "Logout", class: 'has_bottom_tooltip', 'data-original-title' => 'Logout'  do
+            = link_to destroy_user_session_path, class: "logout", method: :delete, title: "Sign out", class: 'has_bottom_tooltip', 'data-original-title' => 'Sign out'  do
               %i.fa.fa-sign-out
           %li.hidden-xs
-            = link_to current_user, class: "profile-pic", id: 'profile-pic' do
+            = link_to current_user, class: "profile-pic has_bottom_tooltip", id: 'profile-pic', 'data-original-title' => 'Your profile' do
               = image_tag avatar_icon(current_user.email, 60), alt: 'User activity'
 
 = render 'shared/outdated_browser'

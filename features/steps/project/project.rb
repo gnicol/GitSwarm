@@ -35,7 +35,7 @@ class Spinach::Features::Project < Spinach::FeatureSteps
   end
 
   step 'I should see new project avatar' do
-    @project.avatar.should be_instance_of AttachmentUploader
+    @project.avatar.should be_instance_of AvatarUploader
     url = @project.avatar.url
     url.should == "/uploads/project/avatar/#{ @project.id }/gitlab_logo.png"
   end
@@ -93,5 +93,13 @@ class Spinach::Features::Project < Spinach::FeatureSteps
   step 'I should see project "Shop" README' do
     page.should have_link 'README.md'
     page.should have_content 'testme'
+  end
+
+  step 'I add project tags' do
+    fill_in 'Tags', with: 'tag1, tag2'
+  end
+
+  step 'I should see project tags' do
+    expect(find_field('Tags').value).to eq 'tag1, tag2'
   end
 end

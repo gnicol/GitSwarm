@@ -20,7 +20,7 @@ module API
       identifier = sudo_identifier()
 
       # If the sudo is the current user do nothing
-      if (identifier && !(@current_user.id == identifier || @current_user.username == identifier))
+      if identifier && !(@current_user.id == identifier || @current_user.username == identifier)
         render_api_error!('403 Forbidden: Must be admin to use sudo', 403) unless @current_user.is_admin?
         @current_user = User.by_username_or_id(identifier)
         not_found!("No user id or username for: #{identifier}") if @current_user.nil?
@@ -33,7 +33,7 @@ module API
       identifier ||= params[SUDO_PARAM] ||= env[SUDO_HEADER]
 
       # Regex for integers
-      if (!!(identifier =~ /^[0-9]+$/))
+      if !!(identifier =~ /^[0-9]+$/)
         identifier.to_i
       else
         identifier
@@ -83,7 +83,10 @@ module API
     end
 
     def authenticate_by_gitlab_shell_token!
-      unauthorized! unless secret_token == params['secret_token'].try(:chomp)
+      input = params['secret_token'].try(:chomp)
+      unless Devise.secure_compare(secret_token, input)
+        unauthorized!
+      end
     end
 
     def authenticated_as_admin!
@@ -204,7 +207,7 @@ module API
     end
 
     def render_validation_error!(model)
-      unless model.valid?
+      if model.errors.any?
         render_api_error!(model.errors.messages || '400 Bad Request', 400)
       end
     end

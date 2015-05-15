@@ -95,16 +95,25 @@ class MergeRequest < ActiveRecord::Base
     end
 
     event :mark_as_mergeable do
-      transition unchecked: :can_be_merged
+      transition [:unchecked, :cannot_be_merged] => :can_be_merged
     end
 
     event :mark_as_unmergeable do
-      transition unchecked: :cannot_be_merged
+      transition [:unchecked, :can_be_merged] => :cannot_be_merged
     end
 
     state :unchecked
     state :can_be_merged
     state :cannot_be_merged
+
+    around_transition do |merge_request, transition, block|
+      merge_request.record_timestamps = false
+      begin
+        block.call
+      ensure
+        merge_request.record_timestamps = true
+      end
+    end
   end
 
   validates :source_project, presence: true, unless: :allow_broken
@@ -115,7 +124,6 @@ class MergeRequest < ActiveRecord::Base
   validate :validate_fork
 
   scope :of_group, ->(group) { where("source_project_id in (:group_project_ids) OR target_project_id in (:group_project_ids)", group_project_ids: group.project_ids) }
-  scope :of_user_team, ->(team) { where("(source_project_id in (:team_project_ids) OR target_project_id in (:team_project_ids) AND assignee_id in (:team_member_ids))", team_project_ids: team.project_ids, team_member_ids: team.member_ids) }
   scope :merged, -> { with_state(:merged) }
   scope :by_branch, ->(branch_name) { where("(source_branch LIKE :branch) OR (target_branch LIKE :branch)", branch: branch_name) }
   scope :cared, ->(user) { where('assignee_id = :user OR author_id = :user', user: user.id) }
@@ -249,11 +257,11 @@ class MergeRequest < ActiveRecord::Base
   end
 
   # Return the set of issues that will be closed if this merge request is accepted.
-  def closes_issues
+  def closes_issues(current_user = self.author)
     if target_branch == project.default_branch
-      issues = commits.flat_map { |c| c.closes_issues(project) }
-      issues.push(*Gitlab::ClosingIssueExtractor.
-                  closed_by_message_in_project(description, project))
+      issues = commits.flat_map { |c| c.closes_issues(project, current_user) }
+      issues.push(*Gitlab::ClosingIssueExtractor.new(project, current_user).
+                  closed_by_message(description))
       issues.uniq.sort_by(&:id)
     else
       []
@@ -353,6 +361,8 @@ class MergeRequest < ActiveRecord::Base
   end
 
   def locked_long_ago?
-    locked_at && locked_at < (Time.now - 1.day)
+    return false unless locked?
+
+    locked_at.nil? || locked_at < (Time.now - 1.day)
   end
 end

@@ -7,9 +7,12 @@ module Projects
     def execute
       @project = Project.new(params)
 
-      # Reset visibility level if is not allowed to set it
-      unless Gitlab::VisibilityLevel.allowed_for?(current_user, params[:visibility_level])
-        @project.visibility_level = default_features.visibility_level
+      # Make sure that the user is allowed to use the specified visibility
+      # level
+      unless Gitlab::VisibilityLevel.allowed_for?(current_user,
+                                                  params[:visibility_level])
+        deny_visibility_level(@project)
+        return @project
       end
 
       # Set project name from path
@@ -80,7 +83,7 @@ module Projects
       system_hook_service.execute_hooks_for(@project, :create)
 
       unless @project.group
-        @project.team << [current_user, :master]
+        @project.team << [current_user, :master, current_user]
       end
 
       @project.update_column(:last_activity_at, @project.created_at)

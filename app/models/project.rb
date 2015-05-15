@@ -37,6 +37,8 @@ class Project < ActiveRecord::Base
   include Gitlab::ShellAdapter
   include Gitlab::VisibilityLevel
   include Gitlab::ConfigHelper
+  include Rails.application.routes.url_helpers
+
   extend Gitlab::ConfigHelper
   extend Enumerize
 
@@ -47,6 +49,12 @@ class Project < ActiveRecord::Base
   default_value_for :wiki_enabled, gitlab_config_features.wiki
   default_value_for :wall_enabled, false
   default_value_for :snippets_enabled, gitlab_config_features.snippets
+
+  # set last_activity_at to the same as created_at
+  after_create :set_last_activity_at
+  def set_last_activity_at
+    update_column(:last_activity_at, self.created_at)
+  end
 
   ActsAsTaggableOn.strict_case_match = true
   acts_as_taggable_on :tags
@@ -65,6 +73,7 @@ class Project < ActiveRecord::Base
   has_one :gitlab_ci_service, dependent: :destroy
   has_one :campfire_service, dependent: :destroy
   has_one :emails_on_push_service, dependent: :destroy
+  has_one :irker_service, dependent: :destroy
   has_one :pivotaltracker_service, dependent: :destroy
   has_one :hipchat_service, dependent: :destroy
   has_one :flowdock_service, dependent: :destroy
@@ -72,7 +81,7 @@ class Project < ActiveRecord::Base
   has_one :asana_service, dependent: :destroy
   has_one :gemnasium_service, dependent: :destroy
   has_one :slack_service, dependent: :destroy
-  has_one :buildbox_service, dependent: :destroy
+  has_one :buildkite_service, dependent: :destroy
   has_one :bamboo_service, dependent: :destroy
   has_one :teamcity_service, dependent: :destroy
   has_one :pushover_service, dependent: :destroy
@@ -80,6 +89,7 @@ class Project < ActiveRecord::Base
   has_one :redmine_service, dependent: :destroy
   has_one :custom_issue_tracker_service, dependent: :destroy
   has_one :gitlab_issue_tracker_service, dependent: :destroy
+  has_one :external_wiki_service, dependent: :destroy
 
   has_one :forked_project_link, dependent: :destroy, foreign_key: "forked_to_project_id"
 
@@ -104,6 +114,8 @@ class Project < ActiveRecord::Base
   has_many :users_star_projects, dependent: :destroy
   has_many :starrers, through: :users_star_projects, source: :user
 
+  has_one :import_data, dependent: :destroy, class_name: "ProjectImportData"
+
   delegate :name, to: :owner, allow_nil: true, prefix: true
   delegate :members, to: :team, prefix: true
 
@@ -114,23 +126,20 @@ class Project < ActiveRecord::Base
     presence: true,
     length: { within: 0..255 },
     format: { with: Gitlab::Regex.project_name_regex,
-              message: Gitlab::Regex.project_regex_message }
+              message: Gitlab::Regex.project_name_regex_message }
   validates :path,
     presence: true,
     length: { within: 0..255 },
-    format: { with: Gitlab::Regex.path_regex,
-              message: Gitlab::Regex.path_regex_message }
+    format: { with: Gitlab::Regex.project_path_regex,
+              message: Gitlab::Regex.project_path_regex_message }
   validates :issues_enabled, :merge_requests_enabled,
             :wiki_enabled, inclusion: { in: [true, false] }
-  validates :visibility_level,
-    exclusion: { in: gitlab_config.restricted_visibility_levels },
-    if: -> { gitlab_config.restricted_visibility_levels.any? }
   validates :issues_tracker_id, length: { maximum: 255 }, allow_blank: true
   validates :namespace, presence: true
   validates_uniqueness_of :name, scope: :namespace_id
   validates_uniqueness_of :path, scope: :namespace_id
   validates :import_url,
-    format: { with: URI::regexp(%w(git http https)), message: 'should be a valid url' },
+    format: { with: /\A#{URI.regexp(%w(ssh git http https))}\z/, message: 'should be a valid url' },
     if: :import?
   validates :star_count, numericality: { greater_than_or_equal_to: 0 }
   validate :check_limit, on: :create
@@ -138,7 +147,7 @@ class Project < ActiveRecord::Base
     if: ->(project) { project.avatar && project.avatar_changed? }
   validates :avatar, file_size: { maximum: 200.kilobytes.to_i }
 
-  mount_uploader :avatar, AttachmentUploader
+  mount_uploader :avatar, AvatarUploader
 
   # Scopes
   scope :sorted_by_activity, -> { reorder(last_activity_at: :desc) }
@@ -148,7 +157,6 @@ class Project < ActiveRecord::Base
   scope :without_user, ->(user)  { where('projects.id NOT IN (:ids)', ids: user.authorized_projects.map(&:id) ) }
   scope :without_team, ->(team) { team.projects.present? ? where('projects.id NOT IN (:ids)', ids: team.projects.map(&:id)) : scoped  }
   scope :not_in_group, ->(group) { where('projects.id NOT IN (:ids)', ids: group.project_ids ) }
-  scope :in_team, ->(team) { where('projects.id IN (:ids)', ids: team.projects.map(&:id)) }
   scope :in_namespace, ->(namespace) { where(namespace_id: namespace.id) }
   scope :in_group_namespace, -> { joins(:group) }
   scope :personal, ->(user) { where(namespace_id: user.namespace_id) }
@@ -179,6 +187,7 @@ class Project < ActiveRecord::Base
     state :failed
 
     after_transition any => :started, do: :add_import_job
+    after_transition any => :finished, do: :clear_import_data
   end
 
   class << self
@@ -256,6 +265,10 @@ class Project < ActiveRecord::Base
     RepositoryImportWorker.perform_in(2.seconds, id)
   end
 
+  def clear_import_data
+    self.import_data.destroy if self.import_data
+  end
+
   def import?
     import_url.present?
   end
@@ -285,7 +298,7 @@ class Project < ActiveRecord::Base
   end
 
   def to_param
-    namespace.path + '/' + path
+    path
   end
 
   def web_url
@@ -402,6 +415,14 @@ class Project < ActiveRecord::Base
     @avatar_file
   end
 
+  def avatar_url
+    if avatar.present?
+      [gitlab_config.url, avatar.url].join
+    elsif avatar_in_git
+      [gitlab_config.url, namespace_project_avatar_path(namespace, self)].join
+    end
+  end
+
   # For compatibility with old code
   def code
     path
@@ -428,13 +449,13 @@ class Project < ActiveRecord::Base
     end
   end
 
-  def team_member_by_name_or_email(name = nil, email = nil)
+  def project_member_by_name_or_email(name = nil, email = nil)
     user = users.where('name like ? or email like ?', name, email).first
     project_members.where(user: user) if user
   end
 
   # Get Team Member record by user id
-  def team_member_by_id(user_id)
+  def project_member_by_id(user_id)
     project_members.find_by(user_id: user_id)
   end
 
@@ -462,8 +483,9 @@ class Project < ActiveRecord::Base
     end
   end
 
-  def execute_services(data)
-    services.select(&:active).each do |service|
+  def execute_services(data, hooks_scope = :push_hooks)
+    # Call only service hooks that are active for this scope
+    services.send(hooks_scope).each do |service|
       service.async_execute(data)
     end
   end

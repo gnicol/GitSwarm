@@ -37,10 +37,8 @@ class @Notes
     $(document).on "click", ".js-note-attachment-delete", @removeAttachment
 
     # reset main target form after submit
-    $(document).on "ajax:complete", ".js-main-target-form", @resetMainTargetForm
-
-    # attachment button
-    $(document).on "click", ".js-choose-note-attachment-button", @chooseNoteAttachment
+    $(document).on "ajax:complete", ".js-main-target-form", @reenableTargetFormSubmitButton
+    $(document).on "ajax:success", ".js-main-target-form", @resetMainTargetForm
 
     # update the file name when an attachment is selected
     $(document).on "change", ".js-note-attachment-input", @updateFormAttachment
@@ -60,6 +58,7 @@ class @Notes
     @notes_forms = '.js-main-target-form textarea, .js-discussion-note-form textarea'
     # Chrome doesn't fire keypress or keyup for Command+Enter, so we need keydown.
     $(document).on('keydown', @notes_forms, (e) ->
+      return if e.originalEvent.repeat
       if e.keyCode == 10 || ((e.metaKey || e.ctrlKey) && e.keyCode == 13)
         $(@).parents('form').submit()
     )
@@ -73,7 +72,7 @@ class @Notes
     $(document).off "click", ".js-note-delete"
     $(document).off "click", ".js-note-attachment-delete"
     $(document).off "ajax:complete", ".js-main-target-form"
-    $(document).off "click", ".js-choose-note-attachment-button"
+    $(document).off "ajax:success", ".js-main-target-form"
     $(document).off "click", ".js-discussion-reply-button"
     $(document).off "click", ".js-add-diff-note-button"
     $(document).off "visibilitychange"
@@ -173,14 +172,10 @@ class @Notes
 
     form.find(".js-note-text").data("autosave").reset()
 
-  ###
-  Called when clicking the "Choose File" button.
+  reenableTargetFormSubmitButton: ->
+    form = $(".js-main-target-form")
 
-  Opens the file selection dialog.
-  ###
-  chooseNoteAttachment: ->
-    form = $(this).closest("form")
-    form.find(".js-note-attachment-input").click()
+    form.find(".js-note-text").trigger "input"
 
   ###
   Shows the main form and does some setup on it.
@@ -438,7 +433,7 @@ class @Notes
     @removeDiscussionNoteForm(form)
 
   updateVotes: ->
-    (new NotesVotes).updateVotes()
+    true
 
   ###
   Called after an attachment file has been selected.

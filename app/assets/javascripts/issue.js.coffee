@@ -9,15 +9,16 @@ class @Issue
     if $("a.btn-close").length
       $("li.task-list-item input:checkbox").prop("disabled", false)
 
-    $(".task-list-item input:checkbox").on(
-      "click"
-      null
-      "issue"
-      updateTaskState
-    )
+    $('.task-list-item input:checkbox').off('change')
+    $('.task-list-item input:checkbox').change('issue', updateTaskState)
 
-    $('.issuable-affix').affix offset:
-      top: ->
-        @top = $('.issue-details').outerHeight(true) + 25
-      bottom: ->
-        @bottom = $('.footer').outerHeight(true)
+    $('.issue-details').waitForImages ->
+      $('.issuable-affix').affix offset:
+        top: ->
+          @top = ($('.issuable-affix').offset().top - 70)
+        bottom: ->
+          @bottom = $('.footer').outerHeight(true)
+      $('.issuable-affix').on 'affix.bs.affix', ->
+        $(@).width($(@).outerWidth())
+      .on 'affixed-top.bs.affix affixed-bottom.bs.affix', ->
+        $(@).width('')

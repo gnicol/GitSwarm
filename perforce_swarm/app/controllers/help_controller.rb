@@ -1,65 +1,44 @@
 require Rails.root.join('app', 'controllers', 'help_controller')
 
 module PerforceSwarm
-  # Override the CE help controller to handle non-Markdown files
-  # (e.g. images) within the /doc path
+  # Override the CE help controller to search the swarm directory for files
   module HelpControllerExtension
     def show
-      @category = params[:category]
-      @file     = params[:file]
-      extension = request.path_parameters[:format]
+      category = clean_path_info(path_params[:category])
+      file = path_params[:file]
 
-      # try serving the file from our docs and the apps docs
-      return if attempt_show('perforce_swarm/doc', @category, @file, extension)
-      return if attempt_show('doc', @category, @file, extension)
-
-      # otherwise, show the appropriate error
-      if !extension.blank? && extension != 'md'
-        render nothing: true, status: 404
-      else
-        not_found!
-      end
-    end
-
-    def attempt_show(prefix, category, file, extension)
-      # calculate the intended root and the requested path
-      doc_path  = File.realpath(Rails.root.join(prefix))
-      file_path = Rails.root.join(prefix, category, file)
-
-      # if we have a non-md extension try to render it as an image
-      if !extension.blank? && extension != 'md'
-        begin
-          asset_path = File.realpath("#{file_path}.#{extension}")
-        rescue Errno::ENOENT
-          asset_path = false
+      respond_to do |format|
+        format.any(:markdown, :md, :html) do
+          swarm_path = Rails.root.join('perforce_swarm', 'doc', category, "#{file}.md")
+          path       = Rails.root.join('doc', category, "#{file}.md")
+          if File.exist?(swarm_path)
+            @markdown = File.read(swarm_path)
+            render 'show.html.haml'
+          elsif File.exist?(path)
+            @markdown = view_context.help_preprocess(category, file)
+            render 'show.html.haml'
+          else
+            # Force template to Haml
+            render 'errors/not_found.html.haml', layout: 'errors', status: 404
+          end
         end
 
-        if asset_path && asset_path.start_with?(doc_path)
-          send_file(
-            asset_path,
-            x_sendfile:   true,
-            type:         request.format.symbol ? request.format : 'application/octet-stream',
-            disposition:  'inline'
-          )
-          return true
+        # Allow access to images in the doc folder
+        format.any(:png, :gif, :jpeg) do
+          swarm_path = Rails.root.join('perforce_swarm', 'doc', category, "#{file}.#{params[:format]}")
+          path       = Rails.root.join('doc', category, "#{file}.#{params[:format]}")
+          if File.exist?(swarm_path)
+            send_file(swarm_path, disposition: 'inline')
+          elsif File.exist?(path)
+            send_file(path, disposition: 'inline')
+          else
+            head :not_found
+          end
         end
 
-        return false
+        # Any other format we don't recognize, just respond 404
+        format.any { head :not_found }
       end
-
-      # looks like we have a markdown file; ensure its under the right path and render
-      begin
-        md_path = File.realpath("#{file_path}.md")
-      rescue Errno::ENOENT
-        md_path = false
-      end
-
-      if md_path && md_path.start_with?(doc_path)
-        render 'show'
-        return true
-      end
-
-      false
     end
   end
 end

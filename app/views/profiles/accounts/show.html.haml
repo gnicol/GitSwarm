@@ -1,16 +1,11 @@
-%h3.page-title
-  Account settings
-%p.light
-  You can change your username and private token here.
-  - if current_user.ldap_user?
+- if current_user.ldap_user?
+  .alert.alert-info
     Some options are unavailable for LDAP accounts
-%hr
-
 
 .account-page
   %fieldset.update-token
     %legend
-      Private token
+      Reset Private token
     %div
       = form_for @user, url: reset_private_token_profile_path, method: :put do |f|
         .data
@@ -25,7 +20,7 @@
             - if current_user.private_token
               = text_field_tag "token", current_user.private_token, class: "form-control"
               %div
-                = f.submit 'Reset', data: { confirm: "Are you sure?" }, class: "btn btn-primary btn-build-token"
+                = f.submit 'Reset private token', data: { confirm: "Are you sure?" }, class: "btn btn-primary btn-build-token"
             - else
               %span You don`t have one yet. Click generate to fix it.
               = f.submit 'Generate', class: "btn success btn-build-token"
@@ -33,17 +28,21 @@
 
   - if show_profile_social_tab?
     %fieldset
-      %legend Social Accounts
-      .oauth_select_holder.append-bottom-10
+      %legend Connected Accounts
+      .oauth-buttons.append-bottom-10
         %p Click on icon to activate signin with one of the following services
         - enabled_social_providers.each do |provider|
-          %span{class: oauth_active_class(provider) }
-            = link_to authbutton(provider, 32), omniauth_authorize_path(User, provider)
+          .btn-group
+            = link_to oauth_image_tag(provider), omniauth_authorize_path(User, provider),
+              class: "btn btn-lg #{'active' if oauth_active?(provider)}"
+            - if oauth_active?(provider)
+              = link_to unlink_profile_account_path(provider: provider), method: :delete, class: 'btn btn-lg' do
+                %i.fa.fa-close
 
   - if show_profile_username_tab?
     %fieldset.update-username
       %legend
-        Username
+        Change Username
       = form_for @user, url: update_username_profile_path,  method: :put, remote: true do |f|
         %p
           Changing your username will change path to all personal projects!
@@ -57,7 +56,7 @@
         %p.light
           = user_url(@user)
         %div
-          = f.submit 'Save username', class: "btn btn-save"
+          = f.submit 'Save username', class: "btn btn-warning"
 
   - if show_profile_remove_tab?
     %fieldset.remove-account

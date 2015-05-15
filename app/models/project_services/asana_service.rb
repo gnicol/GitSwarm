@@ -2,17 +2,21 @@
 #
 # Table name: services
 #
-#  id         :integer          not null, primary key
-#  type       :string(255)
-#  title      :string(255)
-#  project_id :integer
-#  created_at :datetime
-#  updated_at :datetime
-#  active     :boolean          default(FALSE), not null
-#  properties :text
-#  template   :boolean          default(FALSE)
+#  id                    :integer          not null, primary key
+#  type                  :string(255)
+#  title                 :string(255)
+#  project_id            :integer
+#  created_at            :datetime
+#  updated_at            :datetime
+#  active                :boolean          default(FALSE), not null
+#  properties            :text
+#  template              :boolean          default(FALSE)
+#  push_events           :boolean          default(TRUE)
+#  issues_events         :boolean          default(TRUE)
+#  merge_requests_events :boolean          default(TRUE)
+#  tag_push_events       :boolean          default(TRUE)
+#  note_events           :boolean          default(TRUE), not null
 #
-
 require 'asana'
 
 class AsanaService < Service
@@ -61,25 +65,31 @@ automatically inspected. Leave blank to include all branches.'
     ]
   end
 
-  def execute(push)
+  def supported_events
+    %w(push)
+  end
+
+  def execute(data)
+    return unless supported_events.include?(data[:object_kind])
+
     Asana.configure do |client|
       client.api_key = api_key
     end
 
-    user = push[:user_name]
-    branch = push[:ref].gsub('refs/heads/', '')
+    user = data[:user_name]
+    branch = Gitlab::Git.ref_name(data[:ref])
 
     branch_restriction = restrict_to_branch.to_s
 
     # check the branch restriction is poplulated and branch is not included
-    if branch_restriction.length > 0 && branch_restriction.index(branch) == nil
+    if branch_restriction.length > 0 && branch_restriction.index(branch).nil?
       return
     end
 
     project_name = project.name_with_namespace
     push_msg = user + ' pushed to branch ' + branch + ' of ' + project_name
 
-    push[:commits].each do |commit|
+    data[:commits].each do |commit|
       check_commit(' ( ' + commit[:url] + ' ): ' + commit[:message], push_msg)
     end
   end

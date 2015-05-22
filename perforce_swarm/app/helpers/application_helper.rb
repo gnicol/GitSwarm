@@ -44,6 +44,9 @@ module ApplicationHelper
     # point to our configuration file
     content.gsub!('/etc/gitlab', '/etc/gitswarm')
 
+    # point to our configuration file
+    content.gsub!('gitlab-rake', 'gitswarm-rake')
+
     # do a variety of page specific touch-ups
 
     content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure'
@@ -85,6 +88,12 @@ module ApplicationHelper
     # remove a link to GitLab on the web_hooks page
     if category == 'web_hooks' && file == 'web_hooks'
       content.gsub!(/\[the certificate will not be verified\]\([^)]+\)/, 'the certificate will not be verified')
+    end
+
+    # we do not accept contributions, so remove "contribute" section
+    if file == 'migrating_from_svn'
+      content.gsub!('Contribute to this guide', '')
+      content.gsub!(/^We welcome all.+control systems\.$/, '')
     end
 
     # return the munged string

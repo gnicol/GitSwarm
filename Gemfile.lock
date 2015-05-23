@@ -53,6 +53,8 @@ GEM
     astrolabe (1.3.0)
       parser (>= 2.2.0.pre.3, < 3.0)
     atomic (1.1.99)
+    attr_encrypted (1.3.4)
+      encryptor (>= 1.3.0)
     attr_required (1.0.0)
     autoprefixer-rails (5.1.11)
       execjs
@@ -143,6 +145,13 @@ GEM
       warden (~> 1.2.3)
     devise-async (0.9.0)
       devise (~> 3.2)
+    devise-two-factor (1.0.1)
+      activemodel
+      activesupport
+      attr_encrypted (~> 1.3.2)
+      devise (~> 3.2.4)
+      rails
+      rotp (~> 1.6.1)
     diff-lcs (1.2.5)
     diffy (3.0.3)
     docile (1.1.5)
@@ -154,6 +163,7 @@ GEM
     email_spec (1.5.0)
       launchy (~> 2.1)
       mail (~> 2.2)
+    encryptor (1.3.0)
     enumerize (0.7.0)
       activesupport (>= 3.2)
     equalizer (0.0.8)
@@ -222,11 +232,11 @@ GEM
       mime-types (~> 1.19)
     gitlab_emoji (0.1.0)
       gemojione (~> 2.0)
-    gitlab_git (7.1.10)
+    gitlab_git (7.1.13)
       activesupport (~> 4.0)
       charlock_holmes (~> 0.6)
       gitlab-linguist (~> 3.0)
-      rugged (~> 0.21.2)
+      rugged (~> 0.22.2)
     gitlab_meta (7.0)
     gitlab_omniauth-ldap (1.2.1)
       net-ldap (~> 0.9)
@@ -297,11 +307,6 @@ GEM
     i18n (0.7.0)
     ice_cube (0.11.1)
     ice_nine (0.10.0)
-    jasmine (2.2.0)
-      jasmine-core (~> 2.2)
-      phantomjs
-      rack (>= 1.2.1)
-      rake
     jasmine-core (2.2.0)
     jasmine-rails (0.10.8)
       jasmine-core (>= 1.3, < 3.0)
@@ -367,9 +372,9 @@ GEM
       rack (~> 1.2)
     octokit (3.7.0)
       sawyer (~> 0.6.0, >= 0.5.3)
-    omniauth (1.1.4)
-      hashie (>= 1.2, < 3)
-      rack
+    omniauth (1.2.2)
+      hashie (>= 1.2, < 4)
+      rack (~> 1.0)
     omniauth-bitbucket (0.0.2)
       multi_json (~> 1.7)
       omniauth (~> 1.1)
@@ -498,7 +503,11 @@ GEM
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rinku (1.7.3)
+    rotp (1.6.1)
     rouge (1.7.7)
+    rqrcode (0.4.2)
+    rqrcode-rails3 (0.1.7)
+      rqrcode (>= 0.4.2)
     rspec (2.99.0)
       rspec-core (~> 2.99.0)
       rspec-expectations (~> 2.99.0)
@@ -532,7 +541,7 @@ GEM
       sexp_processor (~> 4.1)
     rubyntlm (0.5.0)
     rubypants (0.2.0)
-    rugged (0.21.4)
+    rugged (0.22.2)
     rugments (1.0.0.beta6)
     safe_yaml (0.9.7)
     sanitize (2.1.0)
@@ -608,6 +617,8 @@ GEM
     stamp (0.5.0)
     state_machine (1.2.0)
     stringex (2.5.2)
+    task_list (1.0.2)
+      html-pipeline
     temple (0.6.7)
     term-ansicolor (1.2.2)
       tins (~> 0.8)
@@ -685,6 +696,7 @@ DEPENDENCIES
   asana (~> 0.0.6)
   asciidoctor (= 0.1.4)
   atomic
+  attr_encrypted (= 1.3.4)
   awesome_print
   better_errors
   binding_of_caller
@@ -706,6 +718,7 @@ DEPENDENCIES
   default_value_for (~> 3.0.0)
   devise (= 3.2.4)
   devise-async (= 0.9.0)
+  devise-two-factor
   diffy (~> 3.0.3)
   doorkeeper (= 2.1.3)
   dropzonejs-rails
@@ -722,7 +735,7 @@ DEPENDENCIES
   gitlab-grack (~> 2.0.2)
   gitlab-linguist (~> 3.0.1)
   gitlab_emoji (~> 0.1)
-  gitlab_git (~> 7.1.10)
+  gitlab_git (~> 7.1.13)
   gitlab_meta (= 7.0)
   gitlab_omniauth-ldap (= 1.2.1)
   gollum-lib (~> 4.0.2)
@@ -736,7 +749,6 @@ DEPENDENCIES
   hipchat (~> 1.5.0)
   html-pipeline (~> 1.11.0)
   httparty
-  jasmine (~> 2.2.0)
   jasmine-rails
   jquery-atwho-rails (~> 1.0.0)
   jquery-rails
@@ -752,7 +764,7 @@ DEPENDENCIES
   newrelic_rpm
   nprogress-rails
   octokit (= 3.7.0)
-  omniauth (~> 1.1.3)
+  omniauth (~> 1.2.2)
   omniauth-bitbucket
   omniauth-github
   omniauth-gitlab
@@ -781,6 +793,7 @@ DEPENDENCIES
   redis-rails
   request_store
   rerun (~> 0.10.0)
+  rqrcode-rails3
   rspec-rails (= 2.99)
   rubocop (= 0.28.0)
   rugments
@@ -804,6 +817,7 @@ DEPENDENCIES
   spring-commands-spinach (= 1.0.0)
   stamp
   state_machine
+  task_list (~> 1.0.0)
   test_after_commit
   thin
   tinder (~> 1.9.2)

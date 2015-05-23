@@ -21,7 +21,7 @@ describe GitlabMarkdownHelper do
 
   describe "#gfm" do
     it "should forward HTML options to links" do
-      expect(gfm("Fixed in #{commit.id}", @project, class: 'foo')).
+      expect(gfm("Fixed in #{commit.id}", { project: @project }, class: 'foo')).
         to have_selector('a.gfm.foo')
     end
 
@@ -41,115 +41,6 @@ describe GitlabMarkdownHelper do
       it "should link to the issue" do
         expected = namespace_project_issue_path(project.namespace, project, issue)
         expect(gfm(actual)).to match(expected)
-      end
-    end
-
-    context 'parse_tasks: true' do
-      before(:all) do
-        @source_text_asterisk = <<-EOT.strip_heredoc
-          * [ ] valid unchecked task
-          * [x] valid lowercase checked task
-          * [X] valid uppercase checked task
-              * [ ] valid unchecked nested task
-              * [x] valid checked nested task
-
-          [ ] not an unchecked task - no list item
-          [x] not a checked task - no list item
-
-          * [  ] not an unchecked task - too many spaces
-          * [x ] not a checked task - too many spaces
-          * [] not an unchecked task - no spaces
-          * Not a task [ ] - not at beginning
-        EOT
-
-        @source_text_dash = <<-EOT.strip_heredoc
-          - [ ] valid unchecked task
-          - [x] valid lowercase checked task
-          - [X] valid uppercase checked task
-              - [ ] valid unchecked nested task
-              - [x] valid checked nested task
-        EOT
-      end
-
-      it 'should render checkboxes at beginning of asterisk list items' do
-        rendered_text = markdown(@source_text_asterisk, parse_tasks: true)
-
-        expect(rendered_text).to match(/<input.*checkbox.*valid unchecked task/)
-        expect(rendered_text).to match(
-          /<input.*checkbox.*valid lowercase checked task/
-        )
-        expect(rendered_text).to match(
-          /<input.*checkbox.*valid uppercase checked task/
-        )
-      end
-
-      it 'should render checkboxes at beginning of dash list items' do
-        rendered_text = markdown(@source_text_dash, parse_tasks: true)
-
-        expect(rendered_text).to match(/<input.*checkbox.*valid unchecked task/)
-        expect(rendered_text).to match(
-          /<input.*checkbox.*valid lowercase checked task/
-        )
-        expect(rendered_text).to match(
-          /<input.*checkbox.*valid uppercase checked task/
-        )
-      end
-
-      it 'should render checkboxes for nested tasks' do
-        rendered_text = markdown(@source_text_asterisk, parse_tasks: true)
-
-        expect(rendered_text).to match(
-          /<input.*checkbox.*valid unchecked nested task/
-        )
-        expect(rendered_text).to match(
-          /<input.*checkbox.*valid checked nested task/
-        )
-      end
-
-      it 'should not be confused by whitespace before bullets' do
-        rendered_text_asterisk = markdown(@source_text_asterisk, parse_tasks: true)
-        rendered_text_dash = markdown(@source_text_dash, parse_tasks: true)
-
-        expect(rendered_text_asterisk).to match(
-          /<input.*checkbox.*valid unchecked nested task/
-        )
-        expect(rendered_text_asterisk).to match(
-          /<input.*checkbox.*valid checked nested task/
-        )
-        expect(rendered_text_dash).to match(
-          /<input.*checkbox.*valid unchecked nested task/
-        )
-        expect(rendered_text_dash).to match(
-          /<input.*checkbox.*valid checked nested task/
-        )
-      end
-
-      it 'should not render checkboxes outside of list items' do
-        rendered_text = markdown(@source_text_asterisk, parse_tasks: true)
-
-        expect(rendered_text).not_to match(
-          /<input.*checkbox.*not an unchecked task - no list item/
-        )
-        expect(rendered_text).not_to match(
-          /<input.*checkbox.*not a checked task - no list item/
-        )
-      end
-
-      it 'should not render checkboxes with invalid formatting' do
-        rendered_text = markdown(@source_text_asterisk, parse_tasks: true)
-
-        expect(rendered_text).not_to match(
-          /<input.*checkbox.*not an unchecked task - too many spaces/
-        )
-        expect(rendered_text).not_to match(
-          /<input.*checkbox.*not a checked task - too many spaces/
-        )
-        expect(rendered_text).not_to match(
-          /<input.*checkbox.*not an unchecked task - no spaces/
-        )
-        expect(rendered_text).not_to match(
-          /Not a task.*<input.*checkbox.*not at beginning/
-        )
       end
     end
   end
@@ -202,79 +93,6 @@ describe GitlabMarkdownHelper do
       actual = "This is a <h1>test</h1> - see ##{issues[0].iid}"
       expect(link_to_gfm(actual, commit_path)).
         to match('&lt;h1&gt;test&lt;/h1&gt;')
-    end
-  end
-
-  describe "#markdown" do
-    # TODO (rspeicher): These belong in a relative link filter spec
-    context 'relative links' do
-      context 'with a valid repository' do
-        before do
-          @repository = project.repository
-          @ref = 'markdown'
-        end
-
-        it "should handle relative urls for a file in master" do
-          actual = "[GitLab API doc](doc/api/README.md)\n"
-          expected = "<p><a href=\"/#{project.path_with_namespace}/blob/#{@ref}/doc/api/README.md\">GitLab API doc</a></p>\n"
-          expect(markdown(actual)).to match(expected)
-        end
-
-        it "should handle relative urls for a file in master with an anchor" do
-          actual = "[GitLab API doc](doc/api/README.md#section)\n"
-          expected = "<p><a href=\"/#{project.path_with_namespace}/blob/#{@ref}/doc/api/README.md#section\">GitLab API doc</a></p>\n"
-          expect(markdown(actual)).to match(expected)
-        end
-
-        it "should not handle relative urls for the current file with an anchor" do
-          actual = "[GitLab API doc](#section)\n"
-          expected = "<p><a href=\"#section\">GitLab API doc</a></p>\n"
-          expect(markdown(actual)).to match(expected)
-        end
-
-        it "should handle relative urls for a directory in master" do
-          actual = "[GitLab API doc](doc/api)\n"
-          expected = "<p><a href=\"/#{project.path_with_namespace}/tree/#{@ref}/doc/api\">GitLab API doc</a></p>\n"
-          expect(markdown(actual)).to match(expected)
-        end
-
-        it "should handle absolute urls" do
-          actual = "[GitLab](https://www.gitlab.com)\n"
-          expected = "<p><a href=\"https://www.gitlab.com\">GitLab</a></p>\n"
-          expect(markdown(actual)).to match(expected)
-        end
-
-        it "should handle relative urls in reference links for a file in master" do
-          actual = "[GitLab API doc][GitLab readme]\n [GitLab readme]: doc/api/README.md\n"
-          expected = "<p><a href=\"/#{project.path_with_namespace}/blob/#{@ref}/doc/api/README.md\">GitLab API doc</a></p>\n"
-          expect(markdown(actual)).to match(expected)
-        end
-
-        it "should handle relative urls in reference links for a directory in master" do
-          actual = "[GitLab API doc directory][GitLab readmes]\n [GitLab readmes]: doc/api/\n"
-          expected = "<p><a href=\"/#{project.path_with_namespace}/tree/#{@ref}/doc/api\">GitLab API doc directory</a></p>\n"
-          expect(markdown(actual)).to match(expected)
-        end
-
-        it "should not handle malformed relative urls in reference links for a file in master" do
-          actual = "[GitLab readme]: doc/api/README.md\n"
-          expected = ""
-          expect(markdown(actual)).to match(expected)
-        end
-      end
-
-      context 'with an empty repository' do
-        before do
-          @project = create(:empty_project)
-          @repository = @project.repository
-        end
-
-        it "should not touch relative urls" do
-          actual = "[GitLab API doc][GitLab readme]\n [GitLab readme]: doc/api/README.md\n"
-          expected = "<p><a href=\"doc/api/README.md\">GitLab API doc</a></p>\n"
-          expect(markdown(actual)).to match(expected)
-        end
-      end
     end
   end
 

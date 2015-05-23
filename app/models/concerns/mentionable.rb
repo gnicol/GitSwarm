@@ -39,13 +39,13 @@ module Mentionable
   # Determine whether or not a cross-reference Note has already been created between this Mentionable and
   # the specified target.
   def has_mentioned?(target)
-    Note.cross_reference_exists?(target, local_reference)
+    SystemNoteService.cross_reference_exists?(target, local_reference)
   end
 
-  def mentioned_users(current_user = nil, p = project)
+  def mentioned_users(current_user = nil)
     return [] if mentionable_text.blank?
 
-    ext = Gitlab::ReferenceExtractor.new(p, current_user)
+    ext = Gitlab::ReferenceExtractor.new(self.project, current_user)
     ext.analyze(mentionable_text)
     ext.users.uniq
   end

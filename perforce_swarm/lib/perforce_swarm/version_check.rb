@@ -5,10 +5,14 @@ require 'uri'
 
 module PerforceSwarm
   module VersionCheck
-    VERSION_UNKNOWN = 'unknown'
-    VERSION_CURRENT = 'current'
-    VERSION_NEEDS_UPDATE = 'needs_update'
-    VERSION_CRITICAL = 'critical'
+    VERSION_UNKNOWN      ||= 'unknown'
+    VERSION_CURRENT      ||= 'current'
+    VERSION_NEEDS_UPDATE ||= 'needs_update'
+    VERSION_CRITICAL     ||= 'critical'
+
+    VERSIONS_URI         ||= 'https://updates.perforce.com/static/GitSwarm/GitSwarm.json?product=' +
+                             PerforceSwarm::VERSION
+    VERSIONS_CACHE_KEY   ||= 'perforce_swarm:versions'
 
     attr_reader :versions, :platform
 
@@ -17,20 +21,25 @@ module PerforceSwarm
       @platform = 'noarch'
     end
 
-    def populate_versions
-      # @TODO: add logic to look for and use the cached version once SideTiq is integrated
-      uri = URI.parse('https://updates.perforce.com/static/GitSwarm/GitSwarm.json?product=' +
-                          PerforceSwarm::VERSION)
-      http = Net::HTTP.new(uri.host, uri.port)
+    def load_cached
+      return false unless Rails.cache.exist?(VERSIONS_CACHE_KEY)
+      @versions = Rails.cache.fetch(VERSIONS_CACHE_KEY)
+      true
+    end
+
+    def populate_versions(can_use_cached = true)
+      return if can_use_cached && load_cached
+      uri          = URI.parse(VERSIONS_URI)
+      http         = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = (uri.scheme == 'https')
-      http.verify_mode = OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
       begin
-        response = http.request(Net::HTTP::Get.new(uri.request_uri))
+        response  = http.request(Net::HTTP::Get.new(uri.request_uri))
         @versions = JSON.parse(response.body)
         @versions = @versions['versions']
       rescue
         @versions = {}
       end
+      @versions
     end
 
     # guesses the current platform, and removes any non-matching results from the internal versions list
@@ -123,3 +132,4 @@ end
 class VersionCheck
   prepend PerforceSwarm::VersionCheck
 end
+

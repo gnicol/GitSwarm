@@ -5,39 +5,56 @@ require 'uri'
 
 module PerforceSwarm
   module VersionCheck
-    VERSION_UNKNOWN = 'unknown'
-    VERSION_CURRENT = 'current'
-    VERSION_NEEDS_UPDATE = 'needs_update'
-    VERSION_CRITICAL = 'critical'
+    VERSION_UNKNOWN      ||= 'unknown'
+    VERSION_CURRENT      ||= 'current'
+    VERSION_NEEDS_UPDATE ||= 'needs_update'
+    VERSION_CRITICAL     ||= 'critical'
 
-    attr_reader :versions, :platform
+    VERSIONS_URI         ||= 'https://updates.perforce.com/static/GitSwarm/GitSwarm.json?product='
+    VERSIONS_CACHE_KEY   ||= 'perforce_swarm:versions'
+
+    attr_reader :versions, :platform, :latest, :more_info
 
     def initialize
-      @versions = {}
-      @platform = 'noarch'
+      @versions  = {}
+      @platform  = nil
+      @latest    = parse_version(PerforceSwarm::VERSION)
+      @more_info = ''
     end
 
-    def populate_versions
-      # @TODO: add logic to look for and use the cached version once SideTiq is integrated
-      uri = URI.parse('https://updates.perforce.com/static/GitSwarm/GitSwarm.json?product=' +
-                          PerforceSwarm::VERSION)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = (uri.scheme == 'https')
-      http.verify_mode = OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
+    def parse_version(version)
+      version += '-0' unless version.match(/\-.+$/)
+      Gem::Version.new(version)
+    end
+
+    # loads the cached versions file if it has been cached
+    # returns true if the cached version was used, false otherwise
+    def load_cached
+      return false unless Rails.cache.exist?(VERSIONS_CACHE_KEY)
+      @versions = Rails.cache.fetch(VERSIONS_CACHE_KEY)
+      true
+    end
+
+    def populate_versions(use_cached = true)
+      return if use_cached && load_cached
+      uri              = URI.parse(VERSIONS_URI + URI.encode(PerforceSwarm::VERSION))
+      http             = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl     = (uri.scheme == 'https')
+      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       begin
-        response = http.request(Net::HTTP::Get.new(uri.request_uri))
+        response  = http.request(Net::HTTP::Get.new(uri.request_uri))
         @versions = JSON.parse(response.body)
         @versions = @versions['versions']
       rescue
         @versions = {}
       end
+      @versions
     end
 
     # guesses the current platform, and removes any non-matching results from the internal versions list
     def select_applicable_versions
-      guess_platform
       # remove any versions that don't match our platform
-      our_versions = select_by_platform(@platform)
+      our_versions = select_by_platform(platform)
       if our_versions.empty?
         # we didn't have any OS-specific matches, so use 'noarch'
         our_versions = select_by_platform('noarch')
@@ -53,7 +70,9 @@ module PerforceSwarm
     # determines which platform and major version we are under:
     #  centos6x86_64, centos7x86_64, ubuntu12x86_64, ubuntu14x86_64, noarch
     # returns 'noarch' if platform could not be identified, or there was an error trying to determine it
-    def guess_platform
+    def platform
+      return @platform unless @platform.nil?
+
       @platform = 'noarch'
 
       # we only support x86_64 Linux
@@ -68,18 +87,15 @@ module PerforceSwarm
         version = `/usr/bin/lsb_release -a`
         version.split("\n").each do |value|
           next unless value.match(/^Release:/)
-          /Release:\s+(?<major>\d\d)\.(?<minor>\d\d)$/ =~ value
+          /Release:\s+(?<major>\d+)\.(?<minor>\d+)/ =~ value
           @platform = major.nil? ? 'noarch' : "ubuntu#{major}x86_64"
         end
       end
+      @platform
     end
 
     def check_version
-      /^(?<major>\d+)\.(?<minor>\d+)\-(?<build>.+)$/ =~ PerforceSwarm::VERSION
-      return VERSION_UNKNOWN unless major && minor && build
-      major = major.to_version
-      minor = minor.to_version
-      build = build.to_version
+      our_version = parse_version(PerforceSwarm::VERSION)
 
       # download the versioning information, and remove any non-applicable versions
       populate_versions
@@ -87,37 +103,27 @@ module PerforceSwarm
       return VERSION_UNKNOWN if @versions.empty?
 
       # compare our current version to the applicable ones and determine if we are current, out of date, or critical
-      result = VERSION_CURRENT
+      result  = VERSION_CURRENT
+      @latest = our_version
       @versions.each do |version|
-        version_major = version['major'].to_version
-        version_minor = version['minor'].to_version
-        version_build = version['build'].to_version
-        # check if we're at or ahead
-        next if major > version_major ||
-                (major == version_major && minor > version_minor) ||
-                (major == version_major && minor == version_minor && build >= version_build)
-        # being a major version out of date, or missing a flagged update is always considered critical
-        return VERSION_CRITICAL if major < version_major || version['critical']
+        current = parse_version(version['major'] + '.' + version['minor'] + '-' + version['build'])
+        next if our_version >= current
 
-        # we're just plain old out of date
-        result = VERSION_NEEDS_UPDATE
+        # find the maximum version (latest) and set the more_info field if there is one
+        if @latest > current
+          @latest    = current
+          @more_info = version['more_info'] if version['more_info']
+        end
+
+        # missing a flagged update is always considered critical
+        result = VERSION_CRITICAL if version['critical']
+
+        # we're just plain old out of date, unless we've already found a prior critical one
+        result = VERSION_NEEDS_UPDATE unless result == VERSION_CRITICAL
       end
       result
     end
   end
-
-  module ToVersion
-    def to_version
-      version = downcase
-      return -2 if version == 'alpha'
-      return -1 if version == 'beta'
-      to_i
-    end
-  end
-end
-
-class String
-  prepend PerforceSwarm::ToVersion
 end
 
 class VersionCheck

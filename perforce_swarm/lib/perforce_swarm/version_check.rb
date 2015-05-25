@@ -27,8 +27,6 @@ module PerforceSwarm
       Gem::Version.new(version)
     end
 
-    # loads the cached versions file if it has been cached
-    # returns true if the cached version was used, false otherwise
     def load_cached
       return false unless Rails.cache.exist?(VERSIONS_CACHE_KEY)
       @versions = Rails.cache.fetch(VERSIONS_CACHE_KEY)

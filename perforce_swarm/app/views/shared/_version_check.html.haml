@@ -1,17 +1,19 @@
 - status = 'critical'
 %div{:class => ['version-check-status', 'alert', 'hidden-xs', "#{status}"]}
   - if status == VersionCheck::VERSION_CURRENT
-    You are running the latest version of GitSwarm.
+    You are running the latest version of GitSwarm (#{PerforceSwarm::VERSION}).
   - else
-    This Installation of GitSwarm is out of date. There is an update available.
+    This Installation of GitSwarm is out of date. You are running #{PerforceSwarm::VERSION}, and the latest is #{latest}.
   .pull-right
-    - if check_enabled.nil?
-      Allow GitSwarm to keep checking for updates?
-      = link_to 'Yes', '#', class: 'alert-link'
-      |
-      = link_to 'No', '#', class: 'no-version-check-setting alert-link'
-    - else
-      - unless more_info.nil? || more_info.empty?
-        = link_to 'more info', more_info
+    .pull-left.version-check-details
+      - if check_enabled.nil?
+        Allow GitSwarm to keep checking for updates?
+        = version_check_enabled_link(true)
         |
-      = link_to "Don't show again for this version", '#', class: 'alert-link'
+        = version_check_enabled_link(false)
+      - else
+        - unless more_info.nil? || more_info.empty?
+          = link_to 'more info', more_info, target: '_blank'
+          |
+        = link_to "Don't show again for this version", '#', class: 'alert-link'
+    = link_to 'X', '#', class: 'dismiss-version-check'

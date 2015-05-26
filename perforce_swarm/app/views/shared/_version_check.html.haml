@@ -1,0 +1,13 @@
+- check_enabled = current_application_settings.version_check_enabled
+- if check_enabled || check_enabled.nil?
+  - version_check = VersionCheck.new
+  - status = version_check.check_version
+  -
+  .version-check-setting.alert.alert-warning.hidden-xs
+    This Installation of GitSwarm is #{status}. There is an update available.
+
+    .pull-right
+      Allow GitSwarm to keep checking for updates?
+      = link_to 'Yes', '#', class: 'alert-link'
+      |
+      = link_to 'No', '#', class: 'no-version-check-setting alert-link'

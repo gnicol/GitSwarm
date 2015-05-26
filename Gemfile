@@ -176,7 +176,7 @@ gem "underscore-rails", "~> 1.4.4"
 gem "sanitize", '~> 2.0'
 
 # Protect against bruteforcing
-gem "rack-attack"
+gem "rack-attack", '~> 4.3.0'
 
 # Ace editor
 gem 'ace-rails-ap'
@@ -243,7 +243,7 @@ group :development, :test do
   gem 'minitest', '~> 5.3.0'
 
   # Generate Fake data
-  gem "ffaker"
+  gem 'ffaker', '~> 2.0.0'
 
   # Guard
   gem 'guard-rspec'

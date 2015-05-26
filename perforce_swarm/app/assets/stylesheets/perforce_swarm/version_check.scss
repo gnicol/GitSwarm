@@ -1,0 +1,18 @@
+.version-check-status {
+  color: white;
+}
+
+.version-check-status.current {
+  background-color: #009900;
+  border-color: #009900;
+}
+
+.version-check-status.needs_update {
+  background-color: #eb9532;
+  border-color: #eb9532;
+}
+
+.version-check-status.critical {
+  background-color: #d9534f;
+  border-color: #d9534f;
+}

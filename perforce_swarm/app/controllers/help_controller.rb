@@ -82,6 +82,9 @@ module PerforceSwarm
       # rename the various rake tasks e.g. rake gitlab:check to rake gitswarm:check
       content.gsub!(/(gitswarm-)?rake(\s+)gitlab:/, '\1rake\2gitswarm:')
 
+      # deal with references to the omnibus package
+      content.gsub!(/(omnibus)-gitlab/i, '\1-gitswarm')
+
       # do a variety of page specific touch-ups
 
       content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure'

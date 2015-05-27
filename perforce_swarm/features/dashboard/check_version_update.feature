@@ -2,8 +2,10 @@
 Feature: Check for updates feature which notifies the GitSwarm admin if the installed omnibus version is critically/non-critically out of date
 ############################## Current tests and open issues on version check feature from the community site: ##############################
 # Version check doesn't handle none git installations: https://gitlab.com/gitlab-org/gitlab-ce/issues/1416
-# Version Check image alternative text is useless: https://gitlab.com/gitlab-org/gitlab-ce/issues/1684 ( should not be relevant to our product, since we don't use the image for rendering)
-# Version info spec test: spec/lib/gitlab/version_info_spec.rb (tests how Gitlab versioning is done, and how a succeeding version is counted to be different from a previous one. Not directly relevant to us
+# Version Check image alternative text is useless: https://gitlab.com/gitlab-org/gitlab-ce/issues/1684
+# ( should not be relevant to our product, since we don't use the image for rendering)
+# Version info spec test: spec/lib/gitlab/version_info_spec.rb (tests how Gitlab versioning is done, and how a succeeding version is counted to 
+# be different from a previous one. Not directly relevant to us
 # since we have a different versioning scheme, but might be useful for adding in similar unit tests)
 ###############################################################################################################################################
 
@@ -18,20 +20,23 @@ Feature: Check for updates feature which notifies the GitSwarm admin if the inst
   #  For the same major and minor revisions, a numbered revision attempting to upgrade from a beta release would have the value '
 
   Scenario: Check for updates feature with different platforms on the client GitSwarm server
-    # If the GitSwarm server is installed on one of the supported platforms 'centos6/centos7/ubuntu12/unbuntu14', then the admin user will receive a 'Check for update' notification
-    # ( provided other conditions are met )
-    # If the GitSwarm server is installed on an unsupported OS platform ( e.g. MacOSX), then the platform state will be set as 'unknown', and the admin will never receive a 'Check for update' notification
+    # If the GitSwarm server is installed on one of the supported platforms 'centos6/centos7/ubuntu12/unbuntu14', 
+    # then the admin user will receive a 'Check for update' notification ( provided other conditions are met )
+    # If the GitSwarm server is installed on an unsupported OS platform ( e.g. MacOSX), then the platform state will be set as 'unknown', 
+    # and the admin will never receive a 'Check for update' notification
     # The 'noarch' platform state has no logic currently associated with it. It is primarily used to imply a 'generic platform' across all GitSwarm servers
     Given ...
 
   Scenario: A daily sidetiq task on the server handles the 'check for version update' logic. Verify that the sidetiq task works correctly based on its its set interval
     Given ...
 
-  Scenario: Ensure that the version check logic works correctly with the major and minor numbered ( and alpha/beta ) releases. This is a high risk logic for the feature
+  Scenario: Ensure that the version check logic works correctly with the major and minor numbered ( and alpha/beta ) releases.
+    # This is a high risk logic for the feature
     # The following version-update verifications are good candidates for unit testing ( similar to Gitlab's spec/lib/gitlab/version_info_spec.rb spec file )
     # a) Minor  revision checks: 2015-1-alpha < 2015-1-beta < 2015-1 ( or 2015-1-0 ) < 2015-1-1 <  2015-1-2 <  2015-2-1 < 2015-3-1
     # b) Major revision checks:  2014-4-8 < 2015-1-alpha < 2015-1-1 < 2016-1
-    # Note: Ideally, we would always look at having updates from a current alpha/beta release to the next numbered release, but not necessarily from a current numbered release to its succeeding beta release
+    # Note: Ideally, we would always look at having updates from a current alpha/beta release to the next numbered release, 
+    # but not necessarily from a current numbered release to its succeeding beta release
     Given ...
 
   ######################
@@ -66,4 +71,3 @@ Feature: Check for updates feature which notifies the GitSwarm admin if the inst
 
   Scenario: The update revision feature should work if an existing admin-user signs in for the first time on an existing GitSwarm server, after the version check feature is enabled
     Given...
-

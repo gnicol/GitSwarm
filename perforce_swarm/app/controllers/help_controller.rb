@@ -47,13 +47,9 @@ module PerforceSwarm
       # they talk about GitLab EE only features, nuke those lines
       content.gsub!(/^.*GitLab (EE|Enterprise Edition).*$/, '')
 
-      # some pages need more a whitelist update instead of blacklist; do them first and return
-      if file == 'maintenance'
-        content.gsub!(/about (your )?GitLab/, 'about \1GitSwarm')
-        content.gsub!('Check GitLab configuration', 'Check GitSwarm configuration')
-        content.gsub!('look at our ', 'look at GitLab\'s ')
-        return content
-      end
+      content.gsub!(/about (your )?GitLab/, 'about \1GitSwarm')
+      content.gsub!('Check GitLab configuration', 'Check GitSwarm configuration')
+      content.gsub!('look at our ', 'look at GitLab\'s ')
 
       # hit GitLab occurrences that look ok to update
       content = PerforceSwarm::Branding.rebrand(content)
@@ -61,11 +57,27 @@ module PerforceSwarm
       # try to clarify its not our website
       content.gsub!(/our website/i, "GitLab's website")
 
-      # point to our configuration file
-      content.gsub!('/etc/gitlab', '/etc/gitswarm')
+      # fix example links value
+      content.gsub!(/(your-)?gitlab.example.com/, '\1gitswarm.example.com')
 
-      # point to our configuration file
-      content.gsub!('gitlab-rake', 'gitswarm-rake')
+      # replace /etc/gitlab with /etc/gitswarm but leave /opt/gitswarm/etc/gitlab alone
+      content.gsub!(%r{(?<!gitswarm)/etc/gitlab}, '/etc/gitswarm')
+
+      # rename gitlab.rb to gitswarm.rb but be selective to avoid mucking non /etc/ versions
+      # also get gitlab-secrets.json
+      content.gsub!(%r{(etc|gitswarm)/gitlab.rb}, '\1/gitswarm.rb')
+      content.gsub!(%r{/etc/gitswarm/gitlab\-secrets\.json}, '/etc/gitswarm/gitswarm-secrets.json')
+
+      # rename /opt/gitlab and /var/opt/gitlab
+      content.gsub!('/opt/gitlab', '/opt/gitswarm')
+
+      # handle log path
+      content.gsub!(%r{/var/log/gitlab}, '/var/log/gitswarm')
+
+      # Rename calls to the gitlab- bin scripts
+      # we're careful to avoid replacing /opt/gitlab/embedded/services/gitlab-rails
+      content.gsub!(%r{/bin/gitlab\-(ctl|rake|rails)}, '/bin/gitswarm-\1')
+      content.gsub!(%r{(?<!/)gitlab\-(ctl|rake|rails)}, 'gitswarm-\1')
 
       # do a variety of page specific touch-ups
 

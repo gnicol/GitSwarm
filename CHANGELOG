@@ -4,9 +4,12 @@ v 7.12.0 (unreleased)
   - Refactor permission checks with issues and merge requests project settings (Stan Hu)
   - Fix Markdown preview not working in Edit Milestone page (Stan Hu)
   - Fix Zen Mode not closing with ESC key (Stan Hu)
+  - Allow HipChat API version to be blank and default to v2 (Stan Hu)
+  - Add file attachment support in Milestone description (Stan Hu)
   - Add web hook support for note events (Stan Hu)
   - Disable "New Issue" and "New Merge Request" buttons when features are disabled in project settings (Stan Hu)
   - Remove Rack Attack monkey patches and bump to version 4.3.0 (Stan Hu)
+  - Fix clone URL losing selection after a single click in Safari and Chrome (Stan Hu)
   - Allow to configure location of the `.gitlab_shell_secret` file. (Jakub Jirutka)
   - Disabled expansion of top/bottom blobs for new file diffs
   - Update Asciidoctor gem to version 1.5.2. (Jakub Jirutka)
@@ -15,6 +18,12 @@ v 7.12.0 (unreleased)
   - Default extention for wiki pages is now .md instead of .markdown (Jeroen van Baarsen)
   - Add validation to wiki page creation (only [a-zA-Z0-9/_-] are allowed) (Jeroen van Baarsen)
   - Fix new/empty milestones showing 100% completion value (Jonah Bishop)
+  - Add a note when an Issue or Merge Request's title changes
+  - Consistently refer to MRs as either Accepted or Rejected.
+  - Add Accepted and Rejected tabs to MR lists.
+  - Prefix EmailsOnPush email subject with `[Git]`.
+  - Group project contributions by both name and email. 
+  - Clarify navigation labels for Project Settings and Group Settings.
 
 v 7.11.2
   - no changes
@@ -497,6 +506,12 @@ v 7.5.0
   - Fix raw view for public snippets
   - Use secret token with GitLab internal API.
   - Add missing timestamps to 'members' table
+  
+v 7.4.5
+  - Bump gitlab_git to 7.0.0.rc12 (includes Rugged 0.21.2)
+  
+v 7.4.4
+  - No changes
 
 v 7.4.3
   - Fix raw snippets view

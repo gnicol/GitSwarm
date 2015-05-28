@@ -9,7 +9,6 @@ module PerforceSwarm
     VERSION_CURRENT      ||= 'current'
     VERSION_NEEDS_UPDATE ||= 'needs_update'
     VERSION_CRITICAL     ||= 'critical'
-
     VERSIONS_URI         ||= 'https://updates.perforce.com/static/GitSwarm/GitSwarm.json'
     VERSIONS_CACHE_KEY   ||= 'perforce_swarm:versions'
 
@@ -38,6 +37,7 @@ module PerforceSwarm
 
     def populate_versions(use_cached = true)
       return if use_cached && load_cached
+
       uri              = URI.parse(VERSIONS_URI + '?product=' + URI.encode(PerforceSwarm::VERSION) +
                                    '&platform=' + URI.encode(platform))
       http             = Net::HTTP.new(uri.host, uri.port)
@@ -82,6 +82,7 @@ module PerforceSwarm
       end
 
       # make a best guess based on what the system can provide us
+      @platform = 'noarch'
       if File.exist?('/etc/redhat-release')
         # RedHat/CentOS
         /CentOS release (?<major>\d+)\.(?<minor>\d+) / =~ File.read('/etc/redhat-release')

@@ -5,21 +5,22 @@ module VersionCheckHelper
     current_application_settings.version_check_enabled.nil? || current_application_settings.version_check_enabled
   end
 
+  def version_check_ignored(latest)
+    current_application_settings.last_version_ignored &&
+    (latest == Gem::Version.new(current_application_settings.last_version_ignored))
+  end
+
   def version_check_notification
     version_check = VersionCheck.new
-    # @TODO: Check whether the user has already asked to not be bothered for the latest version
-    unless version_check.status == VersionCheck::VERSION_UNKNOWN
+    unless version_check.status == VersionCheck::VERSION_UNKNOWN || version_check_ignored(version_check.latest)
       render('shared/version_check',
-        status: version_check.status,
-        more_info: version_check.more_info,
-        check_enabled: current_application_settings.version_check_enabled,
-        latest: version_check.latest.to_s.gsub('.pre.', '-')
+        version_check: version_check
       )
     end
   end
 
   def version_check_enabled_link(enabled)
     anchor = enabled ? 'Yes' : 'No'
-    link_to anchor, admin_application_setting_service_path(application_setting: {version_check_enable: enabled}), method: put, class: 'alert-link'
+    link_to anchor, admin_application_setting_service_path(application_setting: {version_check_enable: enabled}), remote: true, method: :put, class: 'alert-link'
   end
 end

@@ -85,6 +85,12 @@ header.navbar-gitlab .navbar-inner {
     > li {
       > a {
         padding: 6px 14px;
+        line-height: 32px;
+        background-color: transparent;
+        margin: 0;
+        border-radius: 0;
+        height: auto;
+        width: auto;
 
         > i.fa {
           width: 16px;

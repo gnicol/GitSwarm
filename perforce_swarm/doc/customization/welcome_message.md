@@ -1,6 +1,6 @@
 ## Omnibus-gitswarm example
 
-In `/etc/gitlab/gitlab.rb`:
+In `/etc/gitswarm/gitswarm.rb`:
 
 ```ruby
 gitlab_rails['extra_sign_in_text'] = <<'EOS'
@@ -9,7 +9,7 @@ Welcome to the [ACME](http://www.example.com) GitSwarm server!
 EOS
 ```
 
-Run `sudo gitlab-ctl reconfigure` for changes to take effect.
+Run `sudo gitswarm-ctl reconfigure` for changes to take effect.
 
 ## Installation from source
 
@@ -25,4 +25,4 @@ production:
       Welcome to the [ACME](http://www.example.com) GitSwarm server!
 ```
 
-Run `sudo service gitlab reload` for the change to take effect.
+Run `sudo service gitswarm reload` for the change to take effect.

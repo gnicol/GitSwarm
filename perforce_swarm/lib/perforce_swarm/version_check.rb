@@ -10,16 +10,17 @@ module PerforceSwarm
     VERSION_NEEDS_UPDATE ||= 'needs_update'
     VERSION_CRITICAL     ||= 'critical'
 
-    VERSIONS_URI         ||= 'https://updates.perforce.com/static/GitSwarm/GitSwarm.json?product='
+    VERSIONS_URI         ||= 'https://updates.perforce.com/static/GitSwarm/GitSwarm.json'
     VERSIONS_CACHE_KEY   ||= 'perforce_swarm:versions'
 
-    attr_reader :versions, :platform, :latest, :more_info
+    attr_reader :versions, :platform, :latest, :more_info, :status
 
     def initialize
       @versions  = {}
       @platform  = nil
       @latest    = parse_version(PerforceSwarm::VERSION)
       @more_info = ''
+      @status    = nil
     end
 
     def parse_version(version)
@@ -37,7 +38,8 @@ module PerforceSwarm
 
     def populate_versions(use_cached = true)
       return if use_cached && load_cached
-      uri              = URI.parse(VERSIONS_URI + URI.encode(PerforceSwarm::VERSION))
+      uri              = URI.parse(VERSIONS_URI + '?product=' + URI.encode(PerforceSwarm::VERSION) +
+                                   '&platform=' + URI.encode(platform))
       http             = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl     = (uri.scheme == 'https')
       http.verify_mode = OpenSSL::SSL::VERIFY_PEER
@@ -73,11 +75,13 @@ module PerforceSwarm
     def platform
       return @platform unless @platform.nil?
 
-      @platform = 'noarch'
+      # if we have a readable platform file, use it
+      if File.exist?('/etc/gitswarm/.platform') && File.readable?('/etc/gitswarm/.platform')
+        @platform = File.read('/etc/gitswarm/.platform').strip
+        return @platform
+      end
 
-      # we only support x86_64 Linux
-      return unless RUBY_PLATFORM == 'x86_64-linux'
-
+      # make a best guess based on what the system can provide us
       if File.exist?('/etc/redhat-release')
         # RedHat/CentOS
         /CentOS release (?<major>\d+)\.(?<minor>\d+) / =~ File.read('/etc/redhat-release')
@@ -94,7 +98,9 @@ module PerforceSwarm
       @platform
     end
 
-    def check_version
+    def status
+      return @status unless @status.nil?
+
       our_version = parse_version(PerforceSwarm::VERSION)
 
       # download the versioning information, and remove any non-applicable versions
@@ -103,8 +109,7 @@ module PerforceSwarm
       return VERSION_UNKNOWN if @versions.empty?
 
       # compare our current version to the applicable ones and determine if we are current, out of date, or critical
-      result  = VERSION_CURRENT
-      @latest = our_version
+      @status = VERSION_CURRENT
       @versions.each do |version|
         current = parse_version(version['major'] + '.' + version['minor'] + '-' + version['build'])
         next if our_version >= current
@@ -116,12 +121,12 @@ module PerforceSwarm
         end
 
         # missing a flagged update is always considered critical
-        result = VERSION_CRITICAL if version['critical']
+        @status = VERSION_CRITICAL if version['critical']
 
         # we're just plain old out of date, unless we've already found a prior critical one
-        result = VERSION_NEEDS_UPDATE unless result == VERSION_CRITICAL
+        @status = VERSION_NEEDS_UPDATE unless @status == VERSION_CRITICAL
       end
-      result
+      @status
     end
   end
 end

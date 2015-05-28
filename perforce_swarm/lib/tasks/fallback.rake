@@ -11,8 +11,8 @@ end
 
 module PerforceSwarm
   module RakeTaskExtension
-    # replace namespace name when displaying rake tasks
-    def name_with_args
+    # replace namespace name when displaying and searching rake tasks
+    def name
       super.sub(/^gitlab:/, 'gitswarm:')
     end
 

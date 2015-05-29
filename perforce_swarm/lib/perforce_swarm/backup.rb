@@ -7,7 +7,7 @@ module PerforceSwarm
       s = {}
       s[:db_version]         = "#{ActiveRecord::Migrator.current_version}"
       s[:backup_created_at]  = Time.now
-      s[:gitlab_version]     = Gitlab::VERSION
+      s[:gitswarm_version]   = PerforceSwarm::VERSION
       s[:tar_version]        = tar_version
       s[:skipped]            = ENV['SKIP']
       tar_file = "#{s[:backup_created_at].to_i}_gitswarm_backup.tar"
@@ -95,11 +95,12 @@ module PerforceSwarm
       ENV['VERSION'] = "#{settings[:db_version]}" if settings[:db_version].to_i > 0
 
       # restoring mismatching backups can lead to unexpected problems
-      if settings[:gitlab_version] != Gitlab::VERSION
-        puts 'GitLab version mismatch:'.red
-        puts "  Your current GitLab version (#{Gitlab::VERSION}) differs from the GitLab version in the backup!".red
+      if settings[:gitswarm_version] != PerforceSwarm::VERSION
+        puts 'GitSwarm version mismatch:'.red
+        puts "  Your current GitSwarm version (#{PerforceSwarm::VERSION}) differs"\
+             ' from the GitSwarm version in the backup!'.red
         puts '  Please switch to the following version and try again:'.red
-        puts "  version: #{settings[:gitlab_version]}".red
+        puts "  version: #{settings[:gitswarm_version]}".red
         exit 1
       end
     end

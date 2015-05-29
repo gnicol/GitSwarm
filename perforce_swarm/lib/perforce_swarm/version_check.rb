@@ -98,8 +98,8 @@ module PerforceSwarm
       return base_url unless base_url
       base_url += base_url.include?('?') ? '&' : '?'
       base_url + 'version='   + URI.encode(PerforceSwarm::VERSION) +
-                 '&revision=' + URI.encode(Gitlab::REVISION) +
-                 '&platform=' + URI.encode(platform)
+        '&revision=' + URI.encode(Gitlab::REVISION) +
+        'platform=' + URI.encode(platform)
     end
 
     def details(key, default = false)

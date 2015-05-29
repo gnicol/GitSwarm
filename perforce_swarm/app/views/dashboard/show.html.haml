@@ -2,8 +2,8 @@
   - if current_user
     = auto_discovery_link_tag(:atom, dashboard_url(format: :atom, private_token: current_user.private_token), title: "All activity")
 
-- if cookies[:dismiss_version_check].nil? && current_user.admin? && version_check_enabled
-  = version_check_notification
+- if show_version_check?
+  = render 'shared/version_check'
 
 - if @projects.any?
   = render 'shared/show_aside'

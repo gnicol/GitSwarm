@@ -38,7 +38,7 @@
             = icon('question-circle')
         - if current_user.is_admin?
           %li.hidden-xs
-            = link_to admin_root_path, title: 'Admin area', data: {toggle: 'tooltip', placement: 'bottom'} do
+            = link_to admin_root_path, title: 'Admin Area', data: {toggle: 'tooltip', placement: 'bottom'} do
               = icon('wrench')
         %li.dropdown.navbar-right
           %a.dropdown-toggle.profile-pic{href: '#', 'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', title: 'User Menu', 'aria-label' => 'User Menu'}

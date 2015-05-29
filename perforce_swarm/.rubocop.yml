@@ -29,6 +29,9 @@ Style/ClosingParenthesisIndentation:
 Style/Documentation:
   Enabled: false
 
+Style/GlobalVars:
+  AllowedVariables: [$progress]
+
 Style/GuardClause:
   Enabled: false
 

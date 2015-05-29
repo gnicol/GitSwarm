@@ -89,12 +89,17 @@ module PerforceSwarm
       details('version', PerforceSwarm::VERSION)
     end
 
-    def critical
+    def critical?
       details('critical')
     end
 
     def more_info
-      details('more_info')
+      base_url = details('more_info')
+      return base_url unless base_url
+      base_url += base_url.include?('?') ? '&' : '?'
+      base_url + 'version='   + URI.encode(PerforceSwarm::VERSION) +
+                 '&revision=' + URI.encode(Gitlab::REVISION) +
+                 '&platform=' + URI.encode(platform)
     end
 
     def details(key, default = false)

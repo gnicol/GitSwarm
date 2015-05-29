@@ -1,11 +1,11 @@
 - status = VersionCheck::outdated? ? 'needs-update' : 'current'
-- status = VersionCheck::critical ? 'critical' : status
+- status = VersionCheck::critical? ? 'critical'     : status
 %div{:class => ['version-check-status', 'alert', 'hidden-xs', "#{status}"]}
   - if !VersionCheck::outdated?
     You are running the latest version of GitSwarm (#{PerforceSwarm::VERSION}).
   - else
     This Installation of GitSwarm is out of date.
-    - if VersionCheck::critical
+    - if VersionCheck::critical?
       A critical
     - else
       An

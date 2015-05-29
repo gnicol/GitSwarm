@@ -3,8 +3,7 @@ require Rails.root.join('app', 'controllers', 'admin', 'application_settings_con
 module PerforceSwarm
   module AdminApplicationSettingsControllerExtension
     def application_setting_params
-      super
-      params.require(:application_setting).permit(:last_version_ignored)
+      super.merge(params.require(:application_setting).permit(:last_version_ignored))
     end
   end
 end

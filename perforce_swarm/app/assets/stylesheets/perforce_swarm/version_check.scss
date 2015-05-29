@@ -1,13 +1,5 @@
 .version-check-status {
   color: white;
-}
-
-.version-check-status.current {
-  background-color: #009900;
-  border-color: #009900;
-}
-
-.version-check-status.needs_update {
   background-color: #eb9532;
   border-color: #eb9532;
 }
@@ -19,4 +11,11 @@
 
 .version-check-details {
   padding-right: 10px;
+}
+
+.version-check-status a.dismiss-version-check {
+  text-decoration: none;
+  padding-left: 15px;
+  font-weight: lighter;
+  font-size: 11px;
 }

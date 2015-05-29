@@ -9,6 +9,6 @@ module VersionCheckHelper
     return true if current_application_settings.version_check_enabled.nil?
 
     # if we're outdated and this particular update isn't ignored; show it!
-    VersionCheck::outdated? && VersionCheck::latest != current_application_settings.last_version_ignored
+    VersionCheck.outdated? && VersionCheck.latest != current_application_settings.last_version_ignored
   end
 end

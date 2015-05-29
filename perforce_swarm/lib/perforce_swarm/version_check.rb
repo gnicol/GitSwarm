@@ -4,19 +4,9 @@ require 'net/https'
 require 'uri'
 
 module PerforceSwarm
-  module VersionCheck
+  module VersionCheckSelf
     VERSIONS_URI       ||= 'https://updates.perforce.com/static/GitSwarm/GitSwarm.json'
     VERSIONS_CACHE_KEY ||= 'perforce_swarm:versions'
-
-    def initialize
-      @versions  = nil
-      @platform  = nil
-    end
-
-    def parse_version(version)
-      version += '-0' unless version.match(/\-.+$/)
-      Gem::Version.new(version)
-    end
 
     def versions(use_cached = true)
       if use_cached
@@ -113,6 +103,11 @@ module PerforceSwarm
       default
     end
 
+    def parse_version(version)
+      version += '-0' unless version.match(/\-.+$/)
+      Gem::Version.new(version)
+    end
+
     # returns details on the newer version or nil if you're up to date
     def update_details
       # download the versioning information, and remove any non-applicable versions
@@ -141,5 +136,7 @@ module PerforceSwarm
 end
 
 class VersionCheck
-  prepend PerforceSwarm::VersionCheck
+  class << self
+    prepend PerforceSwarm::VersionCheckSelf
+  end
 end

@@ -2,5 +2,5 @@ $ ->
   $('.dismiss-version-check').on 'click', (e) ->
     path = '/'
     $.cookie('dismiss_version_check', 'true', { path: path })
-    $(@).parents('.dismiss-version-check').remove()
+    $(@).parents('.version-check-status').remove()
     e.preventDefault()

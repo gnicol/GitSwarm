@@ -1,6 +1,8 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 7.12.0 (unreleased)
+  - Shorten merge request WIP text.
+  - Add option to disallow users from registering any application to use GitLab as an OAuth provider
   - Refactor permission checks with issues and merge requests project settings (Stan Hu)
   - Fix Markdown preview not working in Edit Milestone page (Stan Hu)
   - Fix Zen Mode not closing with ESC key (Stan Hu)
@@ -29,6 +31,7 @@ v 7.12.0 (unreleased)
   - Clarify navigation labels for Project Settings and Group Settings.
   - Move user avatar and logout button to sidebar
   - You can not remove user if he/she is an only owner of group
+  - User should be able to leave group. If not - show him proper message
 
 v 7.11.4
   - Fix missing bullets when creating lists
@@ -36,6 +39,7 @@ v 7.11.4
 
 v 7.11.3
   - no changes
+  - Add SAML support as an omniauth provider
 
 v 7.11.2
   - no changes
@@ -46,6 +50,9 @@ v 7.11.1
 v 7.11.0
   - Fall back to Plaintext when Syntaxhighlighting doesn't work. Fixes some buggy lexers (Hannes Rosenögger)
   - Get editing comments to work in Chrome 43 again.
+  - Allow special character in users bio. I.e.: I <3 GitLab
+
+v 7.11.0 (unreleased)
   - Fix broken view when viewing history of a file that includes a path that used to be another file (Stan Hu)
   - Don't show duplicate deploy keys
   - Fix commit time being displayed in the wrong timezone in some cases (Hannes Rosenögger)

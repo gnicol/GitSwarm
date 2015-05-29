@@ -35,6 +35,7 @@ gem 'omniauth-shibboleth'
 gem 'omniauth-kerberos', group: :kerberos
 gem 'omniauth-gitlab'
 gem 'omniauth-bitbucket'
+gem 'omniauth-saml'
 gem 'doorkeeper', '2.1.3'
 gem "rack-oauth2", "~> 1.0.5"
 
@@ -190,7 +191,7 @@ gem 'charlock_holmes'
 gem "sass-rails", '~> 4.0.2'
 gem "coffee-rails"
 gem "uglifier"
-gem 'turbolinks'
+gem 'turbolinks', '~> 2.5.0'
 gem 'jquery-turbolinks'
 
 gem 'select2-rails'
@@ -257,11 +258,13 @@ group :development, :test do
   # PhantomJS driver for Capybara
   gem 'poltergeist', '~> 1.5.1'
 
-  gem 'jasmine-rails'
+  gem 'teaspoon', '~> 1.0.0'
+  gem 'teaspoon-jasmine'
 
-  gem "spring", '~> 1.3.1'
-  gem "spring-commands-rspec", '1.0.4'
-  gem "spring-commands-spinach", '1.0.0'
+  gem 'spring', '~> 1.3.1'
+  gem 'spring-commands-rspec',    '~> 1.0.0'
+  gem 'spring-commands-spinach',  '~> 1.0.0'
+  gem 'spring-commands-teaspoon', '~> 0.0.2'
 
   gem "byebug"
 end

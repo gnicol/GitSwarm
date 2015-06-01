@@ -1,6 +1,7 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 7.12.0 (unreleased)
+  - Disable changing of the source branch in merge request update API (Stan Hu)
   - Shorten merge request WIP text.
   - Add option to disallow users from registering any application to use GitLab as an OAuth provider
   - Support editing target branch of merge request (Stan Hu)
@@ -35,6 +36,7 @@ v 7.12.0 (unreleased)
   - User should be able to leave group. If not - show him proper message
   - User has ability to leave project
   - Add SAML support as an omniauth provider
+  - Allow to configure a URL to show after sign out 
 
 v 7.11.4
   - Fix missing bullets when creating lists

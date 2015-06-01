@@ -81,9 +81,15 @@ module PerforceSwarm
 
       # rename the various rake tasks e.g. rake gitlab:check to rake gitswarm:check
       content.gsub!(/(gitswarm-)?rake(\s+)gitlab:/, '\1rake\2gitswarm:')
+      content.gsub!(/gitlab:(env|gitlab_shell|sidekiq|app):/, 'gitswarm:\1:')
+      content.gsub!(/gitlab:check /, 'gitswarm:check ')
 
       # deal with references to the omnibus package
-      content.gsub!(/(omnibus)-gitlab/i, '\1-gitswarm')
+      content.gsub!(/Omnibus GitSwarm/i, 'GitSwarm')
+      content.gsub!(/Omnibus-gitlab /, 'GitSwarm ')
+      content.gsub!(/(omnibus)-gitlab(?!\/)/i, 'gitswarm')
+      content.gsub!(/Omnibus Installation/, 'Package Installation')
+      content.gsub!(/Omnibus-packages/, 'GitSwarm packages')
 
       # do a variety of page specific touch-ups
 

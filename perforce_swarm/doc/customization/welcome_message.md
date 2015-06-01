@@ -1,4 +1,4 @@
-## Omnibus-gitswarm example
+## GitSwarm welcome message example
 
 In `/etc/gitswarm/gitswarm.rb`:
 

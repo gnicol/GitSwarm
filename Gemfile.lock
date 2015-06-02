@@ -1,7 +1,7 @@
 PATH
   remote: perforce_swarm
   specs:
-    perforce_swarm (2015.1.pre.beta)
+    perforce_swarm (2015.1)
       rails (~> 4.1.1)
 
 GEM

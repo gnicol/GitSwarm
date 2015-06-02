@@ -106,6 +106,9 @@ module PerforceSwarm
       details = update_details
       return details[key] if details
       default
+      rescue StandardError => e
+        Rails.logger.warn('Error during check for update: ' + e.message) if Rails.logger
+        default
     end
 
     def parse_version(version)
@@ -124,7 +127,8 @@ module PerforceSwarm
       critical    = false
       our_version = parse_version(PerforceSwarm::VERSION)
       applicable.each do |version|
-        next unless version['version']
+        # ensure we have a valid, non-empty version, or skip this one
+        next unless version['version'] && !version['version'].strip.empty? && Gem::Version.correct?(version['version'])
         current_version = parse_version(version['version'])
         next if our_version >= current_version
 

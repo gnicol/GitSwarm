@@ -17,15 +17,16 @@ module PerforceSwarm
       # @todo: there is the potential for a cache stampede here if multiple http requests get to here at the same point.
       # It is unlikely, since the TTL on the cache is 25 hours, and the automated refresh happens every 24 hours, but it
       # is possible. If this happens, we may want to use local file locks to prevent it.
-      uri               = URI.parse(VERSIONS_URI + '?product=' +
-                                    URI.encode('GitSwarm/' + PerforceSwarm::VERSION + '/' + Gitlab::REVISION) +
-                                    '&platform=' + URI.encode(platform))
-      http              = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl      = (uri.scheme == 'https')
-      http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
-      http.open_timeout = 5
-      http.read_timeout = 5
       begin
+        uri               = URI.parse(VERSIONS_URI + '?product=' +
+                                      URI.encode('GitSwarm/' + PerforceSwarm::VERSION + '/' + Gitlab::REVISION) +
+                                      '&platform=' + URI.encode(platform))
+        http              = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl      = (uri.scheme == 'https')
+        http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
+        http.open_timeout = 5
+        http.read_timeout = 5
+
         response  = http.request(Net::HTTP::Get.new(uri.request_uri))
         @versions = JSON.parse(response.body)
         @versions = @versions['versions']
@@ -116,6 +117,10 @@ module PerforceSwarm
       Gem::Version.new(version)
     end
 
+    def valid_version?(version)
+      !version.strip.empty? && Gem::Version.correct?(version)
+    end
+
     # returns details on the newer version or nil if you're up to date
     def update_details
       # download the versioning information, and remove any non-applicable versions
@@ -128,7 +133,7 @@ module PerforceSwarm
       our_version = parse_version(PerforceSwarm::VERSION)
       applicable.each do |version|
         # ensure we have a valid, non-empty version, or skip this one
-        next unless version['version'] && !version['version'].strip.empty? && Gem::Version.correct?(version['version'])
+        next unless version['version'] && valid_version?(version['version'])
         current_version = parse_version(version['version'])
         next if our_version >= current_version
 
@@ -140,6 +145,8 @@ module PerforceSwarm
       end
       details['critical'] = critical if details
       details
+    rescue
+      return nil
     end
   end
 end

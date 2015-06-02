@@ -8,6 +8,9 @@ Metrics/AbcSize:
 Metrics/ClassLength:
   Enabled: false
 
+Metrics/ModuleLength:
+  Enabled: false
+
 Metrics/CyclomaticComplexity:
   Enabled: false
 

@@ -22,9 +22,17 @@ FactoryGirl.define do
     password "12345678"
     confirmed_at { Time.now }
     confirmation_token { nil }
+    can_create_group true
 
     trait :admin do
       admin true
+    end
+
+    trait :two_factor do
+      before(:create) do |user|
+        user.otp_required_for_login = true
+        user.otp_secret = User.generate_otp_secret
+      end
     end
 
     factory :omniauth_user do

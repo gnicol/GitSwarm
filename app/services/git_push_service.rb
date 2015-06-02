@@ -31,6 +31,10 @@ class GitPushService
         # Initial push to the default branch. Take the full history of that branch as "newly pushed".
         @push_commits = project.repository.commits(newrev)
 
+        # Ensure HEAD points to the default branch in case it is not master
+        branch_name = Gitlab::Git.ref_name(ref)
+        project.change_head(branch_name)
+
         # Set protection on the default branch if configured
         if (current_application_settings.default_branch_protection != PROTECTION_NONE)
           developers_can_push = current_application_settings.default_branch_protection == PROTECTION_DEV_CAN_PUSH ? true : false
@@ -70,7 +74,7 @@ class GitPushService
       # Close issues if these commits were pushed to the project's default branch and the commit message matches the
       # closing regex. Exclude any mentioned Issues from cross-referencing even if the commits are being pushed to
       # a different branch.
-      issues_to_close = commit.closes_issues(project, user)
+      issues_to_close = commit.closes_issues(user)
 
       # Load commit author only if needed.
       # For push with 1k commits it prevents 900+ requests in database
@@ -94,7 +98,7 @@ class GitPushService
         author ||= commit_user(commit)
 
         refs.each do |r|
-          Note.create_cross_reference_note(r, commit, author, project)
+          Note.create_cross_reference_note(r, commit, author)
         end
       end
     end

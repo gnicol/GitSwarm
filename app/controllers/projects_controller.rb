@@ -1,22 +1,21 @@
 class ProjectsController < ApplicationController
   prepend_before_filter :render_go_import, only: [:show]
-  skip_before_filter :authenticate_user!, only: [:show]
-  before_filter :project, except: [:new, :create]
-  before_filter :repository, except: [:new, :create]
+  skip_before_action :authenticate_user!, only: [:show]
+  before_action :project, except: [:new, :create]
+  before_action :repository, except: [:new, :create]
 
   # Authorize
-  before_filter :authorize_admin_project!, only: [:edit, :update, :destroy, :transfer, :archive, :unarchive]
-  before_filter :set_title, only: [:new, :create]
-  before_filter :event_filter, only: :show
+  before_action :authorize_admin_project!, only: [:edit, :update, :destroy, :transfer, :archive, :unarchive]
+  before_action :event_filter, only: :show
 
-  layout 'navless', only: [:new, :create, :fork]
+  layout :determine_layout
 
   def new
     @project = Project.new
   end
 
   def edit
-    render 'edit', layout: 'project_settings'
+    render 'edit'
   end
 
   def create
@@ -46,7 +45,7 @@ class ProjectsController < ApplicationController
         end
         format.js
       else
-        format.html { render 'edit', layout: 'project_settings' }
+        format.html { render 'edit' }
         format.js
       end
     end
@@ -66,29 +65,30 @@ class ProjectsController < ApplicationController
       return
     end
 
-    limit = (params[:limit] || 20).to_i
-
     @show_star = !(current_user && current_user.starred?(@project))
 
     respond_to do |format|
       format.html do
         if @project.repository_exists?
           if @project.empty_repo?
-            render 'projects/empty', layout: user_layout
+            render 'projects/empty'
           else
             @last_push = current_user.recent_push(@project.id) if current_user
-            render :show, layout: user_layout
+            render :show
           end
         else
-          render 'projects/no_repo', layout: user_layout
+          render 'projects/no_repo'
         end
       end
 
       format.json do
-        @events = @project.events.recent
-        @events = event_filter.apply_filter(@events).with_associations
-        @events = @events.limit(limit).offset(params[:offset] || 0)
+        load_events
         pager_json('events/_events', @events.count)
+      end
+
+      format.atom do
+        load_events
+        render layout: false
       end
     end
   end
@@ -159,12 +159,21 @@ class ProjectsController < ApplicationController
 
   private
 
-  def set_title
-    @title = 'New Project'
+  def determine_layout
+    if [:new, :create].include?(action_name.to_sym)
+      'application'
+    elsif [:edit, :update].include?(action_name.to_sym)
+      'project_settings'
+    else
+      'project'
+    end
   end
 
-  def user_layout
-    current_user ? 'projects' : 'public_projects'
+  def load_events
+    @events = @project.events.recent
+    @events = event_filter.apply_filter(@events).with_associations
+    limit = (params[:limit] || 20).to_i
+    @events = @events.limit(limit).offset(params[:offset] || 0)
   end
 
   def project_params

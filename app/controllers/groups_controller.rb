@@ -1,17 +1,16 @@
 class GroupsController < Groups::ApplicationController
-  skip_before_filter :authenticate_user!, only: [:show, :issues, :merge_requests]
+  skip_before_action :authenticate_user!, only: [:show, :issues, :merge_requests]
   respond_to :html
-  before_filter :group, except: [:new, :create]
+  before_action :group, except: [:new, :create]
 
   # Authorize
-  before_filter :authorize_read_group!, except: [:new, :create]
-  before_filter :authorize_admin_group!, only: [:edit, :update, :destroy, :projects]
-  before_filter :authorize_create_group!, only: [:new, :create]
+  before_action :authorize_read_group!, except: [:new, :create]
+  before_action :authorize_admin_group!, only: [:edit, :update, :destroy, :projects]
+  before_action :authorize_create_group!, only: [:new, :create]
 
   # Load group projects
-  before_filter :load_projects, except: [:new, :create, :projects, :edit, :update]
-  before_filter :event_filter, only: :show
-  before_filter :set_title, only: [:new, :create]
+  before_action :load_projects, except: [:new, :create, :projects, :edit, :update]
+  before_action :event_filter, only: :show
 
   layout :determine_layout
 
@@ -119,17 +118,11 @@ class GroupsController < Groups::ApplicationController
     end
   end
 
-  def set_title
-    @title = 'New Group'
-  end
-
   def determine_layout
     if [:new, :create].include?(action_name.to_sym)
-      'navless'
-    elsif current_user
-      'group'
+      'application'
     else
-      'public_group'
+      'group'
     end
   end
 

@@ -13,19 +13,19 @@ module Projects
     end
 
     def participants_in(type, id)
-      users = case type
-              when "Issue"
-                issue = project.issues.find_by_iid(id)
-                issue ? issue.participants(current_user) : []
-              when "MergeRequest"
-                merge_request = project.merge_requests.find_by_iid(id)
-                merge_request ? merge_request.participants(current_user) : []
-              when "Commit"
-                author_ids = Note.for_commit_id(id).pluck(:author_id).uniq
-                User.where(id: author_ids)
-              else
-                []
-              end
+      target = 
+        case type
+        when "Issue"
+          project.issues.find_by_iid(id)
+        when "MergeRequest"
+          project.merge_requests.find_by_iid(id)
+        when "Commit"
+          project.commit(id)
+        end
+        
+      return [] unless target
+
+      users = target.participants(current_user)
       sorted(users)
     end
 

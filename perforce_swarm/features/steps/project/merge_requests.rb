@@ -30,14 +30,14 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   step 'I submit new merge request "Jira Integration"' do
     page.find('h3.page-title').should have_content 'New merge request'
     fill_in 'merge_request_title', with: 'Jira Integration'
-    click_button 'Submit merge request'
+    click_button 'Submit new merge request'
   end
 
   step 'I submit new merge request "Dependency Fix"' do
     page.should have_selector('.merge-request-form-info')
     page.find('h3.page-title').should have_content 'New merge request'
     fill_in 'merge_request_title', with: 'Dependency Fix'
-    click_button 'Submit merge request'
+    click_button 'Submit new merge request'
   end
 
   step 'I should see "Jira Integration" in merge requests' do
@@ -65,7 +65,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I fill out a "Compare branches for new Merge Request"' do
-    page.find('h3.page-title').should have_content 'Compare branches for new Merge Request'
+    page.find('.lead').should have_content 'Compare branches for new Merge Request'
     select @project.path_with_namespace, from: 'merge_request_source_project_id'
     select @project.path_with_namespace, from: 'merge_request_target_project_id'
     select 'fix', from: 'merge_request_source_branch'
@@ -99,6 +99,12 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
     within '.can_be_merged' do
       click_button 'Accept Merge Request'
+    end
+  end
+
+  step 'I click link "All"' do
+    within '.content-wrapper' do
+      click_link 'All'
     end
   end
 end

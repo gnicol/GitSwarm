@@ -1,8 +1,8 @@
 class Import::GoogleCodeController < Import::BaseController
-  before_filter :user_map, only: [:new_user_map, :create_user_map]
+  before_action :user_map, only: [:new_user_map, :create_user_map]
 
   def new
-    
+
   end
 
   def callback
@@ -68,10 +68,11 @@ class Import::GoogleCodeController < Import::BaseController
 
   def status
     unless client.valid?
-      return redirect_to new_import_google_code_path 
+      return redirect_to new_import_google_code_path
     end
 
     @repos = client.repos
+    @incompatible_repos = client.incompatible_repos
 
     @already_added_projects = current_user.created_projects.where(import_type: "google_code")
     already_added_projects_names = @already_added_projects.pluck(:import_source)

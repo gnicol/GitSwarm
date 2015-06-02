@@ -16,5 +16,5 @@
 /* Require login styles */
 @import "perforce_swarm/login";
 
-/* Theme additions and changes */
-@import "perforce_swarm/themes/*";
+/* Include version check flash messages */
+@import "perforce_swarm/version_check";

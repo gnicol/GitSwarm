@@ -20,7 +20,7 @@ module API
 
     class UserFull < User
       expose :email
-      expose :theme_id, :color_scheme_id, :projects_limit
+      expose :theme_id, :color_scheme_id, :projects_limit, :current_sign_in_at
       expose :identities, using: Entities::Identity
       expose :can_create_group?, as: :can_create_group
       expose :can_create_project?, as: :can_create_project
@@ -251,11 +251,11 @@ module API
 
     class Compare < Grape::Entity
       expose :commit, using: Entities::RepoCommit do |compare, options|
-        Commit.decorate(compare.commits).last
+        Commit.decorate(compare.commits, nil).last
       end
 
       expose :commits, using: Entities::RepoCommit do |compare, options|
-        Commit.decorate(compare.commits)
+        Commit.decorate(compare.commits, nil)
       end
 
       expose :diffs, using: Entities::RepoDiff do |compare, options|

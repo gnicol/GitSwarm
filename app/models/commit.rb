@@ -3,8 +3,12 @@ class Commit
   include StaticModel
   extend ActiveModel::Naming
   include Mentionable
+  include Participable
 
   attr_mentionable :safe_message
+  participant :author, :committer, :notes, :mentioned_users
+
+  attr_accessor :project
 
   # Safe amount of changes (files and lines) in one commit to render
   # Used to prevent 500 error on huge commits by suppressing diff
@@ -18,12 +22,12 @@ class Commit
   DIFF_HARD_LIMIT_LINES = 50000 unless defined?(DIFF_HARD_LIMIT_LINES)
 
   class << self
-    def decorate(commits)
+    def decorate(commits, project)
       commits.map do |commit|
         if commit.kind_of?(Commit)
           commit
         else
-          self.new(commit)
+          self.new(commit, project)
         end
       end
     end
@@ -41,10 +45,11 @@ class Commit
 
   attr_accessor :raw
 
-  def initialize(raw_commit)
+  def initialize(raw_commit, project)
     raise "Nil as raw commit passed" unless raw_commit
 
     @raw = raw_commit
+    @project = project
   end
 
   def id
@@ -100,7 +105,7 @@ class Commit
     description.present?
   end
 
-  def hook_attrs(project)
+  def hook_attrs
     path_with_namespace = project.path_with_namespace
 
     {
@@ -117,7 +122,7 @@ class Commit
 
   # Discover issues should be closed when this commit is pushed to a project's
   # default branch.
-  def closes_issues(project, current_user = self.committer)
+  def closes_issues(current_user = self.committer)
     Gitlab::ClosingIssueExtractor.new(project, current_user).closed_by_message(safe_message)
   end
 
@@ -132,6 +137,10 @@ class Commit
 
   def committer
     User.find_for_commit(committer_email, committer_name)
+  end
+
+  def notes
+    project.notes.for_commit_id(self.id)
   end
 
   def method_missing(m, *args, &block)
@@ -150,6 +159,6 @@ class Commit
   end
 
   def parents
-    @parents ||= Commit.decorate(super)
+    @parents ||= Commit.decorate(super, project)
   end
 end

@@ -144,7 +144,7 @@ class Project < ActiveRecord::Base
   validates :star_count, numericality: { greater_than_or_equal_to: 0 }
   validate :check_limit, on: :create
   validate :avatar_type,
-    if: ->(project) { project.avatar && project.avatar_changed? }
+    if: ->(project) { project.avatar.present? && project.avatar_changed? }
   validates :avatar, file_size: { maximum: 200.kilobytes.to_i }
 
   mount_uploader :avatar, AvatarUploader
@@ -254,7 +254,11 @@ class Project < ActiveRecord::Base
   end
 
   def repository
-    @repository ||= Repository.new(path_with_namespace)
+    @repository ||= Repository.new(path_with_namespace, nil, self)
+  end
+
+  def commit(id = 'HEAD')
+    repository.commit(id)
   end
 
   def saved?
@@ -325,12 +329,16 @@ class Project < ActiveRecord::Base
     self.id
   end
 
-  def issue_exists?(issue_id)
+  def get_issue(issue_id)
     if default_issues_tracker?
-      self.issues.where(iid: issue_id).first.present?
+      issues.find_by(iid: issue_id)
     else
-      true
+      ExternalIssue.new(issue_id, self)
     end
+  end
+
+  def issue_exists?(issue_id)
+    get_issue(issue_id)
   end
 
   def default_issue_tracker
@@ -346,11 +354,7 @@ class Project < ActiveRecord::Base
   end
 
   def default_issues_tracker?
-    if external_issue_tracker
-      false
-    else
-      true
-    end
+    !external_issue_tracker
   end
 
   def external_issues_trackers
@@ -479,7 +483,7 @@ class Project < ActiveRecord::Base
 
   def execute_hooks(data, hooks_scope = :push_hooks)
     hooks.send(hooks_scope).each do |hook|
-      hook.async_execute(data)
+      hook.async_execute(data, hooks_scope.to_s)
     end
   end
 
@@ -682,11 +686,21 @@ class Project < ActiveRecord::Base
   end
 
   def create_repository
-    if gitlab_shell.add_repository(path_with_namespace)
-      true
+    if forked?
+      if gitlab_shell.fork_repository(forked_from_project.path_with_namespace, self.namespace.path)
+        ensure_satellite_exists
+        true
+      else
+        errors.add(:base, 'Failed to fork repository')
+        false
+      end
     else
-      errors.add(:base, 'Failed to create repository')
-      false
+      if gitlab_shell.add_repository(path_with_namespace)
+        true
+      else
+        errors.add(:base, 'Failed to create repository')
+        false
+      end
     end
   end
 

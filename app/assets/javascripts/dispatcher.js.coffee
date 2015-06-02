@@ -8,7 +8,6 @@ class Dispatcher
 
   initPageScripts: ->
     page = $('body').attr('data-page')
-    project_id = $('body').attr('data-project-id')
 
     unless page
       return false
@@ -22,7 +21,7 @@ class Dispatcher
         shortcut_handler = new ShortcutsNavigation()
       when 'projects:issues:show'
         new Issue()
-        shortcut_handler = new ShortcutsIssueable()
+        shortcut_handler = new ShortcutsIssuable()
         new ZenMode()
       when 'projects:milestones:show'
         new Milestone()
@@ -47,7 +46,7 @@ class Dispatcher
           new IssuableForm($('.merge-request-form'))
       when 'projects:merge_requests:show'
         new Diff()
-        shortcut_handler = new ShortcutsIssueable()
+        shortcut_handler = new ShortcutsIssuable()
         new ZenMode()
       when "projects:merge_requests:diffs"
         new Diff()
@@ -113,6 +112,13 @@ class Dispatcher
             new NamespaceSelect()
       when 'dashboard'
         shortcut_handler = new ShortcutsDashboardNavigation()
+        switch path[1]
+          when 'issues', 'merge_requests'
+            new UsersSelect()
+      when 'groups'
+        switch path[1]
+          when 'issues', 'merge_requests'
+            new UsersSelect()
       when 'profiles'
         new Profile()
       when 'projects'

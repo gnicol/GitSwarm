@@ -5,15 +5,17 @@
 #  id                    :integer          not null, primary key
 #  type                  :string(255)
 #  title                 :string(255)
-#  project_id            :integer          not null
+#  project_id            :integer
 #  created_at            :datetime
 #  updated_at            :datetime
 #  active                :boolean          default(FALSE), not null
 #  properties            :text
+#  template              :boolean          default(FALSE)
 #  push_events           :boolean          default(TRUE)
 #  issues_events         :boolean          default(TRUE)
 #  merge_requests_events :boolean          default(TRUE)
 #  tag_push_events       :boolean          default(TRUE)
+#  note_events           :boolean          default(TRUE), not null
 #
 
 require 'spec_helper'
@@ -211,6 +213,22 @@ describe HipchatService do
             "<a href=\"#{project.web_url}\">#{project_name}</a>: " \
             "<b>#{title}</b>" \
             "<pre>snippet note</pre>")
+      end
+    end
+
+    context "#message_options" do
+      it "should be set to the defaults" do
+        expect(hipchat.send(:message_options)).to eq({notify: false, color: 'yellow'})
+      end
+
+      it "should set notfiy to true" do
+        hipchat.stub(notify: '1')
+        expect(hipchat.send(:message_options)).to eq({notify: true, color: 'yellow'})
+      end
+
+      it "should set the color" do
+        hipchat.stub(color: 'red')
+        expect(hipchat.send(:message_options)).to eq({notify: false, color: 'red'})
       end
     end
   end

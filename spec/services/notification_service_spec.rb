@@ -57,7 +57,7 @@ describe NotificationService do
         end
 
         it 'filters out "mentioned in" notes' do
-          mentioned_note = Note.create_cross_reference_note(mentioned_issue, issue, issue.author, issue.project)
+          mentioned_note = Note.create_cross_reference_note(mentioned_issue, issue, issue.author)
 
           expect(Notify).not_to receive(:note_issue_email)
           notification.new_note(mentioned_note)
@@ -128,7 +128,7 @@ describe NotificationService do
         end
 
         it 'filters out "mentioned in" notes' do
-          mentioned_note = Note.create_cross_reference_note(mentioned_issue, issue, issue.author, issue.project)
+          mentioned_note = Note.create_cross_reference_note(mentioned_issue, issue, issue.author)
 
           expect(Notify).not_to receive(:note_issue_email)
           notification.new_note(mentioned_note)
@@ -149,7 +149,7 @@ describe NotificationService do
 
       before do
         build_team(note.project)
-        note.stub(:commit_author => @u_committer)
+        allow_any_instance_of(Commit).to receive(:author).and_return(@u_committer)
       end
 
       describe :new_note do

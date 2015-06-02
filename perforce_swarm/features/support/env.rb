@@ -32,7 +32,7 @@ end
 Spinach.hooks.on_tag('javascript') do
   ::Capybara.current_driver = ::Capybara.javascript_driver
 end
-Capybara.default_wait_time = 60
+Capybara.default_wait_time = 90
 Capybara.ignore_hidden_elements = false
 
 DatabaseCleaner.strategy = :truncation

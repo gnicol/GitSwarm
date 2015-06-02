@@ -2,6 +2,7 @@ require 'sidekiq/web'
 require 'api/api'
 
 Gitlab::Application.routes.draw do
+  mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   use_doorkeeper do
     controllers applications: 'oauth/applications',
                 authorized_applications: 'oauth/authorized_applications',
@@ -51,7 +52,8 @@ Gitlab::Application.routes.draw do
       get 'raw'
     end
   end
-  get '/s/:username' => 'snippets#user_index', as: :user_snippets, constraints: { username: /.*/ }
+
+  get '/s/:username' => 'snippets#index', as: :user_snippets, constraints: { username: /.*/ }
 
   #
   # Invites
@@ -224,6 +226,11 @@ Gitlab::Application.routes.draw do
       resources :keys
       resources :emails, only: [:index, :create, :destroy]
       resource :avatar, only: [:destroy]
+      resource :two_factor_auth, only: [:new, :create, :destroy] do
+        member do
+          post :codes
+        end
+      end
     end
   end
 
@@ -234,7 +241,7 @@ Gitlab::Application.routes.draw do
       constraints: { username: /.*/ }
 
   get '/u/:username' => 'users#show', as: :user,
-      constraints: { username: /(?:[^.]|\.(?!atom$))+/, format: /atom/ }
+      constraints: { username: /[a-zA-Z.0-9_\-]+(?<!\.atom)/ }
 
   #
   # Dashboard Area
@@ -261,7 +268,7 @@ Gitlab::Application.routes.draw do
   #
   # Groups Area
   #
-  resources :groups, constraints: { id: /(?:[^.]|\.(?!atom$))+/, format: /atom/ }  do
+  resources :groups, constraints: { id: /[a-zA-Z.0-9_\-]+(?<!\.atom)/ }  do
     member do
       get :issues
       get :merge_requests
@@ -293,7 +300,7 @@ Gitlab::Application.routes.draw do
   # Project Area
   #
   resources :namespaces, path: '/', constraints: { id: /[a-zA-Z.0-9_\-]+/ }, only: [] do
-    resources(:projects, constraints: { id: /[a-zA-Z.0-9_\-]+/ }, except:
+    resources(:projects, constraints: { id: /[a-zA-Z.0-9_\-]+(?<!\.atom)/ }, except:
               [:new, :create, :index], path: "/") do
       member do
         put :transfer

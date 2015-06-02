@@ -27,23 +27,28 @@ gem "pg", group: :postgres
 # Auth
 gem "devise", '3.2.4'
 gem "devise-async", '0.9.0'
-gem 'omniauth', "~> 1.1.3"
+gem 'omniauth', "~> 1.2.2"
 gem 'omniauth-google-oauth2'
 gem 'omniauth-twitter'
 gem 'omniauth-github'
 gem 'omniauth-shibboleth'
-gem 'omniauth-kerberos'
+gem 'omniauth-kerberos', group: :kerberos
 gem 'omniauth-gitlab'
 gem 'omniauth-bitbucket'
 gem 'doorkeeper', '2.1.3'
 gem "rack-oauth2", "~> 1.0.5"
+
+# Two-factor authentication
+gem 'devise-two-factor'
+gem 'rqrcode-rails3'
+gem 'attr_encrypted', '1.3.4'
 
 # Browser detection
 gem "browser"
 
 # Extracting information from a git repository
 # Provide access to Gitlab::Git library
-gem "gitlab_git", '~> 7.1.10'
+gem "gitlab_git", '~> 7.1.13'
 
 # Ruby/Rack Git Smart-HTTP Server Handler
 gem 'gitlab-grack', '~> 2.0.2', require: 'grack'
@@ -91,20 +96,17 @@ gem "six"
 # Seed data
 gem "seed-fu"
 
-# Markup pipeline for GitLab
-gem 'html-pipeline-gitlab', '~> 0.1'
-
-# Markdown to HTML
-gem "github-markup"
-
-# Required markup gems by github-markdown
-gem 'redcarpet', '~> 3.2.3'
+# Markdown and HTML processing
+gem 'html-pipeline', '~> 1.11.0'
+gem 'task_list',     '1.0.2', require: 'task_list/railtie'
+gem 'github-markup'
+gem 'redcarpet',     '~> 3.2.3'
 gem 'RedCloth'
-gem 'rdoc', '~>3.6'
-gem 'org-ruby', '= 0.9.12'
-gem 'creole', '~>0.3.6'
-gem 'wikicloth', '=0.8.1'
-gem 'asciidoctor', '= 0.1.4'
+gem 'rdoc',          '~>3.6'
+gem 'org-ruby',      '= 0.9.12'
+gem 'creole',        '~>0.3.6'
+gem 'wikicloth',     '=0.8.1'
+gem 'asciidoctor',   '= 0.1.4'
 
 # Diffs
 gem 'diffy', '~> 3.0.3'
@@ -147,7 +149,7 @@ gem "redis-rails"
 gem 'tinder', '~> 1.9.2'
 
 # HipChat integration
-gem "hipchat", "~> 1.4.0"
+gem 'hipchat', '~> 1.5.0'
 
 # Flowdock integration
 gem "gitlab-flowdock-git-hook", "~> 0.4.2"
@@ -162,7 +164,7 @@ gem "slack-notifier", "~> 1.0.0"
 gem 'asana', '~> 0.0.6'
 
 # d3
-gem "d3_rails", "~> 3.1.4"
+gem 'd3_rails', '~> 3.5.5'
 
 #cal-heatmap
 gem "cal-heatmap-rails", "~> 0.0.1"
@@ -192,7 +194,7 @@ gem 'turbolinks'
 gem 'jquery-turbolinks'
 
 gem 'select2-rails'
-gem 'jquery-atwho-rails', "~> 0.3.3"
+gem 'jquery-atwho-rails', '~> 1.0.0'
 gem "jquery-rails"
 gem "jquery-ui-rails"
 gem "jquery-scrollto-rails"
@@ -212,6 +214,7 @@ group :development do
   gem "letter_opener"
   gem 'quiet_assets', '~> 1.0.1'
   gem 'rack-mini-profiler', require: false
+  gem 'rerun', '~> 0.10.0'
 
   # Better errors handler
   gem 'better_errors'
@@ -227,14 +230,13 @@ end
 group :development, :test do
   gem 'coveralls', require: false
   gem 'rubocop', '0.28.0', require: false
-  # gem 'rails-dev-tweaks'
   gem 'spinach-rails'
   gem "rspec-rails", '2.99'
-  gem "capybara", '~> 2.2.1'
+  gem 'capybara', '~> 2.2.1'
+  gem 'capybara-screenshot', '~> 1.0.0'
   gem "pry-rails"
   gem "awesome_print"
   gem "database_cleaner"
-  gem "launchy"
   gem 'factory_girl_rails'
 
   # Prevent occasions where minitest is not bundled in packaged versions of ruby (see #3826)
@@ -255,7 +257,7 @@ group :development, :test do
   # PhantomJS driver for Capybara
   gem 'poltergeist', '~> 1.5.1'
 
-  gem 'jasmine', '2.0.2'
+  gem 'jasmine-rails'
 
   gem "spring", '~> 1.3.1'
   gem "spring-commands-rspec", '1.0.4'

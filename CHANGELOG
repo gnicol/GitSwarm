@@ -1,6 +1,13 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 7.11.0 (unreleased)
+  - Fall back to Plaintext when Syntaxhighlighting doesn't work. Fixes some buggy lexers (Hannes Rosenögger)
+  - Get editing comments to work in Chrome 43 again.
+  - Fix broken view when viewing history of a file that includes a path that used to be another file (Stan Hu)
+  - Don't show duplicate deploy keys
+  - Fix commit time being displayed in the wrong timezone in some cases (Hannes Rosenögger)
+  - Make the first branch pushed to an empty repository the default HEAD (Stan Hu)
+  - Fix broken view when using a tag to display a tree that contains git submodules (Stan Hu)
   - Make Reply-To config apply to change e-mail confirmation and other Devise notifications (Stan Hu)
   - Add application setting to restrict user signups to e-mail domains (Stan Hu)
   - Don't allow a merge request to be merged when its title starts with "WIP".
@@ -10,53 +17,41 @@ v 7.11.0 (unreleased)
   - Get Gitorious importer to work again.
   - Fix clone URL field and X11 Primary selection (Dmitry Medvinsky)
   - Ignore invalid lines in .gitmodules
-  -
+  - Fix "Cannot move project" error message from popping up after a successful transfer (Stan Hu)
+  - Redirect to sign in page after signing out.
+  - Fix "Hello @username." references not working by no longer allowing usernames to end in period.
+  - Fix "Revspec not found" errors when viewing diffs in a forked project with submodules (Stan Hu)
+  - Improve project page UI
   - Fix broken file browsing with relative submodule in personal projects (Stan Hu)
   - Fix DB error when trying to tag a repository (Stan Hu)
   - Add "Reply quoting selected text" shortcut key (`r`)
   - Fix bug causing `@whatever` inside an issue's first code block to be picked up as a user mention.
   - Fix bug causing `@whatever` inside an inline code snippet (backtick-style) to be picked up as a user mention.
-  -
-  -
-  -
-  -
-  -
-  -
-
-v 7.10.0 (unreleased)
-  - Fix project import URL regex to prevent arbitary local repos from being imported.
-  - Fix bug where Wiki pages that included a '/' were no longer accessible (Stan Hu)
-  - Fix bug where error messages from Dropzone would not be displayed on the issues page (Stan Hu)
-  - Add ability to configure Reply-To address in gitlab.yml (Stan Hu)
-v 7.11.0 (unreleased)
-  - Fix clone URL field and X11 Primary selection (Dmitry Medvinsky)
-  - Ignore invalid lines in .gitmodules
-  -
-  -
-  -
-  -
-  -
-  -
-  -
-
-v 7.10.0 (unreleased)
-  - Allow projects to be imported from Google Code.
+  - When use change branches link at MR form - save source branch selection instead of target one
+  - Improve handling of large diffs
+  - Added GitLab Event header for project hooks
+  - Add Two-factor authentication (2FA) for GitLab logins
   - Show Atom feed buttons everywhere where applicable.
   - Add project activity atom feed.
-  - Don't crash when an MR from a fork has a cross-reference comment from the target project on of its commits.
+  - Don't crash when an MR from a fork has a cross-reference comment from the target project on one of its commits.
   - Include commit comments in MR from a forked project.
   - Fix adding new group members from admin area
+  - Group milestones by title in the dashboard and all other issue views.
+  - Query issues, merge requests and milestones with their IID through API (Julien Bianchi)
   - Add default project and snippet visibility settings to the admin web UI.
   - Show incompatible projects in Google Code import status (Stan Hu)
   - Fix bug where commit data would not appear in some subdirectories (Stan Hu)
   - Unescape branch names in compare commit (Stan Hu)
-  -
-  -
-  - Fix bug where commit data would not appear in some subdirectories (Stan Hu)
+  - Task lists are now usable in comments, and will show up in Markdown previews.
+  - Fix bug where avatar filenames were not actually deleted from the database during removal (Stan Hu)
   - Fix bug where Slack service channel was not saved in admin template settings. (Stan Hu)
+  - Protect OmniAuth request phase against CSRF.
+  -
+  -
   - Move snippets UI to fluid layout
   - Improve UI for sidebar. Increase separation between navigation and content
   - Improve new project command options (Ben Bodenmiller)
+  - Add common method to force UTF-8 and use it to properly handle non-ascii OAuth user properties (Onur Küçük)
   - Prevent sending empty messages to HipChat (Chulki Lee)
   - Improve UI for mobile phones on dashboard and project pages
   - Add room notification and message color option for HipChat
@@ -64,6 +59,16 @@ v 7.10.0 (unreleased)
   - Add footnotes support to Markdown (Guillaume Delbergue)
   - Add current_sign_in_at to UserFull REST api.
   - Make Sidekiq MemoryKiller shutdown signal configurable
+  - Add "Create Merge Request" buttons to commits and branches pages and push event.
+  - Show user roles by comments.
+  - Fix automatic blocking of auto-created users from Active Directory.
+  - Call merge request web hook for each new commits (Arthur Gautier)
+  - Use SIGKILL by default in Sidekiq::MemoryKiller
+  - Fix mentioning of private groups.
+  - Add style for <kbd> element in markdown
+  - Spin spinner icon next to "Checking for CI status..." on MR page.
+  - Fix reference links in dashboard activity and ATOM feeds.
+  - Ensure that the first added admin performs repository imports
 
 v 7.10.2
   - Fix CI links on MR page
@@ -94,7 +99,6 @@ v 7.10.0
   - Allow HTML tags in Markdown input
   - Fix code unfold not working on Compare commits page (Stan Hu)
   - Fix generating SSH key fingerprints with OpenSSH 6.8. (Sašo Stanovnik)
-  - Include missing events and fix save functionality in admin service template settings form (Stan Hu)
   - Fix "Import projects from" button to show the correct instructions (Stan Hu)
   - Fix dots in Wiki slugs causing errors (Stan Hu)
   - Make maximum attachment size configurable via Application Settings (Stan Hu)
@@ -103,7 +107,6 @@ v 7.10.0
   - Disable reference creation for comments surrounded by code/preformatted blocks (Stan Hu)
   - Reduce Rack Attack false positives causing 403 errors during HTTP authentication (Stan Hu)
   - enable line wrapping per default and remove the checkbox to toggle it (Hannes Rosenögger)
-  - extend the commit calendar to show the actual commits made on a date (Hannes Rosenögger)
   - Fix a link in the patch update guide
   - Add a service to support external wikis (Hannes Rosenögger)
   - Omit the "email patches" link and fix plain diff view for merge commits
@@ -151,7 +154,6 @@ v 7.10.0
   - Fixed link paths for HTTP and SSH on the admin project view (Jeremy Maziarz)
   - Fix and improve help rendering (Sullivan Sénéchal)
   - Fix final line in EmailsOnPush email diff being rendered as error.
-  - Authometic setup GitLab CI project for forks if origin project has GitLab CI enabled
   - Prevent duplicate Buildkite service creation.
   - Fix git over ssh errors 'fatal: protocol error: bad line length character' 
   - Automatically setup GitLab CI project for forks if origin project has GitLab CI enabled
@@ -163,11 +165,6 @@ v 7.10.0
   - Fix merge request comments on files with multiple commits
   - Fix Resource Owner Password Authentication Flow
   
-v 7.9.4
-  - Security: Fix project import URL regex to prevent arbitary local repos from being imported
-  - Fixed issue where only 25 commits would load in file listings
-  - Fix LDAP identities  after config update
-
 v 7.9.4
   - Security: Fix project import URL regex to prevent arbitary local repos from being imported
   - Fixed issue where only 25 commits would load in file listings

@@ -28,7 +28,7 @@ module Mentionable
 
   # Construct a String that contains possible GFM references.
   def mentionable_text
-    self.class.mentionable_attrs.map { |attr| send(attr) || '' }.join
+    self.class.mentionable_attrs.map { |attr| send(attr) }.compact.join("\n\n")
   end
 
   # The GFM reference to this Mentionable, which shouldn't be included in its #references.
@@ -39,7 +39,7 @@ module Mentionable
   # Determine whether or not a cross-reference Note has already been created between this Mentionable and
   # the specified target.
   def has_mentioned?(target)
-    Note.cross_reference_exists?(target, local_reference)
+    SystemNoteService.cross_reference_exists?(target, local_reference)
   end
 
   def mentioned_users(current_user = nil)
@@ -64,7 +64,7 @@ module Mentionable
   def create_cross_references!(p = project, a = author, without = [])
     refs = references(p) - without
     refs.each do |ref|
-      Note.create_cross_reference_note(ref, local_reference, a, p)
+      Note.create_cross_reference_note(ref, local_reference, a)
     end
   end
 

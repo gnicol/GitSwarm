@@ -2,7 +2,7 @@ module Gitlab
   module Regex
     extend self
 
-    NAMESPACE_REGEX_STR = '(?:[a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*)'.freeze
+    NAMESPACE_REGEX_STR = '(?:[a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])'.freeze
 
     def namespace_regex
       @namespace_regex ||= /\A#{NAMESPACE_REGEX_STR}\z/.freeze
@@ -10,25 +10,25 @@ module Gitlab
 
     def namespace_regex_message
       "can contain only letters, digits, '_', '-' and '.'. " \
-      "Cannot start with '-'." \
+      "Cannot start with '-' or end in '.'." \
     end
 
 
     def namespace_name_regex
-      @namespace_name_regex ||= /\A[a-zA-Z0-9_\-\. ]*\z/.freeze
+      @namespace_name_regex ||= /\A[\p{Alnum}\p{Pd}_\. ]*\z/.freeze
     end
 
     def namespace_name_regex_message
-      "can contain only letters, digits, '_', '-', '.' and space."
+      "can contain only letters, digits, '_', '.', dash and space."
     end
 
 
     def project_name_regex
-      @project_name_regex ||= /\A[a-zA-Z0-9_.][a-zA-Z0-9_\-\. ]*\z/.freeze
+      @project_name_regex ||= /\A[\p{Alnum}_][\p{Alnum}\p{Pd}_\. ]*\z/.freeze
     end
 
     def project_name_regex_message
-      "can contain only letters, digits, '_', '-', '.' and space. " \
+      "can contain only letters, digits, '_', '.', dash and space. " \
       "It must start with letter, digit or '_'."
     end
 

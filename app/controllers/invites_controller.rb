@@ -1,10 +1,8 @@
 class InvitesController < ApplicationController
-  before_filter :member
-  skip_before_filter :authenticate_user!, only: :decline
+  before_action :member
+  skip_before_action :authenticate_user!, only: :decline
 
   respond_to :html
-
-  layout 'navless'
 
   def show
 
@@ -24,7 +22,7 @@ class InvitesController < ApplicationController
     if member.decline_invite!
       label, _ = source_info(member.source)
 
-      path = 
+      path =
         if current_user
           dashboard_path
         else
@@ -41,7 +39,7 @@ class InvitesController < ApplicationController
 
   def member
     return @member if defined?(@member)
-    
+
     @token = params[:id]
     @member = Member.find_by_invite_token(@token)
 

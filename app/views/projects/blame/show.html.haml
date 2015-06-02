@@ -1,3 +1,4 @@
+- page_title "Blame", @blob.path, @ref
 %h3.page-title Blame view
 
 #tree-holder.tree-holder
@@ -12,7 +13,7 @@
     .file-content.blame.highlight
       %table
         - @blame.each do |commit, lines, since|
-          - commit = Commit.new(commit)
+          - commit = Commit.new(commit, @project)
           %tr
             %td.blame-commit
               %span.commit

@@ -38,7 +38,7 @@
 #= require shortcuts
 #= require shortcuts_navigation
 #= require shortcuts_dashboard_navigation
-#= require shortcuts_issueable
+#= require shortcuts_issuable
 #= require shortcuts_network
 #= require cal-heatmap
 #= require_tree .
@@ -115,8 +115,8 @@ if location.hash
 window.addEventListener "hashchange", shiftWindow
 
 $ ->
-  # Click a .one_click_select field, select the contents
-  $(".one_click_select").on 'click', -> $(@).select()
+  # Click a .js-select-on-focus field, select the contents
+  $(".js-select-on-focus").on "focusin", -> $(this).select()
 
   $('.remove-row').bind 'ajax:success', ->
     $(this).closest('li').fadeOut()
@@ -132,10 +132,17 @@ $ ->
     ), 1
 
   # Initialize tooltips
-  $('.has_tooltip').tooltip()
-
-  # Bottom tooltip
-  $('.has_bottom_tooltip').tooltip(placement: 'bottom')
+  $('body').tooltip({
+    selector: '.has_tooltip, [data-toggle="tooltip"], .page-sidebar-collapsed .nav-sidebar a'
+    placement: (_, el) ->
+      $el = $(el)
+      if $el.attr('id') == 'js-shortcuts-home'
+        # Place the logo tooltip on the right when collapsed, bottom when expanded
+        $el.parents('header').hasClass('header-collapsed') and 'right' or 'bottom'
+      else
+        # Otherwise use the data-placement attribute like normal
+        $el.data('placement')
+  })
 
   # Form submitter
   $('.trigger-submit').on 'change', ->
@@ -173,6 +180,7 @@ $ ->
     $(@).closest(".diff-file").find(".notes_holder").toggle()
     e.preventDefault()
 
+  $(document).off "click", '.js-confirm-danger'
   $(document).on "click", '.js-confirm-danger', (e) ->
     e.preventDefault()
     btn = $(e.target)

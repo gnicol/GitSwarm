@@ -107,8 +107,8 @@ module PerforceSwarm
       return details[key] if details
       default
       rescue StandardError => e
-        Rails.logger.warn('Error during check for update: ' + e.message) if Rails.logger
-        default
+        Rails.logger.warn("Error during check for update: #{e.class} #{e.message}") if Rails.logger
+        return default
     end
 
     def parse_version(version)

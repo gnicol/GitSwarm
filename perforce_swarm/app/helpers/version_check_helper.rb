@@ -9,7 +9,7 @@ module VersionCheckHelper
     return true if current_application_settings.version_check_enabled.nil?
 
     # never show it if they have the feature disabled
-    return false if !current_application_settings.version_check_enabled
+    return false unless current_application_settings.version_check_enabled
 
     # if we're outdated and this particular update isn't ignored; show it!
     VersionCheck.outdated? && VersionCheck.latest != current_application_settings.last_version_ignored

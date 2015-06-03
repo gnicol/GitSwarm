@@ -136,6 +136,18 @@ module PerforceSwarm
         content.gsub!(/^We welcome all.+control systems\.$/, '')
       end
 
+      # apply a note about using SSH instead of HTTP(S), to avoid
+      # resource issues.
+      if category == 'workflow' && file == 'workflow'
+          content = content + <<EOS
+
+Note: For performance reasons, it is better to clone from a repo via SSH
+instead of HTTP(S). GitSwarm maintains a limited pool of web worker
+processes, and each HTTP(S) push/pull/fetch operation ties up a worker
+process until completion.
+EOS
+      end
+
       # return the munged string
       content
     end

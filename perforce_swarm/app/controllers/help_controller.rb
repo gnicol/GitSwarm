@@ -139,7 +139,7 @@ module PerforceSwarm
       # apply a note about using SSH instead of HTTP(S), to avoid
       # resource issues.
       if category == 'workflow' && file == 'workflow'
-          content = content + <<EOS
+        content = content + <<EOS
 
 Note: For performance reasons, it is better to clone from a repo via SSH
 instead of HTTP(S). GitSwarm maintains a limited pool of web worker

@@ -94,10 +94,14 @@ Feature: Check for updates feature which notifies the GitSwarm admin if the inst
   ### in addition to checking that no banner appears, confirm that the customer is also not pulling the version check file from the external URL??
 
   # As an admin who has not confirmed whether or not they would like to receive update notifications (version_check is set to null):
-  ## when an update (major/minor/build) is available, if I navigate to the homepage I should see a yellow banner that says
-  ## when a critical update (major/minor/build) is available, if I navigate to the homepage I should see a red banner that says
-  ## when no update is available, if I navigate to the homepage I should see no update banner.
-  ## when no update is available but the latest version is marked as critical, if I navigate to the homepage I should see no update banner.
-  ## when my release is ahead of the current available release, if I navigate to the homepage I should see no update banner.
-  ## when the available release version does not conform to the correct format "Major.Minor-Build" (for example, a blank string), if I navigate to the homepage I should see no update banner.
-  ## with an update banner notification on the homepage, when I close the banner by clicking the X, verify that the session cookie dismiss_version_check is set and the banner does not appear for the remainder of the browser session
+  ## when an update (major/minor/build) is available, if I navigate to the homepage I should see a yellow banner that says "This Installation of GitSwarm is out of date. An update is available. Allow GitSwarm to keep checking for updates?"
+  ## when a critical update (major/minor/build) is available, if I navigate to the homepage I should see a red banner that says "This Installation of GitSwarm is out of date. A critical update is available. Allow GitSwarm to keep checking for updates?"
+  ## when no update is available, if I navigate to the homepage I should see a banner that says "You are running the latest version of GitSwarm (2015.1). Allow GitSwarm to keep checking for updates?"
+  ## when no update is available but the latest version is marked as critical, if I navigate to the homepage I should see a banner that says "You are running the latest version of GitSwarm (2015.1). Allow GitSwarm to keep checking for updates?"
+  ## when my release is ahead of the current available release, if I navigate to the homepage I should see a banner with "You are running the latest version of GitSwarm (2015.1). Allow GitSwarm to keep checking for updates?" ?? Odd scenario for anyone other than us but technically that banner is wrong.
+  ## when the available release version does not conform to the correct format "Major.Minor-Build" (for example, a blank string), if I navigate to the homepage I should see a banner that says "You are running the latest version of GitSwarm (2015.1). Allow GitSwarm to keep checking for updates?"
+  ## with a banner notification on the homepage, when I close the banner by clicking the X, verify that the session cookie dismiss_version_check is set and the banner does not appear for the remainder of the browser session
+  ## with a banner notification on the homepage, reply yes and verify that the user is taken to the admin settings and the checkbox is checked. Confirm in the database that the admin has version_check_enabled set to t
+  ## with a banner notification on the homepage, reply no and verify that the user is taken to the admin settings and the checkbox is not checked. Confirm in the database that the admin has version_check_enabled set to f
+
+  # As a regular user verify that the banner notifications do not appear.

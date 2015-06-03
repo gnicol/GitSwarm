@@ -103,9 +103,15 @@ check). If you have a 512MB machine with a SSD drive you can use two
 Unicorn workers, this will allow HTTP access although it will be slow due
 to swapping.
 
-To change the Unicorn workers please see [the Unicorn settings in the
-GitLab
-documentation](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/unicorn.md#unicorn-settings).
+If you need to adjust the Unicorn timeout or the number of workers you can
+use the following settings in `/etc/gitswarm/gitswarm.rb`:
+
+```
+unicorn['worker_processes'] = 3
+unicorn['worker_timeout'] = 60
+```
+
+Run `sudo gitswarm-ctl reconfigure` for the change to take effect.
 
 ## Database
 

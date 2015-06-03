@@ -8,12 +8,6 @@ To uninstall GitSwarm, follow these steps:
 sudo gitswarm-ctl cleanse
     ```
 
-1.  **Optional:** Remove all GitSwarm users and groups.
-
-    ```
-sudo gitswarm-ctl remove_users
-    ```
-
 1.  **Stop GitSwarm and remove its supervisory processes.**
 
     ```
@@ -22,13 +16,13 @@ sudo gitswarm-ctl uninstall
 
 1.  **Uninstall the GitSwarm package.**
 
-    1.  **For Debian or Ubuntu**:
+    1.  **For Ubuntu:**
 
         ```
 sudo dpkg --purge perforce-gitswarm
         ```
 
-    1.  **For CentOS/RHEL 6/7**:
+    1.  **For CentOS/RHEL:**
 
         ```
 sudo rpm -e perforce-gitswarm

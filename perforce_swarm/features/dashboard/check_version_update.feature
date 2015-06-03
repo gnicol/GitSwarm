@@ -71,3 +71,33 @@ Feature: Check for updates feature which notifies the GitSwarm admin if the inst
 
   Scenario: The update revision feature should work if an existing admin-user signs in for the first time on an existing GitSwarm server, after the version check feature is enabled
     Given...
+
+  ##########################################################
+  # For each platform (Ubuntu12, Ubuntu14, Centos6, Centos7)
+  ##########################################################
+  # As an admin with version_check enabled:
+  ## when an update (major/minor/build) is available, if I navigate to the homepage I should see a yellow banner that says "This installation of GitSwarm is out of date. An update is available"
+  ## when a critical update (major/minor/build) is available, if I navigate to the homepage I should see a red banner that says "This installation is out of date. A critical update is available."
+  ## when no update is available, if I navigate to the homepage I should see no update banner.
+  ## when no update is available but the latest version is marked as critical, if I navigate to the homepage I should see no update banner.
+  ## when my release is ahead of the current available release, if I navigate to the homepage I should see no update banner.
+  ## when the available release version does not conform to the correct format "Major.Minor-Build" (for example, a blank string), if I navigate to the homepage I should see no update banner.
+  ## with an update banner notification on the homepage, when I close the banner by clicking the X, verify that the session cookie dismiss_version_check is set and the banner does not appear for the remainder of the browser session
+
+  # As an admin with version_check disabled:
+  ## when an update (major/minor/build) is available, if I navigate to the homepage I should see no update banner.
+  ## when a critical update (major/minor/build) is available, if I navigate to the homepage I should see no update banner.
+  ## when no update is available, if I navigate to the homepage I should see no update banner.
+  ## when no update is available but the latest version is marked as critical, if I navigate to the homepage I should see no update banner.
+  ## when my release is ahead of the current available release, if I navigate to the homepage I should see no update banner.
+  ## when the available release version does not conform to the correct format  "Major.Minor-Build" (for example, a blank string), if I navigate to the homepage I should see no update banner.
+  ### in addition to checking that no banner appears, confirm that the customer is also not pulling the version check file from the external URL??
+
+  # As an admin who has not confirmed whether or not they would like to receive update notifications (version_check is set to null):
+  ## when an update (major/minor/build) is available, if I navigate to the homepage I should see a yellow banner that says
+  ## when a critical update (major/minor/build) is available, if I navigate to the homepage I should see a red banner that says
+  ## when no update is available, if I navigate to the homepage I should see no update banner.
+  ## when no update is available but the latest version is marked as critical, if I navigate to the homepage I should see no update banner.
+  ## when my release is ahead of the current available release, if I navigate to the homepage I should see no update banner.
+  ## when the available release version does not conform to the correct format "Major.Minor-Build" (for example, a blank string), if I navigate to the homepage I should see no update banner.
+  ## with an update banner notification on the homepage, when I close the banner by clicking the X, verify that the session cookie dismiss_version_check is set and the banner does not appear for the remainder of the browser session

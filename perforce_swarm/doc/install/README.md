@@ -74,6 +74,16 @@ wget http://preview.perforce.com/gitswarm/perforce-gitswarm_2015.1.beta.el7.x86_
 sudo rpm -i perforce-gitswarm_2015.1.beta.el7.x86_64.rpm
         ```
 
+1.  **Set the timezone for your GitSwarm instance:**
+
+    Edit `/etc/gitswarm/gitswarm.rb` and set:
+
+    ```
+gitlab_rails['time_zone'] = 'America/Vancouver'
+    ```
+
+    Replace `America/Vancouver` with an appropriate timezone.
+
 1.  **Configure and start GitSwarm.**
 
     ```

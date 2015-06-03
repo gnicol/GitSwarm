@@ -141,10 +141,10 @@ module PerforceSwarm
       if category == 'workflow' && file == 'workflow'
           content = content + <<EOS
 
-Note: For performance reasons, it is better to clone from a repo
-via SSH instead of HTTP(S). GitSwarm maintains a very limited pool
-of web worker processes, and each push/pull/fetch operation ties
-up a worker process until completion.
+Note: For performance reasons, it is better to clone from a repo via SSH
+instead of HTTP(S). GitSwarm maintains a limited pool of web worker
+processes, and each HTTP(S) push/pull/fetch operation ties up a worker
+process until completion.
 EOS
       end
 

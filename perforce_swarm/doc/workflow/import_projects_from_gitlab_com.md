@@ -3,8 +3,8 @@
 You can import your existing GitLab.com projects to your GitSwarm instance.
 But keep in mind that it is possible only if GitLab support is enabled on
 your GitSwarm instance. You can read more about Gitlab support
-[here](../integration/gitlab.md) To get to the importer page you need to go
-to "New project" page.
+[here](../integration/gitlab.md). To get to the importer page you need to
+go to "New project" page.
 
 ![New project page](gitlab_importer/new_project_page.png)
 

@@ -3,8 +3,8 @@
 You can import your existing GitHub projects to GitSwarm. But keep in mind
 that it is possible only if GitHub support is enabled on your GitSwarm
 instance. You can read more about GitHub support
-[here](../integration/github.md) To get to the importer page you need to go
-to "New project" page.
+[here](../integration/github.md). To get to the importer page you need to
+go to "New project" page.
 
 ![New project page](github_importer/new_project_page.png) 
 

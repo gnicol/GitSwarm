@@ -44,20 +44,7 @@ If you have enough RAM memory and a recent CPU the speed of GitSwarm is mainly l
 ### CPU
 
 We have found through testing that supporting fetch/pull/push operations
-via HTTP(S) requires a minimum of 2 cores. If your system has more than 2
-cores, you should verify that the Unicorn configuration in
-`/etc/gitswarm/gitswarm.rb` contains:
-
-```
-unicorn['worker_processes'] = "2 cores + 1"
-```
-
-If you make any changes to the configuration, you need to run the following
-command to make the changes active:
-
-```
-sudo gitswarm-ctl reconfigure
-```
+via HTTP(S) requires a **minimum** of 2 cores.
 
 - 1 core works supports up to 100 users but the application can be a bit slower due to having all workers and background jobs running on the same core
 - **2 cores** is the **recommended** number of cores and supports up to 500 users

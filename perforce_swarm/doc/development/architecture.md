@@ -60,7 +60,7 @@ gitlab-shell, which is included with GitSwarm and is installed in
 
 ### Components
 
-![GitSwarm Diagram Overview](gitlab_diagram_overview.png)
+![GitSwarm Diagram Overview](gitswarm_diagram_overview.png)
 
 A typical install of GitSwarm is on GNU/Linux. It uses Nginx as a web front
 end to proxypass the Unicorn web server. By default, communication between

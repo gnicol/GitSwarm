@@ -44,16 +44,32 @@ sudo systemctl reload firewalld
 
 1.  **Download the GitSwarm package and install everything.**
 
-    1.  **For Ubuntu:**
+    1.  **For Ubuntu 12.04:**
 
         ```
-$ sudo apt-get install perforce-gitswarm
+curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.ubuntu12x86_64/perforce-gitswarm-2015.1.precise.amd64.deb
+sudo dpkg -i perforce-gitswarm-2015.1.precise.amd64.deb
         ```
 
-    1.  **For CentOS/RHEL: (run this command as root)**
+    1.  **For Ubuntu 14.04:**
 
         ```
-# yum install perforce-gitswarm
+curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.ubuntu12x86_64/perforce-gitswarm-2015.1.trusty.amd64.deb
+sudo dpkg -i perforce-gitswarm-2015.1.trusty.amd64.deb
+        ```
+
+    1.  **For CentOS/RHEL 6:**
+
+        ```
+curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos6x86_64/perforce-gitswarm-2015.1.el6.x86_64.rpm
+sudo rpm -i perforce-gitswarm-2015.1.el6.x86_64.rpm
+        ```
+
+    1.  **For CentOS/RHEL 7:**
+
+        ```
+curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos6x86_64/perforce-gitswarm-2015.1.el7.x86_64.rpm
+sudo rpm -i perforce-gitswarm-2015.1.el7.x86_64.rpm
         ```
 
 1.  **Set the timezone for your GitSwarm instance:**

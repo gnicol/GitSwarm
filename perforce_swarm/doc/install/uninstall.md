@@ -19,11 +19,11 @@ sudo gitswarm-ctl uninstall
     1.  **For Ubuntu:**
 
         ```
-sudo dpkg --purge perforce-gitswarm
+sudo dpkg --purge perforce-gitswarm-2015.1
         ```
 
     1.  **For CentOS/RHEL:**
 
         ```
-sudo rpm -e perforce-gitswarm
+sudo rpm -e perforce-gitswarm-2015.1
         ```

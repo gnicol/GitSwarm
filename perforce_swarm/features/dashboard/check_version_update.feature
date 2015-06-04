@@ -105,3 +105,60 @@ Feature: Check for updates feature which notifies the GitSwarm admin if the inst
   ## with a banner notification on the homepage, reply no and verify that the user is taken to the admin settings and the checkbox is not checked. Confirm in the database that the admin has version_check_enabled set to f
 
   # As a regular user verify that the banner notifications do not appear.
+
+## BUGS ###
+Scenario: User receives 'Update message' growl even though he/she chose not to receive them, if their installed GitSwarm version is behind that of update.perforce.com
+  Given my version installed version is behind the version on update.perforce.com/GitSwarm.json
+  And my 'version_check_enabled' & 'last_version_ignored' fields are set to 'nil'
+  When I log-in for the FIRST TIME as an admin
+  And I correctly get a growl that "Do you want to check for updates"
+  And I select "NO"
+  Then my visibility settings get correctly updated to OFF
+  But I INCORRECTLY see the "This Installation of GitSwarm is out of date. An update ( or critical update) is available." message
+
+Scenario: The installed build 'patch' number will always start behind the 'patch' on update.perforce.com
+## The omnibus packages currently read our releases from a file ( perforce_swarm/lib/perforce_swarm/version.rb). The way we have written in our release number as "2015.1" we assume that the first patch version 
+## installed by a user is "0", while the build team assumes it to be "1"  ( which is what the update.perforce.com server will have). This will force the users to upgrade immediately after they install, since we 
+## will always be behind their build . That does not seem correct. We should start with "2015.1-1" 
+  Given ...
+  
+## UNANSWERED QUESTIONS: ###
+
+## 1) How will previous critical updates be picked up by succeeding update growls sent out to the user?
+## Scenario: A user is on 2015.1-1, and chooses not to update with critical release 2015.2-1, but now wants to update with 2015.3-1 ( which lets say is not a critical update version). When '2015.3-1' is pushed ## to the user, will it contain the critical updates of '2015.2-1' ( which were previously not pushed to the user), and if yes, how will the system keep track of all critical update releases ( such as ## 
+## '2015.2-1'), for a particular platform. The system can only push all missed critical updates if it somehow keeps track of those, and detects which critical releases a user has missed.
+#####  According to Elliot, this case works, but I can't seem to test it #####
+
+## 2) How will the build numbers be managed across OSses?
+## For example, lets say for a release 2015-1, we start at patch 1 for all OSes ( i.e. 2015.1-1)
+## Then we push a patch '2' to ubuntu, making ubuntu build revisions at  2015-1-2
+## We now push a patch '3' to centos, making centos build revision at  2015-1-3
+## Now when we want to push to ubuntu again, the person has to  upgrade from '2015.1-2' to '2015.1-4' , which seems non-linear and incorrect with regards to how versioning is handled. 
+
+
+## Additional Test cases ###
+
+## Setting an invalid a '.platform' value ( which does not hit any existing architecture), and then running tests with & without no-arch 
+## The updates are set to be true, and no-arch is ahead of existing version
+## Updates should be seen on dashboard WITH 'no-arch' model ( as they would with any other model)
+## No updates should be see on dashboard WITHOUT the 'no-arch' json section. In that case, all updates will be disabled
+## Missing ".platform" file - verify what happens . Correctly reverts to a 'no-arch' model.
+
+## multiple admins created -> all see the same settings for version check
+
+## On a GitSwarm version upgrade -> the existing visibility settings in the database should be maintained on the upgraded version. For example, if the visibility flag is set to OFF, then it should continue to ## remain OFF and vice-versa
+
+## The version check enabled flag DOES get toggled if we check/uncheck the flag on 'application settings page'
+
+## Tested with the "more_info" flag. Verified that we see the growl message "This Installation of GitSwarm is out of date. An update is available.", where the 'update is available' 
+flag message gets linked to the 'more_info' http page
+
+## @TODO: If we hit the production server, does it cause a tick on the stats graph
+
+
+
+
+
+
+
+

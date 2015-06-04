@@ -56,6 +56,17 @@ $ sudo apt-get install perforce-gitswarm
 # yum install perforce-gitswarm
         ```
 
+1.  **Set the timezone for your GitSwarm instance:**
+
+    Edit `/etc/gitswarm/gitswarm.rb`, and edit the line:
+
+    ```
+#gitlab_rails['time_zone'] = 'UTC'
+    ```
+
+    Replace `UTC` with an [appropriate
+    timezone](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones), and uncomment the line.
+
 1.  **Configure and start GitSwarm.**
 
     ```

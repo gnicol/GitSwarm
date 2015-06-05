@@ -1,5 +1,5 @@
 @dashboard
-Feature: Check for updates feature which notifies the GitSwarm admin if the installed omnibus version is critically/non-critically out of date
+Feature: Check for updates
 ############################## Current tests and open issues on version check feature from the community site: ##############################
 # Version check doesn't handle none git installations: https://gitlab.com/gitlab-org/gitlab-ce/issues/1416
 # Version Check image alternative text is useless: https://gitlab.com/gitlab-org/gitlab-ce/issues/1684
@@ -64,11 +64,22 @@ Feature: Check for updates feature which notifies the GitSwarm admin if the inst
   #########################
   # Front-end verifications
   #########################
+  @automated
+  Scenario: Growl notification should be displayed if an admin views the dashboard and has not chosen to en/disable check for updates
+    Given I sign in as an admin
+    And Set check for updates status to unknown
+    When I visit dashboard page
+    Then I should see a check for updates growl
+    Then I should be prompted to enable or disable check for updates
 
-  Scenario: The growl notification should be displayed if a new admin-user signs in for the first time on a newly installed GitSwarm server, after the version check feature is enabled
-    Given...
+  @automated
+  Scenario: Growl notifications should not be displayed for regular users when check for updates hasn't been en/disabled
+    Given I sign in as a user
+    And Set check for updates status to unknown
+    When I visit dashboard page
+    Then I should not see a check for updates growl
 
-  Scenario: The update revision feature should work if an existing admin-user signs in for the first time on an existing GitSwarm server, after the version check feature is enabled
+  Scenario: The update revision feature should work if an admin signs in for the first time on an existing GitSwarm server, after the version check feature is enabled
     Given...
 
   ##########################################################

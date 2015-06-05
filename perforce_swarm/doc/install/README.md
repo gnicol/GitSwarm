@@ -75,14 +75,13 @@ sudo rpm -i perforce-gitswarm-2015.1.el7.x86_64.rpm
 1.  **Verify the external URL for your GitSwarm instance:**
 
     View `/etc/gitswarm/gitswarm.rb`, and verify that the following
-    setting:
+    setting is set to the URL that your GitSwarm users should use:
 
     ```
 external_url "http://gitswarm.example.com"
     ```
 
-    is set to the URL that your GitSwarm users should use. Edit the setting
-    if necessary.
+    Edit the setting if necessary.
 
 1.  **Set the timezone for your GitSwarm instance:**
 

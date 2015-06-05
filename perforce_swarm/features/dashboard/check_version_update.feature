@@ -28,15 +28,14 @@ Feature: Check for updates feature which notifies the GitSwarm admin if the inst
     Given ...
 
   Scenario: A daily sidetiq task on the server handles the 'check for version update' logic. Verify that the sidetiq task works correctly based on its its set interval
+    ## Tested the async sidetiq by setting its timeout to minutely and seeing that the "Version check banner was seen for a version update
     Given ...
 
   Scenario: Ensure that the version check logic works correctly with the major and minor numbered ( and alpha/beta ) releases.
     # This is a high risk logic for the feature
     # The following version-update verifications are good candidates for unit testing ( similar to Gitlab's spec/lib/gitlab/version_info_spec.rb spec file )
-    # a) Minor  revision checks: 2015-1-alpha < 2015-1-beta < 2015-1 ( or 2015-1-0 ) < 2015-1-1 <  2015-1-2 <  2015-2-1 < 2015-3-1
-    # b) Major revision checks:  2014-4-8 < 2015-1-alpha < 2015-1-1 < 2016-1
-    # Note: Ideally, we would always look at having updates from a current alpha/beta release to the next numbered release, 
-    # but not necessarily from a current numbered release to its succeeding beta release
+    # a) Minor-version  revision checks: 2015-1-alpha < 2015-1-beta < 2015-1 ( or 2015-1-0 ) < 2015-1-1 <  2015-1-2 <  2015-2-1 < 2015-3-1
+    # b) Major-version revision checks:  2014-4-8 < 2015-1-alpha < 2015-1-1 < 2016-1
     Given ...
 
   ######################
@@ -53,9 +52,9 @@ Feature: Check for updates feature which notifies the GitSwarm admin if the inst
     # Questions: What if the admin is not a redirected to the dashboard page - will he see the growl notifications then?
     Given ...
 
-  Scenario: Admin will receive critical update if updates are turned ON and  MAJOR REVISION is out of date or if a critical patch is pushed by the Perforce team for a particular build version & platform
+  Scenario: Admin will receive critical update only if 'critical: true' flag is set for the particular platform in the JSON file
    # The updates are verified against a JSON received from https://updates.perforce.com/static/GitSwarm/GitSwarm.json, which contains information on the latest released builds for the respective platforms
-   # For example, if the Gitswarm server has a build version of 2014 and the latest
+   # Verified that a user receives critical updates from all previous versions that were ignored, if any of those versions had the 'critical: true' flag set.
     Given ...
 
   Scenario: Admin will receive non-critical update if updates are turned ON and MINOR REVISION or BUILD NUMBER is out of date
@@ -106,59 +105,24 @@ Feature: Check for updates feature which notifies the GitSwarm admin if the inst
 
   # As a regular user verify that the banner notifications do not appear.
 
-## BUGS ###
-Scenario: User receives 'Update message' growl even though he/she chose not to receive them, if their installed GitSwarm version is behind that of update.perforce.com
-  Given my version installed version is behind the version on update.perforce.com/GitSwarm.json
-  And my 'version_check_enabled' & 'last_version_ignored' fields are set to 'nil'
-  When I log-in for the FIRST TIME as an admin
-  And I correctly get a growl that "Do you want to check for updates"
-  And I select "NO"
-  Then my visibility settings get correctly updated to OFF
-  But I INCORRECTLY see the "This Installation of GitSwarm is out of date. An update ( or critical update) is available." message
-
-Scenario: The installed build 'patch' number will always start behind the 'patch' on update.perforce.com
-## The omnibus packages currently read our releases from a file ( perforce_swarm/lib/perforce_swarm/version.rb). The way we have written in our release number as "2015.1" we assume that the first patch version 
-## installed by a user is "0", while the build team assumes it to be "1"  ( which is what the update.perforce.com server will have). This will force the users to upgrade immediately after they install, since we 
-## will always be behind their build . That does not seem correct. We should start with "2015.1-1" 
-  Given ...
-  
-## UNANSWERED QUESTIONS: ###
-
-## 1) How will previous critical updates be picked up by succeeding update growls sent out to the user?
-## Scenario: A user is on 2015.1-1, and chooses not to update with critical release 2015.2-1, but now wants to update with 2015.3-1 ( which lets say is not a critical update version). When '2015.3-1' is pushed ## to the user, will it contain the critical updates of '2015.2-1' ( which were previously not pushed to the user), and if yes, how will the system keep track of all critical update releases ( such as ## 
-## '2015.2-1'), for a particular platform. The system can only push all missed critical updates if it somehow keeps track of those, and detects which critical releases a user has missed.
-#####  According to Elliot, this case works, but I can't seem to test it #####
-
-## 2) How will the build numbers be managed across OSses?
-## For example, lets say for a release 2015-1, we start at patch 1 for all OSes ( i.e. 2015.1-1)
-## Then we push a patch '2' to ubuntu, making ubuntu build revisions at  2015-1-2
-## We now push a patch '3' to centos, making centos build revision at  2015-1-3
-## Now when we want to push to ubuntu again, the person has to  upgrade from '2015.1-2' to '2015.1-4' , which seems non-linear and incorrect with regards to how versioning is handled. 
-
-
 ## Additional Test cases ###
 
-## Setting an invalid a '.platform' value ( which does not hit any existing architecture), and then running tests with & without no-arch 
-## The updates are set to be true, and no-arch is ahead of existing version
-## Updates should be seen on dashboard WITH 'no-arch' model ( as they would with any other model)
-## No updates should be see on dashboard WITHOUT the 'no-arch' json section. In that case, all updates will be disabled
-## Missing ".platform" file - verify what happens . Correctly reverts to a 'no-arch' model.
+  ## Setting an invalid a '.platform' value ( which does not hit any existing architecture), and then running tests with & without no-arch 
+  ## The updates are set to be true, and no-arch is ahead of existing version
+  ## Updates should be seen on dashboard WITH 'no-arch' model ( as they would with any other model)
+  ## No updates should be see on dashboard WITHOUT the 'no-arch' json section. In that case, all updates will be disabled
+  ## Missing ".platform" file - verify what happens . Correctly reverts to a 'no-arch' model.
+  ## multiple admins created -> all see the same settings for version check
+  ## On a GitSwarm version upgrade -> the existing visibility settings in the database should be maintained when GitSwarm is upgarded to a later version. 
+  ## For example, if the visibility flag is set to OFF, then it should continue to remain OFF and vice-versa
+  ## The version check enabled flag DOES get toggled if we check/uncheck the flag on 'application settings page'
+  ## Tested with the "more_info" flag. Verified that we see the growl message "This Installation of GitSwarm is out of date. An update is available.", where the 'update is available' 
+  ## flag message gets linked to the 'more_info' http page
+  ## Verified that release that the user's first version is 'MAJOR.MINOR-BUILD' and not just 'MAJOR.MINOR' , with BUILD_value = 0. This takes care of PGL-811
 
-## multiple admins created -> all see the same settings for version check
-
-## On a GitSwarm version upgrade -> the existing visibility settings in the database should be maintained on the upgraded version. For example, if the visibility flag is set to OFF, then it should continue to ## remain OFF and vice-versa
-
-## The version check enabled flag DOES get toggled if we check/uncheck the flag on 'application settings page'
-
-## Tested with the "more_info" flag. Verified that we see the growl message "This Installation of GitSwarm is out of date. An update is available.", where the 'update is available' 
-flag message gets linked to the 'more_info' http page
-
-## @TODO: If we hit the production server, does it cause a tick on the stats graph
-
-
-
-
-
-
-
+  ## Note: For a given platform, the patch versions need not be linear, and can have hops
+  ## For example, lets say for a release 2015-1, we start at patch 1 for all OSes ( i.e. 2015.1-1)
+  ## Then we push a patch '2' to ubuntu, making ubuntu build revisions at  2015-1-2
+  ## We now push a patch '3' to centos, making centos build revision at  2015-1-3
+## Now when we want to push to ubuntu again, the person will receive an update from '2015.1-2' to '2015.1-4' 
 

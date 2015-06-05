@@ -72,6 +72,17 @@ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos6x86_64/perforce-gitswar
 sudo rpm -i perforce-gitswarm-2015.1.el7.x86_64.rpm
         ```
 
+1.  **Verify the external URL for your GitSwarm instance:**
+
+    View `/etc/gitswarm/gitswarm.rb`, and verify that the following
+    setting is set to the URL that your GitSwarm users should use:
+
+    ```
+external_url "http://gitswarm.example.com"
+    ```
+
+    Edit the setting if necessary.
+
 1.  **Set the timezone for your GitSwarm instance:**
 
     Edit `/etc/gitswarm/gitswarm.rb`, and edit the line:

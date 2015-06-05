@@ -66,7 +66,7 @@ A typical install of GitSwarm is on GNU/Linux. It uses Nginx as a web front
 end to proxypass the Unicorn web server. By default, communication between
 Unicorn and the front end is via a Unix domain socket but forwarding
 requests via TCP is also supported. The web front end accesses
-`/home/git/gitlab/public` bypassing the Unicorn server to serve static
+`/home/git/gitswarm/public` bypassing the Unicorn server to serve static
 pages, uploads (e.g. avatar images or attachments), and precompiled assets.
 GitLab serves web pages and a [GitSwarm API](../api/README.md) using the
 Unicorn web server. It uses Sidekiq as a job queue which, in turn, uses

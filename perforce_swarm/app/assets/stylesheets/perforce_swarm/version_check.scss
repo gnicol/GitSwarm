@@ -1,0 +1,22 @@
+.version-check-status {
+  color: white;
+  background-color: #eb9532;
+  border-color: #eb9532;
+}
+
+.version-check-status.critical {
+  background-color: #d9534f;
+  border-color: #d9534f;
+}
+
+.version-check-details {
+  padding-right: 10px;
+}
+
+.version-check-status a.dismiss-version-check {
+  text-decoration: none;
+  padding-left: 15px;
+  font-weight: lighter;
+  font-size: 11px;
+}
+

@@ -4,6 +4,7 @@
 #= require_self
 #= require perforce_swarm/storage
 #= require perforce_swarm/navbar
+#= require perforce_swarm/dashboard
 
 # define the swarm global variable
 @swarm = {}

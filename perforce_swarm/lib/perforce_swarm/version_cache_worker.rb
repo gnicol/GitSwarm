@@ -4,22 +4,20 @@ require 'sidetiq'
 require Rails.root.join('lib', 'gitlab', 'current_settings')
 
 module PerforceSwarm
-  class AsyncVersionCheck
+  class VersionCacheWorker
     include Sidekiq::Worker
     include Sidetiq::Schedulable
     include Gitlab::CurrentSettings
-    include PerforceSwarm::VersionCheck
 
-    # @TODO: Change this to daily or something more sensible before it goes out
-    recurrence { minutely }
+    # randomize when the worker runs to be on a random minute of every day
+    recurrence { daily.hour_of_day(rand(24)).minute_of_hour(rand(60)) }
 
     def perform
       # we only run the automated check if the admin has explicitly enabled it
       return unless current_application_settings.version_check_enabled
 
-      # download versions file (force download) and cache it if we get a valid response
-      versions = populate_versions(false)
-      Rails.cache.write(VERSIONS_CACHE_KEY, versions) if versions
+      # download versions file with forced download and cache
+      ::VersionCheck.versions(false)
     end
   end
 end

@@ -87,7 +87,7 @@ module PerforceSwarm
       # deal with references to the omnibus package
       content.gsub!(/Omnibus GitSwarm/i, 'GitSwarm')
       content.gsub!(/Omnibus-gitlab /, 'GitSwarm ')
-      content.gsub!(/(omnibus)-gitlab(?!\/)/i, 'gitswarm')
+      # Commenting out line till a rubocop fix is made: content.gsub!(/(omnibus)-gitlab(?!\/)/i, 'gitswarm')
       content.gsub!(/Omnibus Installation/, 'Package Installation')
       content.gsub!(/Omnibus-packages/, 'GitSwarm packages')
 

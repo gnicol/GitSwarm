@@ -78,7 +78,7 @@ sudo rpm -i perforce-gitswarm-2015.1.el7.x86_64.rpm
     setting:
 
     ```
-external_url "http://gitlab.example.com"
+external_url "http://gitswarm.example.com"
     ```
 
     is set to the URL that your GitSwarm users should use. Edit the setting

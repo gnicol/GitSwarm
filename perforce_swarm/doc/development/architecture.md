@@ -8,7 +8,7 @@ Currently, GitSwarm is only available as packages.
 
 You can imagine GitSwarm as a physical office.
 
-**The repositories** are the goods GitSwarm handling. They can be stored in
+**The repositories** are the goods GitSwarm handles. They can be stored in
 a warehouse.  This can be either a hard disk, or something more complex,
 such as a NFS filesystem.
 
@@ -159,61 +159,3 @@ Persistent database
 /etc/init.d/postgresql
 Usage: /etc/init.d/postgresql {start|stop|restart|reload|force-reload|status} [version ..]
 ```
-
-### Log locations of the services
-
-Note: `/home/git/` is shorthand for `/home/git`.
-
-GitSwarm (includes Unicorn and Sidekiq logs)
-
-- `/home/git/gitlab/log/` contains `application.log`, `production.log`, `sidekiq.log`, `unicorn.stdout.log`, `githost.log`, `satellites.log`, and `unicorn.stderr.log` normally.
-
-gitlab-shell
-
-- `/home/git/gitlab-shell/gitlab-shell.log`
-
-SSH
-
-- `/var/log/auth.log` auth log (on Ubuntu).
-- `/var/log/secure` auth log (on RHEL).
-
-Nginx
-
-- `/var/log/nginx/` contains error and access logs.
-
-Redis
-
-- `/var/log/redis/redis.log` there are also log-rotated logs there.
-
-PostgreSQL
-
-- `/var/log/postgresql/*`
-
-### GitSwarm specific config files
-
-GitSwarm has configuration files located in `/home/git/gitlab/config/*`.
-Commonly referenced config files include:
-
-- `gitlab.yml` - GitLab configuration.
-- `unicorn.rb` - Unicorn web server settings.
-- `database.yml` - Database connection settings.
-
-gitlab-shell has a configuration file at `/home/git/gitlab-shell/config.yml`.
-
-### Maintenance Tasks
-
-GitSwarm provides rake tasks with which you see version information and run
-a quick check on your configuration to ensure it is configured properly
-within the application. See [maintenance rake
-tasks](..//raketasks/maintenance.md). In a nutshell, do the following:
-
-```
-sudo -i -u git
-cd gitlab
-bundle exec rake gitswarm:env:info RAILS_ENV=production
-bundle exec rake gitswarm:check RAILS_ENV=production
-```
-
-Note: It is recommended to log into the `git` user using `sudo -i -u git`
-or `sudo su - git`. While the sudo commands provided by GitSwarm work in
-Ubuntu they do not always work in RHEL.

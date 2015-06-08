@@ -1,7 +1,7 @@
 module PerforceSwarm
   module PageLayoutHelper
     def page_title(*titles)
-      super(*titles).gsub!(/GitLab/, 'GitSwarm')
+      super(*titles).gsub(/GitLab$/, 'GitSwarm')
     end
   end
 end

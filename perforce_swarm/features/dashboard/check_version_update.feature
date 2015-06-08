@@ -19,13 +19,29 @@ Feature: Check for updates
   #  is the minor revision, and 'beta' is the build number. 'Build' can have a numbered value or have the values 'alpha' or 'beta'
   #  For the same major and minor revisions, a numbered revision attempting to upgrade from a beta release would have the value '
 
-  Scenario: Check for updates feature with different platforms on the client GitSwarm server
-    # If the GitSwarm server is installed on one of the supported platforms 'centos6/centos7/ubuntu12/unbuntu14', 
-    # then the admin user will receive a 'Check for update' notification ( provided other conditions are met )
-    # If the GitSwarm server is installed on an unsupported OS platform ( e.g. MacOSX), then the platform state will be set as 'unknown', 
-    # and the admin will never receive a 'Check for update' notification
-    # The 'noarch' platform state has no logic currently associated with it. It is primarily used to imply a 'generic platform' across all GitSwarm servers
-    Given ...
+  @automated
+  Scenario: With no matching platform in the versions file, no growl is shown
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And There is no matching platform in the versions file
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated
+  Scenario: With an unsupported platform value, no growl is shown
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And VersionCheck is set to an unsupported platform
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated
+  Scenario: With the platform set to noarch, no growl is shown
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And VersionCheck has a platform of noarch
+    When I visit dashboard page
+    Then I should not see a check for updates growl
 
   Scenario: A daily sidetiq task on the server handles the 'check for version update' logic. Verify that the sidetiq task works correctly based on its its set interval
     ## Tested the async sidetiq by setting its timeout to minutely and seeing that the "Version check banner was seen for a version update
@@ -42,11 +58,25 @@ Feature: Check for updates
     Then I should see a check for updates growl
     Then I should be prompted to enable or disable check for updates
 
-  Scenario: An admin will ALWAYS receive update version notifications if the growl "Allow Gitswarm to keep checking for updates" is accepted or if the 'version check enabled' checkbox on the admin application settings page is enabled
-  # 1. The 'version check enabled' checkbox  can be set on the admin application page only ( no config file)
-  # 2. By default it should be unchecked (checks turned OFF)
-  # 3. The default value 'OFF' is an override of the corresponding Gitlab-CE feature. The Gitlab-CE feature for release 7.11, had version check enabled by default
-    Given ...
+  @automated
+  Scenario: Enabling check for updates via the admin settings page results in the growl being shown
+    Given I sign in as an admin
+    And I visit admin settings page
+    And I enable check for updates and save the form
+    And Am behind the next minor version of GitSwarm
+    When I visit dashboard page
+    Then I should see a check for updates growl
+    Then I should be notified that my version is out of date
+    Then I should be asked if I want to ignore this update
+
+  @automated
+  Scenario: Disabling check for updates via the admin settings page results in no growl being shown on an out of date install
+    Given I sign in as an admin
+    And I visit admin settings page
+    And I disable check for updates and save the form
+    And Am behind the next minor version of GitSwarm
+    When I visit dashboard page
+    Then I should not see a check for updates growl
 
   @automated
   Scenario: GitSwarm admin receives an out of date growl if they are out of date by at least one major version
@@ -96,8 +126,6 @@ Feature: Check for updates
 
   @automated
   Scenario: Admin will receive critical update only if 'critical: true' flag is set for the particular platform in the JSON file
-   # The updates are verified against a JSON received from https://updates.perforce.com/static/GitSwarm/GitSwarm.json, which contains information on the latest released builds for the respective platforms
-   # Verified that a user receives critical updates from all previous versions that were ignored, if any of those versions had the 'critical: true' flag set.
     Given I sign in as an admin
     And Check for updates is enabled
     And Am behind the next minor version of GitSwarm
@@ -110,6 +138,8 @@ Feature: Check for updates
   #########################
   # Front-end verifications
   #########################
+
+  # Check for updates is in unknown state
   @automated
   Scenario: Growl notification should be displayed if an admin views the dashboard and has not chosen to en/disable check for updates
     Given I sign in as an admin
@@ -125,32 +155,86 @@ Feature: Check for updates
     When I visit dashboard page
     Then I should not see a check for updates growl
 
+  # Check for updates has been enabled
+  @automated
   Scenario: The update revision feature should work if an admin signs in for the first time on an existing GitSwarm server, after the version check feature is enabled
-    Given Check for updates is enabled
+    Given I sign in as an admin
+    And Check for updates is enabled
     And Am behind the next minor version of GitSwarm
-    When I sign in as an admin
+    When I visit dashboard page
     Then I should see a check for updates growl
-    Then I should be prompted to enable or disable check for updates
 
-  ##########################################################
-  # For each platform (Ubuntu12, Ubuntu14, Centos6, Centos7)
-  ##########################################################
-  # As an admin with version_check enabled:
-  ## when an update (major/minor/build) is available, if I navigate to the homepage I should see a yellow banner that says "This installation of GitSwarm is out of date. An update is available"
-  ## when a critical update (major/minor/build) is available, if I navigate to the homepage I should see a red banner that says "This installation is out of date. A critical update is available."
-  ## when no update is available, if I navigate to the homepage I should see no update banner.
-  ## when no update is available but the latest version is marked as critical, if I navigate to the homepage I should see no update banner.
-  ## when my release is ahead of the current available release, if I navigate to the homepage I should see no update banner.
-  ## when the available release version does not conform to the correct format "Major.Minor-Build" (for example, a blank string), if I navigate to the homepage I should see no update banner.
-  ## with an update banner notification on the homepage, when I close the banner by clicking the X, verify that the session cookie dismiss_version_check is set and the banner does not appear for the remainder of the browser session
+  @automated
+  Scenario: My release is equal to or ahead of the current available release, I should see no growl on the dashboard
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And My GitSwarm install is up to date
+    When I visit dashboard page
+    Then I should not see a check for updates growl
 
-  # As an admin with version_check disabled:
-  ## when an update (major/minor/build) is available, if I navigate to the homepage I should see no update banner.
-  ## when a critical update (major/minor/build) is available, if I navigate to the homepage I should see no update banner.
-  ## when no update is available, if I navigate to the homepage I should see no update banner.
-  ## when no update is available but the latest version is marked as critical, if I navigate to the homepage I should see no update banner.
-  ## when my release is ahead of the current available release, if I navigate to the homepage I should see no update banner.
-  ## when the available release version does not conform to the correct format  "Major.Minor-Build" (for example, a blank string), if I navigate to the homepage I should see no update banner.
+  @automated
+  Scenario: The list of available versions contains a malformed version, that version is ignored
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And My GitSwarm install is up to date
+    And There is a malformed version in the list of available versions
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated
+  Scenario: No update is available but the latest version is marked as critical, I should see no growl on the dashboard
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And My GitSwarm install is up to date
+    And The current version is a critical update
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated @javascript
+  Scenario: I can click on the X in the growl message, which sets the dismiss_version_check cookie and removes the growl
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And Am behind the next minor version of GitSwarm
+    And I visit dashboard page
+    When I click the X to close the growl
+    Then I should not see a check for updates growl
+    Then The dismiss_version_check cookie should be set
+
+  # Check for updates has been disabled
+  @automated
+  Scenario: No growl should be shown if check for updates is disabled
+    Given I sign in as an admin
+    And Disable check for updates
+    And Am behind the next minor version of GitSwarm
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated
+  Scenario: With check for updates disabled, when my release is equal to or ahead of the current available release, I should see no growl on the dashboard
+    Given I sign in as an admin
+    And Disable check for updates
+    And My GitSwarm install is up to date
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated
+  Scenario: With check for updates disabled, when the list of available versions contains a malformed version, that version is ignored
+    Given I sign in as an admin
+    And Disable check for updates
+    And My GitSwarm install is up to date
+    And There is a malformed version in the list of available versions
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated
+  Scenario: With check for updates disabled, when no update is available but the latest version is marked as critical, I should see no growl on the dashboard
+    Given I sign in as an admin
+    And Disable check for updates
+    And My GitSwarm install is up to date
+    And The current version is a critical update
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
   ### in addition to checking that no banner appears, confirm that the customer is also not pulling the version check file from the external URL??
 
   # As an admin who has not confirmed whether or not they would like to receive update notifications (version_check is set to null):

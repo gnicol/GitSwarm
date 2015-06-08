@@ -1,6 +1,6 @@
 class VersionCheck
   class << self
-    attr_accessor :versions
+    attr_accessor :versions, :platform
   end
 end
 
@@ -9,23 +9,35 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
   include SharedAuthentication
   include Gitlab::CurrentSettings
 
+  attr_accessor :original_platform
+
+  before do
+    # save a copy of our platform file
+    platform_file      = Rails.root.join('.platform')
+    @original_platform = File.read(platform_file) if File.exist?(platform_file)
+  end
+
+  after do
+    # put our original platform back
+    platform_file = Rails.root.join('.platform')
+    File.unlink(platform_file) if File.exist?(platform_file)
+    File.write(platform_file, @original_platform) if @original_platform
+  end
+
+  step 'Check for updates is enabled' do
+    version_check_enabled_flag(true)
+  end
+
+  step 'Disable check for updates' do
+    version_check_enabled_flag(false)
+  end
+
   step 'Set check for updates status to unknown' do
-    ApplicationSetting.first.update(version_check_enabled: nil)
-    current_application_settings.version_check_enabled = nil
+    version_check_enabled_flag(nil)
   end
 
   step 'Check for updates status is unknown' do
     current_application_settings.version_check_enabled.should be_nil
-  end
-
-  step 'Check for updates is enabled' do
-    ApplicationSetting.first.update(version_check_enabled: true)
-    current_application_settings.version_check_enabled = true
-  end
-
-  step 'Disable check for updates' do
-    ApplicationSetting.first.update(version_check_enabled: false)
-    current_application_settings.version_check_enabled = false
   end
 
   step 'I click yes to allow check for updates' do
@@ -49,17 +61,9 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
   end
 
   step 'The next version is a critical update' do
-    versions = VersionCheck.versions
-    latest   = VersionCheck.latest
-    # mark the latest one as critical and modify in place
-    versions.map! do |version|
-      version['critical'] = true if version['version'] == latest
-      version
+    with_versions do |version|
+      version['critical'] = true if version['version'] == VersionCheck.latest
     end
-
-    # update the in-memory and cached versions
-    VersionCheck.versions = versions
-    Rails.cache.write(PerforceSwarm::VersionCheckSelf::VERSIONS_CACHE_KEY, versions)
   end
 
   step 'I should see a check for updates growl' do
@@ -96,6 +100,73 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
 
   step 'I should be prompted to enable or disable check for updates' do
     page.should have_content 'Allow GitSwarm to keep checking for updates?'
+  end
+
+  step 'VersionCheck is set to an unsupported platform' do
+    File.write(Rails.root.join('.platform'), 'pdp-11')
+    VersionCheck.platform = 'pdp-11'
+  end
+
+  step 'VersionCheck has a platform of noarch' do
+    File.write(Rails.root.join('.platform'), 'noarch')
+    VersionCheck.platform = 'noarch'
+  end
+
+  step 'I enable check for updates and save the form' do
+    check 'Version check enabled'
+    click_button 'Save'
+  end
+
+  step 'I disable check for updates and save the form' do
+    uncheck 'Version check enabled'
+    click_button 'Save'
+  end
+
+  step 'My GitSwarm install is up to date' do
+    with_versions do |version|
+      version['version'] = PerforceSwarm::VERSION
+    end
+  end
+
+  step 'I click the X to close the growl' do
+    page.click_link 'X'
+  end
+
+  step 'There is no matching platform in the versions file' do
+    with_versions do |version|
+      version['platform'] = 'pdp-11'
+    end
+  end
+
+  step 'There is a malformed version in the list of available versions' do
+    with_versions do |version|
+      version['version'] = 'c3p0'
+    end
+  end
+
+  step 'The current version is a critical update' do
+    with_versions do |version|
+      version['critical'] = true if version['version'] == PerforceSwarm::VERSION
+    end
+  end
+
+  step 'The dismiss_version_check cookie should be set' do
+    # TODO: unable to access cookies - may require some driver tweaks
+  end
+
+  def version_check_enabled_flag(value)
+    ApplicationSetting.first.update(version_check_enabled: value)
+    current_application_settings.version_check_enabled = value
+  end
+
+  def with_versions
+    versions = VersionCheck.versions
+    versions.map! do |version|
+      yield(version)
+      version
+    end
+    VersionCheck.versions = versions
+    Rails.cache.write(PerforceSwarm::VersionCheckSelf::VERSIONS_CACHE_KEY, versions)
   end
 
   def add_to_versions_list(version, critical: nil, more_info: nil, platform: nil)

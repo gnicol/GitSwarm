@@ -180,10 +180,12 @@ Feature: Check for updates
   ## Tested with the "more_info" flag. Verified that we see the growl message "This Installation of GitSwarm is out of date. An update is available.", where the 'update is available' 
   ## flag message gets linked to the 'more_info' http page
   ## Verified that release that the user's first version is 'MAJOR.MINOR-BUILD' and not just 'MAJOR.MINOR' , with BUILD_value = 0. This takes care of PGL-811
-
+  ## Verified that when production JSON page 'updates.perforce.com/static/GitSwarm/GitSwarm.json' is used for testing, the stats do flow to the graphs on the page 'http://gather-dev.perforce.com/'
+  
   ## Note: For a given platform, the patch versions need not be linear, and can have hops
   ## For example, lets say for a release 2015-1, we start at patch 1 for all OSes ( i.e. 2015.1-1)
   ## Then we push a patch '2' to ubuntu, making ubuntu build revisions at  2015-1-2
   ## We now push a patch '3' to centos, making centos build revision at  2015-1-3
-## Now when we want to push to ubuntu again, the person will receive an update from '2015.1-2' to '2015.1-4' 
+  ## Now when we want to push to ubuntu again, the person will receive an update from '2015.1-2' to '2015.1-4'
 
+  

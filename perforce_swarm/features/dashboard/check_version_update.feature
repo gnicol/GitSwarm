@@ -31,16 +31,16 @@ Feature: Check for updates
     ## Tested the async sidetiq by setting its timeout to minutely and seeing that the "Version check banner was seen for a version update
     Given ...
 
-  Scenario: Ensure that the version check logic works correctly with the major and minor numbered ( and alpha/beta ) releases.
-    # This is a high risk logic for the feature
-    # The following version-update verifications are good candidates for unit testing ( similar to Gitlab's spec/lib/gitlab/version_info_spec.rb spec file )
-    # a) Minor-version  revision checks: 2015-1-alpha < 2015-1-beta < 2015-1 ( or 2015-1-0 ) < 2015-1-1 <  2015-1-2 <  2015-2-1 < 2015-3-1
-    # b) Major-version revision checks:  2014-4-8 < 2015-1-alpha < 2015-1-1 < 2016-1
-    Given ...
-
   ######################
   # Basic work-flow tests
   ######################
+
+  @automated
+  Scenario: Check for updates is set to nil by default
+    Given I sign in as an admin
+    When I visit dashboard page
+    Then I should see a check for updates growl
+    Then I should be prompted to enable or disable check for updates
 
   Scenario: An admin will ALWAYS receive update version notifications if the growl "Allow Gitswarm to keep checking for updates" is accepted or if the 'version check enabled' checkbox on the admin application settings page is enabled
   # 1. The 'version check enabled' checkbox  can be set on the admin application page only ( no config file)
@@ -48,18 +48,64 @@ Feature: Check for updates
   # 3. The default value 'OFF' is an override of the corresponding Gitlab-CE feature. The Gitlab-CE feature for release 7.11, had version check enabled by default
     Given ...
 
-  Scenario: Only the GitSwarm admin user will receive update 'growl notification' for out of date revisions. The notifications will be displayed on the admin dashboard page, post authentication.
-    # Questions: What if the admin is not a redirected to the dashboard page - will he see the growl notifications then?
-    Given ...
+  @automated
+  Scenario: GitSwarm admin receives an out of date growl if they are out of date by at least one major version
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And Am behind the next major version of GitSwarm
+    When I visit dashboard page
+    Then I should see a check for updates growl
+    Then I should be notified that my version is out of date
+    Then I should be asked if I want to ignore this update
 
+  @automated
+  Scenario: GitSwarm admin receives an out of date growl if they are out of date by at least one minor version
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And Am behind the next minor version of GitSwarm
+    When I visit dashboard page
+    Then I should see a check for updates growl
+    Then I should be notified that my version is out of date
+    Then I should be asked if I want to ignore this update
+
+  @automated
+  Scenario: GitSwarm admin receives an out of date growl if they are out of date by at least one build version
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And Am behind the next build version of GitSwarm
+    When I visit dashboard page
+    Then I should see a check for updates growl
+    Then I should be notified that my version is out of date
+    Then I should be asked if I want to ignore this update
+
+  @automated
+  Scenario: Clicking yes to allow check for updates enables the check for updates feature
+    Given I sign in as an admin
+    And Check for updates status is unknown
+    And I click yes to allow check for updates
+    Then I should see application settings saved
+    Then Version check enabled checkbox is checked
+
+  @automated
+  Scenario: Clicking no to disable the check for updates unchecks the box on the settings page
+    Given I sign in as an admin
+    And Check for updates status is unknown
+    And I click no to disable check for updates
+    Then I should see application settings saved
+    Then Version check enabled checkbox is not checked
+
+  @automated
   Scenario: Admin will receive critical update only if 'critical: true' flag is set for the particular platform in the JSON file
    # The updates are verified against a JSON received from https://updates.perforce.com/static/GitSwarm/GitSwarm.json, which contains information on the latest released builds for the respective platforms
    # Verified that a user receives critical updates from all previous versions that were ignored, if any of those versions had the 'critical: true' flag set.
-    Given ...
-
-  Scenario: Admin will receive non-critical update if updates are turned ON and MINOR REVISION or BUILD NUMBER is out of date
-    Given ...
-
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And Am behind the next minor version of GitSwarm
+    And The next version is a critical update
+    When I visit dashboard page
+    Then I should be notified that my version is out of date
+    Then I should be notified of a critical update
+    Then I should be asked if I want to ignore this update
 
   #########################
   # Front-end verifications
@@ -73,14 +119,18 @@ Feature: Check for updates
     Then I should be prompted to enable or disable check for updates
 
   @automated
-  Scenario: Growl notifications should not be displayed for regular users when check for updates hasn't been en/disabled
+  Scenario: Growl notifications should not be displayed for regular users when check for updates has not been en/disabled
     Given I sign in as a user
     And Set check for updates status to unknown
     When I visit dashboard page
     Then I should not see a check for updates growl
 
   Scenario: The update revision feature should work if an admin signs in for the first time on an existing GitSwarm server, after the version check feature is enabled
-    Given...
+    Given Check for updates is enabled
+    And Am behind the next minor version of GitSwarm
+    When I sign in as an admin
+    Then I should see a check for updates growl
+    Then I should be prompted to enable or disable check for updates
 
   ##########################################################
   # For each platform (Ubuntu12, Ubuntu14, Centos6, Centos7)

@@ -1,0 +1,57 @@
+                             Release Notes for
+                             Perforce GitSwarm
+
+                              Version 2015.1
+
+Introduction
+
+    Perforce GitSwarm (hereafter referred to as "GitSwarm") enables users to
+    manage revisions of content using Git, and collaborate on a project using a
+    (Pull-Request) code review workflow. Users can choose to have P4D be the
+    "master" for their Git repository, thus enabling artists, developers using
+    P4, tech pub, and others who generate binary content to collaborate on the
+    same project with users using Git. In addition to the pull-request workflow,
+    GitSwarm also offers an issue tracker, a Wiki, and a user interface to
+    manage code repository. GitSwarm is based on the Gitlab Open Source
+    Community Edition software.
+
+    Please send all feedback to support@perforce.com.
+
+---------------------------------------------------------------------------
+
+Documentation
+
+    GitSwarm Release 2015.1 documentation is included in the distribution and
+    can be accessed from within GitSwarm from the "?" menu on the top toolbar
+
+Supported Client Browsers
+
+    GitSwarm supports the following client web browsers and versions:
+
+    * Chrome (Latest stable version)
+    * Firefox (Latest released version and latest ESR version)
+    * Safari 7+ (known problem: required fields in html5 do not work)
+    * Opera (Latest released version)
+    * IE 10+
+
+    We recommend the use of the latest stable version of the browsers
+    listed above for the best experience when using GitSwarm.
+
+    Other web browsers might also work, including prior, development or
+    beta builds of the above web browsers, but are not officially
+    supported.
+
+Installation and Supported Platforms
+
+    Please see the separate "install" file, a peer to this file.
+
+Credits
+
+    Perforce GitSwarm, based on the excellent GitLab Open Source Community
+    Edition software with additional contributions from the GitSwarm Team:
+    DJ Mountney, Elliot Wiltshire, Geoff Nicol, Jayesh Mistry,
+    Jan Van Uytven, Elizabeth Hale, Porus Patell, Tony Kim, Ewan Edwards,
+    Sean Ardley, Russ Tremain, Murtaza Amiji, Jason Novecosky, Michael Davies,
+    and Janet Taylor.
+
+END

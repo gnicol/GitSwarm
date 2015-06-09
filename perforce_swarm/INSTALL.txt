@@ -50,10 +50,9 @@ Storage
     network (SAN) or on an Amazon Web Services (AWS) Elastic Block Store
     (EBS) volume.
 
-    If you have enough RAM memory and a recent CPU, the speed of GitSwarm is
-    mainly limited by hard drive seek times. Having a fast drive (7,200 RPM
-    and up) or a solid state drive (SSD) will improve the responsiveness of
-    GitSwarm.
+    If you have enough RAM and a recent CPU, the speed of GitSwarm is mainly
+    limited by hard drive seek times. Having a fast drive (7,200 RPM and up)
+    or a solid state drive (SSD) will improve the responsiveness of GitSwarm.
 
 CPU
 

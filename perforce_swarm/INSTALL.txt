@@ -1,0 +1,190 @@
+                       Installation Instructions for
+                            Perforce GitSwarm
+
+                              Version 2015.1
+
+Introduction
+
+    This document describes the installation and initial configuration
+    process for Perforce GitSwarm (hereafter referred to as "GitSwarm")
+    release 2015.1.
+
+    * Note, installing and configuring GitSwarm is a System Administrator
+      function and requires root access.
+
+Overview
+
+    To get the GitSwarm web application installed and configured, this
+    document will cover these main areas:
+
+    * Hardware Requirements
+    * Install Dependencies
+    * GitSwarm Installation
+    * Basic Configuration
+
+
+------------------------------------------------------------------------
+Hardware Requirements
+------------------------------------------------------------------------
+
+Supported Operating System Platforms
+
+    * Ubuntu 12.04 or 14.04
+    * CentOS 6.6 or 7
+
+Storage
+
+    The necessary hard drive space largely depends on the size of the repos
+    you want to store in GitSwarm. As a rule of thumb you should have at
+    least twice as much free space as all your repos combined take up. You
+    need twice the storage because GitSwarm satellites contain an extra copy
+    of each repo.
+
+    If you want to be flexible about growing your hard drive space in the
+    future, consider mounting it using LVM so you can add more hard drives
+    when you need them.
+
+    Apart from a local hard drive, you can also mount a volume that supports
+    the network file system (NFS) protocol. This volume might be located on
+    a file server, a network attached storage (NAS) device, a storage area
+    network (SAN) or on an Amazon Web Services (AWS) Elastic Block Store
+    (EBS) volume.
+
+    If you have enough RAM and a recent CPU, the speed of GitSwarm is mainly
+    limited by hard drive seek times. Having a fast drive (7,200 RPM and up)
+    or a solid state drive (SSD) will improve the responsiveness of GitSwarm.
+
+CPU
+
+    We have found through testing that supporting fetch/pull/push operations
+    via HTTP(S) requires a minimum of 2 cores.
+
+    * 1 core works supports up to 100 users, but the application can be a bit
+      slower due to having all workers and background jobs running on the
+      same core
+    * 2 cores is the recommended number of cores and supports up to 500 users
+    * 4 cores supports up to 2,000 users
+    * 8 cores supports up to 5,000 users
+    * 16 cores supports up to 10,000 users
+    * 32 cores supports up to 20,000 users
+    * 64 cores supports up to 40,000 users
+
+Memory
+
+    You need at least 2GB of addressable memory (RAM + swap) to install and
+    use GitSwarm! With less memory, GitSwarm will give strange errors during
+    the reconfigure run and 500 errors during usage.
+
+    * 512MB RAM + 1.5GB of swap is the absolute minimum, but we strongly
+      advise against this amount of memory.
+    * 1GB RAM + 1GB swap supports up to 100 users
+    * 2GB RAM is the recommended memory size and supports up to 500 users
+    * 4GB RAM supports up to 2,000 users
+    * 8GB RAM supports up to 5,000 users
+    * 16GB RAM supports up to 10,000 users
+    * 32GB RAM supports up to 20,000 users
+    * 64GB RAM supports up to 40,000 users
+
+    Note: The 25 workers of Sidekiq will show up as separate processes in
+          your process overview (such as top or htop) but they share the same
+          RAM allocation since Sidekiq is a multithreaded application.
+
+
+------------------------------------------------------------------------
+Install Dependencies
+------------------------------------------------------------------------
+
+Note: If you install Postfix to send email, please select Internet Site
+      during setup. Instead of using Postfix, you can also use Sendmail or
+      configure a custom SMTP server. Do not use Exim to send email from
+      GitSwarm.
+
+1. For Ubuntu:
+
+   $ sudo apt-get install curl openssh-server ca-certificates postfix
+
+2. For CentOS/RHEL 6:
+
+   $ sudo yum install curl openssh-server postfix cronie
+   $ sudo service postfix start
+   $ sudo chkconfig postfix on
+   $ sudo lokkit -s http -s ssh
+
+   Note: The commands above also open HTTP and SSH access in the system
+         firewall.
+
+3. For CentOS/RHEL 7:
+
+   $ sudo yum install curl openssh-server
+   $ sudo systemctl enable sshd
+   $ sudo systemctl start sshd
+   $ sudo yum install postfix
+   $ sudo systemctl enable postfix
+   $ sudo systemctl start postfix
+   $ sudo firewall-cmd --permanent --add-service=http
+   $ sudo systemctl reload firewalld
+
+   Note: The commands above also open HTTP and SSH access in the system
+         firewall.
+
+
+------------------------------------------------------------------------
+GitSwarm Installation
+------------------------------------------------------------------------
+
+1. For Ubuntu 12.04:
+
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.ubuntu12x86_64/perforce-gitswarm-2015.1.precise.amd64.deb
+   $ sudo dpkg -i perforce-gitswarm-2015.1.precise.amd64.deb
+
+2. For Ubuntu 14.04:
+
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.ubuntu14x86_64/perforce-gitswarm-2015.1.trusty.amd64.deb
+   $ sudo dpkg -i perforce-gitswarm-2015.1.trusty.amd64.deb
+
+3. For CentOS/RHEL 6:
+
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos6x86_64/perforce-gitswarm-2015.1.el6.x86_64.rpm
+   $ sudo rpm -i perforce-gitswarm-2015.1.el6.x86_64.rpm
+
+4. For CentOS/RHEL 7:
+
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos7x86_64/perforce-gitswarm-2015.1.el7.x86_64.rpm
+   $ sudo rpm -i perforce-gitswarm-2015.1.el7.x86_64.rpm
+
+
+
+------------------------------------------------------------------------
+Basic Configuration
+------------------------------------------------------------------------
+
+1. Verify the external URL for your GitSwarm instance:
+
+   View /etc/gitswarm/gitswarm.rb, and verify that the following setting is
+   set to the URL that your GitSwarm users should use:
+
+     external_url "http://gitswarm.example.com"
+
+   Edit the setting if necessary.
+
+2. Set the timezone for your GitSwarm instance:
+
+   Edit /etc/gitswarm/gitswarm.rb, and edit the line:
+
+     #gitlab_rails['time_zone'] = 'UTC'
+
+   Replace UTC with an appropriate timezone, and uncomment the line.
+
+3. Configure and start GitSwarm.
+
+   $ sudo gitswarm-ctl reconfigure
+
+4. Browse to the hostname and login.
+
+   Username: root
+   Password: 5iveL!fe
+
+
+You are now all set to start using GitSwarm. Enjoy!
+
+END

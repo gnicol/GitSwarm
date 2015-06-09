@@ -35,23 +35,23 @@ Supported Operating System Platforms
 Storage
 
     The necessary hard drive space largely depends on the size of the repos
-    you want to store in GitSwarm but as a rule of thumb you should have at
+    you want to store in GitSwarm. As a rule of thumb you should have at
     least twice as much free space as all your repos combined take up. You
     need twice the storage because GitSwarm satellites contain an extra copy
     of each repo.
 
     If you want to be flexible about growing your hard drive space in the
-    future consider mounting it using LVM so you can add more hard drives
+    future, consider mounting it using LVM so you can add more hard drives
     when you need them.
 
-    Apart from a local hard drive you can also mount a volume that supports
+    Apart from a local hard drive, you can also mount a volume that supports
     the network file system (NFS) protocol. This volume might be located on
     a file server, a network attached storage (NAS) device, a storage area
     network (SAN) or on an Amazon Web Services (AWS) Elastic Block Store
     (EBS) volume.
 
-    If you have enough RAM memory and a recent CPU the speed of GitSwarm is
-    mainly limited by hard drive seek times. Having a fast drive (7200 RPM
+    If you have enough RAM memory and a recent CPU, the speed of GitSwarm is
+    mainly limited by hard drive seek times. Having a fast drive (7,200 RPM
     and up) or a solid state drive (SSD) will improve the responsiveness of
     GitSwarm.
 
@@ -60,7 +60,7 @@ CPU
     We have found through testing that supporting fetch/pull/push operations
     via HTTP(S) requires a minimum of 2 cores.
 
-    * 1 core works supports up to 100 users but the application can be a bit
+    * 1 core works supports up to 100 users, but the application can be a bit
       slower due to having all workers and background jobs running on the
       same core
     * 2 cores is the recommended number of cores and supports up to 500 users
@@ -73,10 +73,10 @@ CPU
 Memory
 
     You need at least 2GB of addressable memory (RAM + swap) to install and
-    use GitSwarm! With less memory GitSwarm will give strange errors during
+    use GitSwarm! With less memory, GitSwarm will give strange errors during
     the reconfigure run and 500 errors during usage.
 
-    * 512MB RAM + 1.5GB of swap is the absolute minimum but we strongly
+    * 512MB RAM + 1.5GB of swap is the absolute minimum, but we strongly
       advise against this amount of memory. See the unicorn worker section
       below for more advise.
     * 1GB RAM + 1GB swap supports up to 100 users
@@ -107,24 +107,24 @@ Note: If you install Postfix to send email, please select Internet Site
 
 2. For CentOS/RHEL 6:
 
-   # sudo yum install curl openssh-server postfix cronie
-   # sudo service postfix start
-   # sudo chkconfig postfix on
-   # sudo lokkit -s http -s ssh
+   $ sudo yum install curl openssh-server postfix cronie
+   $ sudo service postfix start
+   $ sudo chkconfig postfix on
+   $ sudo lokkit -s http -s ssh
 
    Note: The commands above also open HTTP and SSH access in the system
          firewall.
 
 3. For CentOS/RHEL 7:
 
-   # sudo yum install curl openssh-server
-   # sudo systemctl enable sshd
-   # sudo systemctl start sshd
-   # sudo yum install postfix
-   # sudo systemctl enable postfix
-   # sudo systemctl start postfix
-   # sudo firewall-cmd --permanent --add-service=http
-   # sudo systemctl reload firewalld
+   $ sudo yum install curl openssh-server
+   $ sudo systemctl enable sshd
+   $ sudo systemctl start sshd
+   $ sudo yum install postfix
+   $ sudo systemctl enable postfix
+   $ sudo systemctl start postfix
+   $ sudo firewall-cmd --permanent --add-service=http
+   $ sudo systemctl reload firewalld
 
    Note: The commands above also open HTTP and SSH access in the system
          firewall.
@@ -146,13 +146,13 @@ GitSwarm Installation
 
 3. For CentOS/RHEL 6:
 
-   # curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos6x86_64/perforce-gitswarm-2015.1.el6.x86_64.rpm
-   # sudo rpm -i perforce-gitswarm-2015.1.el6.x86_64.rpm
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos6x86_64/perforce-gitswarm-2015.1.el6.x86_64.rpm
+   $ sudo rpm -i perforce-gitswarm-2015.1.el6.x86_64.rpm
 
 4. For CentOS/RHEL 7:
 
-   # curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos7x86_64/perforce-gitswarm-2015.1.el7.x86_64.rpm
-   # sudo rpm -i perforce-gitswarm-2015.1.el7.x86_64.rpm
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos7x86_64/perforce-gitswarm-2015.1.el7.x86_64.rpm
+   $ sudo rpm -i perforce-gitswarm-2015.1.el7.x86_64.rpm
 
 
 
@@ -179,7 +179,7 @@ Basic Configuration
 
 3. Configure and start GitSwarm.
 
-   sudo gitswarm-ctl reconfigure
+   $ sudo gitswarm-ctl reconfigure
 
 4. Browse to the hostname and login.
 

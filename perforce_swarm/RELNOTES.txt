@@ -6,14 +6,14 @@
 Introduction
 
     Perforce GitSwarm (hereafter referred to as "GitSwarm") enables users to
-    manage revisions of content using Git, and collaborate on a project using a
-    (Pull-Request) code review workflow. Users can choose to have P4D be the
-    "master" for their Git repository, thus enabling artists, developers using
-    P4, tech pub, and others who generate binary content to collaborate on the
-    same project with users using Git. In addition to the pull-request workflow,
-    GitSwarm also offers an issue tracker, a Wiki, and a user interface to
-    manage code repository. GitSwarm is based on the Gitlab Open Source
-    Community Edition software.
+    manage revisions of content using Git, and collaborate on a project using
+    a "Pull-Request" code review workflow. Users can choose to have P4D be
+    the "master" for their Git repository, thus enabling artists, developers
+    using P4, technical writers, and others who generate content to
+    collaborate on the same project with users using Git. In addition to the
+    pull-request workflow, GitSwarm also offers an issue tracker, a Wiki, and
+    a user interface to manage code repositories. GitSwarm is based on the
+    Gitlab Open Source Community Edition software.
 
     Please send all feedback to support@perforce.com.
 
@@ -38,8 +38,8 @@ Supported Client Browsers
     listed above for the best experience when using GitSwarm.
 
     Other web browsers might also work, including prior, development or
-    beta builds of the above web browsers, but are not officially
-    supported.
+    beta builds of the above web browsers, but these browsers are not
+    officially supported.
 
 Installation and Supported Platforms
 

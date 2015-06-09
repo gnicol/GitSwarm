@@ -1,13 +1,12 @@
                        Installation Instructions for
-                            Perforce GitSwarm
+                              Helix GitSwarm
 
                               Version 2015.1
 
 Introduction
 
     This document describes the installation and initial configuration
-    process for Perforce GitSwarm (hereafter referred to as "GitSwarm")
-    release 2015.1.
+    process for Helix GitSwarm release 2015.1.
 
     * Note, installing and configuring GitSwarm is a System Administrator
       function and requires root access.

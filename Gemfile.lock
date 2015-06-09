@@ -831,3 +831,6 @@ DEPENDENCIES
   virtus
   webmock
   wikicloth (= 0.8.1)
+
+BUNDLED WITH
+   1.10.3

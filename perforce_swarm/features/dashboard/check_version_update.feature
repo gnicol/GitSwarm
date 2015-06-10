@@ -1,22 +1,13 @@
 @dashboard
-Feature: Check for GitSwarm version updates for client Gitswarm installation
-############################## Current tests and open issues on version check feature from the community site: ##############################
-# Version check doesn't handle none git installations: https://gitlab.com/gitlab-org/gitlab-ce/issues/1416
-# Version Check image alternative text is useless: https://gitlab.com/gitlab-org/gitlab-ce/issues/1684
-# ( should not be relevant to our product, since we don't use the image for rendering)
-# Version info spec test: spec/lib/gitlab/version_info_spec.rb (tests how Gitlab versioning is done, and how a succeeding version is counted to 
-# be different from a previous one. Not directly relevant to us
-# since we have a different versioning scheme, but might be useful for adding in similar unit tests)
-###############################################################################################################################################
-
-
-  #######################
-  # System level tests
-  #######################
+Feature: Check for version updates against customer GitSwarm installations
 
   # Unit tests are located in the following spec files:
   #  * perforce_swarm/spec/lib/gitswarm/version_check_spec.rb
   #  * perforce_swarm/spec/lib/gitswarm/version_comparison_spec.rb
+  
+  #######################
+  # System level tests
+  #######################
 
   #  An omnibus build contains information regarding the major revision, minor revision, build number and the OS Platform.
   #  For example, for the build 'GitSwarm 2015.1-beta', 2015 is the major revision,'1'
@@ -316,5 +307,3 @@ Feature: Check for GitSwarm version updates for client Gitswarm installation
   ## Then we push a patch '2' to ubuntu, making ubuntu build revisions at  2015-1-2
   ## We now push a patch '3' to centos, making centos build revision at  2015-1-3
   ## Now when we want to push to ubuntu again, the person will receive an update from '2015.1-2' to '2015.1-4'
-
-  

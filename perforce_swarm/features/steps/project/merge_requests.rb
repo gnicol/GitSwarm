@@ -18,9 +18,9 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
   step 'I see prefilled new Merge Request page' do
     current_path.should eq new_namespace_project_merge_request_path(@project.namespace, @project)
-    find('#merge_request_target_project_id').value.should eq @project.id.to_s
-    find('#merge_request_source_branch').value.should eq 'fix'
-    find('#merge_request_target_branch').value.should eq 'master'
+    find('input#merge_request_target_project_id').value.should eq @project.id.to_s
+    find('input#merge_request_source_branch').value.should eq 'fix'
+    find('input#merge_request_target_branch').value.should eq 'master'
   end
 
   step 'I click button "Assign to me"' do

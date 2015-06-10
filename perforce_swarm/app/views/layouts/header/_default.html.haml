@@ -1,10 +1,10 @@
 %header.navbar.navbar-fixed-top.navbar-gitlab{ class: nav_header_class }
-  .navbar-inner
-    .container
-      %div.app_logo
-        = link_to root_path, class: 'home has_bottom_tooltip', title: 'Dashboard' do
-          %div
-          %h3 GitSwarm
+  .container
+    .header-logo
+      = link_to root_path, class: 'home has_bottom_tooltip', title: 'Dashboard' do
+        %div
+        %h3 GitSwarm
+    .header-content
       - if !@recent_projects.nil?
         %div.dropdown.dashboard-menu
           %h1.dropdown-toggle.title{'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', 'tabIndex' => '0' }
@@ -27,22 +27,21 @@
           %h1.title
             = title
 
-      %ul.nav.navbar-nav
+      %ul.nav.navbar-nav.pull-right
         %li.hidden-sm.hidden-xs
           = render 'layouts/search'
         %li.visible-sm.visible-xs
-          = link_to search_path, title: 'Search', class: 'has_bottom_tooltip', 'data-original-title' => 'Search area' do
-            %i.fa.fa-search
+          = link_to search_path, title: 'Search', data: {toggle: 'tooltip', placement: 'bottom'} do
+            = icon('search')
         %li.hidden-xs
-          = link_to help_path, title: 'Help', class: 'has_bottom_tooltip',
-             'data-original-title' => 'Help'  do
-            %i.fa.fa-question-circle
+          = link_to help_path, title: 'Help', data: {toggle: 'tooltip', placement: 'bottom'} do
+            = icon('question-circle fw')
         - if current_user.is_admin?
           %li.hidden-xs
-            = link_to admin_root_path, title: 'Admin Area', class: 'has_bottom_tooltip', 'data-original-title' => 'Admin Area' do
-              %i.fa.fa-cogs
+            = link_to admin_root_path, title: 'Admin Area', data: {toggle: 'tooltip', placement: 'bottom'} do
+              = icon('wrench fw')
         %li.dropdown.navbar-right
-          %a.dropdown-toggle.profile-pic{href: '#', 'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', title: 'User Menu', class: 'has_bottom_tooltip', 'data-original-title' => 'User Menu', 'aria-label' => 'User Menu'}
+          %a.dropdown-toggle.profile-pic{href: '#', 'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', title: 'User Menu', 'aria-label' => 'User Menu'}
             = image_tag avatar_icon(current_user.email, 26)
             %span.caret>
           %ul.dropdown-menu{role: 'menu', 'aria-label' => 'User Menu'}

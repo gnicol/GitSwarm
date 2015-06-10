@@ -5,7 +5,7 @@ module PerforceSwarm
     def fields
       super.map do |field|
         field.dup.tap do
-          field[:help].gsub!(/GitLab/, 'GitSwarm') if field[:help]
+          field[:help].gsub(/GitLab/, 'GitSwarm') if field[:help]
         end
       end
     end

@@ -1,10 +1,10 @@
 %header.navbar.navbar-fixed-top.navbar-gitlab{ class: nav_header_class }
-  .navbar-inner
-    .container
-      %div.app_logo
-        = link_to root_path, class: 'home has_bottom_tooltip', title: 'Dashboard' do
-          %div
-          %h3 GitSwarm
+  .container
+    .header-logo
+      = link_to root_path, class: 'home has_bottom_tooltip', title: 'Dashboard' do
+        %div
+        %h3 GitSwarm
+    .header-content
       - if !@recent_projects.nil?
         %div.dropdown.dashboard-menu
           %h1.dropdown-toggle.title{'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', 'tabIndex' => '0' }
@@ -27,7 +27,7 @@
           %h1.title
             = title
 
-      %ul.nav.navbar-nav
+      %ul.nav.navbar-nav.pull-right
         %li.hidden-sm.hidden-xs
           = render 'layouts/search'
         %li.visible-sm.visible-xs
@@ -35,11 +35,11 @@
             = icon('search')
         %li.hidden-xs
           = link_to help_path, title: 'Help', data: {toggle: 'tooltip', placement: 'bottom'} do
-            = icon('question-circle')
+            = icon('question-circle fw')
         - if current_user.is_admin?
           %li.hidden-xs
             = link_to admin_root_path, title: 'Admin Area', data: {toggle: 'tooltip', placement: 'bottom'} do
-              = icon('wrench')
+              = icon('wrench fw')
         %li.dropdown.navbar-right
           %a.dropdown-toggle.profile-pic{href: '#', 'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', title: 'User Menu', 'aria-label' => 'User Menu'}
             = image_tag avatar_icon(current_user.email, 26)

@@ -246,7 +246,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'I click on the Swarm icon' do
-    find(:css, '.app_logo').click
+    find(:css, '.header-logo').click
   end
 
   step 'I click on the back button' do

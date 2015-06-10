@@ -1,5 +1,5 @@
 @dashboard
-Feature: Check for updates
+Feature: Check for GitSwarm version updates for client Gitswarm installation
 ############################## Current tests and open issues on version check feature from the community site: ##############################
 # Version check doesn't handle none git installations: https://gitlab.com/gitlab-org/gitlab-ce/issues/1416
 # Version Check image alternative text is useless: https://gitlab.com/gitlab-org/gitlab-ce/issues/1684
@@ -21,7 +21,8 @@ Feature: Check for updates
   #  An omnibus build contains information regarding the major revision, minor revision, build number and the OS Platform.
   #  For example, for the build 'GitSwarm 2015.1-beta', 2015 is the major revision,'1'
   #  is the minor revision, and 'beta' is the build number. 'Build' can have a numbered value or have the values 'alpha' or 'beta'
-  #  For the same major and minor revisions, a numbered revision attempting to upgrade from a beta release would have the value '
+  #  For the same major and minor revisions, a numbered revision attempting to upgrade from a beta release would have the value '-1'
+  #  For the same major and minor revisions, a numbered revision attempting to upgrade from a alpha release would have the value '-2'
 
   @automated
   Scenario: With no matching platform in the versions file, no growl is shown

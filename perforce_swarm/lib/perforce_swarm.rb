@@ -1,5 +1,5 @@
 require 'perforce_swarm/active_support/concern'
 require 'perforce_swarm/engine'
 require 'perforce_swarm/haml'
-require 'perforce_swarm/spinach' if ENV['RAILS_ENV'] == 'test'
-require 'perforce_swarm/rspec'   if ENV['RAILS_ENV'] == 'test'
+autoload(:Spinach, 'perforce_swarm/spinach') if ENV['RAILS_ENV'] == 'test'
+autoload(:RSpec,  'perforce_swarm/rspec') if ENV['RAILS_ENV'] == 'test'

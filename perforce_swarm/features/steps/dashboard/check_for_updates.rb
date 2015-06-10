@@ -9,26 +9,31 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
   include SharedAuthentication
   include Gitlab::CurrentSettings
 
-  attr_accessor :original_platform
+  attr_accessor :original_platform, :original_version
 
   before do
     # save a copy of our platform file
     platform_file      = Rails.root.join('.platform')
     @original_platform = File.read(platform_file) if File.exist?(platform_file)
+
+    # save a copy of the original version, so we can change the constant as needed
+    @original_version  = PerforceSwarm::VERSION
   end
 
   after do
-    # put our original platform back
+    # put our original values back
     platform_file = Rails.root.join('.platform')
     File.unlink(platform_file) if File.exist?(platform_file)
     File.write(platform_file, @original_platform) if @original_platform
+
+    modify_version(@original_version)
   end
 
   step 'Check for updates is enabled' do
     version_check_enabled_flag(true)
   end
 
-  step 'Disable check for updates' do
+  step 'Check for updates is disabled' do
     version_check_enabled_flag(false)
   end
 
@@ -60,10 +65,22 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
     add_to_versions_list(incremented_version(build_increment: 1))
   end
 
+  step 'My GitSwarm install is ahead by a minor version' do
+    modify_version(incremented_version(minor_increment: 1))
+  end
+
   step 'The next version is a critical update' do
     with_versions do |version|
       version['critical'] = true if version['version'] == VersionCheck.latest
     end
+  end
+
+  step 'We have a noarch update available in the versions list' do
+    # make all existing platforms non-matching
+    with_versions do |version|
+      version['platform'] = 'univac'
+    end
+    add_to_versions_list(incremented_version(minor_increment: 1), platform: 'noarch')
   end
 
   step 'I should see a check for updates growl' do
@@ -152,6 +169,11 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
 
   step 'The dismiss_version_check cookie should be set' do
     # TODO: unable to access cookies - may require some driver tweaks
+  end
+
+  def modify_version(new_value)
+    PerforceSwarm.send(:remove_const, :VERSION)
+    PerforceSwarm.const_set(:VERSION, new_value)
   end
 
   def version_check_enabled_flag(value)

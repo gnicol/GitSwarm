@@ -14,6 +14,10 @@ Feature: Check for updates
   # System level tests
   #######################
 
+  # Unit tests are located in the following spec files:
+  #  * perforce_swarm/spec/lib/gitswarm/version_check_spec.rb
+  #  * perforce_swarm/spec/lib/gitswarm/version_comparison_spec.rb
+
   #  An omnibus build contains information regarding the major revision, minor revision, build number and the OS Platform.
   #  For example, for the build 'GitSwarm 2015.1-beta', 2015 is the major revision,'1'
   #  is the minor revision, and 'beta' is the build number. 'Build' can have a numbered value or have the values 'alpha' or 'beta'
@@ -36,12 +40,22 @@ Feature: Check for updates
     Then I should not see a check for updates growl
 
   @automated
-  Scenario: With the platform set to noarch, no growl is shown
+  Scenario: With the platform set to noarch, and noarch missing from the versions list, no growl is shown
     Given I sign in as an admin
     And Check for updates is enabled
     And VersionCheck has a platform of noarch
     When I visit dashboard page
     Then I should not see a check for updates growl
+    
+  @automated
+  Scenario: With an unsupported platform, but a noarch update available in the versions list that has a newer version, the growl is shown
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And VersionCheck is set to an unsupported platform
+    And We have a noarch update available in the versions list
+    When I visit dashboard page
+    Then I should see a check for updates growl
+
 
   Scenario: A daily sidetiq task on the server handles the 'check for version update' logic. Verify that the sidetiq task works correctly based on its its set interval
     ## Tested the async sidetiq by setting its timeout to minutely and seeing that the "Version check banner was seen for a version update
@@ -54,9 +68,7 @@ Feature: Check for updates
   @automated
   Scenario: Check for updates is set to nil by default
     Given I sign in as an admin
-    When I visit dashboard page
-    Then I should see a check for updates growl
-    Then I should be prompted to enable or disable check for updates
+    Then Check for updates status is unknown
 
   @automated
   Scenario: Enabling check for updates via the admin settings page results in the growl being shown
@@ -155,6 +167,30 @@ Feature: Check for updates
     When I visit dashboard page
     Then I should not see a check for updates growl
 
+  @automated
+  Scenario: Growl notifications should not be displayed for regular users when check for updates is disabled
+    Given I sign in as a user
+    And Check for updates is disabled
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated
+  Scenario: Growl notifications should not be displayed for regular users when check for updates is enabled and we are behind by a minor version
+    Given I sign in as a user
+    And Check for updates is enabled
+    And Am behind the next minor version of GitSwarm
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated
+  Scenario: Growl notifications should not be displayed for regular users when check for updates is enabled and there is a critical update available
+    Given I sign in as a user
+    And Check for updates is enabled
+    And Am behind the next minor version of GitSwarm
+    And The next version is a critical update
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
   # Check for updates has been enabled
   @automated
   Scenario: The update revision feature should work if an admin signs in for the first time on an existing GitSwarm server, after the version check feature is enabled
@@ -165,10 +201,18 @@ Feature: Check for updates
     Then I should see a check for updates growl
 
   @automated
-  Scenario: My release is equal to or ahead of the current available release, I should see no growl on the dashboard
+  Scenario: My release is equal to the current available release, I should see no growl on the dashboard
     Given I sign in as an admin
     And Check for updates is enabled
     And My GitSwarm install is up to date
+    When I visit dashboard page
+    Then I should not see a check for updates growl
+
+  @automated
+  Scenario: My release is ahead of the current available release, I should see no growl on the dashboard
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And My GitSwarm install is ahead by a minor version
     When I visit dashboard page
     Then I should not see a check for updates growl
 
@@ -204,7 +248,7 @@ Feature: Check for updates
   @automated
   Scenario: No growl should be shown if check for updates is disabled
     Given I sign in as an admin
-    And Disable check for updates
+    And Check for updates is disabled
     And Am behind the next minor version of GitSwarm
     When I visit dashboard page
     Then I should not see a check for updates growl
@@ -212,7 +256,7 @@ Feature: Check for updates
   @automated
   Scenario: With check for updates disabled, when my release is equal to or ahead of the current available release, I should see no growl on the dashboard
     Given I sign in as an admin
-    And Disable check for updates
+    And Check for updates is disabled
     And My GitSwarm install is up to date
     When I visit dashboard page
     Then I should not see a check for updates growl
@@ -220,7 +264,7 @@ Feature: Check for updates
   @automated
   Scenario: With check for updates disabled, when the list of available versions contains a malformed version, that version is ignored
     Given I sign in as an admin
-    And Disable check for updates
+    And Check for updates is disabled
     And My GitSwarm install is up to date
     And There is a malformed version in the list of available versions
     When I visit dashboard page
@@ -229,7 +273,7 @@ Feature: Check for updates
   @automated
   Scenario: With check for updates disabled, when no update is available but the latest version is marked as critical, I should see no growl on the dashboard
     Given I sign in as an admin
-    And Disable check for updates
+    And Check for updates is disabled
     And My GitSwarm install is up to date
     And The current version is a critical update
     When I visit dashboard page

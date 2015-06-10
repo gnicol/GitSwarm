@@ -3,11 +3,11 @@ require Rails.root.join('app', 'models', 'project_services', 'emails_on_push_ser
 module PerforceSwarm
   module EmailsOnPushServiceExtension
     def fields
-      super.each { |field|
-        if field[:help]
-          field[:help].gsub!(/GitLab/, 'GitSwarm')
+      super.map do |field|
+        field.dup.tap do
+          field[:help].gsub!(/GitLab/, 'GitSwarm') if field[:help]
         end
-      }
+      end
     end
   end
 end

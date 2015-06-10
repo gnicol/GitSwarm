@@ -4,8 +4,8 @@ module PerforceSwarm
   module EmailsOnPushServiceExtension
     def fields
       super.map do |field|
-        field.dup.tap do
-          field[:help].gsub(/GitLab/, 'GitSwarm') if field[:help]
+        field.dup.tap do |field|
+          field[:help] = field[:help].gsub(/GitLab/, 'GitSwarm') if field[:help]
         end
       end
     end

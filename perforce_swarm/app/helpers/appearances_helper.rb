@@ -4,6 +4,6 @@ module AppearancesHelper
   BRAND_TITLE_VALUE = 'GitSwarm'
 
   def brand_title
-    return BRAND_TITLE_VALUE
+    BRAND_TITLE_VALUE
   end
 end

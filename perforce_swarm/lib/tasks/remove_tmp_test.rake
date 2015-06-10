@@ -4,6 +4,6 @@
 namespace :perforce_swarm do
   desc 'Remove the tmp/tests directory'
   task :remove_tmp_tests do
-    FileUtils.remove_dir(File.expand_path( File.join( File.dirname(__FILE__), "..", "..", "..", "tmp", "tests") ), true)
+    FileUtils.remove_dir(Rails.root.join('tmp', 'tests'), true)
   end
 end

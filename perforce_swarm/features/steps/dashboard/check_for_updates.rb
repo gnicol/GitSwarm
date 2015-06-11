@@ -75,6 +75,12 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
     end
   end
 
+  step 'The next version has a more info link' do
+    with_versions do |version|
+      version['more_info'] = 'http://foo.bar.baz' if version['version'] == VersionCheck.latest
+    end
+  end
+
   step 'We have a noarch update available in the versions list' do
     # make all existing platforms non-matching
     with_versions do |version|
@@ -97,6 +103,10 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
 
   step 'I should be notified of a critical update' do
     page.should have_content 'A critical update is available.'
+  end
+
+  step 'I should see a more info link in the growl' do
+    page.should have_link 'more info'
   end
 
   step 'Version check enabled checkbox is checked' do

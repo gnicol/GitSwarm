@@ -1,5 +1,5 @@
 @dashboard
-Feature: Check for version updates against customer GitSwarm installations
+Feature: Check for updates
 
   # Unit tests are located in the following spec files:
   #  * perforce_swarm/spec/lib/gitswarm/version_check_spec.rb
@@ -235,6 +235,16 @@ Feature: Check for version updates against customer GitSwarm installations
     When I click the X to close the growl
     Then I should not see a check for updates growl
     Then The dismiss_version_check cookie should be set
+
+  @automated
+  Scenario: My release is behind by a minor version, and there is a "more info" link available. I should see a more info link in the growl.
+    Given I sign in as an admin
+    And Check for updates is enabled
+    And Am behind the next minor version of GitSwarm
+    And The next version has a more info link
+    When I visit dashboard page
+    Then I should see a check for updates growl
+    Then I should see a more info link in the growl
 
   # Check for updates has been disabled
   @automated

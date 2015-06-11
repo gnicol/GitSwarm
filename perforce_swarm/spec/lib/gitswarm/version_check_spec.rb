@@ -13,7 +13,7 @@ describe 'PerforceSwarm::VersionCheck', no_db: true do
     options['more_info'] ||= nil
     options['critical']  ||= nil
     version = { 'version' => version_string }
-    /(?<major>\d+)\.(?<minor>\d+)(?<build>.+)/ =~ version_string
+    /(?<major>\d+)\.(?<minor>\d+)(\-(?<build>.+))?/ =~ version_string
     version['major'] = major
     version['minor'] = minor
     version['build'] = build[1..-1] if build
@@ -36,26 +36,26 @@ describe 'PerforceSwarm::VersionCheck', no_db: true do
     end
   end
 
-  shared_examples :outdated do |versions, with_version, expected_latest|
+  shared_examples :outdated do |versions, with_version, expected_latest, options = {}|
     it 'is outdated' do
       version_check = create_version_check(versions, with_version)
       expect(version_check.update_details).to_not be nil
       expect(version_check.latest).to eq(expected_latest)
       expect(version_check.outdated?).to be_truthy
     end
-  end
 
-  shared_examples :critical do |versions, with_version|
-    it 'is marked as critical' do
-      version_check = create_version_check(versions, with_version)
-      expect(version_check.critical?).to be_truthy
+    if options[:more_info]
+      it 'has a more_info link' do
+        version_check = create_version_check(versions, with_version)
+        expect(version_check.more_info).to_not be nil
+      end
     end
-  end
 
-  shared_examples :more_info do |versions, with_version|
-    it 'has a more_info link' do
-      version_check = create_version_check(versions, with_version)
-      expect(version_check.more_info).to_not be nil
+    if options[:critical]
+      it 'is marked as critical' do
+        version_check = create_version_check(versions, with_version)
+        expect(version_check.critical?).to be_truthy
+      end
     end
   end
 
@@ -86,19 +86,22 @@ describe 'PerforceSwarm::VersionCheck', no_db: true do
 
   context 'with critical update available' do
     versions = [{ 'version' => '2015.1-2', 'critical' => true }]
-    include_examples :outdated, versions, '2015.1-1', '2015.1-2'
-    include_examples :critical, versions, '2015.1-1', '2015.1-2'
+    include_examples :outdated, versions, '2015.1-1', '2015.1-2', critical: true
   end
 
   context 'with critical intermediary update available' do
     versions = [{ 'version' => '2015.1-2', 'critical' => true }, '2015.2-1']
-    include_examples :outdated, versions, '2015.1-1', '2015.2-1'
-    include_examples :critical, versions, '2015.1-1', '2015.2-1'
+    include_examples :outdated, versions, '2015.1-1', '2015.2-1', critical: true
   end
 
   context 'with update that has more info available' do
     versions = ['2015.1-1', { 'version' => '2015.2-1', 'more_info' => 'http://foo.com' }]
-    include_examples :outdated, versions, '2015.1-1', '2015.2-1'
-    include_examples :more_info, versions, '2015.1-1', '2015.2-1'
+    include_examples :outdated, versions, '2015.1-1', '2015.2-1', more_info: true
+  end
+
+  context 'with invalid current version' do
+    include_examples :up_to_date, [PerforceSwarm::VERSION], nil
+    include_examples :up_to_date, [PerforceSwarm::VERSION], ''
+    include_examples :up_to_date, [PerforceSwarm::VERSION], 'JUNK_VALUE'
   end
 end

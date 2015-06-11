@@ -16,7 +16,7 @@ describe 'PerforceSwarm::VersionCheck', no_db: true do
     /(?<major>\d+)\.(?<minor>\d+)(\-(?<build>.+))?/ =~ version_string
     version['major'] = major
     version['minor'] = minor
-    version['build'] = build[1..-1] if build
+    version['build'] = build if build
     version.merge(options)
   end
 

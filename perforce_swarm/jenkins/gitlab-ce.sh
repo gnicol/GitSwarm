@@ -100,11 +100,12 @@ sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
 sed "/test\: \&test/a \  host: localhost" -i config/database.yml
 sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
 sed "s/gitlabhq_development/${DB_NAME}/" -i config/database.yml
+sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
 bundle exec rake db:setup
 
 # Run db migrate
 echo "::: Running db:migrate on ${DB_NAME} :::"
-bundle exec rake db:migrate
+bomb_if_bad bundle exec rake db:migrate
 
 # Clear datebase
 echo "::: Clearing Database ${DB_NAME} :::"
@@ -154,11 +155,12 @@ sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
 sed "/test\: \&test/a \  host: localhost" -i config/database.yml
 sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
 sed "s/gitlabhq_development/${DB_NAME}/" -i config/database.yml
+sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
 bundle exec rake db:setup
 
 # Run db migrate
 echo "::: Running db:migrate on ${DB_NAME} :::"
-bundle exec rake db:migrate
+bomb_if_bad bundle exec rake db:migrate
 
 # Clear database
 echo "::: Clearing Database ${DB_NAME} :::"

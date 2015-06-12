@@ -7,6 +7,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    CFPropertyList (2.3.1)
     RedCloth (4.2.9)
     ace-rails-ap (2.0.1)
     actionmailer (4.1.9)
@@ -41,14 +42,14 @@ GEM
       tzinfo (~> 1.1)
     acts-as-taggable-on (3.5.0)
       activerecord (>= 3.2, < 5)
-    addressable (2.3.5)
+    addressable (2.3.8)
     annotate (2.6.0)
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
     arel (5.0.1.20140414130214)
     asana (0.0.6)
       activeresource (>= 3.2.3)
-    asciidoctor (0.1.4)
+    asciidoctor (1.5.2)
     ast (2.0.0)
     astrolabe (1.3.0)
       parser (>= 2.2.0.pre.3, < 3.0)
@@ -82,7 +83,7 @@ GEM
       ruby_parser (~> 3.5.0)
       sass (~> 3.0)
       terminal-table (~> 1.4)
-    browser (0.7.2)
+    browser (0.8.0)
     builder (3.2.2)
     byebug (3.2.0)
       columnize (~> 0.8)
@@ -108,13 +109,13 @@ GEM
     coderay (1.1.0)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
-    coffee-rails (4.0.1)
+    coffee-rails (4.1.0)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.0)
-    coffee-script (2.2.0)
+    coffee-script (2.4.1)
       coffee-script-source
       execjs
-    coffee-script-source (1.6.3)
+    coffee-script-source (1.9.1.1)
     colored (1.2)
     colorize (0.5.8)
     columnize (0.9.0)
@@ -125,8 +126,8 @@ GEM
       simplecov (>= 0.7)
       term-ansicolor
       thor
-    crack (0.4.1)
-      safe_yaml (~> 0.9.0)
+    crack (0.4.2)
+      safe_yaml (~> 1.0.0)
     creole (0.3.8)
     d3_rails (3.5.5)
       railties (>= 3.1.0)
@@ -170,7 +171,7 @@ GEM
     erubis (2.7.0)
     escape_utils (0.2.4)
     eventmachine (1.0.4)
-    excon (0.32.1)
+    excon (0.45.3)
     execjs (2.5.2)
     expression_parser (0.9.0)
     factory_girl (4.3.0)
@@ -183,31 +184,71 @@ GEM
     faraday_middleware (0.9.0)
       faraday (>= 0.7.4, < 0.9)
     fastercsv (1.5.5)
-    ffaker (1.22.1)
+    ffaker (2.0.0)
     ffi (1.9.8)
-    fog (1.21.0)
-      fog-brightbox
-      fog-core (~> 1.21, >= 1.21.1)
+    fission (0.5.0)
+      CFPropertyList (~> 2.2)
+    fog (1.25.0)
+      fog-brightbox (~> 0.4)
+      fog-core (~> 1.25)
       fog-json
+      fog-profitbricks
+      fog-radosgw (>= 0.0.2)
+      fog-sakuracloud (>= 0.0.4)
+      fog-softlayer
+      fog-terremark
+      fog-vmfusion
+      fog-voxel
+      fog-xml (~> 0.1.1)
+      ipaddress (~> 0.5)
       nokogiri (~> 1.5, >= 1.5.11)
-    fog-brightbox (0.0.1)
-      fog-core
+      opennebula
+    fog-brightbox (0.7.1)
+      fog-core (~> 1.22)
       fog-json
-    fog-core (1.21.1)
+      inflecto (~> 0.0.2)
+    fog-core (1.30.0)
       builder
-      excon (~> 0.32)
-      formatador (~> 0.2.0)
+      excon (~> 0.45)
+      formatador (~> 0.2)
       mime-types
       net-scp (~> 1.1)
       net-ssh (>= 2.1.3)
-    fog-json (1.0.0)
-      multi_json (~> 1.0)
+    fog-json (1.0.2)
+      fog-core (~> 1.0)
+      multi_json (~> 1.10)
+    fog-profitbricks (0.0.3)
+      fog-core
+      fog-xml
+      nokogiri
+    fog-radosgw (0.0.4)
+      fog-core (>= 1.21.0)
+      fog-json
+      fog-xml (>= 0.0.1)
+    fog-sakuracloud (1.0.1)
+      fog-core
+      fog-json
+    fog-softlayer (0.4.6)
+      fog-core
+      fog-json
+    fog-terremark (0.1.0)
+      fog-core
+      fog-xml
+    fog-vmfusion (0.1.0)
+      fission
+      fog-core
+    fog-voxel (0.1.0)
+      fog-core
+      fog-xml
+    fog-xml (0.1.2)
+      fog-core
+      nokogiri (~> 1.5, >= 1.5.11)
     font-awesome-rails (4.2.0.0)
       railties (>= 3.2, < 5.0)
     foreman (0.63.0)
       dotenv (>= 0.7)
       thor (>= 0.13.6)
-    formatador (0.2.4)
+    formatador (0.2.5)
     gemnasium-gitlab-service (0.2.6)
       rugged (~> 0.21)
     gemojione (2.0.0)
@@ -232,7 +273,7 @@ GEM
       mime-types (~> 1.19)
     gitlab_emoji (0.1.0)
       gemojione (~> 2.0)
-    gitlab_git (7.1.13)
+    gitlab_git (7.2.3)
       activesupport (~> 4.0)
       charlock_holmes (~> 0.6)
       gitlab-linguist (~> 3.0)
@@ -268,19 +309,6 @@ GEM
     grape-entity (0.4.2)
       activesupport
       multi_json (>= 1.3.2)
-    growl (1.0.3)
-    guard (2.2.4)
-      formatador (>= 0.2.4)
-      listen (~> 2.1)
-      lumberjack (~> 1.0)
-      pry (>= 0.9.12)
-      thor (>= 0.18.1)
-    guard-rspec (4.2.0)
-      guard (>= 2.1.1)
-      rspec (>= 2.14, < 4.0)
-    guard-spinach (0.0.2)
-      guard (>= 1.1)
-      spinach
     haml (4.0.5)
       tilt
     haml-rails (0.5.3)
@@ -307,14 +335,10 @@ GEM
     i18n (0.7.0)
     ice_cube (0.11.1)
     ice_nine (0.10.0)
-    jasmine-core (2.2.0)
-    jasmine-rails (0.10.8)
-      jasmine-core (>= 1.3, < 3.0)
-      phantomjs (>= 1.9)
-      railties (>= 3.2.0)
-      sprockets-rails
+    inflecto (0.0.2)
+    ipaddress (0.8.0)
     jquery-atwho-rails (1.0.1)
-    jquery-rails (3.1.0)
+    jquery-rails (3.1.2)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     jquery-scrollto-rails (1.4.3)
@@ -342,7 +366,8 @@ GEM
       celluloid (~> 0.16.0)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
-    lumberjack (1.0.4)
+    macaddr (1.7.1)
+      systemu (~> 2.6.2)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
@@ -356,9 +381,9 @@ GEM
     multipart-post (1.2.0)
     mysql2 (0.3.16)
     net-ldap (0.11)
-    net-scp (1.1.2)
+    net-scp (1.2.1)
       net-ssh (>= 2.6.5)
-    net-ssh (2.8.0)
+    net-ssh (2.9.2)
     newrelic_rpm (3.9.4.245)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
@@ -399,11 +424,18 @@ GEM
     omniauth-oauth2 (1.1.1)
       oauth2 (~> 0.8.0)
       omniauth (~> 1.0)
+    omniauth-saml (1.3.1)
+      omniauth (~> 1.1)
+      ruby-saml (~> 0.8.1)
     omniauth-shibboleth (1.1.1)
       omniauth (>= 1.0.0)
     omniauth-twitter (1.0.1)
       multi_json (~> 1.3)
       omniauth-oauth (~> 1.0)
+    opennebula (4.12.1)
+      json
+      nokogiri
+      rbvmomi
     org-ruby (0.9.12)
       rubypants (~> 0.2)
     orm_adapter (0.5.0)
@@ -411,7 +443,6 @@ GEM
     parser (2.2.0.2)
       ast (>= 1.1, < 3.0)
     pg (0.15.1)
-    phantomjs (1.9.8.0)
     poltergeist (1.5.1)
       capybara (~> 2.1)
       cliver (~> 0.3.1)
@@ -429,10 +460,10 @@ GEM
     quiet_assets (1.0.2)
       railties (>= 3.1, < 5.0)
     racc (1.4.10)
-    rack (1.5.2)
+    rack (1.5.3)
     rack-accept (0.4.5)
       rack (>= 0.4)
-    rack-attack (4.2.0)
+    rack-attack (4.3.0)
       rack
     rack-cors (0.2.9)
     rack-mini-profiler (0.9.0)
@@ -461,8 +492,6 @@ GEM
       sprockets-rails (~> 2.0)
     rails-observers (0.1.2)
       activemodel (~> 4.0)
-    rails_autolink (1.1.6)
-      rails (> 3.1)
     railties (4.1.9)
       actionpack (= 4.1.9)
       activesupport (= 4.1.9)
@@ -475,6 +504,10 @@ GEM
     rb-fsevent (0.9.4)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
+    rbvmomi (1.8.2)
+      builder
+      nokogiri (>= 1.4.1)
+      trollop
     rdoc (3.12.2)
       json (~> 1.4)
     redcarpet (3.2.3)
@@ -508,10 +541,6 @@ GEM
     rqrcode (0.4.2)
     rqrcode-rails3 (0.1.7)
       rqrcode (>= 0.4.2)
-    rspec (2.99.0)
-      rspec-core (~> 2.99.0)
-      rspec-expectations (~> 2.99.0)
-      rspec-mocks (~> 2.99.0)
     rspec-collection_matchers (1.1.2)
       rspec-expectations (>= 2.99.0.beta1)
     rspec-core (2.99.2)
@@ -534,6 +563,9 @@ GEM
       rainbow (>= 1.99.1, < 3.0)
       ruby-progressbar (~> 1.4)
     ruby-progressbar (1.7.1)
+    ruby-saml (0.8.2)
+      nokogiri (>= 1.5.0)
+      uuid (~> 2.3)
     ruby2ruby (2.1.3)
       ruby_parser (~> 3.1)
       sexp_processor (~> 4.0)
@@ -542,8 +574,8 @@ GEM
     rubyntlm (0.5.0)
     rubypants (0.2.0)
     rugged (0.22.2)
-    rugments (1.0.0.beta6)
-    safe_yaml (0.9.7)
+    rugments (1.0.0.beta7)
+    safe_yaml (1.0.4)
     sanitize (2.1.0)
       nokogiri (>= 1.4.4)
     sass (3.2.19)
@@ -558,14 +590,14 @@ GEM
     sdoc (0.3.20)
       json (>= 1.1.3)
       rdoc (~> 3.10)
-    seed-fu (2.3.1)
-      activerecord (>= 3.1, < 4.2)
-      activesupport (>= 3.1, < 4.2)
+    seed-fu (2.3.5)
+      activerecord (>= 3.1, < 4.3)
+      activesupport (>= 3.1, < 4.3)
     select2-rails (3.5.2)
       thor (~> 0.14)
     settingslogic (2.0.9)
     sexp_processor (4.4.5)
-    shoulda-matchers (2.7.0)
+    shoulda-matchers (2.8.0)
       activesupport (>= 3.0.0)
     sidekiq (3.3.0)
       celluloid (>= 0.16.0)
@@ -600,10 +632,12 @@ GEM
       capybara (>= 2.0.0)
       railties (>= 3)
       spinach (>= 0.4)
-    spring (1.3.3)
+    spring (1.3.6)
     spring-commands-rspec (1.0.4)
       spring (>= 0.9.1)
     spring-commands-spinach (1.0.0)
+      spring (>= 0.9.1)
+    spring-commands-teaspoon (0.0.2)
       spring (>= 0.9.1)
     sprockets (2.11.0)
       hike (~> 1.2)
@@ -617,8 +651,13 @@ GEM
     stamp (0.5.0)
     state_machine (1.2.0)
     stringex (2.5.2)
+    systemu (2.6.5)
     task_list (1.0.2)
       html-pipeline
+    teaspoon (1.0.2)
+      railties (>= 3.2.5, < 5)
+    teaspoon-jasmine (2.2.0)
+      teaspoon (>= 1.0.0)
     temple (0.6.7)
     term-ansicolor (1.2.2)
       tins (~> 0.8)
@@ -644,7 +683,8 @@ GEM
       multi_json (~> 1.7)
       twitter-stream (~> 0.1)
     tins (0.13.1)
-    turbolinks (2.0.0)
+    trollop (2.1.2)
+    turbolinks (2.5.3)
       coffee-rails
     twitter-stream (0.1.16)
       eventmachine (>= 0.12.8)
@@ -665,6 +705,8 @@ GEM
       raindrops (~> 0.7)
     unicorn-worker-killer (0.4.2)
       unicorn (~> 4)
+    uuid (2.3.7)
+      macaddr (~> 1.0)
     version_sorter (2.0.0)
     virtus (1.0.1)
       axiom-types (~> 0.0.5)
@@ -673,8 +715,8 @@ GEM
       equalizer (~> 0.0.7)
     warden (1.2.3)
       rack (>= 1.0)
-    webmock (1.16.0)
-      addressable (>= 2.2.7)
+    webmock (1.21.0)
+      addressable (>= 2.3.6)
       crack (>= 0.3.2)
     websocket-driver (0.3.3)
     wikicloth (0.8.1)
@@ -694,7 +736,7 @@ DEPENDENCIES
   addressable
   annotate (~> 2.6.0.beta2)
   asana (~> 0.0.6)
-  asciidoctor (= 0.1.4)
+  asciidoctor (~> 1.5.2)
   atomic
   attr_encrypted (= 1.3.4)
   awesome_print
@@ -702,7 +744,7 @@ DEPENDENCIES
   binding_of_caller
   bootstrap-sass (~> 3.0)
   brakeman
-  browser
+  browser (~> 0.8.0)
   byebug
   cal-heatmap-rails (~> 0.0.1)
   capybara (~> 2.2.1)
@@ -725,8 +767,8 @@ DEPENDENCIES
   email_spec
   enumerize
   factory_girl_rails
-  ffaker
-  fog (~> 1.14)
+  ffaker (~> 2.0.0)
+  fog (~> 1.25.0)
   font-awesome-rails (~> 4.2)
   foreman
   gemnasium-gitlab-service (~> 0.2)
@@ -735,23 +777,19 @@ DEPENDENCIES
   gitlab-grack (~> 2.0.2)
   gitlab-linguist (~> 3.0.1)
   gitlab_emoji (~> 0.1)
-  gitlab_git (~> 7.1.13)
+  gitlab_git (~> 7.2.3)
   gitlab_meta (= 7.0)
   gitlab_omniauth-ldap (= 1.2.1)
   gollum-lib (~> 4.0.2)
   gon (~> 5.0.0)
   grape (~> 0.6.1)
   grape-entity (~> 0.4.2)
-  growl
-  guard-rspec
-  guard-spinach
   haml-rails
   hipchat (~> 1.5.0)
   html-pipeline (~> 1.11.0)
   httparty
-  jasmine-rails
   jquery-atwho-rails (~> 1.0.0)
-  jquery-rails
+  jquery-rails (= 3.1.2)
   jquery-scrollto-rails
   jquery-turbolinks
   jquery-ui-rails
@@ -770,6 +808,7 @@ DEPENDENCIES
   omniauth-gitlab
   omniauth-google-oauth2
   omniauth-kerberos
+  omniauth-saml
   omniauth-shibboleth
   omniauth-twitter
   org-ruby (= 0.9.12)
@@ -779,15 +818,12 @@ DEPENDENCIES
   poltergeist (~> 1.5.1)
   pry-rails
   quiet_assets (~> 1.0.1)
-  rack-attack
+  rack-attack (~> 4.3.0)
   rack-cors
   rack-mini-profiler
   rack-oauth2 (~> 1.0.5)
   rails (~> 4.1.0)
-  rails_autolink (~> 1.1)
   raphael-rails (~> 2.1.2)
-  rb-fsevent
-  rb-inotify
   rdoc (~> 3.6)
   redcarpet (~> 3.2.3)
   redis-rails
@@ -796,14 +832,14 @@ DEPENDENCIES
   rqrcode-rails3
   rspec-rails (= 2.99)
   rubocop (= 0.28.0)
-  rugments
+  rugments (~> 1.0.0.beta7)
   sanitize (~> 2.0)
   sass-rails (~> 4.0.2)
   sdoc
   seed-fu
   select2-rails
   settingslogic
-  shoulda-matchers (~> 2.7.0)
+  shoulda-matchers (~> 2.8.0)
   sidekiq (~> 3.3)
   sidetiq (= 0.6.3)
   simplecov
@@ -813,15 +849,18 @@ DEPENDENCIES
   slim
   spinach-rails
   spring (~> 1.3.1)
-  spring-commands-rspec (= 1.0.4)
-  spring-commands-spinach (= 1.0.0)
+  spring-commands-rspec (~> 1.0.0)
+  spring-commands-spinach (~> 1.0.0)
+  spring-commands-teaspoon (~> 0.0.2)
   stamp
   state_machine
   task_list (= 1.0.2)
+  teaspoon (~> 1.0.0)
+  teaspoon-jasmine
   test_after_commit
   thin
   tinder (~> 1.9.2)
-  turbolinks
+  turbolinks (~> 2.5.0)
   uglifier
   underscore-rails (~> 1.4.4)
   unf
@@ -829,5 +868,5 @@ DEPENDENCIES
   unicorn-worker-killer
   version_sorter
   virtus
-  webmock
+  webmock (~> 1.21.0)
   wikicloth (= 0.8.1)

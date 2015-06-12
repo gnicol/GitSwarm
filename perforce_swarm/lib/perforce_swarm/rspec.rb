@@ -1,5 +1,5 @@
 if ENV['RAILS_ENV'] == 'test'
-  require 'rspec'
+  require 'rspec/rails'
   require_relative '../../spec/support/test_env'
 
   # this file helps configure Rspec so that tests in the main application

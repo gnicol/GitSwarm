@@ -1,11 +1,8 @@
 /* Custom navbar for our NavBar */
-header.navbar-gitlab .navbar-inner {
-  .container {
-    padding-right: 15px;
-  }
-
+header.navbar-gitlab .container {
   /* Swarm Logo */
-  .app_logo {
+  .header-logo {
+    height: 44px;
     margin-right: 0;
 
     a {
@@ -23,8 +20,17 @@ header.navbar-gitlab .navbar-inner {
     }
   }
 
+  .header-content {
+    height: 44px;
+    padding-right: 15px;
+  }
+
+  .search {
+    margin-top: 8px;
+  }
+
   /* Fix Navbar height */
-  .app_logo a {
+  .header-logo a {
     height: 44px;
   }
 
@@ -85,6 +91,12 @@ header.navbar-gitlab .navbar-inner {
     > li {
       > a {
         padding: 6px 14px;
+        line-height: 32px;
+        background-color: transparent;
+        margin: 0;
+        border-radius: 0;
+        height: auto;
+        width: auto;
 
         > i.fa {
           width: 16px;
@@ -130,12 +142,17 @@ header.navbar-gitlab .navbar-inner {
     /* Restore bootstrap defaults, as GitLab's styles do some weird sizing here */
     .navbar-nav {
       margin: 0px;
+      float: right !important;
 
       > li {
         display: list-item;
         width: auto;
         float: left;
       }
+    }
+
+    .dashboard-menu .title {
+      max-width: 100% !important;
     }
 
     /**

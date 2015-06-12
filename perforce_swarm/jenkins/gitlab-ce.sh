@@ -94,10 +94,12 @@ bundle install
 # Load the db scheme
 echo "::: Load the database schema :::"
 cp config/database.yml.postgresql  config/database.yml
+cp config/gitlab.yml.example config/gitlab.yml
+sed "/port\: 80/a \    user\: perforce" -i config/gitlab.yml
 sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
 sed "/test\: \&test/a \  host: localhost" -i config/database.yml
 sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
-sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
+sed "s/gitlabhq_development/${DB_NAME}/" -i config/database.yml
 bundle exec rake db:setup
 
 # Run db migrate
@@ -108,6 +110,7 @@ bundle exec rake db:migrate
 echo "::: Clearing Database ${DB_NAME} :::"
 bundle exec rake db:drop
 rm config/database.yml
+rm config/gitlab.yml
 
 # Run a diff of resulting Gemfile.lock with master
 echo "::: Diff for master Gemfile.lock and db/schema.rb :::"
@@ -145,10 +148,12 @@ bundle install
 # Load the db scheme
 echo "::: Load the database schema :::"
 cp config/database.yml.postgresql  config/database.yml
+cp config/gitlab.yml.example config/gitlab.yml
+sed "/port\: 80/a \    user\: perforce" -i config/gitlab.yml
 sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
 sed "/test\: \&test/a \  host: localhost" -i config/database.yml
 sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
-sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
+sed "s/gitlabhq_development/${DB_NAME}/" -i config/database.yml
 bundle exec rake db:setup
 
 # Run db migrate
@@ -159,6 +164,7 @@ bundle exec rake db:migrate
 echo "::: Clearing Database ${DB_NAME} :::"
 bundle exec rake db:drop
 rm config/database.yml
+rm config/gitlab.yml
 
 # Run a diff of the resulting Gemfile.lock with prep
 echo "::: Diff for prep Gemfile.lock :::"

@@ -20,10 +20,15 @@ module Mentionable
     end
   end
 
-  # Generate a GFM back-reference that will construct a link back to this Mentionable when rendered. Must
-  # be overridden if this model object can be referenced directly by GFM notation.
-  def gfm_reference
-    raise NotImplementedError.new("#{self.class} does not implement #gfm_reference")
+  # Returns the text used as the body of a Note when this object is referenced
+  #
+  # By default this will be the class name and the result of calling
+  # `to_reference` on the object.
+  def gfm_reference(from_project = nil)
+    # "MergeRequest" > "merge_request" > "Merge request" > "merge request"
+    friendly_name = self.class.to_s.underscore.humanize.downcase
+
+    "#{friendly_name} #{to_reference(from_project)}"
   end
 
   # Construct a String that contains possible GFM references.
@@ -62,7 +67,13 @@ module Mentionable
 
   # Create a cross-reference Note for each GFM reference to another Mentionable found in +mentionable_text+.
   def create_cross_references!(p = project, a = author, without = [])
-    refs = references(p) - without
+    refs = references(p)
+
+    # We're using this method instead of Array diffing because that requires
+    # both of the object's `hash` values to be the same, which may not be the
+    # case for otherwise identical Commit objects.
+    refs.reject! { |ref| without.include?(ref) }
+
     refs.each do |ref|
       Note.create_cross_reference_note(ref, local_reference, a)
     end

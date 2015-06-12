@@ -1,4 +1,7 @@
 class OmniauthCallbacksController < Devise::OmniauthCallbacksController
+
+  protect_from_forgery except: [:kerberos, :saml]
+
   Gitlab.config.omniauth.providers.each do |provider|
     define_method provider['name'] do
       handle_omniauth
@@ -21,7 +24,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     @user = Gitlab::LDAP::User.new(oauth)
     @user.save if @user.changed? # will also save new users
     gl_user = @user.gl_user
-    gl_user.remember_me = true if @user.persisted?
+    gl_user.remember_me = params[:remember_me] if @user.persisted?
 
     # Do additional LDAP checks for the user filter and EE features
     if @user.allowed?

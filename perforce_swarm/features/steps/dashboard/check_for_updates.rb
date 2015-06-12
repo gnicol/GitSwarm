@@ -179,6 +179,7 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
 
   step 'The dismiss_version_check cookie should be set' do
     # TODO: unable to access cookies - may require some driver tweaks
+    # JIRA: https://jira.perforce.com:8443/browse/PGL-826
   end
 
   def modify_version(new_value)

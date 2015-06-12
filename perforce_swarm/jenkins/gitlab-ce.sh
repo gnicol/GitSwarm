@@ -93,13 +93,13 @@ bundle install
 
 # Load the db scheme
 echo "::: Load the database schema :::"
+export RAILS_ENV=test
 cp config/database.yml.postgresql  config/database.yml
 cp config/gitlab.yml.example config/gitlab.yml
 sed "/port\: 80/a \    user\: perforce" -i config/gitlab.yml
 sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
 sed "/test\: \&test/a \  host: localhost" -i config/database.yml
 sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
-sed "s/gitlabhq_development/${DB_NAME}/" -i config/database.yml
 sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
 bundle exec rake db:setup
 
@@ -148,13 +148,13 @@ bundle install
 
 # Load the db scheme
 echo "::: Load the database schema :::"
+export RAILS_ENV=test
 cp config/database.yml.postgresql  config/database.yml
 cp config/gitlab.yml.example config/gitlab.yml
 sed "/port\: 80/a \    user\: perforce" -i config/gitlab.yml
 sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
 sed "/test\: \&test/a \  host: localhost" -i config/database.yml
 sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
-sed "s/gitlabhq_development/${DB_NAME}/" -i config/database.yml
 sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
 bundle exec rake db:setup
 

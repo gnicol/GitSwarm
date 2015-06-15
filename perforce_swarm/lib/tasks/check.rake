@@ -1,12 +1,11 @@
 module Kernel
-  def puts (s)
+  def puts(s)
     $stdout.puts(s.gsub(/gitlab/, 'gitswarm').gsub(/GitLab/, 'GitSwarm'))
   end
 
-  def print (s)
+  def print(s)
     $stdout.print(s.gsub(/gitlab/, 'gitswarm').gsub(/GitLab/, 'GitSwarm'))
   end
-
 end
 
 namespace :gitlab do

@@ -4,6 +4,7 @@ Feature: Admin Settings
     Given I sign in as an admin
     And I visit admin settings page
 
+  @automated
   Scenario: See email on push settings
     When I click on "Service Templates"
     And I click on "Emails on push" service

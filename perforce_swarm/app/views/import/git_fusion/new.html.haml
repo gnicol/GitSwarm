@@ -1,0 +1,15 @@
+- page_title 'Import from Git Fusion'
+%h3.page-title
+  Import from Git Fusion
+%hr
+
+= form_tag new_import_git_fusion_path, class: 'form-horizontal' do
+  .form-group.import-url-data
+    = label_tag :import_url, class: 'control-label' do
+      %span Import Git Fusion Repo
+    .col-sm-10
+      = select_tag(:repo_id, options_for_select(@repos_select))
+      .well.prepend-top-20
+        Additional text to display to user.
+  .form-actions
+    = submit_tag 'Start import', class: 'btn btn-create', tabindex: 4

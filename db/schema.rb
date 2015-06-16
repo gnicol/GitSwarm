@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 20150610065936) do
     t.integer  "default_branch_protection",    default: 2
     t.boolean  "twitter_sharing_enabled",      default: true
     t.text     "restricted_visibility_levels"
-    t.boolean  "version_check_enabled"
+    t.boolean  "version_check_enabled",        default: true
     t.integer  "max_attachment_size",          default: 10,    null: false
     t.integer  "default_project_visibility"
     t.integer  "default_snippet_visibility"
@@ -36,7 +36,6 @@ ActiveRecord::Schema.define(version: 20150610065936) do
     t.boolean  "user_oauth_applications",      default: true
     t.string   "after_sign_out_path"
     t.integer  "session_expire_delay",         default: 10080, null: false
-    t.string   "last_version_ignored"
   end
 
   create_table "broadcast_messages", force: true do |t|

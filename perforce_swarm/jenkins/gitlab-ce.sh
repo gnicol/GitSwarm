@@ -73,15 +73,14 @@ bomb_if_bad git merge --strategy-option theirs prep -m "Copying prep into integr
 
 git checkout integration-ce
 
-# Checkout the Gemfile.lock and db/schema.rb from community to serve as the base for master
-echo "::: Checking out Gemfile.lock and db/schema.rb from community master :::"
-git checkout origin/community-master -- Gemfile.lock db/schema.rb
-git add Gemfile.lock db/schema.rb
-git commit -m "Cleanup Gemfile.lock and db/shema.rb changes"
 
 # Now merge the Community master into integration-ce
 echo "::: merge origin/community-master -> integration-ce :::"
 bomb_if_bad git merge origin/community-master -m "Merging community into master"
+
+# Checkout the Gemfile.lock and db/schema.rb from community to serve as the base for master
+echo "::: Checking out Gemfile.lock and db/schema.rb from community master :::"
+git checkout origin/community-master -- Gemfile.lock db/schema.rb
 
 # Get the gemfile diffs and store them
 echo "::: Diff for community Gemfile, vs master :::"
@@ -128,15 +127,13 @@ git push origin integration-ce
 
 git checkout integration-prep-ce
 
-# Checkout the Gemfile.lock and db/schema.rb from community to serve as a base
-echo "::: Checking out Gemfile.lock from ${STABLE_BRANCH} :::"
-git checkout origin/${STABLE_BRANCH} -- Gemfile.lock db/schema.rb
-git add Gemfile.lock db/schema.rb
-git commit -m "Cleanup Gemfile.lock and db/shema.rb changes"
-
 # Merge the community-stable branch into integration-prep-ce
 echo "::: Merging origin/${STABLE_BRANCH} -> integration-prep-ce :::"
 bomb_if_bad git merge origin/${STABLE_BRANCH} -m "Merging ${STABLE_BRANCH} into integration-prep-ce"
+
+# Checkout the Gemfile.lock and db/schema.rb from community to serve as a base
+echo "::: Checking out Gemfile.lock from ${STABLE_BRANCH} :::"
+git checkout origin/${STABLE_BRANCH} -- Gemfile.lock db/schema.rb
 
 # Get the gemfile diffs and store them
 echo "::: Diff for ${STABLE_BRANCH} Gemfile, vs prep :::"

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150526112122) do
+ActiveRecord::Schema.define(version: 20150529150355) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,11 +28,13 @@ ActiveRecord::Schema.define(version: 20150526112122) do
     t.integer  "default_branch_protection",    default: 2
     t.boolean  "twitter_sharing_enabled",      default: true
     t.text     "restricted_visibility_levels"
-    t.boolean  "version_check_enabled"
     t.integer  "max_attachment_size",          default: 10,   null: false
     t.integer  "default_project_visibility"
     t.integer  "default_snippet_visibility"
     t.text     "restricted_signup_domains"
+    t.boolean  "version_check_enabled"
+    t.boolean  "user_oauth_applications",      default: true
+    t.string   "after_sign_out_path"
     t.string   "last_version_ignored"
   end
 
@@ -352,12 +354,12 @@ ActiveRecord::Schema.define(version: 20150526112122) do
     t.string   "import_url"
     t.integer  "visibility_level",       default: 0,        null: false
     t.boolean  "archived",               default: false,    null: false
-    t.string   "avatar"
     t.string   "import_status"
     t.float    "repository_size",        default: 0.0
     t.integer  "star_count",             default: 0,        null: false
     t.string   "import_type"
     t.string   "import_source"
+    t.string   "avatar"
   end
 
   add_index "projects", ["created_at", "id"], name: "index_projects_on_created_at_and_id", using: :btree
@@ -534,6 +536,7 @@ ActiveRecord::Schema.define(version: 20150526112122) do
     t.boolean  "issues_events",         default: false,         null: false
     t.boolean  "merge_requests_events", default: false,         null: false
     t.boolean  "tag_push_events",       default: false
+    t.boolean  "note_events",           default: false,         null: false
   end
 
   add_index "web_hooks", ["created_at", "id"], name: "index_web_hooks_on_created_at_and_id", using: :btree

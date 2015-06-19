@@ -9,7 +9,8 @@ The new release manager should create overall issue to track the progress.
 
 ## Release Manager
 
-A release manager is selected that coordinates all releases the coming month, including the patch releases for previous releases.
+A release manager is selected that coordinates all releases the coming month,
+including the patch releases for previous releases.
 The release manager has to make sure all the steps below are done and delegated where necessary.
 This person should also make sure this document is kept up to date and issues are created and updated.
 
@@ -70,9 +71,14 @@ Xth: (1 working day before the 22nd)
 - [ ] Update GitLab.com with the stable version (#LINK)
 - [ ] Update ci.gitLab.com with the stable version (#LINK)
 
-22nd:
+22nd before 12AM CET:
+
+Release before 12AM CET / 3AM PST, to make sure the majority of our users
+get the new version on the 22nd and there is sufficient time in the European
+workday to quickly fix any issues.
 
 - [ ] Release CE, EE and CI (#LINK)
+- [ ] Schedule a second tweet of the release announcement at 6PM CET / 9AM PST
 
 ```
 
@@ -92,6 +98,8 @@ There are three changelogs that need to be updated: CE, EE and CI.
 ## Prepare CHANGELOG for next release
 
 Once the stable branches have been created, update the CHANGELOG in `master` with the upcoming version, usually X.X.X.pre.
+
+On creating the stable branches, notify the core team and developers.
 
 ## QA
 

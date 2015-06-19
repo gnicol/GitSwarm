@@ -18,11 +18,13 @@ require 'erb'
 #         -> `gfm_with_options` helper
 #           -> HTML::Pipeline
 #             -> Sanitize
+#             -> RelativeLink
 #             -> Emoji
 #             -> Table of Contents
 #             -> Autolinks
 #               -> Rinku (http, https, ftp)
 #               -> Other schemes
+#             -> ExternalLink
 #             -> References
 #             -> TaskList
 #           -> `html_safe`
@@ -66,6 +68,10 @@ describe 'GitLab Markdown' do
     @doc.at_css("##{id}").parent.next_element
   end
 
+  # Sometimes it can be useful to see the parsed output of the Markdown document
+  # for debugging. Uncomment this block to write the output to
+  # tmp/capybara/markdown_spec.html.
+  #
   # it 'writes to a file' do
   #   File.open(Rails.root.join('tmp/capybara/markdown_spec.html'), 'w') do |file|
   #     file.puts @md
@@ -356,13 +362,13 @@ class MarkdownFeature
   end
 
   def commit
-    @commit ||= project.repository.commit
+    @commit ||= project.commit
   end
 
   def commit_range
     unless @commit_range
-      commit2 = project.repository.commit('HEAD~3')
-      @commit_range = CommitRange.new("#{commit.id}...#{commit2.id}")
+      commit2 = project.commit('HEAD~3')
+      @commit_range = CommitRange.new("#{commit.id}...#{commit2.id}", project)
     end
 
     @commit_range
@@ -388,11 +394,6 @@ class MarkdownFeature
     @xproject
   end
 
-  # Shortcut to "cross-reference/project"
-  def xref
-    xproject.path_with_namespace
-  end
-
   def xissue
     @xissue ||= create(:issue, project: xproject)
   end
@@ -406,13 +407,13 @@ class MarkdownFeature
   end
 
   def xcommit
-    @xcommit ||= xproject.repository.commit
+    @xcommit ||= xproject.commit
   end
 
   def xcommit_range
     unless @xcommit_range
-      xcommit2 = xproject.repository.commit('HEAD~2')
-      @xcommit_range = CommitRange.new("#{xcommit.id}...#{xcommit2.id}")
+      xcommit2 = xproject.commit('HEAD~2')
+      @xcommit_range = CommitRange.new("#{xcommit.id}...#{xcommit2.id}", xproject)
     end
 
     @xcommit_range

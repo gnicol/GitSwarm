@@ -241,10 +241,7 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
     # Copy the example Rack attack config
     sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb
 
-    # Configure Git global settings for git user, useful when editing via web
-    # Edit user.email according to what is set in gitlab.yml
-    sudo -u git -H git config --global user.name "GitLab"
-    sudo -u git -H git config --global user.email "example@example.com"
+    # Configure Git global settings for git user, used when editing via web editor
     sudo -u git -H git config --global core.autocrlf input
 
     # Configure Redis connection settings
@@ -301,6 +298,8 @@ GitLab Shell is an SSH access and repository management software developed speci
     sudo -u git -H editor /home/git/gitlab-shell/config.yml
 
 **Note:** If you want to use HTTPS, see [Using HTTPS](#using-https) for the additional steps.
+
+**Note:** Make sure your hostname can be resolved on the machine itself by either a proper DNS record or an additional line in /etc/hosts ("127.0.0.1  hostname"). This might be necessary for example if you set up gitlab behind a reverse proxy. If the hostname cannot be resolved, the final installation check will fail with "Check GitLab API access: FAILED. code: 401" and pushing commits will be rejected with "[remote rejected] master -> master (hook declined)".
 
 ### Initialize Database and Activate Advanced Features
 

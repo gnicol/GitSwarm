@@ -246,7 +246,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'I click on the Swarm icon' do
-    find(:css, '.app_logo').click
+    find(:css, '.header-logo').click
   end
 
   step 'I click on the back button' do
@@ -303,7 +303,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the user settings page' do
-    find(:css, '.page-title').should have_content('Profile Settings')
+    find(:css, '.page-title').should have_content('Profile')
   end
 
   step 'I should see the new project page' do

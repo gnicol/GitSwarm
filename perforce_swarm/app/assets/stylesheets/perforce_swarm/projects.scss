@@ -1,0 +1,34 @@
+.project-edit-content hr.or {
+  border-top: 1px solid #ccc;
+  color: #999;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.project-edit-content hr.or:after {
+  content: "OR";
+  display: inline-block;
+  position: relative;
+  top: -0.7em;
+  font-size: 1.2em;
+  padding: 0 1em;
+  background: white;
+}
+
+.project-edit-content .project-import img {
+  width: 40%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.project-edit-content .centered-buttons {
+  position: absolute;
+  top: 40%;
+  right: 0;
+}
+
+.project-edit-content .form-group {
+  position: relative;
+}

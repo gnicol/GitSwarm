@@ -20,6 +20,7 @@ module Gitlab
                                       import_source: repo[:clone_url],
                                       import_url: repo[:clone_url]
         ).execute
+        # TODO: add the 'mirror' remote on the repo that gitlab manages
       end
     end
   end

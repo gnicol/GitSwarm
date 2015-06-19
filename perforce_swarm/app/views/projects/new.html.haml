@@ -26,8 +26,11 @@
 
       .project-import.js-toggle-container
         .form-group
-          %label.control-label Import project from
-          .col-sm-10
+          %label.control-label
+            = image_tag('import_external.png')
+            Import from external
+            %span.light (optional)
+          .col-sm-10.centered-buttons
             - if github_import_enabled?
               = link_to status_import_github_path, class: 'btn' do
                 %i.fa.fa-github
@@ -68,11 +71,7 @@
               %i.fa.fa-google
               Google Code
 
-            = link_to new_import_git_fusion_path, class: 'btn' do
-              %i.fa.fa-bank
-              %span Git Fusion
-
-            = link_to "#", class: 'btn js-toggle-button' do
+            = link_to "#", class: 'btn js-toggle-button helix-toggle' do
               %i.fa.fa-git
               %span Any repo by URL
 
@@ -91,7 +90,18 @@
                   %li
                     To migrate an SVN repository, check out #{link_to "this document", "http://doc.gitlab.com/ce/workflow/migrating_from_svn.html"}.
 
-      %hr.prepend-botton-10
+        .helix-toggle-content
+          %hr.prepend-bottom-10.or
+
+          .form-group
+            = f.label :perforce_swarm, class: 'control-label' do
+              = image_tag('import_git_fusion.png')
+              Import from &amp; Mirror with Helix Git Fusion
+              %span.light (optional)
+            .col-sm-10
+              = select_tag('git_fusion_repo', options_for_select([['', ''], ['Talkhouse', 'Talkhouse']]))
+
+      %hr.prepend-bottom-10
 
       .form-group
         = f.label :description, class: 'control-label' do

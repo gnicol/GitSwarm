@@ -1,0 +1,15 @@
+%header.navbar.navbar-fixed-top.navbar-gitlab{ class: nav_header_class }
+  .container
+    .header-logo
+      = link_to explore_root_path, class: 'home' do
+        %div
+        %h3 GitSwarm
+    .header-content
+      %div.dashboard-menu
+        %h1.title= title
+
+      - unless current_controller?('sessions')
+        .pull-right
+          = link_to 'Sign in', new_session_path(:user, redirect_to_referer: 'yes'), class: 'btn btn-sign-in btn-success btn-sm'
+
+= render 'shared/outdated_browser'

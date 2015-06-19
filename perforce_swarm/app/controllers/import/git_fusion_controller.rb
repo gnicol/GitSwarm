@@ -14,20 +14,21 @@ class Import::GitFusionController < Import::BaseController
   end
 
   def new
-    @repos_select = []
-    @repos        = PerforceSwarm::GitFusionRepo.list('git@10.2.0.118')
+    # TODO: filter out already-mirrored repos?
+    @repos       = PerforceSwarm::GitFusion::Repo.list('git@192.168.1.75')
+    @repo_select = []
     @repos.each do |name, _description|
-      @repos_select.push([name, name])
+      @repo_select.push([name, name])
     end
   end
 
   def create
     @repo_id = params[:repo_id]
     # TODO: include git fusion URL from object
-    repo = { name: @repo_id, description: client[@repo_id], clone_url: 'git@10.2.0.118/' + @repo_id }
+    repo = { name: @repo_id, description: client[@repo_id], clone_url: 'git@192.168.1.75/' + @repo_id }
     @project_name = @repo_id
     @target_namespace = current_user.namespace
-
+    @repo_select = []
     namespace = get_or_create_namespace || (render && return)
 
     @project = Gitlab::GitFusionImport::ProjectCreator.new(repo, namespace, current_user).execute

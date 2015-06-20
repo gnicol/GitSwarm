@@ -23,12 +23,41 @@
   margin-right: auto;
 }
 
+.project-edit-content .form-group {
+  position: relative;
+}
 .project-edit-content .centered-buttons {
   position: absolute;
   top: 40%;
   right: 0;
 }
 
-.project-edit-content .form-group {
-  position: relative;
+.form-group.disabled {
+  opacity: 0.5;
+}
+
+.split {
+  margin-top: 10px;
+  float: none;
+}
+
+.split .left {
+  float: left;
+  width: 45%;
+}
+
+.split .right {
+  float: right;
+  width: 45%;
+}
+
+.greyed {
+  background-color: #ddd;
+  text-align: left;
+  padding: 2px 30px 2px 5px;
+}
+
+.repo-select {
+  margin-top: 20px;
+  text-align: center;
 }

@@ -14,4 +14,16 @@ module ProjectsHelper
       end
     end
   end
+
+  def git_fusion_import_enabled?
+    true
+  end
+
+  def git_fusion_host
+    'foo.bar.baz'
+  end
+
+  def git_fusion_help
+    'http://www.google.com'
+  end
 end

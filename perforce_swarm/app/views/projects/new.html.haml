@@ -25,7 +25,7 @@
       %hr
 
       .project-import.js-toggle-container
-        .form-group
+        .form-group.external-import
           %label.control-label
             = image_tag('import_external.png')
             Import from external
@@ -93,13 +93,13 @@
         .helix-toggle-content
           %hr.prepend-bottom-10.or
 
-          .form-group
+          .form-group.git-fusion-import
             = f.label :perforce_swarm, class: 'control-label' do
               = image_tag('import_git_fusion.png')
               Import from &amp; Mirror with Helix Git Fusion
               %span.light (optional)
             .col-sm-10
-              = select_tag('git_fusion_repo', options_for_select([['', ''], ['Talkhouse', 'Talkhouse']]))
+              = render 'import/git_fusion/new'
 
       %hr.prepend-bottom-10
 

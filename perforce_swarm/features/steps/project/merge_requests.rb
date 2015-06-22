@@ -75,6 +75,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
   step 'merge request "Dependency Fix" is mergeable' do
     merge_request = MergeRequest.find_by(title: 'Dependency Fix')
+    merge_request.project.satellite.create
     merge_request.mark_as_mergeable
   end
 

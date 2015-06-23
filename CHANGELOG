@@ -1,6 +1,8 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 7.13.0 (unreleased)
+  - Fix invalid timestamps in RSS feeds (Rowan Wookey)
+  - Fix error when deleting a user who has projects (Stan Hu)
   - Update maintenance documentation to explain no need to recompile asssets for omnibus installations (Stan Hu)
   - Support commenting on diffs in side-by-side mode (Stan Hu)
   - Fix JavaScript error when clicking on the comment button on a diff line that has a comment already (Stan Hu)
@@ -8,8 +10,11 @@ v 7.13.0 (unreleased)
   - Rename "Design" profile settings page to "Preferences".
   - Allow users to customize their default Dashboard page.
   - Update ssl_ciphers in Nginx example to remove DHE settings. This will deny forward secrecy for Android 2.3.7, Java 6 and OpenSSL 0.9.8
+  - Admin can edit and remove user identities
   - Convert CRLF newlines to LF when committing using the web editor.
   - API request /projects/:project_id/merge_requests?state=closed will return only closed merge requests without merged one. If you need ones that were merged - use state=merged.  
+  - Allow Administrators to filter the user list by those with or without Two-factor Authentication enabled.
+  - Show a user's Two-factor Authentication status in the administration area.
 
 v 7.12.0 (unreleased)
   - Fix Error 500 when one user attempts to access a personal, internal snippet (Stan Hu)

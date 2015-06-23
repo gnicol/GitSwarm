@@ -31,7 +31,7 @@ if ENV['RAILS_ENV'] == 'test'
     # in the rails engine, for a dummy scenario with the same name & feature location as the parent
     skipped_scenarios = {}
     Dir["#{Rails.root}/perforce_swarm/features/**/*.feature"].each do |engine_file|
-      app_file = engine_file.gsub(%r{/perforce_swarm}, '')
+      app_file = engine_file.gsub(/\/perforce_swarm/, '')
       next unless File.exist?(app_file)
 
       feature_name = `grep 'Feature:' #{engine_file} |sed 's/Feature: *//g'`.strip

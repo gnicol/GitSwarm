@@ -6,6 +6,7 @@ v 7.13.0 (unreleased)
   - Fix invalid timestamps in RSS feeds (Rowan Wookey)
   - Fix error when deleting a user who has projects (Stan Hu)
   - Fix downloading of patches on public merge requests when user logged out (Stan Hu)
+  - The password for the default administrator (root) account has been changed from "5iveL!fe" to "password".
   - Update maintenance documentation to explain no need to recompile asssets for omnibus installations (Stan Hu)
   - Support commenting on diffs in side-by-side mode (Stan Hu)
   - Fix JavaScript error when clicking on the comment button on a diff line that has a comment already (Stan Hu)
@@ -19,6 +20,7 @@ v 7.13.0 (unreleased)
   - Allow Administrators to filter the user list by those with or without Two-factor Authentication enabled.
   - Show a user's Two-factor Authentication status in the administration area.
   - Explicit error when commit not found in the CI
+  - Improve performance for issue and merge request pages 
 
 v 7.12.0 (unreleased)
   - Fix Error 500 when one user attempts to access a personal, internal snippet (Stan Hu)

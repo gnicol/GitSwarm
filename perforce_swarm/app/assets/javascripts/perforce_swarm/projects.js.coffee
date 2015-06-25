@@ -1,11 +1,16 @@
-$ ->
-  $('body').on 'click', '.helix-toggle', (e) ->
-    $(@).parents().find('.helix-toggle-content').toggle()
-    e.preventDefault()
+update_ui = () ->
+  fusion_repo_selected = $('.git-fusion-import select#repo_id').find('option:selected').text() != ''
+  import_url           = $('input#project_import_url').val() != ''
+  external_elements    = '.external-import, .external-import > .centered-buttons > a.btn, .project-import .import-url-data'
+  $(external_elements).toggleClass('disabled', fusion_repo_selected)
+  $('input#project_import_url').attr('disabled', fusion_repo_selected ? 'disabled' : '')
+  $('.git-fusion-import').toggleClass('disabled', import_url)
+  $('.git-fusion-import select').attr('disabled', import_url ? 'disabled' : '')
 
-  $('body').on 'change', 'select#repo_id', (e) ->
-    if $(@).find('option:selected').text() != ''
-      $(@).parents().find('.external-import, .external-import > .centered-buttons > a.btn').addClass('disabled')
-    else
-      $(@).parents().find('.external-import, .external-import > .centered-buttons > a.btn').removeClass('disabled')
+$ ->
+  $('body').on 'focus blur keyup', 'input#project_import_url', (e) ->
+    update_ui()
+
+  $('body').on 'change', '.git-fusion-import select#repo_id', (e) ->
+    update_ui()
     e.preventDefault()

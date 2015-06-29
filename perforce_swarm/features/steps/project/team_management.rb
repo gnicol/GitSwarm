@@ -23,10 +23,10 @@ class Spinach::Features::ProjectTeamManagement < Spinach::FeatureSteps
   end
 
   step 'I should still be on the "New project member(s)" form' do
-    expect(page.find('#new_project_member').visible?).to be_true
+    expect(page.find('#new_project_member').visible?).to be true
   end
 
   step 'I should see the "New project member(s)" form' do
-    expect(page.find('#new_project_member').visible?).to be_true
+    expect(page.find('#new_project_member').visible?).to be true
   end
 end

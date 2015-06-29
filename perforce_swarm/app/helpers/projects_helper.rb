@@ -34,6 +34,6 @@ module ProjectsHelper
     repos.each do |name, _description|
       options.push([name, name])
     end
-    options_for_select(options)
+    repos.empty? ? [] : options_for_select(options)
   end
 end

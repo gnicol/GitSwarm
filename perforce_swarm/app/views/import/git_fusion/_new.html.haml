@@ -8,10 +8,10 @@
           .left
             Connected to Git Fusion Server:
             %span.greyed
-              = git_fusion_host
+              = git_fusion_url
             .repo-select
               Repo:
-              = select_tag(:repo_id, options_for_select([['', ''], ['Foo', 'foo']]))
+              = select_tag(:repo_id, git_fusion_repos)
           .right
             To point GitSwarm at a different Git Fusion instance, have an admin
             = link_to 'see these directions.', git_fusion_help, target: '_blank'

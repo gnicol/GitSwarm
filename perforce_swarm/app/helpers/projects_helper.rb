@@ -16,14 +16,24 @@ module ProjectsHelper
   end
 
   def git_fusion_import_enabled?
-    true
+    !git_fusion_url.nil?
   end
 
-  def git_fusion_host
-    'foo.bar.baz'
+  def git_fusion_url
+    PerforceSwarm::GitlabConfig.new.git_fusion['url']
   end
 
   def git_fusion_help
+    # TODO: Put a link here that's actually helpful
     'http://www.google.com'
+  end
+
+  def git_fusion_repos
+    options = [['', '']]
+    repos   = PerforceSwarm::Repo.list
+    repos.each do |name, _description|
+      options.push([name, name])
+    end
+    options_for_select(options)
   end
 end

@@ -40,9 +40,18 @@ module PerforceSwarm
     end
   end
 
-  def self.ee?
-    const_set(:IS_EE, File.exist?("#{Rails.root}/CHANGELOG-EE")) unless defined? IS_EE
-    IS_EE
+  def self.gitswarm_edition
+    unless defined? GITSWARM_EDITION
+      const_set(:GITSWARM_EDITION, File.exist?("#{Rails.root}/CHANGELOG-EE") ? 'ee' : 'ce')
+    end
+    GITSWARM_EDITION
+  end
+
+  def self.gitswarm_ee?
+    gitswarm_edition == 'ee'
+  end
+  def self.gitswarm_ce?
+    gitswarm_edition == 'ce'
   end
 
   module ConfigurationExtension

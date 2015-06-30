@@ -44,7 +44,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see "Forum" at the top of the list in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('Forum')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('Forum')
   end
 
   step 'I should see "Forum" in the recent projects dropdown' do
@@ -66,8 +66,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see "PerforceProject" with "QA" group name in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QA')
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QA')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
   end
 
   step 'I should see "Recent Projects" in the recent projects dropdown' do
@@ -96,7 +96,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I should see "Shop" then "Forum" then "Empty Project" in the recent projects dropdown' do
     within '.navbar-gitlab .dashboard-menu' do
-      menuitems = all(:css, '.dropdown-menu li')
+      menuitems = page.all(:css, '.dropdown-menu li')
       menuitems[1].should have_content('Shop')
       menuitems[2].should have_content('Forum')
       menuitems[3].should have_content('Empty Project')
@@ -104,8 +104,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should not see any projects in the recent projects dropdown' do
-    all('.dashboard-menu .dropdown-menu li').count.should eq(3)
-    all('.dashboard-menu .dropdown-menu li')[0].text.should have_content('Dashboard')
+    page.all('.dashboard-menu .dropdown-menu li').count.should eq(3)
+    page.all('.dashboard-menu .dropdown-menu li')[0].text.should have_content('Dashboard')
   end
 
   #########################
@@ -114,31 +114,31 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I should not see "Shop" as the latest project in the dropdown' do
     within '.navbar-gitlab .dashboard-menu' do
-      all(:css, '.dropdown-menu li')[1].should_not have_content('Shop')
+      page.all(:css, '.dropdown-menu li')[1].should_not have_content('Shop')
     end
   end
 
   step 'I should see "New Project" at the top of the list in the recent projects dropdown' do
     within '.navbar-gitlab' do
-      all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('new-project')
-      all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('new-project')
+      page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('new-project')
+      page.all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('new-project')
     end
   end
 
   step 'I should see "PerforceProject" at the top of the list in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
   end
 
   step 'I should see "QAProject" at the top of the list in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QAProject')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QAProject')
   end
 
   step 'I should see the project with the project name over 100 characters at the top of the list' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content(long_project_name + long_project_name)
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content(long_project_name + long_project_name)
   end
 
   step 'I should not see "PerforceProject" second on the list in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('PerforceProject')
+    page.all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('PerforceProject')
   end
 
   #########################

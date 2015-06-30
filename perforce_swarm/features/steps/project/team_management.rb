@@ -10,7 +10,7 @@ class Spinach::Features::ProjectTeamManagement < Spinach::FeatureSteps
   end
 
   step 'I should see "No matches found"' do
-    all('ul.select2-results')[1].text.should have_content('No matches found')
+    page.all('ul.select2-results')[1].text.should have_content('No matches found')
   end
 
   step 'I attempt to add "*$%&^!()" in the People field' do

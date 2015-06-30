@@ -40,6 +40,11 @@ module PerforceSwarm
     end
   end
 
+  def self.ee?
+    const_set(:IS_EE, File.exist?("#{Rails.root}/CHANGELOG-EE")) unless defined? IS_EE
+    IS_EE
+  end
+
   module ConfigurationExtension
     def initialize(*)
       super

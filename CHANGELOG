@@ -2,6 +2,7 @@ Please view this file on the master branch, on stable branches it's out of date.
 
 v 7.13.0 (unreleased)
   - Fix order of issues imported form GitHub (Hiroyuki Sato)
+  - Bump rugments to 1.0.0beta8 to fix C prototype function highlighting (Jonathon Reinhart)
   - Fix Merge Request webhook to properly fire "merge" action when accepted from the web UI
   - Add `two_factor_enabled` field to admin user API (Stan Hu)
   - Fix invalid timestamps in RSS feeds (Rowan Wookey)
@@ -25,7 +26,7 @@ v 7.13.0 (unreleased)
   - Improve performance for issue and merge request pages 
   - Users with guest access level can not set assignee, labels or milestones for issue and merge request
 
-v 7.12.0 (unreleased)
+v 7.12.0
   - Fix Error 500 when one user attempts to access a personal, internal snippet (Stan Hu)
   - Disable changing of target branch in new merge request page when a branch has already been specified (Stan Hu)
   - Fix post-receive errors on a push when an external issue tracker is configured (Stan Hu)

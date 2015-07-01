@@ -42,7 +42,7 @@ module PerforceSwarm
 
   def self.gitswarm_edition
     unless defined? GITSWARM_EDITION
-      const_set(:GITSWARM_EDITION, File.exist?("#{Rails.root}/CHANGELOG-EE") ? 'ee' : 'ce')
+      const_set(:GITSWARM_EDITION, File.exist?(Rails.root.join('CHANGELOG-EE')) ? 'ee' : 'ce')
     end
     GITSWARM_EDITION
   end

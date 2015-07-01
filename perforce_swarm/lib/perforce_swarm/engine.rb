@@ -40,6 +40,20 @@ module PerforceSwarm
     end
   end
 
+  def self.gitswarm_edition
+    unless defined? GITSWARM_EDITION
+      const_set(:GITSWARM_EDITION, File.exist?(Rails.root.join('CHANGELOG-EE')) ? 'ee' : 'ce')
+    end
+    GITSWARM_EDITION
+  end
+
+  def self.gitswarm_ee?
+    gitswarm_edition == 'ee'
+  end
+  def self.gitswarm_ce?
+    gitswarm_edition == 'ce'
+  end
+
   module ConfigurationExtension
     def initialize(*)
       super

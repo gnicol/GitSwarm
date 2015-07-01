@@ -16,7 +16,7 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   end
 
   step 'I click the "Close Issue" button' do
-    within '.voting_notes' do
+    page.within '.voting_notes' do
       click_link 'Close Issue'
     end
   end
@@ -42,7 +42,7 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   end
 
   step 'I click link "All"' do
-    within '.content-wrapper' do
+    page.within '.content-wrapper' do
       click_link 'All'
     end
   end

@@ -414,8 +414,6 @@ class Repository
     Gitlab::Git::Blob.remove(raw_repository, options)
   end
 
-  private
-
   def user_to_comitter(user)
     {
       email: user.email,
@@ -423,6 +421,17 @@ class Repository
       time: Time.now
     }
   end
+
+  def can_be_merged?(source_branch, target_branch)
+    our_commit = rugged.branches[target_branch].target
+    their_commit = rugged.branches[source_branch].target
+
+    if our_commit && their_commit
+      !rugged.merge_commits(our_commit, their_commit).conflicts?
+    end
+  end
+
+  private
 
   def cache
     @cache ||= RepositoryCache.new(path_with_namespace)

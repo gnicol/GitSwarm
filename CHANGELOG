@@ -10,6 +10,7 @@ v 7.13.0 (unreleased)
   - Fix downloading of patches on public merge requests when user logged out (Stan Hu)
   - The password for the default administrator (root) account has been changed from "5iveL!fe" to "password".
   - Fix Error 500 when relative submodule resolves to a namespace that has a different name from its path (Stan Hu)
+  - Extract the longest-matching ref from a commit path when multiple matches occur (Stan Hu)
   - Update maintenance documentation to explain no need to recompile asssets for omnibus installations (Stan Hu)
   - Support commenting on diffs in side-by-side mode (Stan Hu)
   - Fix JavaScript error when clicking on the comment button on a diff line that has a comment already (Stan Hu)
@@ -25,6 +26,17 @@ v 7.13.0 (unreleased)
   - Explicit error when commit not found in the CI
   - Improve performance for issue and merge request pages 
   - Users with guest access level can not set assignee, labels or milestones for issue and merge request
+  - Reporter role can manage issue tracker now: edit any issue, set assignee or milestone and manage labels
+  - Better performance for pages with events list, issues list and commits list
+
+v 7.12.1
+  - Fix error when deleting a user who has projects (Stan Hu)
+  - Fix post-receive errors on a push when an external issue tracker is configured (Stan Hu)
+  - Add SAML to list of social_provider (Matt Firtion)
+  - Fix merge requests API scope to keep compatibility in 7.12.x patch release (Dmitriy Zaporozhets)
+  - Fix closed merge request scope at milestone page (Dmitriy Zaporozhets)
+  - Revert merge request states renaming 
+  - Fix hooks for web based events with external issue references (Daniel Gerhardt)
 
 v 7.12.0
   - Fix Error 500 when one user attempts to access a personal, internal snippet (Stan Hu)

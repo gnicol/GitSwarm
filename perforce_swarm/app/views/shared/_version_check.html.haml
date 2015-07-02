@@ -16,9 +16,9 @@
   .pull-right.version-check-details
     - if current_application_settings.version_check_enabled.nil?
       Allow GitSwarm to keep checking for updates?
-      = link_to 'Yes', admin_application_settings_path(application_setting: {version_check_enabled: true}), method: :put, class: 'alert-link'
+      = link_to 'Yes', admin_application_settings_path(application_setting: {version_check_enabled: true}), method: :put, remote: true, class: 'alert-link'
       |
-      = link_to 'No', admin_application_settings_path(application_setting: {version_check_enabled: false}), method: :put, class: 'alert-link'
+      = link_to 'No', admin_application_settings_path(application_setting: {version_check_enabled: false}), method: :put, remote: true, class: 'alert-link'
     - else
       - if VersionCheck::more_info
         = link_to 'more info', VersionCheck::more_info, target: '_blank'

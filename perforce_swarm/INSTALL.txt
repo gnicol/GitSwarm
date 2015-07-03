@@ -1,12 +1,12 @@
                        Installation Instructions for
                               Helix GitSwarm
 
-                              Version 2015.1
+                              Version 2015.2
 
 Introduction
 
     This document describes the installation and initial configuration
-    process for Helix GitSwarm release 2015.1.
+    process for Helix GitSwarm release 2015.2.
 
     * Note, installing and configuring GitSwarm is a System Administrator
       function and requires root access.
@@ -73,23 +73,23 @@ GitSwarm Installation
 
 1. For Ubuntu 12.04:
 
-   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.ubuntu12x86_64/perforce-gitswarm-2015.1.precise.amd64.deb
-   $ sudo dpkg -i perforce-gitswarm-2015.1.precise.amd64.deb
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.ubuntu12x86_64/perforce-gitswarm-2015.2.precise.amd64.deb
+   $ sudo dpkg -i perforce-gitswarm-2015.2.precise.amd64.deb
 
 2. For Ubuntu 14.04:
 
-   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.ubuntu14x86_64/perforce-gitswarm-2015.1.trusty.amd64.deb
-   $ sudo dpkg -i perforce-gitswarm-2015.1.trusty.amd64.deb
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.ubuntu14x86_64/perforce-gitswarm-2015.2.trusty.amd64.deb
+   $ sudo dpkg -i perforce-gitswarm-2015.2.trusty.amd64.deb
 
 3. For CentOS/RHEL 6:
 
-   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos6x86_64/perforce-gitswarm-2015.1.el6.x86_64.rpm
-   $ sudo rpm -i perforce-gitswarm-2015.1.el6.x86_64.rpm
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos6x86_64/perforce-gitswarm-2015.2.el6.x86_64.rpm
+   $ sudo rpm -i perforce-gitswarm-2015.2.el6.x86_64.rpm
 
 4. For CentOS/RHEL 7:
 
-   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos7x86_64/perforce-gitswarm-2015.1.el7.x86_64.rpm
-   $ sudo rpm -i perforce-gitswarm-2015.1.el7.x86_64.rpm
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.1/bin.centos7x86_64/perforce-gitswarm-2015.2.el7.x86_64.rpm
+   $ sudo rpm -i perforce-gitswarm-2015.2.el7.x86_64.rpm
 
 
 

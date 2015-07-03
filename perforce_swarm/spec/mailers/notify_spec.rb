@@ -75,4 +75,20 @@ describe Notify do
 
     it_behaves_like 'an email sent from GitLab'
   end
+
+  # EE only test
+  if PerforceSwarm.ee?
+    describe 'admin notification', override: true do
+      let(:example_site_path) { root_path }
+      let(:user) { create(:user) }
+
+      subject { @email = Notify.send_admin_notification(user.id, 'Admin announcement', 'Text') }
+
+      it 'is sent as the author' do
+        sender = subject.header[:from].addrs[0]
+        sender.display_name.should eq('GitSwarm')
+        sender.address.should eq(gitlab_sender)
+      end
+    end
+  end
 end

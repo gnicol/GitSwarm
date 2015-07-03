@@ -138,6 +138,7 @@ class Ability
         :read_project,
         :read_wiki,
         :read_issue,
+        :read_label,
         :read_milestone,
         :read_project_snippet,
         :read_project_member,
@@ -262,7 +263,7 @@ class Ability
             :"modify_#{name}",
           ]
         else
-          if subject.respond_to?(:project)
+          if subject.respond_to?(:project) && subject.project
             project_abilities(user, subject.project)
           else
             []

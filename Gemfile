@@ -4,7 +4,7 @@ eval_gemfile File.join(File.dirname(__FILE__), 'perforce_swarm/Gemfile')
 
 source "https://rubygems.org"
 
-gem "rails", "~> 4.1.0"
+gem 'rails', '4.1.11'
 
 # Default values for AR models
 gem "default_value_for", "~> 3.0.0"
@@ -38,7 +38,7 @@ gem "browser", '~> 0.8.0'
 
 # Extracting information from a git repository
 # Provide access to Gitlab::Git library
-gem "gitlab_git", '~> 7.2.3'
+gem "gitlab_git", '~> 7.2.5'
 
 # Ruby/Rack Git Smart-HTTP Server Handler
 # GitLab fork with a lot of changes (improved thread-safety, better memory usage etc)
@@ -197,7 +197,7 @@ gem 'font-awesome-rails', '~> 4.2'
 gem 'gitlab_emoji',       '~> 0.1'
 gem 'gon',                '~> 5.0.0'
 gem 'jquery-atwho-rails', '~> 1.0.0'
-gem 'jquery-rails',       '3.1.2'
+gem 'jquery-rails',       '3.1.3'
 gem 'jquery-scrollto-rails'
 gem 'jquery-ui-rails'
 gem 'nprogress-rails'

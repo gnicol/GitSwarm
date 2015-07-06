@@ -23,6 +23,9 @@ if ENV['RAILS_ENV'] == 'test'
       feature.find(:css, 'body').text.should feature.eq('')
       wait_for_requests
     end
+
+    # Clear sidekiq worker jobs
+    Sidekiq::Worker.clear_all
   end
 
   Spinach.hooks.before_run do

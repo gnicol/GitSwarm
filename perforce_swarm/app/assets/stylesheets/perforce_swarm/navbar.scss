@@ -204,8 +204,6 @@ header.navbar-gitlab .container {
   }
 }
 
-@media (max-width: $screen-xs-max) {
-  #nprogress .spinner {
-    display: none;
-  }
+#nprogress .spinner {
+  display: none;
 }

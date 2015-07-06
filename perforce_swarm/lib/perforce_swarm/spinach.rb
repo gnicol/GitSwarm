@@ -3,10 +3,8 @@ if ENV['RAILS_ENV'] == 'test'
   require_relative '../../spec/support/test_env'
   require_relative '../../features/support/rack_request_blocker'
 
-  PerforceSwarm::Engine.initializer 'request_blocker' do |app|
-    # Make sure the middleware is inserted first in middleware chain
-    app.middleware.insert_before('Gitlab::Middleware::Static', 'RackRequestBlocker')
-  end
+  # Make sure the middleware is inserted first in middleware chain
+  Rails.application.middleware.insert_before('Gitlab::Middleware::Static', 'RackRequestBlocker')
 
   Spinach.hooks.around_scenario do |_scenario_data, feature, &block|
     RackRequestBlocker.clear_active_requests

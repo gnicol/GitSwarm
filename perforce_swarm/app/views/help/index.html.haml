@@ -3,6 +3,11 @@
     GitSwarm
     %span= PerforceSwarm::VERSION
     %small= Gitlab::REVISION
+- if PerforceSwarm.ee? && help_text.present?
+  %hr
+  %p.slead
+    = markdown(help_text)
+- else
   %p.slead
     GitSwarm is Helix's Git frontend based on $GitLab$ #{Gitlab::VERSION}
     %br

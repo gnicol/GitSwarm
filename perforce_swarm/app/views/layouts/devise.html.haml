@@ -18,6 +18,11 @@
 
             - if extra_sign_in_text.present?
               = markdown(extra_sign_in_text)
+            - if PerforceSwarm.ee? && help_text.present?
+              %h3 Need help?
+              %hr
+              %p.slead
+                = markdown(help_text)
           .col-sm-5.login-holder
             = yield
             .footer-links

@@ -69,7 +69,9 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     select @project.path_with_namespace, from: 'merge_request_source_project_id'
     select @project.path_with_namespace, from: 'merge_request_target_project_id'
     select 'fix', from: 'merge_request_source_branch'
+    page.find('.mr_source_commit').should have_selector('.commit')
     select 'master', from: 'merge_request_target_branch'
+    page.find('.mr_target_commit').should have_selector('.commit')
     click_button 'Compare branches'
   end
 

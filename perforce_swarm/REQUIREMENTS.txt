@@ -1,12 +1,12 @@
                          Hardware Requirements for
                               Helix GitSwarm
 
-                              Version 2015.1
+                              Version 2015.2
 
 Introduction
 
     This document describes the hardware requirements for Helix GitSwarm
-    release 2015.1.
+    release 2015.2.
 
 Supported Operating System Platforms
 

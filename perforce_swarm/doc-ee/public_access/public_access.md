@@ -43,11 +43,12 @@ The public page of users, located at `/u/username` is visible if either:
 
 Otherwise, you will be redirected to the sign in page.
 
-When visiting the public page of an user, you will only see listed projects which you can view yourself.
+When visiting the public page of an user, you will only see listed projects
+which you can view yourself.
 
 ## Restricting the use of public or internal projects
 
-In the Admin area under Settings, you can disable public projects or public
+In the Admin area under Settings you can disable public projects or public
 and internal projects for the entire GitSwarm installation to prevent
 people making code public by accident. The restricted visibility settings
 do not apply to admin users.

@@ -25,12 +25,9 @@
       %hr
 
       .project-import.js-toggle-container
-        .form-group.external-import
-          %label.control-label
-            = image_tag('import_external.png')
-            Import from external
-            %span.light (optional)
-          .col-sm-10.centered-buttons
+        .form-group
+          %label.control-label Import project from
+          .col-sm-10
             - if github_import_enabled?
               = link_to status_import_github_path, class: 'btn' do
                 %i.fa.fa-github
@@ -93,7 +90,6 @@
         %hr.prepend-bottom-10.or
           .form-group.git-fusion-import
             = f.label :perforce_swarm, class: 'control-label' do
-              = image_tag('import_git_fusion.png')
               Import from &amp; Mirror with Helix Git Fusion
               %span.light (optional)
             .col-sm-10

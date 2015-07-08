@@ -1,6 +1,6 @@
 .login-box
   .login-heading.sign-in
-    %h3 Log in to GitSwarm
+    %h3 Log in to #{brand_title}
     = render 'layouts/flash'
     - flash.clear unless flash.empty?
   - if ldap_enabled?

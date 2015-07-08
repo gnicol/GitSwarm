@@ -55,6 +55,11 @@ if ENV['RAILS_ENV'] == 'test'
       Dir[Rails.root.join('perforce_swarm/spec/support/**/*.rb')].each { |f| require f }
     end
 
+    # Clear sidekiq worker jobs
+    config.after(:each) do
+      Sidekiq::Worker.clear_all
+    end
+
     # print a warning to users who are not running any tests from the engine
     unless config.files_to_run.any? { |path| path.include?('perforce_swarm') }
       p 'WARNING: Running the main test without the Swarm overrides.'

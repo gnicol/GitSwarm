@@ -14,7 +14,7 @@
               Although Git Fusion is configured, there are no repos available for import.
             - else
               .repo-select
-                = hidden_field_tag(:git_fusion_entry, git_fusion_entry)
+                = hidden_field_tag(:git_fusion_entry, 'default')
                 Repo:
                 = select_tag(:git_fusion_repo_name, repos)
           .right

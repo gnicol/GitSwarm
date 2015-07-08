@@ -8,6 +8,7 @@ update_ui = () ->
   $('.git-fusion-import select').attr('disabled', import_url ? 'disabled' : '')
 
 $ ->
+  update_ui();
   $('body').on 'focus blur keyup', 'input#project_import_url', (e) ->
     update_ui()
 

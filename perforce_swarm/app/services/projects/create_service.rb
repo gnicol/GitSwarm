@@ -5,7 +5,7 @@ module PerforceSwarm
     def after_create_actions
       # user has chosen to import via Git Fusion
       if @params[:git_fusion_repo]
-        # ensure project is marked as git fusion, and add git fusion source repo
+        # ensure project is marked as a git fusion import
         @project.update_column(:import_type, 'git_fusion')
 
         # create mirror remote

@@ -23,11 +23,6 @@ module ProjectsHelper
     PerforceSwarm::GitlabConfig.new.git_fusion_entry['url']
   end
 
-  def git_fusion_entry
-    # return the git fusion entry we're using (currently just default)
-    'default'
-  end
-
   def git_fusion_help
     # TODO: Put a link here that's actually helpful
     'http://www.google.com'

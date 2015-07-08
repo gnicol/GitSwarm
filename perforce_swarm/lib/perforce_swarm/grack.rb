@@ -7,7 +7,7 @@ module PerforceSwarm
       cmd, path, @reqfile, @rpc = match_routing
       @git = get_git(path)
 
-      return super unless Mirror.mirror_url(@git.repo)
+      return super unless PerforceSwarm::Repo.new(@git.repo).mirrored?
 
       # Fail if the service user hasn't been setup
       return [

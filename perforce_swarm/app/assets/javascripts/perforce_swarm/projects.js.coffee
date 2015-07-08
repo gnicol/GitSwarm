@@ -1,5 +1,5 @@
 update_ui = () ->
-  fusion_repo_selected = $('.git-fusion-import select#repo_id').find('option:selected').text() != ''
+  fusion_repo_selected = $('.git-fusion-import select#fusion_repo_id').find('option:selected').text() != ''
   import_url           = $('input#project_import_url').val() != ''
   external_elements    = '.external-import, .external-import > .centered-buttons > a.btn, .project-import .import-url-data'
   $(external_elements).toggleClass('disabled', fusion_repo_selected)
@@ -11,6 +11,6 @@ $ ->
   $('body').on 'focus blur keyup', 'input#project_import_url', (e) ->
     update_ui()
 
-  $('body').on 'change', '.git-fusion-import select#repo_id', (e) ->
+  $('body').on 'change', '.git-fusion-import select#fusion_repo_id', (e) ->
     update_ui()
     e.preventDefault()

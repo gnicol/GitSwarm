@@ -10,7 +10,7 @@ module PerforceSwarm
 
         # create mirror remote
         log_info("Creating Git remote mirror for '#{@project.git_fusion_repo}'.")
-        PerforceSwarm::GitFusion.add_mirror_remote(@project.git_fusion_repo, @project.repository.path_to_repo)
+        PerforceSwarm::Repo.new(@project.repository.path_to_repo).mirror_url = @project.git_fusion_repo
 
         # kick off and background initial import task
         log_info("Kicking off initial import for '#{@project.git_fusion_repo}'.")

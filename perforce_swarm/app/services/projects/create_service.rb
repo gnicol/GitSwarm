@@ -17,7 +17,7 @@ module PerforceSwarm
         import_job = fork do
           mirror_script =
               File.join(File.expand_path(Gitlab.config.gitlab_shell.path), 'perforce_swarm', 'bin', 'gitswarm-mirror')
-          exec Shellwords.shelljoin(mirror_script, 'fetch', @project.path_with_namespace + '.git')
+          exec Shellwords.shelljoin([mirror_script, 'fetch', @project.path_with_namespace + '.git'])
         end
         Process.detach(import_job)
       end

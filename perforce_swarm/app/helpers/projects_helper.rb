@@ -26,11 +26,6 @@ module ProjectsHelper
     PerforceSwarm::GitFusion::URL.new(PerforceSwarm::GitlabConfig.new.git_fusion_entry['url']).to_s
   end
 
-  def git_fusion_help
-    # TODO: Put a link here that's actually helpful
-    'http://www.google.com'
-  end
-
   def git_fusion_repos
     options = [['<Select repo to enable>', '']]
     repos   = PerforceSwarm::GitFusionRepo.list

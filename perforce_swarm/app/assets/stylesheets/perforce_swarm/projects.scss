@@ -2,14 +2,15 @@
   border-top: 1px solid #ccc;
   color: #999;
   text-align: center;
-  margin-top: 25px;
+  margin-top: 20px;
+  margin-bottom: 5px;
 }
 
 .project-edit-content hr.or:after {
   content: "OR";
   position: relative;
   top: -0.7em;
-  font-size: 1.2em;
+  font-size: 1.1em;
   padding: 0 1em;
   background: white;
 }
@@ -22,28 +23,35 @@
   opacity: 0.5;
 }
 
-.split {
+.git-fusion-import .description {
+  margin-top: 7px;
+}
+
+.git-fusion-import .split {
   margin-top: 10px;
   float: none;
 }
 
-.split .left {
+.git-fusion-import .split .left {
   float: left;
   width: 50%;
 }
 
-.split .right {
+.git-fusion-import .split .right {
   float: right;
   width: 45%;
 }
 
-.greyed {
+.git-fusion-import .greyed {
   background-color: #ddd;
-  text-align: left;
   padding: 2px 30px 2px 5px;
+  whitespace: nowrap;
 }
 
-.repo-select {
-  margin-top: 20px;
+.git-fusion-import .repo-select, .git-fusion-import .repo-warning {
+  margin-top: 1em;
+}
+
+.git-fusion-import .repo-select {
   text-align: center;
 }

@@ -2,22 +2,30 @@
 
 ## Software delivery
 
-Currently, GitSwarm is only available as packages.
+There are two editions of GitSwarm: 'GitSwarm', which is based upon
+[GitLab's Community Edition](https://gitlab.com/gitlab-org/gitlab-ce/tree/master),
+and 'GitSwarm Enterprise Edition (EE)', which is based upon
+[GitLab's Enterprise Edition](https://about.gitlab.com/gitlab-ce/).
+
+Both editions of GitSwarm are only available via packages.
+
+Both editions of GitSwarm require a component called gitlab-shell.
+It is included in the GitSwarm packages.
 
 ## Physical office analogy
 
 You can imagine GitSwarm as a physical office.
 
-**The repositories** are the goods GitSwarm handles. They can be stored in
-a warehouse.  This can be either a hard disk, or something more complex,
-such as a NFS filesystem.
+**The repositories** are the goods (git repositories) that GitSwarm
+handles. They can be stored in a "warehouse". This can be either a hard
+disk, or something more complex, such as a NFS filesystem.
 
-**Nginx** acts like the front-desk. Users come to Nginx and request
-actions to be done by workers in the office.
+**Nginx** (a web server) acts like the front-desk. Users come to Nginx and
+request actions to be done by workers in the office.
 
 **The database** is a series of metal file cabinets with information on:
- - The goods in the warehouse (metadata, issues, merge requests etc).
- - The users coming to the front desk (permissions).
+ - The goods in the warehouse (metadata, issues, merge requests etc);
+ - The users coming to the front desk (permissions)
 
 **Redis** is a communication board with "cubby holes" that can contain
 tasks for office workers.
@@ -27,10 +35,10 @@ tasks from the Redis communication board.
 
 **A Unicorn worker** is a worker that handles quick/mundane tasks. They
 work with the communication board (Redis). Their job description:
- - check permissions by checking the user session stored in a Redis "cubby
+ - Check permissions by checking the user session stored in a Redis "cubby
    hole".
- - make tasks for Sidekiq.
- - fetch stuff from the warehouse or move things around in there.
+ - Make tasks for Sidekiq.
+ - Fetch stuff from the warehouse or move things around in there.
 
 **Gitlab-shell** is a third kind of worker that takes orders from a fax
 machine (SSH) instead of the front desk (HTTP). Gitlab-shell communicates
@@ -43,10 +51,10 @@ practices that the office is run by.
 ## System Layout
 
 When referring to ~git in the pictures it means the home directory of the
-git user which is typically /home/git.
+git user which is typically `/home/git`.
 
 GitSwarm is primarily installed within the `/home/git` user home directory
-as `git` user. Within the home directory is where the GitSwarm server
+as `git` user. Within the home directory is where the gitlabhq server
 software resides as well as the repositories (though the repository
 location is configurable).
 
@@ -54,9 +62,8 @@ The bare repositories are located in `/home/git/repositories`. GitSwarm is
 a Ruby on Rails application, so the particulars of the inner workings can
 be learned by studying how a Ruby on Rails application works.
 
-To serve repositories over SSH there is an add-on application called
-gitlab-shell, which is included with GitSwarm and is installed in
-`/home/git/gitlab-shell`.
+To serve repositories over SSH there's an add-on application called
+gitlab-shell which is installed in `/home/git/gitlab-shell`.
 
 ### Components
 
@@ -64,27 +71,26 @@ gitlab-shell, which is included with GitSwarm and is installed in
 
 A typical install of GitSwarm is on GNU/Linux. It uses Nginx as a web front
 end to proxypass the Unicorn web server. By default, communication between
-Unicorn and the front end is via a Unix domain socket but forwarding
+Unicorn and the front end is via a Unix domain socket, but forwarding
 requests via TCP is also supported. The web front end accesses
-`/home/git/gitswarm/public` bypassing the Unicorn server to serve static
-pages, uploads (e.g. avatar images or attachments), and precompiled assets.
-GitLab serves web pages and a [GitSwarm API](../api/README.md) using the
-Unicorn web server. It uses Sidekiq as a job queue which, in turn, uses
-Redis as a non-persistent database backend for job information, meta data,
-and incoming jobs.
+`/home/git/gitswarm/public`, bypassing the Unicorn server, to serve static
+pages, uploads (e.g. avatar images or attachments), and precompiled
+assets. GitSwarm serves web pages and a [GitSwarm API](../api/README.md)
+using the Unicorn web server. It uses Sidekiq as a job queue which, in
+turn, uses Redis as a non-persistent database backend for job information,
+meta data, and incoming jobs.
 
-
-The GitSwarm web app uses PostgreSQL for persistent database information
-(e.g. users, permissions, issues, other meta data). GitSwarm stores the
-bare git repositories it serves in `/home/git/repositories` by default. It
-also keeps default branch and hook information with the bare repository.
+GitSwarm uses PostgreSQL for persistent database information (e.g. users,
+permissions, issues, other meta data). GitSwarm stores the bare git
+repositories it serves in `/home/git/repositories` by default. It also
+keeps default branch and hook information with the bare repository.
 `/home/git/gitlab-satellites` keeps checked out repositories when
 performing actions such as a merge request, editing files in the web
 interface, etc.
 
 The satellite repository is used by the web interface for editing
 repositories and the wiki which is also a git repository. When serving
-repositories over HTTP/HTTPS GitSwarm utilizes the GitSwarm API to resolve
+repositories over HTTP/HTTPS, GitSwarm utilizes the GitSwarm API to resolve
 authorization and access as well as serving git objects.
 
 The add-on component gitlab-shell serves repositories over SSH. It manages
@@ -96,28 +102,25 @@ authorization and access.
 
 ### Installation Folder Summary
 
-To summarize, here is the [directory structure of the `git` user home
-directory](../install/structure.md).
+To summarize, here's the [directory structure of the `git` user home directory](../install/structure.md).
 
 ### Processes
 
-```
-ps aux | grep '^git'
-```
+    ps aux | grep '^git'
 
 GitSwarm has several components to operate. As a system user (i.e. any user
-that is not the `git` user) it requires a persistent database
-(PostreSQL) and Redis database. It also uses Nginx to proxypass
-Unicorn. As the `git` user it starts Sidekiq and Unicorn (a simple ruby
-HTTP server running on port `8080` by default). Under the GitSwarm user,
-there are normally 4 processes: `unicorn_rails master` (1 process),
-`unicorn_rails worker` (2 processes), `sidekiq` (1 process).
+that is not the `git` user) it requires a persistent database (PostreSQL)
+and Redis database. It also uses Nginx to proxypass Unicorn. As the `git`
+user it starts Sidekiq and Unicorn (a simple Ruby HTTP server running on
+port `8080` by default). Under the GitSwarm user there are normally 4
+processes: `unicorn_rails master` (1 process), `unicorn_rails worker` (2
+processes), `sidekiq` (1 process).
 
 ### Repository access
 
-Repositories get accessed via HTTP or SSH. HTTP cloning/push/pull utilizes
-the GitSwarm API and SSH cloning is handled by gitlab-shell (previously
-explained).
+Repositories can be accessed via HTTP or SSH. HTTP cloning/push/pull
+utilizes the GitSwarm API and SSH cloning is handled by gitlab-shell
+(previously explained).
 
 ## Troubleshooting
 
@@ -149,13 +152,13 @@ Usage: /etc/init.d/sshd {start|stop|restart|reload|force-reload|condrestart|try-
 Web server
 
 ```
-/etc/init.d/nginx
+$ /etc/init.d/nginx
 Usage: nginx {start|stop|restart|reload|force-reload|status|configtest}
 ```
 
 Persistent database
 
 ```
-/etc/init.d/postgresql
+$ /etc/init.d/postgresql
 Usage: /etc/init.d/postgresql {start|stop|restart|reload|force-reload|status} [version ..]
 ```

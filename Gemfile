@@ -207,7 +207,7 @@ gem 'jquery-ui-rails'
 gem 'nprogress-rails'
 gem 'raphael-rails',      '~> 2.1.2'
 gem 'request_store'
-gem 'select2-rails'
+gem 'select2-rails',      '~> 3.5.9'
 gem 'virtus'
 
 group :development do
@@ -254,7 +254,7 @@ group :development, :test do
   # Generate Fake data
   gem 'ffaker', '~> 2.0.0'
 
-  gem 'capybara',            '~> 2.3.0'
+  gem 'capybara',            '~> 2.4.0'
   gem 'capybara-screenshot', '~> 1.0.0'
   gem 'poltergeist',         '~> 1.6.0'
 

@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 20150620233230) do
     t.integer  "default_branch_protection",    default: 2
     t.boolean  "twitter_sharing_enabled",      default: true
     t.text     "restricted_visibility_levels"
+    t.boolean  "version_check_enabled",        default: true
     t.integer  "max_attachment_size",          default: 10,    null: false
     t.integer  "default_project_visibility"
     t.integer  "default_snippet_visibility"
@@ -511,12 +512,12 @@ ActiveRecord::Schema.define(version: 20150620233230) do
     t.string   "bitbucket_access_token"
     t.string   "bitbucket_access_token_secret"
     t.string   "location"
-    t.string   "public_email",                  default: "",    null: false
     t.string   "encrypted_otp_secret"
     t.string   "encrypted_otp_secret_iv"
     t.string   "encrypted_otp_secret_salt"
     t.boolean  "otp_required_for_login",        default: false, null: false
     t.text     "otp_backup_codes"
+    t.string   "public_email",                  default: "",    null: false
     t.integer  "dashboard",                     default: 0
   end
 

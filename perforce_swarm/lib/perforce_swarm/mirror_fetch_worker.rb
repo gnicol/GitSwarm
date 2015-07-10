@@ -30,7 +30,6 @@ module PerforceSwarm
       Project.all.each do |project|
         next unless PerforceSwarm::Repo.new(project.repository.path_to_repo).mirrored?
 
-        puts "Running mirror fetch against #{project.path_with_namespace}"
         system(mirror_script, 'fetch', '--min-outdated=300', project.path_with_namespace + '.git')
       end
     end

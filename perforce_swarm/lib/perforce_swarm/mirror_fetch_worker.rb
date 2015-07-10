@@ -29,7 +29,7 @@ module PerforceSwarm
       # for each project, perform a mirror fetch
       Project.all.each do |project|
         puts "Running mirror fetch against #{project.path_with_namespace}"
-        system [mirror_script, 'fetch', '--min-outdated=300', project.path_with_namespace + '.git']
+        system(mirror_script, 'fetch', '--min-outdated=300', project.path_with_namespace + '.git')
       end
     end
   end

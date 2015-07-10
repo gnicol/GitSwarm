@@ -71,7 +71,7 @@ module PerforceSwarm
 
       # rename gitlab.rb to gitswarm.rb but be selective to avoid mucking non /etc/ versions
       # also get gitlab-secrets.json
-      content.gsub!(%r{(etc|gitswarm)/gitlab.rb}, '\1/gitswarm.rb')
+      content.gsub!(/(etc|gitswarm)\/gitlab.rb/, '\1/gitswarm.rb')
       content.gsub!(%r{/etc/gitswarm/gitlab\-secrets\.json}, '/etc/gitswarm/gitswarm-secrets.json')
 
       # rename /opt/gitlab and /var/opt/gitlab
@@ -83,7 +83,7 @@ module PerforceSwarm
       # Rename calls to the gitlab- bin scripts
       # we're careful to avoid replacing /opt/gitlab/embedded/services/gitlab-rails
       content.gsub!(%r{/bin/gitlab\-(ctl|rake|rails)}, '/bin/gitswarm-\1')
-      content.gsub!(%r{(?<!/)gitlab\-(ctl|rake|rails)}, 'gitswarm-\1')
+      content.gsub!(/(?<!\/)gitlab\-(ctl|rake|rails)/, 'gitswarm-\1')
 
       # rename the various rake tasks e.g. rake gitlab:check to rake gitswarm:check
       content.gsub!(/(gitswarm-)?rake(\s+)gitlab:/, '\1rake\2gitswarm:')
@@ -93,7 +93,7 @@ module PerforceSwarm
       # deal with references to the omnibus package
       content.gsub!(/Omnibus GitSwarm/i, 'GitSwarm')
       content.gsub!(/Omnibus-gitlab /, 'GitSwarm ')
-      content.gsub!(%r{(omnibus)-gitlab(?!/)}i, 'gitswarm')
+      content.gsub!(/(omnibus)-gitlab(?!\/)/i, 'gitswarm')
       content.gsub!(/Omnibus Installation/, 'Package Installation')
       content.gsub!(/Omnibus-packages/, 'GitSwarm packages')
 

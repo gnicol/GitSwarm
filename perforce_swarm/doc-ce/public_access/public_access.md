@@ -47,16 +47,7 @@ When visiting the public page of an user, you will only see listed projects whic
 
 ## Restricting the use of public or internal projects
 
-You can disable public projects, or public and internal projects, for the
-entire GitSwarm installation to prevent people from making code public by
-accident.
-
-To do so, add (or modify) the following lines in the configuration file
-`/etc/gitswarm/gitswarm.rb`:
-
-```
-# Control visibility of projects; default value is nil
-# nil = public and internal projects are visible
-# ['public', 'internal'] = make public and internal project invisible
-gitlab_rails['gitlab_restricted_visibility_levels'] = nil
-```
+In the Admin area under Settings, you can disable public projects or public
+and internal projects for the entire GitSwarm installation to prevent
+people making code public by accident. The restricted visibility settings
+do not apply to admin users.

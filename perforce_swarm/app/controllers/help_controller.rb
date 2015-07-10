@@ -1,15 +1,18 @@
 require Rails.root.join('app', 'controllers', 'help_controller')
 
 module PerforceSwarm
-  # Override the CE help controller to search the swarm directory for files
+  # Override the GitLab help controller to search the
+  # perforce_swarm directory for files
   module HelpControllerExtension
     def show
       category = clean_path_info(path_params[:category])
       file = path_params[:file]
 
+      override_doc_dir = PerforceSwarm.ee? ? 'doc-ee' : 'doc-ce'
+
       respond_to do |format|
         format.any(:markdown, :md, :html) do
-          swarm_path = Rails.root.join('perforce_swarm', 'doc', category, "#{file}.md")
+          swarm_path = Rails.root.join('perforce_swarm', override_doc_dir, category, "#{file}.md")
           path       = Rails.root.join('doc', category, "#{file}.md")
           if File.exist?(swarm_path)
             @markdown = File.read(swarm_path)
@@ -25,7 +28,7 @@ module PerforceSwarm
 
         # Allow access to images in the doc folder
         format.any(:png, :gif, :jpeg) do
-          swarm_path = Rails.root.join('perforce_swarm', 'doc', category, "#{file}.#{params[:format]}")
+          swarm_path = Rails.root.join('perforce_swarm', override_doc_dir, category, "#{file}.#{params[:format]}")
           path       = Rails.root.join('doc', category, "#{file}.#{params[:format]}")
           if File.exist?(swarm_path)
             send_file(swarm_path, disposition: 'inline')
@@ -43,6 +46,9 @@ module PerforceSwarm
 
     def help_preprocess(category, file)
       content = File.read(Rails.root.join('doc', category, "#{file}.md"))
+
+      # replace GitLab attribution with our own
+      content.gsub!(/GitLab B\.V\./, 'Perforce Software')
 
       # they talk about GitLab EE only features, nuke those lines
       content.gsub!(/^.*GitLab (EE|Enterprise Edition).*$/, '')

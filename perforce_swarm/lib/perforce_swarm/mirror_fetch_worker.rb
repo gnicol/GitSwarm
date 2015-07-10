@@ -27,8 +27,9 @@ module PerforceSwarm
       mirror_script = File.join(shell_path, 'perforce_swarm', 'bin', 'gitswarm-mirror')
 
       # for each project, perform a mirror fetch
-      Project.all.each do |project|
-        puts "Running mirror fetch against #{project.path_with_namespace}"
+      ::Project.all.each do |project|
+        next unless PerforceSwarm::Repo.new(project.repository.path_to_repo).mirrored?
+
         system(mirror_script, 'fetch', '--min-outdated=300', project.path_with_namespace + '.git')
       end
     end

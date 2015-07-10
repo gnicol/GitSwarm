@@ -534,6 +534,7 @@ class Project < ActiveRecord::Base
 
   def url_to_repo
     gitlab_shell.url_to_repo(path_with_namespace)
+    gitlab_shell.url_to_repo(path_with_namespace)
   end
 
   def namespace_dir

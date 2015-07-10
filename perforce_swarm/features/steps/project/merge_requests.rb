@@ -7,6 +7,12 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   include Spinach::DSL
   include LoginHelpers
 
+  step 'I click link "New Merge Request"' do
+    ancestor = page.find('.issue-search-form + div')
+    ancestor.should have_link 'New Merge Request'
+    ancestor.click_link 'New Merge Request'
+  end
+
   step 'I should see last push widget' do
     page.should have_content 'You pushed to fix'
     page.should have_link 'Create Merge Request'

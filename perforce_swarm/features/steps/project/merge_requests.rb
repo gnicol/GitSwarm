@@ -100,11 +100,9 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I accept this merge request' do
-    module PerforceSwarm::GitlabSatelliteMergeAction
-      def merge!(_merge_commit_message = nil)
-        true
-      end
-    end
+    MergeRequests::AutoMergeService.any_instance.stub(
+      merge!: true
+    )
 
     page.within '.mr-state-widget' do
       click_button 'Accept Merge Request'

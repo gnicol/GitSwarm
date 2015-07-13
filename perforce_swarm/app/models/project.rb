@@ -33,7 +33,6 @@ module PerforceSwarm
 end
 
 class Project < ActiveRecord::Base
-  validates :git_fusion_repo,
-            length: { within: 0..255 }
+  validates :git_fusion_repo, length: { maximum: 255 }, allow_blank: true
   prepend PerforceSwarm::Project
 end

@@ -1,3 +1,5 @@
+require 'gitlab' # Load lib/gitlab.rb as soon as possible
+
 class Settings < Settingslogic
   source ENV.fetch('GITLAB_CONFIG') { "#{Rails.root}/config/gitlab.yml" }
   namespace Rails.env
@@ -64,15 +66,17 @@ Settings.ldap['enabled'] = false if Settings.ldap['enabled'].nil?
 # backwards compatibility, we only have one host
 if Settings.ldap['enabled'] || Rails.env.test?
   if Settings.ldap['host'].present?
+    # We detected old LDAP configuration syntax. Update the config to make it
+    # look like it was entered with the new syntax.
     server = Settings.ldap.except('sync_time')
-    server['provider_name'] = 'ldap'
     Settings.ldap['servers'] = {
-      'ldap' => server
+      'main' => server
     }
   end
 
   Settings.ldap['servers'].each do |key, server|
     server['label'] ||= 'LDAP'
+    server['block_auto_created_users'] = false if server['block_auto_created_users'].nil?
     server['allow_username_or_email_login'] = false if server['allow_username_or_email_login'].nil?
     server['active_directory'] = true if server['active_directory'].nil?
     server['provider_name'] ||= "ldap#{key}".downcase
@@ -80,8 +84,14 @@ if Settings.ldap['enabled'] || Rails.env.test?
   end
 end
 
+
 Settings['omniauth'] ||= Settingslogic.new({})
 Settings.omniauth['enabled']      = false if Settings.omniauth['enabled'].nil?
+Settings.omniauth['auto_sign_in_with_provider'] = false if Settings.omniauth['auto_sign_in_with_provider'].nil?
+Settings.omniauth['allow_single_sign_on'] = false if Settings.omniauth['allow_single_sign_on'].nil?
+Settings.omniauth['block_auto_created_users'] = true if Settings.omniauth['block_auto_created_users'].nil?
+Settings.omniauth['auto_link_ldap_user'] = false if Settings.omniauth['auto_link_ldap_user'].nil?
+
 Settings.omniauth['providers']  ||= []
 
 Settings['issues_tracker']  ||= {}
@@ -102,6 +112,8 @@ Settings.gitlab['relative_url_root'] ||= ENV['RAILS_RELATIVE_URL_ROOT'] || ''
 Settings.gitlab['protocol']   ||= Settings.gitlab.https ? "https" : "http"
 Settings.gitlab['email_enabled'] ||= true if Settings.gitlab['email_enabled'].nil?
 Settings.gitlab['email_from'] ||= "gitlab@#{Settings.gitlab.host}"
+Settings.gitlab['email_display_name'] ||= "GitLab"
+Settings.gitlab['email_reply_to'] ||= "noreply@#{Settings.gitlab.host}"
 Settings.gitlab['url']        ||= Settings.send(:build_gitlab_url)
 Settings.gitlab['user']       ||= 'git'
 Settings.gitlab['user_home']  ||= begin
@@ -118,12 +130,14 @@ Settings.gitlab['username_changing_enabled'] = true if Settings.gitlab['username
 Settings.gitlab['issue_closing_pattern'] = '((?:[Cc]los(?:e[sd]?|ing)|[Ff]ix(?:e[sd]|ing)?|[Rr]esolv(?:e[sd]?|ing)) +(?:(?:issues? +)?#\d+(?:(?:, *| +and +)?))+)' if Settings.gitlab['issue_closing_pattern'].nil?
 Settings.gitlab['default_projects_features'] ||= {}
 Settings.gitlab['webhook_timeout'] ||= 10
+Settings.gitlab['max_attachment_size'] ||= 10
 Settings.gitlab.default_projects_features['issues']         = true if Settings.gitlab.default_projects_features['issues'].nil?
 Settings.gitlab.default_projects_features['merge_requests'] = true if Settings.gitlab.default_projects_features['merge_requests'].nil?
 Settings.gitlab.default_projects_features['wiki']           = true if Settings.gitlab.default_projects_features['wiki'].nil?
 Settings.gitlab.default_projects_features['snippets']       = false if Settings.gitlab.default_projects_features['snippets'].nil?
 Settings.gitlab.default_projects_features['visibility_level']    = Settings.send(:verify_constant, Gitlab::VisibilityLevel, Settings.gitlab.default_projects_features['visibility_level'], Gitlab::VisibilityLevel::PRIVATE)
 Settings.gitlab['repository_downloads_path'] = File.absolute_path(Settings.gitlab['repository_downloads_path'] || 'tmp/repositories', Rails.root)
+Settings.gitlab['restricted_signup_domains'] ||= []
 
 #
 # Gravatar
@@ -139,6 +153,7 @@ Settings.gravatar['ssl_url']    ||= 'https://secure.gravatar.com/avatar/%{hash}?
 Settings['gitlab_shell'] ||= Settingslogic.new({})
 Settings.gitlab_shell['path']         ||= Settings.gitlab['user_home'] + '/gitlab-shell/'
 Settings.gitlab_shell['hooks_path']   ||= Settings.gitlab['user_home'] + '/gitlab-shell/hooks/'
+Settings.gitlab_shell['secret_file'] ||= Rails.root.join('.gitlab_shell_secret')
 Settings.gitlab_shell['receive_pack']   = true if Settings.gitlab_shell['receive_pack'].nil?
 Settings.gitlab_shell['upload_pack']    = true if Settings.gitlab_shell['upload_pack'].nil?
 Settings.gitlab_shell['repos_path']   ||= Settings.gitlab['user_home'] + '/repositories/'
@@ -159,6 +174,7 @@ Settings.backup['upload'] ||= Settingslogic.new({ 'remote_directory' => nil, 'co
 if Settings.backup['upload']['connection']
   Settings.backup['upload']['connection'] = Hash[Settings.backup['upload']['connection'].map { |k, v| [k.to_sym, v] }]
 end
+Settings.backup['upload']['multipart_chunk_size'] ||= 104857600
 
 #
 # Git
@@ -182,6 +198,7 @@ Settings['extra'] ||= Settingslogic.new({})
 #
 Settings['rack_attack'] ||= Settingslogic.new({})
 Settings.rack_attack['git_basic_auth'] ||= Settingslogic.new({})
+Settings.rack_attack.git_basic_auth['enabled'] = true if Settings.rack_attack.git_basic_auth['enabled'].nil?
 Settings.rack_attack.git_basic_auth['ip_whitelist'] ||= %w{127.0.0.1}
 Settings.rack_attack.git_basic_auth['maxretry'] ||= 10
 Settings.rack_attack.git_basic_auth['findtime'] ||= 1.minute

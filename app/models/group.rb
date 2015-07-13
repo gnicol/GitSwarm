@@ -17,13 +17,15 @@ require 'carrierwave/orm/activerecord'
 require 'file_size_validator'
 
 class Group < Namespace
+  include Referable
+
   has_many :group_members, dependent: :destroy, as: :source, class_name: 'GroupMember'
   has_many :users, through: :group_members
 
-  validate :avatar_type, if: ->(user) { user.avatar_changed? }
+  validate :avatar_type, if: ->(user) { user.avatar.present? && user.avatar_changed? }
   validates :avatar, file_size: { maximum: 200.kilobytes.to_i }
 
-  mount_uploader :avatar, AttachmentUploader
+  mount_uploader :avatar, AvatarUploader
 
   after_create :post_create_hook
   after_destroy :post_destroy_hook
@@ -36,6 +38,18 @@ class Group < Namespace
     def sort(method)
       order_by(method)
     end
+
+    def reference_prefix
+      User.reference_prefix
+    end
+
+    def reference_pattern
+      User.reference_pattern
+    end
+  end
+
+  def to_reference(_from_project = nil)
+    "#{self.class.reference_prefix}#{name}"
   end
 
   def human_name
@@ -46,19 +60,18 @@ class Group < Namespace
     @owners ||= group_members.owners.map(&:user)
   end
 
-  def add_users(user_ids, access_level)
-    user_ids.compact.each do |user_id|
-      user = self.group_members.find_or_initialize_by(user_id: user_id)
-      user.update_attributes(access_level: access_level)
+  def add_users(user_ids, access_level, current_user = nil)
+    user_ids.each do |user_id|
+      Member.add_user(self.group_members, user_id, access_level, current_user)
     end
   end
 
-  def add_user(user, access_level)
-    self.group_members.create(user_id: user.id, access_level: access_level)
+  def add_user(user, access_level, current_user = nil)
+    add_users([user], access_level, current_user)
   end
 
-  def add_owner(user)
-    self.add_user(user, Gitlab::Access::OWNER)
+  def add_owner(user, current_user = nil)
+    self.add_user(user, Gitlab::Access::OWNER, current_user)
   end
 
   def has_owner?(user)
@@ -88,10 +101,14 @@ class Group < Namespace
   end
 
   def post_create_hook
+    Gitlab::AppLogger.info("Group \"#{name}\" was created")
+
     system_hook_service.execute_hooks_for(self, :create)
   end
 
   def post_destroy_hook
+    Gitlab::AppLogger.info("Group \"#{name}\" was removed")
+
     system_hook_service.execute_hooks_for(self, :destroy)
   end
 

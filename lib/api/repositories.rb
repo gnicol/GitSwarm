@@ -62,7 +62,7 @@ module API
         ref = params[:ref_name] || user_project.try(:default_branch) || 'master'
         path = params[:path] || nil
 
-        commit = user_project.repository.commit(ref)
+        commit = user_project.commit(ref)
         not_found!('Tree') unless commit
 
         tree = user_project.repository.tree(commit.id, path)
@@ -133,10 +133,11 @@ module API
         authorize! :download_code, user_project
 
         begin
-          file_path = ArchiveRepositoryService.new.execute(
-              user_project,
-              params[:sha],
-              params[:format])
+          file_path = ArchiveRepositoryService.new(
+            user_project,
+            params[:sha],
+            params[:format]
+          ).execute
         rescue
           not_found!('File')
         end
@@ -149,7 +150,7 @@ module API
           env['api.format'] = :binary
           present data
         else
-          not_found!('File')
+          redirect request.fullpath
         end
       end
 

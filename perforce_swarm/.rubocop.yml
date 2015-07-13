@@ -8,10 +8,16 @@ Metrics/AbcSize:
 Metrics/ClassLength:
   Enabled: false
 
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
 Metrics/LineLength:
   Max: 120
 
 Metrics/MethodLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
   Enabled: false
 
 Style/ClassAndModuleChildren:
@@ -20,5 +26,11 @@ Style/ClassAndModuleChildren:
 Style/Documentation:
   Enabled: false
 
+Style/GlobalVars:
+  AllowedVariables: [$progress]
+
 Style/GuardClause:
+  Enabled: false
+
+Style/SpaceAroundOperators:
   Enabled: false

@@ -16,9 +16,6 @@ module MergeRequests
         return build_failed(merge_request, nil)
       end
 
-      # Generate suggested MR title based on source branch name
-      merge_request.title = merge_request.source_branch.titleize.humanize
-
       compare_result = CompareService.new.execute(
         current_user,
         merge_request.source_project,
@@ -32,7 +29,7 @@ module MergeRequests
       # At this point we decide if merge request can be created
       # If we have at least one commit to merge -> creation allowed
       if commits.present?
-        merge_request.compare_commits = Commit.decorate(commits)
+        merge_request.compare_commits = Commit.decorate(commits, merge_request.source_project)
         merge_request.can_be_created = true
         merge_request.compare_failed = false
 
@@ -50,6 +47,15 @@ module MergeRequests
       else
         merge_request.can_be_created = false
         merge_request.compare_failed = false
+      end
+
+      commits = merge_request.compare_commits
+      if commits && commits.count == 1
+        commit = commits.first
+        merge_request.title       = commit.title
+        merge_request.description = commit.description.try(:strip)
+      else
+        merge_request.title = merge_request.source_branch.titleize.humanize
       end
 
       merge_request

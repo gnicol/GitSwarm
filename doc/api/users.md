@@ -57,7 +57,8 @@ GET /users
     "color_scheme_id": 2,
     "is_admin": false,
     "avatar_url": "http://localhost:3000/uploads/user/avatar/1/cd8.jpeg",
-    "can_create_group": true
+    "can_create_group": true,
+    "current_sign_in_at": "2014-03-19T13:12:15Z"
   },
   {
     "id": 2,
@@ -79,7 +80,8 @@ GET /users
     "avatar_url": "http://localhost:3000/uploads/user/avatar/1/cd8.jpeg",
     "can_create_group": true,
     "can_create_project": true,
-    "projects_limit": 100
+    "projects_limit": 100,
+    "current_sign_in_at": "2014-03-19T17:54:13Z"
   }
 ]
 ```
@@ -170,6 +172,7 @@ Parameters:
 - `bio` (optional)              - User's biography
 - `admin` (optional)            - User is admin - true or false (default)
 - `can_create_group` (optional) - User can create groups - true or false
+- `confirm` (optional)          - Require confirmation - true (default) or false
 
 ## User modification
 

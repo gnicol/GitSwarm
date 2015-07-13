@@ -7,6 +7,7 @@
 module Issuable
   extend ActiveSupport::Concern
   include Mentionable
+  include Participable
 
   included do
     belongs_to :author, class_name: "User"
@@ -15,6 +16,7 @@ module Issuable
     has_many :notes, as: :noteable, dependent: :destroy
     has_many :label_links, as: :target, dependent: :destroy
     has_many :labels, through: :label_links
+    has_many :subscriptions, dependent: :destroy, as: :subscribable
 
     validates :author, presence: true
     validates :title, presence: true, length: { within: 0..255 }
@@ -44,6 +46,7 @@ module Issuable
              prefix: true
 
     attr_mentionable :title, :description
+    participant :author, :assignee, :notes, :mentioned_users
   end
 
   module ClassMethods
@@ -116,20 +119,20 @@ module Issuable
     upvotes + downvotes
   end
 
-  # Return all users participating on the discussion
-  def participants
-    users = []
-    users << author
-    users << assignee if is_assigned?
-    mentions = []
-    mentions << self.mentioned_users
+  def subscribed?(user)
+    subscription = subscriptions.find_by_user_id(user.id)
 
-    notes.each do |note|
-      users << note.author
-      mentions << note.mentioned_users
+    if subscription
+      return subscription.subscribed
     end
 
-    users.concat(mentions.reduce([], :|)).uniq
+    participants(user).include?(user)
+  end
+
+  def toggle_subscription(user)
+    subscriptions.
+      find_or_initialize_by(user_id: user.id).
+      update(subscribed: !subscribed?(user))
   end
 
   def to_hook_data(user)

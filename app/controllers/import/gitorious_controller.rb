@@ -6,7 +6,7 @@ class Import::GitoriousController < Import::BaseController
 
   def callback
     session[:gitorious_repos] = params[:repos]
-    redirect_to status_import_gitorious_url
+    redirect_to status_import_gitorious_path
   end
 
   def status
@@ -15,7 +15,7 @@ class Import::GitoriousController < Import::BaseController
     @already_added_projects = current_user.created_projects.where(import_type: "gitorious")
     already_added_projects_names = @already_added_projects.pluck(:import_source)
 
-    @repos.to_a.reject! { |repo| already_added_projects_names.include? repo.full_name }
+    @repos.reject! { |repo| already_added_projects_names.include? repo.full_name }
   end
 
   def jobs

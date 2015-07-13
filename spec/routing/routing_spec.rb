@@ -28,7 +28,7 @@ end
 #          DELETE /snippets/:id(.:format)      snippets#destroy
 describe SnippetsController, "routing" do
   it "to #user_index" do
-    expect(get("/s/User")).to route_to('snippets#user_index', username: 'User')
+    expect(get("/s/User")).to route_to('snippets#index', username: 'User')
   end
 
   it "to #raw" do
@@ -64,50 +64,35 @@ describe SnippetsController, "routing" do
   end
 end
 
-#              help GET    /help(.:format)              help#index
-#  help_permissions GET    /help/permissions(.:format)  help#permissions
-#     help_workflow GET    /help/workflow(.:format)     help#workflow
-#          help_api GET    /help/api(.:format)          help#api
-#    help_web_hooks GET    /help/web_hooks(.:format)    help#web_hooks
-# help_system_hooks GET    /help/system_hooks(.:format) help#system_hooks
-#     help_markdown GET    /help/markdown(.:format)     help#markdown
-#          help_ssh GET    /help/ssh(.:format)          help#ssh
-#    help_raketasks GET    /help/raketasks(.:format)    help#raketasks
+#            help GET /help(.:format)                 help#index
+#       help_page GET /help/:category/:file(.:format) help#show {:category=>/.*/, :file=>/[^\/\.]+/}
+#  help_shortcuts GET /help/shortcuts(.:format)       help#shortcuts
+#         help_ui GET /help/ui(.:format)              help#ui
 describe HelpController, "routing" do
   it "to #index" do
     expect(get("/help")).to route_to('help#index')
   end
 
-  it "to #permissions" do
-    expect(get("/help/permissions/permissions")).to route_to('help#show', category: "permissions", file: "permissions")
+  it 'to #show' do
+    path = '/help/markdown/markdown.md'
+    expect(get(path)).to route_to('help#show',
+                                  category: 'markdown',
+                                  file: 'markdown',
+                                  format: 'md')
+
+    path = '/help/workflow/protected_branches/protected_branches1.png'
+    expect(get(path)).to route_to('help#show',
+                                  category: 'workflow/protected_branches',
+                                  file: 'protected_branches1',
+                                  format: 'png')
   end
 
-  it "to #workflow" do
-    expect(get("/help/workflow/README")).to route_to('help#show', category: "workflow", file: "README")
+  it 'to #shortcuts' do
+    expect(get('/help/shortcuts')).to route_to('help#shortcuts')
   end
 
-  it "to #api" do
-    expect(get("/help/api/README")).to route_to('help#show', category: "api", file: "README")
-  end
-
-  it "to #web_hooks" do
-    expect(get("/help/web_hooks/web_hooks")).to route_to('help#show', category: "web_hooks", file: "web_hooks")
-  end
-
-  it "to #system_hooks" do
-    expect(get("/help/system_hooks/system_hooks")).to route_to('help#show', category: "system_hooks", file: "system_hooks")
-  end
-
-  it "to #markdown" do
-    expect(get("/help/markdown/markdown")).to route_to('help#show',category: "markdown", file: "markdown")
-  end
-
-  it "to #ssh" do
-    expect(get("/help/ssh/README")).to route_to('help#show', category: "ssh", file: "README")
-  end
-
-  it "to #raketasks" do
-    expect(get("/help/raketasks/README")).to route_to('help#show', category: "raketasks", file: "README")
+  it 'to #ui' do
+    expect(get('/help/ui')).to route_to('help#ui')
   end
 end
 
@@ -117,7 +102,6 @@ end
 #               profile_token GET    /profile/token(.:format)               profile#token
 # profile_reset_private_token PUT    /profile/reset_private_token(.:format) profile#reset_private_token
 #                     profile GET    /profile(.:format)                     profile#show
-#              profile_design GET    /profile/design(.:format)              profile#design
 #              profile_update PUT    /profile/update(.:format)              profile#update
 describe ProfilesController, "routing" do
   it "to #account" do
@@ -135,9 +119,19 @@ describe ProfilesController, "routing" do
   it "to #show" do
     expect(get("/profile")).to route_to('profiles#show')
   end
+end
 
-  it "to #design" do
-    expect(get("/profile/design")).to route_to('profiles#design')
+# profile_preferences GET      /profile/preferences(.:format) profiles/preferences#show
+#                     PATCH    /profile/preferences(.:format) profiles/preferences#update
+#                     PUT      /profile/preferences(.:format) profiles/preferences#update
+describe Profiles::PreferencesController, 'routing' do
+  it 'to #show' do
+    expect(get('/profile/preferences')).to route_to('profiles/preferences#show')
+  end
+
+  it 'to #update' do
+    expect(put('/profile/preferences')).to   route_to('profiles/preferences#update')
+    expect(patch('/profile/preferences')).to route_to('profiles/preferences#update')
   end
 end
 
@@ -210,11 +204,9 @@ end
 #                dashboard GET    /dashboard(.:format)                dashboard#show
 #         dashboard_issues GET    /dashboard/issues(.:format)         dashboard#issues
 # dashboard_merge_requests GET    /dashboard/merge_requests(.:format) dashboard#merge_requests
-#                     root        /                                   dashboard#show
 describe DashboardController, "routing" do
   it "to #index" do
     expect(get("/dashboard")).to route_to('dashboard#show')
-    expect(get("/")).to route_to('dashboard#show')
   end
 
   it "to #issues" do
@@ -225,6 +217,14 @@ describe DashboardController, "routing" do
     expect(get("/dashboard/merge_requests")).to route_to('dashboard#merge_requests')
   end
 end
+
+#                     root        /                                   root#show
+describe RootController, 'routing' do
+  it 'to #show' do
+    expect(get('/')).to route_to('root#show')
+  end
+end
+
 
 #        new_user_session GET    /users/sign_in(.:format)               devise/sessions#new
 #            user_session POST   /users/sign_in(.:format)               devise/sessions#create

@@ -13,6 +13,13 @@ describe Repository do
     it { is_expected.not_to include('fix') }
   end
 
+  describe :tag_names_contains do
+    subject { repository.tag_names_contains(sample_commit.id) }
+
+    it { is_expected.to include('v1.1.0') }
+    it { is_expected.not_to include('v1.0.0') }
+  end
+
   describe :last_commit_for_path do
     subject { repository.last_commit_for_path(sample_commit.id, '.gitignore').id }
 

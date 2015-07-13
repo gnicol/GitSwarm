@@ -5,31 +5,13 @@ describe IssuesHelper do
   let(:issue) { create :issue, project: project }
   let(:ext_project) { create :redmine_project }
 
-  describe "title_for_issue" do
-    it "should return issue title if used internal tracker" do
-      @project = project
-      expect(title_for_issue(issue.iid)).to eq issue.title
-    end
-
-    it "should always return empty string if used external tracker" do
-      @project = ext_project
-      expect(title_for_issue(rand(100))).to eq ""
-    end
-
-    it "should always return empty string if project nil" do
-      @project = nil
-
-      expect(title_for_issue(rand(100))).to eq ""
-    end
-  end
-
   describe "url_for_project_issues" do
     let(:project_url) { ext_project.external_issue_tracker.project_url }
     let(:ext_expected) do
       project_url.gsub(':project_id', ext_project.id.to_s)
                  .gsub(':issues_tracker_id', ext_project.issues_tracker_id.to_s)
     end
-    let(:int_expected) { polymorphic_path([project]) }
+    let(:int_expected) { polymorphic_path([@project.namespace, project]) }
 
     it "should return internal path if used internal tracker" do
       @project = project
@@ -67,7 +49,7 @@ describe IssuesHelper do
         .gsub(':project_id', ext_project.id.to_s)
         .gsub(':issues_tracker_id', ext_project.issues_tracker_id.to_s)
     end
-    let(:int_expected) { polymorphic_path([project, issue]) }
+    let(:int_expected) { polymorphic_path([@project.namespace, project, issue]) }
 
     it "should return internal path if used internal tracker" do
       @project = project
@@ -104,7 +86,7 @@ describe IssuesHelper do
       issues_url.gsub(':project_id', ext_project.id.to_s)
         .gsub(':issues_tracker_id', ext_project.issues_tracker_id.to_s)
     end
-    let(:int_expected) { new_project_issue_path(project) }
+    let(:int_expected) { new_namespace_project_issue_path(project.namespace, project) }
 
     it "should return internal path if used internal tracker" do
       @project = project

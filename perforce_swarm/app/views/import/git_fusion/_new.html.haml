@@ -1,0 +1,28 @@
+.form-group
+  .col-sm-10
+    - if git_fusion_import_enabled?
+      .description
+        Two+ way mirroring! Project changes made here will be reflected in the Helix Versioning Engine, and changes
+        made via Helix clients will be reflected in GitSwarm.
+        .split
+          .left
+            Connected to Git Fusion Server:
+            %span.greyed
+              = git_fusion_url
+            - repos = git_fusion_repos
+            - if repos.empty?
+              .repo-warning
+                Although Git Fusion is configured, there are no repos available for import.
+            - else
+              .repo-select
+                = hidden_field_tag(:git_fusion_entry, 'default')
+                Repo:
+                = select_tag(:git_fusion_repo_name, repos)
+          .right
+            To point GitSwarm at a different Git Fusion instance, have an admin
+            = link_to 'see these directions.', help_path, target: '_blank'
+    - else
+      .description
+        This GitSwarm instance is not pointing to any Git Fusion servers. To import a repo from an existing Git Fusion
+        instance, have an admin
+        = link_to 'see these directions.', help_path, target: '_blank'

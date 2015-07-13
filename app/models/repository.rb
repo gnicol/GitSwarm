@@ -1,11 +1,17 @@
 class Repository
   include Gitlab::ShellAdapter
 
-  attr_accessor :raw_repository, :path_with_namespace
+  attr_accessor :raw_repository, :path_with_namespace, :project
 
-  def initialize(path_with_namespace, default_branch = nil)
+  def initialize(path_with_namespace, default_branch = nil, project = nil)
     @path_with_namespace = path_with_namespace
-    @raw_repository = Gitlab::Git::Repository.new(path_to_repo) if path_with_namespace
+    @project = project
+
+    if path_with_namespace
+      @raw_repository = Gitlab::Git::Repository.new(path_to_repo) 
+      @raw_repository.autocrlf = :input
+    end
+
   rescue Gitlab::Git::Repository::NoRepository
     nil
   end
@@ -28,7 +34,7 @@ class Repository
   def commit(id = 'HEAD')
     return nil unless raw_repository
     commit = Gitlab::Git::Commit.find(raw_repository, id)
-    commit = Commit.new(commit) if commit
+    commit = Commit.new(commit, @project) if commit
     commit
   rescue Rugged::OdbError
     nil
@@ -42,13 +48,13 @@ class Repository
       limit: limit,
       offset: offset,
     )
-    commits = Commit.decorate(commits) if commits.present?
+    commits = Commit.decorate(commits, @project) if commits.present?
     commits
   end
 
   def commits_between(from, to)
     commits = Gitlab::Git::Commit.between(raw_repository, from, to)
-    commits = Commit.decorate(commits) if commits.present?
+    commits = Commit.decorate(commits, @project) if commits.present?
     commits
   end
 
@@ -62,24 +68,28 @@ class Repository
 
   def add_branch(branch_name, ref)
     cache.expire(:branch_names)
+    @branches = nil
 
     gitlab_shell.add_branch(path_with_namespace, branch_name, ref)
   end
 
   def add_tag(tag_name, ref, message = nil)
     cache.expire(:tag_names)
+    @tags = nil
 
     gitlab_shell.add_tag(path_with_namespace, tag_name, ref, message)
   end
 
   def rm_branch(branch_name)
     cache.expire(:branch_names)
+    @branches = nil
 
     gitlab_shell.rm_branch(path_with_namespace, branch_name)
   end
 
   def rm_tag(tag_name)
     cache.expire(:tag_names)
+    @tags = nil
 
     gitlab_shell.rm_tag(path_with_namespace, tag_name)
   end
@@ -122,7 +132,7 @@ class Repository
 
   def expire_cache
     %i(size branch_names tag_names commit_count graph_log
-       readme version contribution_guide).each do |key|
+       readme version contribution_guide changelog license).each do |key|
       cache.expire(key)
     end
   end
@@ -136,8 +146,8 @@ class Repository
         commit = Gitlab::Git::Commit.new(rugged_commit)
 
         {
-          author_name: commit.author_name.force_encoding('UTF-8'),
-          author_email: commit.author_email.force_encoding('UTF-8'),
+          author_name: commit.author_name,
+          author_email: commit.author_email,
           additions: commit.stats.additions,
           deletions: commit.stats.deletions,
         }
@@ -145,34 +155,21 @@ class Repository
     end
   end
 
-  def timestamps_by_user_log(user)
-    args = %W(git log --author=#{user.email} --since=#{(Date.today - 1.year).to_s} --pretty=format:%cd --date=short)
-    dates = Gitlab::Popen.popen(args, path_to_repo).first.split("\n")
-
-    if dates.present?
-      dates
-    else
-      []
-    end
-  end
-
-  def commits_per_day_for_user(user)
-    timestamps_by_user_log(user).
-      group_by { |commit_date| commit_date }.
-      inject({}) do |hash, (timestamp_date, commits)|
-        hash[timestamp_date] = commits.count
-        hash
-      end
+  def lookup_cache
+    @lookup_cache ||= {}
   end
 
   def method_missing(m, *args, &block)
-    raw_repository.send(m, *args, &block)
+    if m == :lookup && !block_given?
+      lookup_cache[m] ||= {}
+      lookup_cache[m][args.join(":")] ||= raw_repository.send(m, *args, &block)
+    else
+      raw_repository.send(m, *args, &block)
+    end
   end
 
-  def respond_to?(method)
-    return true if raw_repository.respond_to?(method)
-
-    super
+  def respond_to_missing?(method, include_private = false)
+    raw_repository.respond_to?(method, include_private) || super
   end
 
   def blob_at(sha, path)
@@ -196,16 +193,44 @@ class Repository
   end
 
   def contribution_guide
-    cache.fetch(:contribution_guide) { tree(:head).contribution_guide }
+    cache.fetch(:contribution_guide) do
+      tree(:head).blobs.find do |file|
+        file.contributing?
+      end
+    end
+  end
+
+  def changelog
+    cache.fetch(:changelog) do
+      tree(:head).blobs.find do |file|
+        file.name =~ /\A(changelog|history)/i
+      end
+    end
+  end
+
+  def license
+    cache.fetch(:license) do
+      tree(:head).blobs.find do |file|
+        file.name =~ /\Alicense/i
+      end
+    end
   end
 
   def head_commit
-    commit(self.root_ref)
+    @head_commit ||= commit(self.root_ref)
+  end
+
+  def head_tree
+    @head_tree ||= Tree.new(self, head_commit.sha, nil)
   end
 
   def tree(sha = :head, path = nil)
     if sha == :head
-      sha = head_commit.sha
+      if path.nil?
+        return head_tree
+      else
+        sha = head_commit.sha
+      end
     end
 
     Tree.new(self, sha, path)
@@ -238,7 +263,7 @@ class Repository
   end
 
   def last_commit_for_path(sha, path)
-    args = %W(git rev-list --max-count 1 #{sha} -- #{path})
+    args = %W(git rev-list --max-count=1 #{sha} -- #{path})
     sha = Gitlab::Popen.popen(args, path_to_repo).first.strip
     commit(sha)
   end
@@ -246,6 +271,9 @@ class Repository
   # Remove archives older than 2 hours
   def clean_old_archives
     repository_downloads_path = Gitlab.config.gitlab.repository_downloads_path
+
+    return unless File.directory?(repository_downloads_path)
+
     Gitlab::Popen.popen(%W(find #{repository_downloads_path} -not -path #{repository_downloads_path} -mmin +120 -delete))
   end
 
@@ -333,7 +361,66 @@ class Repository
     end
   end
 
+  def branches
+    @branches ||= raw_repository.branches
+  end
+
+  def tags
+    @tags ||= raw_repository.tags
+  end
+
+  def root_ref
+    @root_ref ||= raw_repository.root_ref
+  end
+
+  def commit_file(user, path, content, message, ref)
+    path[0] = '' if path[0] == '/'
+
+    committer = user_to_comitter(user)
+    options = {}
+    options[:committer] = committer
+    options[:author] = committer
+    options[:commit] = {
+      message: message,
+      branch: ref
+    }
+
+    options[:file] = {
+      content: content,
+      path: path
+    }
+
+    Gitlab::Git::Blob.commit(raw_repository, options)
+  end
+
+  def remove_file(user, path, message, ref)
+    path[0] = '' if path[0] == '/'
+
+    committer = user_to_comitter(user)
+    options = {}
+    options[:committer] = committer
+    options[:author] = committer
+    options[:commit] = {
+      message: message,
+      branch: ref
+    }
+
+    options[:file] = {
+      path: path
+    }
+
+    Gitlab::Git::Blob.remove(raw_repository, options)
+  end
+
   private
+
+  def user_to_comitter(user)
+    {
+      email: user.email,
+      name: user.name,
+      time: Time.now
+    }
+  end
 
   def cache
     @cache ||= RepositoryCache.new(path_with_namespace)

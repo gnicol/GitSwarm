@@ -20,7 +20,7 @@ module API
         present @groups, with: Entities::Group
       end
 
-      # Create group. Available only for admin
+      # Create group. Available only for users who can create groups.
       #
       # Parameters:
       #   name (required) - The name of the group
@@ -28,7 +28,7 @@ module API
       # Example Request:
       #   POST /groups
       post do
-        authenticated_as_admin!
+        authorize! :create_group, current_user
         required_attributes! [:name, :path]
 
         attrs = attributes_for_keys [:name, :path, :description]
@@ -61,8 +61,8 @@ module API
       #   DELETE /groups/:id
       delete ":id" do
         group = find_group(params[:id])
-        authorize! :manage_group, group
-        group.destroy
+        authorize! :admin_group, group
+        DestroyGroupService.new(group, current_user).execute
       end
 
       # Transfer a project to the Group namespace

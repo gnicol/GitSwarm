@@ -8,6 +8,8 @@ GitLab has a great issue tracker but you can also use an external issue tracker 
 
 ![Jira screenshot](jira-integration-points.png)
 
+GitLab Enterprise Edition contains [advanced JIRA support](http://doc.gitlab.com/ee/integration/jira.html).
+
 ## Configuration
 
 ### Project Service
@@ -23,7 +25,6 @@ Fill in the required details on the page:
 * `issues_url` The URL to the issue in Redmine project that is linked to this GitLab project. Note that the `issues_url` requires `:id` in the url. This id is used by GitLab as a placeholder to replace the issue number.
 * `new_issue_url` This is the URL to create a new issue in Redmine for the project linked to this GitLab project.
 
-
 ### Service Template
 
 It is necessary to configure the external issue tracker per project, because project specific details are needed for the integration with GitLab.
@@ -34,5 +35,10 @@ In GitLab Admin section, navigate to `Service Templates` and choose the service 
 ![redmine service template](redmine_service_template.png)
 
 After the template is created, the template details will be pre-filled on the project service page.
+
+NOTE: For each project, you will still need to configure the issue tracking URLs by replacing `:issues_tracker_id` in the above screenshot
+with the ID used by your external issue tracker. Prior to GitLab v7.8, this ID was configured in the project settings, and GitLab would automatically
+update the URL configured in `gitlab.yml`. This behavior is now depecated, and all issue tracker URLs must be configured directly
+within the project's Services settings.
 
 Support to add your commits to the Jira ticket automatically is [available in GitLab EE](http://doc.gitlab.com/ee/integration/jira.html).

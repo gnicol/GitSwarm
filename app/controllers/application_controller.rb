@@ -2,20 +2,25 @@ require 'gon'
 
 class ApplicationController < ActionController::Base
   include Gitlab::CurrentSettings
+  include GitlabRoutingHelper
+  include PageLayoutHelper
 
-  before_filter :authenticate_user_from_token!
-  before_filter :authenticate_user!
-  before_filter :reject_blocked!
-  before_filter :check_password_expiration
-  before_filter :ldap_security_check
-  before_filter :default_headers
-  before_filter :add_gon_variables
-  before_filter :configure_permitted_parameters, if: :devise_controller?
-  before_filter :require_email, unless: :devise_controller?
+  PER_PAGE = 20
+
+  before_action :authenticate_user_from_token!
+  before_action :authenticate_user!
+  before_action :reject_blocked!
+  before_action :check_password_expiration
+  before_action :ldap_security_check
+  before_action :default_headers
+  before_action :add_gon_variables
+  before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :require_email, unless: :devise_controller?
 
   protect_from_forgery with: :exception
 
   helper_method :abilities, :can?, :current_application_settings
+  helper_method :github_import_enabled?, :gitlab_import_enabled?, :bitbucket_import_enabled?
 
   rescue_from Encoding::CompatibilityError do |exception|
     log_exception(exception)
@@ -83,6 +88,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def after_sign_out_path_for(resource)
+    current_application_settings.after_sign_out_path || new_user_session_path
+  end
+
   def abilities
     Ability.abilities
   end
@@ -93,6 +102,7 @@ class ApplicationController < ActionController::Base
 
   def project
     unless @project
+      namespace = params[:namespace_id]
       id = params[:project_id] || params[:id]
 
       # Redirect from
@@ -104,7 +114,7 @@ class ApplicationController < ActionController::Base
         redirect_to request.original_url.gsub(/\.git\Z/, '') and return
       end
 
-      @project = Project.find_with_namespace(id)
+      @project = Project.find_with_namespace("#{namespace}/#{id}")
 
       if @project and can?(current_user, :read_project, @project)
         @project
@@ -121,17 +131,13 @@ class ApplicationController < ActionController::Base
 
   def repository
     @repository ||= project.repository
-  rescue Grit::NoSuchPathError
+  rescue Grit::NoSuchPathError => e
+    log_exception(e)
     nil
   end
 
   def authorize_project!(action)
     return access_denied! unless can?(current_user, action, project)
-  end
-
-  def authorize_labels!
-    # Labels should be accessible for issues and/or merge requests
-    authorize_read_issue! || authorize_read_merge_request!
   end
 
   def access_denied!
@@ -147,7 +153,7 @@ class ApplicationController < ActionController::Base
   end
 
   def method_missing(method_sym, *arguments, &block)
-    if method_sym.to_s =~ /^authorize_(.*)!$/
+    if method_sym.to_s =~ /\Aauthorize_(.*)!\z/
       authorize_project!($1.to_sym)
     else
       super
@@ -185,6 +191,7 @@ class ApplicationController < ActionController::Base
     gon.api_version = API::API.version
     gon.relative_url_root = Gitlab.config.gitlab.relative_url_root
     gon.default_avatar_url = URI::join(Gitlab.config.gitlab.url, ActionController::Base.helpers.image_path('no_avatar.png')).to_s
+    gon.max_file_size = current_application_settings.max_attachment_size;
 
     if current_user
       gon.current_user_id = current_user.id
@@ -240,7 +247,7 @@ class ApplicationController < ActionController::Base
   end
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.sanitize(:sign_in) { |u| u.permit(:username, :email, :password, :login, :remember_me) }
+    devise_parameter_sanitizer.for(:sign_in) { |u| u.permit(:username, :email, :password, :login, :remember_me, :otp_attempt) }
   end
 
   def hexdigest(string)
@@ -275,40 +282,27 @@ class ApplicationController < ActionController::Base
     @filter_params
   end
 
-  def set_filter_values(collection)
-    assignee_id = @filter_params[:assignee_id]
-    author_id = @filter_params[:author_id]
-    milestone_id = @filter_params[:milestone_id]
-
-    @sort = @filter_params[:sort]
-    @assignees = User.where(id: collection.pluck(:assignee_id))
-    @authors = User.where(id: collection.pluck(:author_id))
-    @milestones = Milestone.where(id: collection.pluck(:milestone_id))
-
-    if assignee_id.present? && !assignee_id.to_i.zero?
-      @assignee = @assignees.find_by(id: assignee_id)
-    end
-
-    if author_id.present? && !author_id.to_i.zero?
-      @author = @authors.find_by(id: author_id)
-    end
-
-    if milestone_id.present? && !milestone_id.to_i.zero?
-      @milestone = @milestones.find_by(id: milestone_id)
-    end
-  end
-
   def get_issues_collection
     set_filters_params
-    issues = IssuesFinder.new.execute(current_user, @filter_params)
-    set_filter_values(issues)
-    issues
+    @issuable_finder = IssuesFinder.new(current_user, @filter_params)
+    @issuable_finder.execute
   end
 
   def get_merge_requests_collection
     set_filters_params
-    merge_requests = MergeRequestsFinder.new.execute(current_user, @filter_params)
-    set_filter_values(merge_requests)
-    merge_requests
+    @issuable_finder = MergeRequestsFinder.new(current_user, @filter_params)
+    @issuable_finder.execute
+  end
+
+  def github_import_enabled?
+    OauthHelper.enabled_oauth_providers.include?(:github)
+  end
+
+  def gitlab_import_enabled?
+    OauthHelper.enabled_oauth_providers.include?(:gitlab)
+  end
+
+  def bitbucket_import_enabled?
+    OauthHelper.enabled_oauth_providers.include?(:bitbucket) && Gitlab::BitbucketImport.public_key.present?
   end
 end

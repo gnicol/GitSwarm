@@ -3,6 +3,7 @@ require 'spec_helper'
 
 describe API::API, api: true  do
   include ApiHelpers
+  include Gitlab::CurrentSettings
   let(:user) { create(:user) }
   let(:user2) { create(:user) }
   let(:user3) { create(:user) }
@@ -57,6 +58,13 @@ describe API::API, api: true  do
         expect(json_response.first['owner']['username']).to eq(user.username)
       end
 
+      it 'should include the project labels as the tag_list' do
+        get api('/projects', user)
+        response.status.should == 200
+        json_response.should be_an Array
+        json_response.first.keys.should include('tag_list')
+      end
+
       context 'and using search' do
         it 'should return searched project' do
           get api('/projects', user), { search: project.name }
@@ -77,6 +85,15 @@ describe API::API, api: true  do
           expect(response.status).to eq(200)
           expect(json_response).to be_an Array
           expect(json_response.first['id']).to eq(project3.id)
+        end
+
+        it 'returns projects in the correct order when ci_enabled_first parameter is passed' do
+          [project, project2, project3].each{ |project| project.build_missing_services }
+          project2.gitlab_ci_service.update(active: true, token: "token", project_url: "url")
+          get api('/projects', user), { ci_enabled_first: 'true'}
+          expect(response.status).to eq(200)
+          expect(json_response).to be_an Array
+          expect(json_response.first['id']).to eq(project2.id)
         end
       end
     end
@@ -148,7 +165,7 @@ describe API::API, api: true  do
     it "should assign attributes to project" do
       project = attributes_for(:project, {
         path: 'camelCasePath',
-        description: Faker::Lorem.sentence,
+        description: FFaker::Lorem.sentence,
         issues_enabled: false,
         merge_requests_enabled: false,
         wiki_enabled: false
@@ -202,6 +219,31 @@ describe API::API, api: true  do
       expect(json_response['public']).to be_falsey
       expect(json_response['visibility_level']).to eq(Gitlab::VisibilityLevel::PRIVATE)
     end
+
+    context 'when a visibility level is restricted' do
+      before do
+        @project = attributes_for(:project, { public: true })
+        allow_any_instance_of(ApplicationSetting).to(
+          receive(:restricted_visibility_levels).and_return([20])
+        )
+      end
+
+      it 'should not allow a non-admin to use a restricted visibility level' do
+        post api('/projects', user), @project
+        expect(response.status).to eq(400)
+        expect(json_response['message']['visibility_level'].first).to(
+          match('restricted by your GitLab administrator')
+        )
+      end
+
+      it 'should allow an admin to override restricted visibility settings' do
+        post api('/projects', admin), @project
+        expect(json_response['public']).to be_truthy
+        expect(json_response['visibility_level']).to(
+          eq(Gitlab::VisibilityLevel::PUBLIC)
+        )
+      end
+    end
   end
 
   describe 'POST /projects/user/:id' do
@@ -221,18 +263,18 @@ describe API::API, api: true  do
       expect(json_response['message']['name']).to eq([
         'can\'t be blank',
         'is too short (minimum is 0 characters)',
-        Gitlab::Regex.project_regex_message
+        Gitlab::Regex.project_name_regex_message
       ])
       expect(json_response['message']['path']).to eq([
         'can\'t be blank',
         'is too short (minimum is 0 characters)',
-        Gitlab::Regex.send(:default_regex_message)
+        Gitlab::Regex.send(:project_path_regex_message)
       ])
     end
 
     it 'should assign attributes to project' do
       project = attributes_for(:project, {
-        description: Faker::Lorem.sentence,
+        description: FFaker::Lorem.sentence,
         issues_enabled: false,
         merge_requests_enabled: false,
         wiki_enabled: false
@@ -399,7 +441,8 @@ describe API::API, api: true  do
   describe 'POST /projects/:id/snippets' do
     it 'should create a new project snippet' do
       post api("/projects/#{project.id}/snippets", user),
-        title: 'api test', file_name: 'sample.rb', code: 'test'
+        title: 'api test', file_name: 'sample.rb', code: 'test',
+        visibility_level: '0'
       expect(response.status).to eq(201)
       expect(json_response['title']).to eq('api test')
     end
@@ -749,11 +792,6 @@ describe API::API, api: true  do
   describe 'DELETE /projects/:id' do
     context 'when authenticated as user' do
       it 'should remove project' do
-        expect(GitlabShellWorker).to(
-          receive(:perform_async).with(:remove_repository,
-                                       /#{project.path_with_namespace}/)
-        ).twice
-
         delete api("/projects/#{project.id}", user)
         expect(response.status).to eq(200)
       end

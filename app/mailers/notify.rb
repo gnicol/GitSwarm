@@ -13,13 +13,11 @@ class Notify < ActionMailer::Base
   add_template_helper MergeRequestsHelper
   add_template_helper EmailsHelper
 
-  default_url_options[:host]     = Gitlab.config.gitlab.host
-  default_url_options[:protocol] = Gitlab.config.gitlab.protocol
-  default_url_options[:port]     = Gitlab.config.gitlab.port unless Gitlab.config.gitlab_on_standard_port?
-  default_url_options[:script_name] = Gitlab.config.gitlab.relative_url_root
+  attr_accessor :current_user
+  helper_method :current_user, :can?
 
   default from: Proc.new { default_sender_address.format }
-  default reply_to: "noreply@#{Gitlab.config.gitlab.host}"
+  default reply_to: Gitlab.config.gitlab.email_reply_to
 
   # Just send email with 2 seconds delay
   def self.delay
@@ -34,23 +32,47 @@ class Notify < ActionMailer::Base
     )
   end
 
+  # Splits "gitlab.corp.company.com" up into "gitlab.corp.company.com",
+  # "corp.company.com" and "company.com".
+  # Respects set tld length so "company.co.uk" won't match "somethingelse.uk"
+  def self.allowed_email_domains
+    domain_parts = Gitlab.config.gitlab.host.split(".")
+    allowed_domains = []
+    begin
+      allowed_domains << domain_parts.join(".")
+      domain_parts.shift
+    end while domain_parts.length > ActionDispatch::Http::URL.tld_length
+
+    allowed_domains
+  end
+
   private
 
   # The default email address to send emails from
   def default_sender_address
     address = Mail::Address.new(Gitlab.config.gitlab.email_from)
-    address.display_name = "GitLab"
+    address.display_name = Gitlab.config.gitlab.email_display_name
     address
+  end
+
+  def can_send_from_user_email?(sender)
+    sender_domain = sender.email.split("@").last
+    self.class.allowed_email_domains.include?(sender_domain)
   end
 
   # Return an email address that displays the name of the sender.
   # Only the displayed name changes; the actual email address is always the same.
-  def sender(sender_id)
-    if sender = User.find(sender_id)
-      address = default_sender_address
-      address.display_name = sender.name
-      address.format
+  def sender(sender_id, send_from_user_email = false)
+    return unless sender = User.find(sender_id)
+
+    address = default_sender_address
+    address.display_name = sender.name
+
+    if send_from_user_email && can_send_from_user_email?(sender)
+      address.address = sender.email
     end
+
+    address.format
   end
 
   # Look up a User by their ID and return their email address
@@ -59,9 +81,8 @@ class Notify < ActionMailer::Base
   #
   # Returns a String containing the User's email address.
   def recipient(recipient_id)
-    if recipient = User.find(recipient_id)
-      recipient.notification_email
-    end
+    @current_user = User.find(recipient_id)
+    @current_user.notification_email
   end
 
   # Set the References header field
@@ -128,10 +149,14 @@ class Notify < ActionMailer::Base
     headers['References'] = message_id(model)
     headers['X-GitLab-Project'] = "#{@project.name} | " if @project
 
-    if (headers[:subject])
+    if headers[:subject]
       headers[:subject].prepend('Re: ')
     end
 
     mail(headers, &block)
+  end
+
+  def can?
+    Ability.abilities.allowed?(user, action, subject)
   end
 end

@@ -39,24 +39,6 @@ describe ApplicationHelper do
     end
   end
 
-  describe 'group_icon' do
-    avatar_file_path = File.join(Rails.root, 'public', 'gitlab_logo.png')
-
-    it 'should return an url for the avatar' do
-      group = create(:group)
-      group.avatar = File.open(avatar_file_path)
-      group.save!
-      expect(group_icon(group.path).to_s).
-        to match("/uploads/group/avatar/#{ group.id }/gitlab_logo.png")
-    end
-
-    it 'should give default avatar_icon when no avatar is present' do
-      group = create(:group)
-      group.save!
-      expect(group_icon(group.path)).to match('group_avatar.png')
-    end
-  end
-
   describe 'project_icon' do
     avatar_file_path = File.join(Rails.root, 'public', 'gitlab_logo.png')
 
@@ -64,8 +46,9 @@ describe ApplicationHelper do
       project = create(:project)
       project.avatar = File.open(avatar_file_path)
       project.save!
-      expect(project_icon(project.to_param).to_s).to eq(
-        "<img alt=\"Gitlab logo\" src=\"/uploads/project/avatar/#{ project.id }/gitlab_logo.png\" />"
+      avatar_url = "http://localhost/uploads/project/avatar/#{ project.id }/gitlab_logo.png"
+      expect(project_icon("#{project.namespace.to_param}/#{project.to_param}").to_s).to eq(
+        "<img alt=\"Gitlab logo\" src=\"#{avatar_url}\" />"
       )
     end
 
@@ -75,8 +58,9 @@ describe ApplicationHelper do
 
       allow_any_instance_of(Project).to receive(:avatar_in_git).and_return(true)
 
-      expect(project_icon(project.to_param).to_s).to match(
-        image_tag(project_avatar_path(project)))
+      avatar_url = 'http://localhost' + namespace_project_avatar_path(project.namespace, project)
+      expect(project_icon("#{project.namespace.to_param}/#{project.to_param}").to_s).to match(
+        image_tag(avatar_url))
     end
   end
 
@@ -192,10 +176,12 @@ describe ApplicationHelper do
     it 'sorts tags in a natural order' do
       # Stub repository.tag_names to make sure we get some valid testing data
       expect(@project.repository).to receive(:tag_names).
-        and_return(['v1.0.9', 'v1.0.10', 'v2.0', 'v3.1.4.2', 'v1.0.9a'])
+        and_return(['v1.0.9', 'v1.0.10', 'v2.0', 'v3.1.4.2', 'v2.0rc1¿',
+                    'v1.0.9a', 'v2.0-rc1', 'v2.0rc2'])
 
       expect(options[1][1]).
-        to eq(['v3.1.4.2', 'v2.0', 'v1.0.10', 'v1.0.9a', 'v1.0.9'])
+        to eq(['v3.1.4.2', 'v2.0', 'v2.0rc2', 'v2.0rc1¿', 'v2.0-rc1', 'v1.0.10',
+               'v1.0.9', 'v1.0.9a'])
     end
   end
 
@@ -239,34 +225,62 @@ describe ApplicationHelper do
   end
 
   describe 'link_to' do
-
     it 'should not include rel=nofollow for internal links' do
-      expect(link_to('Home', root_path)).to eq("<a href=\"/\">Home</a>")
+      expect(link_to('Home', root_path)).to eq('<a href="/">Home</a>')
     end
 
     it 'should include rel=nofollow for external links' do
-      expect(link_to('Example', 'http://www.example.com')).to eq("<a href=\"http://www.example.com\" rel=\"nofollow\">Example</a>")
+      expect(link_to('Example', 'http://www.example.com')).
+        to eq '<a href="http://www.example.com" rel="nofollow">Example</a>'
     end
 
-    it 'should include re=nofollow for external links and honor existing html_options' do
-      expect(
-        link_to('Example', 'http://www.example.com', class: 'toggle', data: {toggle: 'dropdown'})
-      ).to eq("<a class=\"toggle\" data-toggle=\"dropdown\" href=\"http://www.example.com\" rel=\"nofollow\">Example</a>")
+    it 'should include rel=nofollow for external links and honor existing html_options' do
+      expect(link_to('Example', 'http://www.example.com', class: 'toggle', data: {toggle: 'dropdown'}))
+        .to eq '<a class="toggle" data-toggle="dropdown" href="http://www.example.com" rel="nofollow">Example</a>'
     end
 
-    it 'should include rel=nofollow for external links and preserver other rel values' do
-      expect(
-        link_to('Example', 'http://www.example.com', rel: 'noreferrer')
-      ).to eq("<a href=\"http://www.example.com\" rel=\"noreferrer nofollow\">Example</a>")
+    it 'should include rel=nofollow for external links and preserve other rel values' do
+      expect(link_to('Example', 'http://www.example.com', rel: 'noreferrer'))
+        .to eq '<a href="http://www.example.com" rel="noreferrer nofollow">Example</a>'
+    end
+
+    it 'should not include rel=nofollow for external links on the same host as GitLab' do
+      expect(Gitlab.config.gitlab).to receive(:host).and_return('example.foo')
+      expect(link_to('Example', 'http://example.foo/bar')).
+        to eq '<a href="http://example.foo/bar">Example</a>'
+    end
+
+    it 'should not raise an error when given a bad URI' do
+      expect { link_to('default', 'if real=1 RANDOM; if real>1 IDLHS; if real>500 LHS') }.
+        not_to raise_error
+    end
+
+    it 'should not raise an error when given a bad mailto URL' do
+      expect { link_to('email', 'mailto://foo.bar@example.es?subject=Subject%20Line') }.
+        not_to raise_error
     end
   end
 
-  describe 'markup_render' do
+  describe 'render_markup' do
     let(:content) { 'Noël' }
 
     it 'should preserve encoding' do
       expect(content.encoding.name).to eq('UTF-8')
       expect(render_markup('foo.rst', content).encoding.name).to eq('UTF-8')
+    end
+
+    it "should delegate to #markdown when file name corresponds to Markdown" do
+      expect(self).to receive(:gitlab_markdown?).with('foo.md').and_return(true)
+      expect(self).to receive(:markdown).and_return('NOEL')
+
+      expect(render_markup('foo.md', content)).to eq('NOEL')
+    end
+
+    it "should delegate to #asciidoc when file name corresponds to AsciiDoc" do
+      expect(self).to receive(:asciidoc?).with('foo.adoc').and_return(true)
+      expect(self).to receive(:asciidoc).and_return('NOEL')
+
+      expect(render_markup('foo.adoc', content)).to eq('NOEL')
     end
   end
 end

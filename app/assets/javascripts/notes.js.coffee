@@ -1,3 +1,10 @@
+#= require autosave
+#= require dropzone
+#= require dropzone_input
+#= require gfm_auto_complete
+#= require jquery.atwho
+#= require task_list
+
 class @Notes
   @interval: null
 
@@ -11,6 +18,7 @@ class @Notes
     @setupMainTargetNoteForm()
     @cleanBinding()
     @addBinding()
+    @initTaskList()
 
   addBinding: ->
     # add note to UI after creation
@@ -37,10 +45,8 @@ class @Notes
     $(document).on "click", ".js-note-attachment-delete", @removeAttachment
 
     # reset main target form after submit
-    $(document).on "ajax:complete", ".js-main-target-form", @resetMainTargetForm
-
-    # attachment button
-    $(document).on "click", ".js-choose-note-attachment-button", @chooseNoteAttachment
+    $(document).on "ajax:complete", ".js-main-target-form", @reenableTargetFormSubmitButton
+    $(document).on "ajax:success", ".js-main-target-form", @resetMainTargetForm
 
     # update the file name when an attachment is selected
     $(document).on "change", ".js-note-attachment-input", @updateFormAttachment
@@ -57,12 +63,11 @@ class @Notes
     # fetch notes when tab becomes visible
     $(document).on "visibilitychange", @visibilityChange
 
-    @notes_forms = '.js-main-target-form textarea, .js-discussion-note-form textarea'
     # Chrome doesn't fire keypress or keyup for Command+Enter, so we need keydown.
-    $(document).on('keydown', @notes_forms, (e) ->
+    $(document).on 'keydown', '.js-note-text', (e) ->
+      return if e.originalEvent.repeat
       if e.keyCode == 10 || ((e.metaKey || e.ctrlKey) && e.keyCode == 13)
-        $(@).parents('form').submit()
-    )
+        $(@).closest('form').submit()
 
   cleanBinding: ->
     $(document).off "ajax:success", ".js-main-target-form"
@@ -73,14 +78,17 @@ class @Notes
     $(document).off "click", ".js-note-delete"
     $(document).off "click", ".js-note-attachment-delete"
     $(document).off "ajax:complete", ".js-main-target-form"
-    $(document).off "click", ".js-choose-note-attachment-button"
+    $(document).off "ajax:success", ".js-main-target-form"
     $(document).off "click", ".js-discussion-reply-button"
     $(document).off "click", ".js-add-diff-note-button"
     $(document).off "visibilitychange"
-    $(document).off "keydown", @notes_forms
+    $(document).off "keydown", ".js-note-text"
     $(document).off "keyup", ".js-note-text"
     $(document).off "click", ".js-note-target-reopen"
     $(document).off "click", ".js-note-target-close"
+
+    $('.note .js-task-list-container').taskList('disable')
+    $(document).off 'tasklist:changed', '.note .js-task-list-container'
 
   initRefresh: ->
     clearInterval(Notes.interval)
@@ -115,6 +123,7 @@ class @Notes
     if @isNewNote(note)
       @note_ids.push(note.id)
       $('ul.main-notes-list').append(note.html)
+      @initTaskList()
 
   ###
   Check if note does not exists on page
@@ -173,14 +182,10 @@ class @Notes
 
     form.find(".js-note-text").data("autosave").reset()
 
-  ###
-  Called when clicking the "Choose File" button.
+  reenableTargetFormSubmitButton: ->
+    form = $(".js-main-target-form")
 
-  Opens the file selection dialog.
-  ###
-  chooseNoteAttachment: ->
-    form = $(this).closest("form")
-    form.find(".js-note-attachment-input").click()
+    form.find(".js-note-text").trigger "input"
 
   ###
   Shows the main form and does some setup on it.
@@ -273,6 +278,8 @@ class @Notes
     note_li.replaceWith(note.html)
     note_li.find('.note-edit-form').hide()
     note_li.find('.note-body > .note-text').show()
+    note_li.find('js-task-list-container').taskList('enable')
+    @enableTaskList()
 
   ###
   Called in response to clicking the edit note link
@@ -301,6 +308,14 @@ class @Notes
     form.show()
     textarea = form.find("textarea")
     textarea.focus()
+
+    # HACK (rspeicher/DouweM): Work around a Chrome 43 bug(?).
+    # The textarea has the correct value, Chrome just won't show it unless we
+    # modify it, so let's clear it and re-set it!
+    value = textarea.val()
+    textarea.val ""
+    textarea.val value
+
     disableButtonIfEmptyField textarea, form.find(".js-comment-button")
 
   ###
@@ -438,7 +453,7 @@ class @Notes
     @removeDiscussionNoteForm(form)
 
   updateVotes: ->
-    (new NotesVotes).updateVotes()
+    true
 
   ###
   Called after an attachment file has been selected.
@@ -484,3 +499,13 @@ class @Notes
     else
       form.find('.js-note-target-reopen').text('Reopen')
       form.find('.js-note-target-close').text('Close')
+
+  initTaskList: ->
+    @enableTaskList()
+    $(document).on 'tasklist:changed', '.note .js-task-list-container', @updateTaskList
+
+  enableTaskList: ->
+    $('.note .js-task-list-container').taskList('enable')
+
+  updateTaskList: ->
+    $('form', this).submit()

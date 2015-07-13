@@ -1,6 +1,6 @@
 module BlobHelper
-  def highlight(blob_name, blob_content, nowrap = false)
-    formatter = Rugments::Formatters::HTML.new(
+  def highlight(blob_name, blob_content, nowrap: false, continue: false)
+    @formatter ||= Rugments::Formatters::HTML.new(
       nowrap: nowrap,
       cssclass: 'code highlight',
       lineanchors: true,
@@ -8,16 +8,18 @@ module BlobHelper
     )
 
     begin
-      lexer = Rugments::Lexer.guess(filename: blob_name, source: blob_content)
-    rescue Rugments::Lexer::AmbiguousGuess
+      @lexer ||= Rugments::Lexer.guess(filename: blob_name, source: blob_content).new
+      result = @formatter.format(@lexer.lex(blob_content, continue: continue)).html_safe
+    rescue
       lexer = Rugments::Lexers::PlainText
+      result = @formatter.format(lexer.lex(blob_content)).html_safe
     end
 
-    formatter.format(lexer.lex(blob_content)).html_safe
+    result
   end
 
   def no_highlight_files
-    %w(credits changelog copying copyright license authors)
+    %w(credits changelog news copying copyright license authors)
   end
 
   def edit_blob_link(project, ref, path, options = {})
@@ -36,8 +38,12 @@ module BlobHelper
       link_opts[:from_merge_request_id] = from_mr if from_mr
       cls = 'btn btn-small'
       if allowed_tree_edit?(project, ref)
-        link_to text, project_edit_blob_path(project, tree_join(ref, path),
-                                             link_opts), class: cls
+        link_to(text,
+                namespace_project_edit_blob_path(project.namespace, project,
+                                                 tree_join(ref, path),
+                                                 link_opts),
+                class: cls
+               )
       else
         content_tag :span, text, class: cls + ' disabled'
       end + after.html_safe
@@ -51,10 +57,18 @@ module BlobHelper
   end
 
   def editing_preview_title(filename)
-    if Gitlab::MarkdownHelper.previewable?(filename)
+    if Gitlab::MarkupHelper.previewable?(filename)
       'Preview'
     else
       'Preview changes'
     end
+  end
+
+  # Return an image icon depending on the file mode and extension
+  #
+  # mode - File unix mode
+  # mode - File name
+  def blob_icon(mode, name)
+    icon("#{file_type_icon_class('file', mode, name)} fw")
   end
 end

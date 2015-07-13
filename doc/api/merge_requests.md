@@ -10,11 +10,13 @@ The pagination parameters `page` and `per_page` can be used to restrict the list
 GET /projects/:id/merge_requests
 GET /projects/:id/merge_requests?state=opened
 GET /projects/:id/merge_requests?state=all
+GET /projects/:id/merge_requests?iid=42
 ```
 
 Parameters:
 
 - `id` (required) - The ID of a project
+- `iid` (optional) - Return the request having the given `iid`
 - `state` (optional) - Return `all` requests or just those that are `merged`, `opened` or `closed`
 - `order_by` (optional) - Return requests ordered by `created_at` or `updated_at` fields. Default is `created_at`
 - `sort` (optional) - Return requests sorted in `asc` or `desc` order. Default is `desc`
@@ -219,7 +221,7 @@ If an error occurs, an error number and a message explaining the reason is retur
 
 ## Update MR
 
-Updates an existing merge request. You can change branches, title, or even close the MR.
+Updates an existing merge request. You can change the target branch, title, or even close the MR.
 
 ```
 PUT /projects/:id/merge_request/:merge_request_id
@@ -229,7 +231,6 @@ Parameters:
 
 - `id` (required)               - The ID of a project
 - `merge_request_id` (required) - ID of MR
-- `source_branch`               - The source branch
 - `target_branch`               - The target branch
 - `assignee_id`                 - Assignee user ID
 - `title`                       - Title of MR
@@ -240,7 +241,6 @@ Parameters:
 {
   "id": 1,
   "target_branch": "master",
-  "source_branch": "test1",
   "project_id": 3,
   "title": "test1",
   "description": "description1",
@@ -375,7 +375,7 @@ Parameters:
     }
   },
   {
-    "note": "_Status changed to closed_",
+    "note": "Status changed to closed",
     "author": {
       "id": 11,
       "username": "admin",
@@ -388,6 +388,6 @@ Parameters:
 ]
 ```
 
-## Comments on issues
+## Comments on merge requets
 
 Comments are done via the notes resource.

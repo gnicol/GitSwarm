@@ -1,0 +1,30 @@
+!!! 5
+%html{ lang: 'en'}
+  = render 'layouts/head'
+  %body.ui_mars.login-page.application
+    = render 'layouts/broadcast'
+    = render "layouts/header/empty"
+    .container.navless-container
+      .content
+        = render 'layouts/flash'
+        .row.prepend-top-20
+          .col-sm-5.col-sm-offset-1.brand-holder
+            - if brand_item
+              = brand_image
+              = brand_text
+            - else
+              .brand-image.default-brand-image.hidden-sm.hidden-xs
+                = image_tag 'brand_logo.png'
+
+            - if extra_sign_in_text.present?
+              = markdown(extra_sign_in_text)
+            - if PerforceSwarm.ee? && help_text.present?
+              %h3 Need help?
+              %hr
+              %p.slead
+                = markdown(help_text)
+          .col-sm-5.login-holder
+            = yield
+            .footer-links
+              = link_to 'Explore projects', explore_root_path
+              = link_to 'Help', help_path

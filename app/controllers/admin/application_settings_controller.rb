@@ -1,5 +1,5 @@
 class Admin::ApplicationSettingsController < Admin::ApplicationController
-  before_filter :set_application_setting
+  before_action :set_application_setting
 
   def show
   end
@@ -20,6 +20,15 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
   end
 
   def application_setting_params
+    restricted_levels = params[:application_setting][:restricted_visibility_levels]
+    if restricted_levels.nil?
+      params[:application_setting][:restricted_visibility_levels] = []
+    else
+      restricted_levels.map! do |level|
+        level.to_i
+      end
+    end
+
     params.require(:application_setting).permit(
       :default_projects_limit,
       :default_branch_protection,
@@ -28,7 +37,15 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
       :gravatar_enabled,
       :twitter_sharing_enabled,
       :sign_in_text,
-      :home_page_url
+      :home_page_url,
+      :after_sign_out_path,
+      :max_attachment_size,
+      :default_project_visibility,
+      :default_snippet_visibility,
+      :restricted_signup_domains_raw,
+      :version_check_enabled,
+      :user_oauth_applications,
+      restricted_visibility_levels: [],
     )
   end
 end

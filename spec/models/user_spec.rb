@@ -2,53 +2,79 @@
 #
 # Table name: users
 #
-#  id                       :integer          not null, primary key
-#  email                    :string(255)      default(""), not null
-#  encrypted_password       :string(255)      default(""), not null
-#  reset_password_token     :string(255)
-#  reset_password_sent_at   :datetime
-#  remember_created_at      :datetime
-#  sign_in_count            :integer          default(0)
-#  current_sign_in_at       :datetime
-#  last_sign_in_at          :datetime
-#  current_sign_in_ip       :string(255)
-#  last_sign_in_ip          :string(255)
-#  created_at               :datetime
-#  updated_at               :datetime
-#  name                     :string(255)
-#  admin                    :boolean          default(FALSE), not null
-#  projects_limit           :integer          default(10)
-#  skype                    :string(255)      default(""), not null
-#  linkedin                 :string(255)      default(""), not null
-#  twitter                  :string(255)      default(""), not null
-#  authentication_token     :string(255)
-#  theme_id                 :integer          default(1), not null
-#  bio                      :string(255)
-#  failed_attempts          :integer          default(0)
-#  locked_at                :datetime
-#  username                 :string(255)
-#  can_create_group         :boolean          default(TRUE), not null
-#  can_create_team          :boolean          default(TRUE), not null
-#  state                    :string(255)
-#  color_scheme_id          :integer          default(1), not null
-#  notification_level       :integer          default(1), not null
-#  password_expires_at      :datetime
-#  created_by_id            :integer
-#  avatar                   :string(255)
-#  confirmation_token       :string(255)
-#  confirmed_at             :datetime
-#  confirmation_sent_at     :datetime
-#  unconfirmed_email        :string(255)
-#  hide_no_ssh_key          :boolean          default(FALSE)
-#  website_url              :string(255)      default(""), not null
-#  last_credential_check_at :datetime
-#  github_access_token      :string(255)
+#  id                            :integer          not null, primary key
+#  email                         :string(255)      default(""), not null
+#  encrypted_password            :string(255)      default(""), not null
+#  reset_password_token          :string(255)
+#  reset_password_sent_at        :datetime
+#  remember_created_at           :datetime
+#  sign_in_count                 :integer          default(0)
+#  current_sign_in_at            :datetime
+#  last_sign_in_at               :datetime
+#  current_sign_in_ip            :string(255)
+#  last_sign_in_ip               :string(255)
+#  created_at                    :datetime
+#  updated_at                    :datetime
+#  name                          :string(255)
+#  admin                         :boolean          default(FALSE), not null
+#  projects_limit                :integer          default(10)
+#  skype                         :string(255)      default(""), not null
+#  linkedin                      :string(255)      default(""), not null
+#  twitter                       :string(255)      default(""), not null
+#  authentication_token          :string(255)
+#  theme_id                      :integer          default(1), not null
+#  bio                           :string(255)
+#  failed_attempts               :integer          default(0)
+#  locked_at                     :datetime
+#  username                      :string(255)
+#  can_create_group              :boolean          default(TRUE), not null
+#  can_create_team               :boolean          default(TRUE), not null
+#  state                         :string(255)
+#  color_scheme_id               :integer          default(1), not null
+#  notification_level            :integer          default(1), not null
+#  password_expires_at           :datetime
+#  created_by_id                 :integer
+#  last_credential_check_at      :datetime
+#  avatar                        :string(255)
+#  confirmation_token            :string(255)
+#  confirmed_at                  :datetime
+#  confirmation_sent_at          :datetime
+#  unconfirmed_email             :string(255)
+#  hide_no_ssh_key               :boolean          default(FALSE)
+#  website_url                   :string(255)      default(""), not null
+#  github_access_token           :string(255)
+#  gitlab_access_token           :string(255)
+#  notification_email            :string(255)
+#  hide_no_password              :boolean          default(FALSE)
+#  password_automatically_set    :boolean          default(FALSE)
+#  bitbucket_access_token        :string(255)
+#  bitbucket_access_token_secret :string(255)
+#  location                      :string(255)
+#  public_email                  :string(255)      default(""), not null
+#  encrypted_otp_secret          :string(255)
+#  encrypted_otp_secret_iv       :string(255)
+#  encrypted_otp_secret_salt     :string(255)
+#  otp_required_for_login        :boolean
+#  otp_backup_codes              :text
+#  dashboard                     :integer          default(0)
 #
 
 require 'spec_helper'
 
 describe User do
-  describe "Associations" do
+  include Gitlab::CurrentSettings
+
+  describe 'modules' do
+    subject { described_class }
+
+    it { is_expected.to include_module(Gitlab::ConfigHelper) }
+    it { is_expected.to include_module(Gitlab::CurrentSettings) }
+    it { is_expected.to include_module(Referable) }
+    it { is_expected.to include_module(Sortable) }
+    it { is_expected.to include_module(TokenAuthenticatable) }
+  end
+
+  describe 'associations' do
     it { is_expected.to have_one(:namespace) }
     it { is_expected.to have_many(:snippets).class_name('Snippet').dependent(:destroy) }
     it { is_expected.to have_many(:project_members).dependent(:destroy) }
@@ -64,9 +90,6 @@ describe User do
     it { is_expected.to have_many(:identities).dependent(:destroy) }
   end
 
-  describe "Mass assignment" do
-  end
-
   describe 'validations' do
     it { is_expected.to validate_presence_of(:username) }
     it { is_expected.to validate_presence_of(:projects_limit) }
@@ -74,7 +97,7 @@ describe User do
     it { is_expected.to allow_value(0).for(:projects_limit) }
     it { is_expected.not_to allow_value(-1).for(:projects_limit) }
 
-    it { is_expected.to ensure_length_of(:bio).is_within(0..255) }
+    it { is_expected.to validate_length_of(:bio).is_within(0..255) }
 
     describe 'email' do
       it 'accepts info@example.com' do
@@ -106,6 +129,51 @@ describe User do
         user = build(:user, email: "lol!'+=?><#$%^&*()@gmail.com")
         expect(user).to be_invalid
       end
+
+      context 'when no signup domains listed' do
+        before { allow(current_application_settings).to receive(:restricted_signup_domains).and_return([]) }
+        it 'accepts any email' do
+          user = build(:user, email: "info@example.com")
+          expect(user).to be_valid
+        end
+      end
+
+      context 'when a signup domain is listed and subdomains are allowed' do
+        before { allow(current_application_settings).to receive(:restricted_signup_domains).and_return(['example.com', '*.example.com']) }
+        it 'accepts info@example.com' do
+          user = build(:user, email: "info@example.com")
+          expect(user).to be_valid
+        end
+
+        it 'accepts info@test.example.com' do
+          user = build(:user, email: "info@test.example.com")
+          expect(user).to be_valid
+        end
+
+        it 'rejects example@test.com' do
+          user = build(:user, email: "example@test.com")
+          expect(user).to be_invalid
+        end
+      end
+
+      context 'when a signup domain is listed and subdomains are not allowed' do
+        before { allow(current_application_settings).to receive(:restricted_signup_domains).and_return(['example.com']) }
+
+        it 'accepts info@example.com' do
+          user = build(:user, email: "info@example.com")
+          expect(user).to be_valid
+        end
+
+        it 'rejects info@test.example.com' do
+          user = build(:user, email: "info@test.example.com")
+          expect(user).to be_invalid
+        end
+
+        it 'rejects example@test.com' do
+          user = build(:user, email: "example@test.com")
+          expect(user).to be_invalid
+        end
+      end
     end
   end
 
@@ -113,6 +181,14 @@ describe User do
     it { is_expected.to respond_to(:is_admin?) }
     it { is_expected.to respond_to(:name) }
     it { is_expected.to respond_to(:private_token) }
+  end
+
+  describe '#to_reference' do
+    let(:user) { create(:user) }
+
+    it 'returns a String reference to the object' do
+      expect(user.to_reference).to eq "@#{user.username}"
+    end
   end
 
   describe '#generate_password' do
@@ -173,6 +249,7 @@ describe User do
     it { expect(@user.several_namespaces?).to be_truthy }
     it { expect(@user.authorized_groups).to eq([@group]) }
     it { expect(@user.owned_groups).to eq([@group]) }
+    it { expect(@user.namespaces).to match_array([@user.namespace, @group]) }
   end
 
   describe 'group multiple owners' do
@@ -195,6 +272,7 @@ describe User do
     end
 
     it { expect(@user.several_namespaces?).to be_falsey }
+    it { expect(@user.namespaces).to eq([@user.namespace]) }
   end
 
   describe 'blocking user' do
@@ -298,16 +376,6 @@ describe User do
       expect(User.by_login(username)).to eq user
       expect(User.by_login(nil)).to be_nil
       expect(User.by_login('')).to be_nil
-    end
-  end
-
-  describe ".clean_username" do
-
-    let!(:user) { create(:user, username: "johngitlab-etc") }
-    let!(:namespace) { create(:namespace, path: "JohnGitLab-etc1") }
-
-    it "cleans a username and makes sure it's available" do
-      expect(User.clean_username("-john+gitlab-ETC%.git@gmail.com")).to eq("johngitlab-ETC2")
     end
   end
 
@@ -503,6 +571,50 @@ describe User do
 
     it "sorts users by name when nil is passed" do
       expect(User.sort(nil).first).to eq(@user)
+    end
+  end
+
+  describe "#contributed_projects_ids" do
+    subject { create(:user) }
+    let!(:project1) { create(:project) }
+    let!(:project2) { create(:project, forked_from_project: project3) }
+    let!(:project3) { create(:project) }
+    let!(:merge_request) { create(:merge_request, source_project: project2, target_project: project3, author: subject) }
+    let!(:push_event) { create(:event, action: Event::PUSHED, project: project1, target: project1, author: subject) }
+    let!(:merge_event) { create(:event, action: Event::CREATED, project: project3, target: merge_request, author: subject) }
+
+    before do
+      project1.team << [subject, :master]
+      project2.team << [subject, :master]
+    end
+
+    it "includes IDs for projects the user has pushed to" do
+      expect(subject.contributed_projects_ids).to include(project1.id)
+    end
+
+    it "includes IDs for projects the user has had merge requests merged into" do
+      expect(subject.contributed_projects_ids).to include(project3.id)
+    end
+
+    it "doesn't include IDs for unrelated projects" do
+      expect(subject.contributed_projects_ids).not_to include(project2.id)
+    end
+  end
+
+  describe :can_be_removed? do
+    subject { create(:user) }
+
+    context 'no owned groups' do
+      it { expect(subject.can_be_removed?).to be_truthy }
+    end
+
+    context 'has owned groups' do
+      before do
+        group = create(:group)
+        group.add_owner(subject)
+      end
+
+      it { expect(subject.can_be_removed?).to be_falsey }
     end
   end
 end

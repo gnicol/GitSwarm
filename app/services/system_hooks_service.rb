@@ -7,12 +7,12 @@ class SystemHooksService
 
   def execute_hooks(data)
     SystemHook.all.each do |sh|
-      async_execute_hook sh, data
+      async_execute_hook(sh, data, 'system_hooks')
     end
   end
 
-  def async_execute_hook(hook, data)
-    Sidekiq::Client.enqueue(SystemHookWorker, hook.id, data)
+  def async_execute_hook(hook, data, hook_name)
+    Sidekiq::Client.enqueue(SystemHookWorker, hook.id, data, hook_name)
   end
 
   def build_event_data(model, event)
@@ -41,7 +41,7 @@ class SystemHooksService
         path_with_namespace: model.path_with_namespace,
         project_id: model.id,
         owner_name: owner.name,
-        owner_email: owner.respond_to?(:email) ?  owner.email : nil,
+        owner_email: owner.respond_to?(:email) ?  owner.email : "",
         project_visibility: Project.visibility_levels.key(model.visibility_level_field).downcase
       })
     when User

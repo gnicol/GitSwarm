@@ -31,7 +31,7 @@ module Gitlab
     config.encoding = "utf-8"
 
     # Configure sensitive parameters which will be filtered from the log file.
-    config.filter_parameters.push(:password, :password_confirmation, :private_token)
+    config.filter_parameters.push(:password, :password_confirmation, :private_token, :otp_attempt)
 
     # Enable escaping HTML in JSON.
     config.active_support.escape_html_entities_in_json = true
@@ -49,6 +49,8 @@ module Gitlab
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    config.action_view.sanitized_allowed_protocols = %w(smb)
 
     # Relative url support
     # Uncomment and customize the last line to run in a non-root path

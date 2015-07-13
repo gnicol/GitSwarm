@@ -20,7 +20,7 @@ module API
 
     class UserFull < User
       expose :email
-      expose :theme_id, :color_scheme_id, :projects_limit
+      expose :theme_id, :color_scheme_id, :projects_limit, :current_sign_in_at
       expose :identities, using: Entities::Identity
       expose :can_create_group?, as: :can_create_group
       expose :can_create_project?, as: :can_create_project
@@ -46,7 +46,7 @@ module API
     end
 
     class Project < Grape::Entity
-      expose :id, :description, :default_branch
+      expose :id, :description, :default_branch, :tag_list
       expose :public?, as: :public
       expose :archived?, as: :archived
       expose :visibility_level, :ssh_url_to_repo, :http_url_to_repo, :web_url
@@ -54,8 +54,10 @@ module API
       expose :name, :name_with_namespace
       expose :path, :path_with_namespace
       expose :issues_enabled, :merge_requests_enabled, :wiki_enabled, :snippets_enabled, :created_at, :last_activity_at
+      expose :creator_id
       expose :namespace
       expose :forked_from_project, using: Entities::ForkedFromProject, if: lambda{ | project, options | project.forked? }
+      expose :avatar_url
     end
 
     class ProjectMember < UserBasic
@@ -142,7 +144,7 @@ module API
 
     class ProjectEntity < Grape::Entity
       expose :id, :iid
-      expose (:project_id) { |entity| entity.project.id }
+      expose(:project_id) { |entity| entity.project.id }
       expose :title, :description
       expose :state, :created_at, :updated_at
     end
@@ -249,11 +251,11 @@ module API
 
     class Compare < Grape::Entity
       expose :commit, using: Entities::RepoCommit do |compare, options|
-        Commit.decorate(compare.commits).last
+        Commit.decorate(compare.commits, nil).last
       end
 
       expose :commits, using: Entities::RepoCommit do |compare, options|
-        Commit.decorate(compare.commits)
+        Commit.decorate(compare.commits, nil)
       end
 
       expose :diffs, using: Entities::RepoDiff do |compare, options|

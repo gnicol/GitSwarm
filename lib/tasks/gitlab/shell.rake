@@ -59,6 +59,9 @@ namespace :gitlab do
 
         # Launch installation process
         system(*%W(bin/install))
+
+        # (Re)create hooks
+        system(*%W(bin/create-hooks))
       end
 
       # Required for debian packaging with PKGR: Setup .ssh/environment with
@@ -112,6 +115,7 @@ namespace :gitlab do
         print '.'
       end
     end
+    puts ""
 
     unless $?.success?
       puts "Failed to add keys...".red

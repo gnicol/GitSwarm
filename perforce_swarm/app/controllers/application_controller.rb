@@ -19,6 +19,11 @@ module PerforceSwarm
                            .reorder('last_activity_at DESC, created_at DESC').non_archived.limit(5)
       end
     end
+
+    # Ensure our engine's 404 page gets rendered
+    def render_404
+      render file: Rails.root.join('perforce_swarm', 'public', '404'), layout: false, status: '404'
+    end
   end
 end
 

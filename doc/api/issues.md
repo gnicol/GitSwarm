@@ -99,11 +99,13 @@ GET /projects/:id/issues?labels=foo,bar
 GET /projects/:id/issues?labels=foo,bar&state=opened
 GET /projects/:id/issues?milestone=1.0.0
 GET /projects/:id/issues?milestone=1.0.0&state=opened
+GET /projects/:id/issues?iid=42
 ```
 
 Parameters:
 
 - `id` (required) - The ID of a project
+- `iid` (optional) - Return the issue having the given `iid`
 - `state` (optional) - Return `all` issues or just those that are `opened` or `closed`
 - `labels` (optional) - Comma-separated list of label names
 - `milestone` (optional) - Milestone title
@@ -208,7 +210,7 @@ If an error occurs, an error number and a message explaining the reason is retur
 
 ## Delete existing issue (**Deprecated**)
 
-The function is deprecated and returns a `405 Method Not Allowed` error if called. An issue gets now closed and is done by calling `PUT /projects/:id/issues/:issue_id` with parameter `closed` set to 1.
+The function is deprecated and returns a `405 Method Not Allowed` error if called. An issue gets now closed and is done by calling `PUT /projects/:id/issues/:issue_id` with parameter `state_event` set to `close`.
 
 ```
 DELETE /projects/:id/issues/:issue_id

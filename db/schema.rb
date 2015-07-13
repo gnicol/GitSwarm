@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150213121042) do
+ActiveRecord::Schema.define(version: 20150702141633) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,8 +25,18 @@ ActiveRecord::Schema.define(version: 20150213121042) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "home_page_url"
-    t.integer  "default_branch_protection", default: 2
-    t.boolean  "twitter_sharing_enabled",   default: true
+    t.integer  "default_branch_protection",    default: 2
+    t.boolean  "twitter_sharing_enabled",      default: true
+    t.text     "restricted_visibility_levels"
+    t.boolean  "version_check_enabled"
+    t.integer  "max_attachment_size",          default: 10,    null: false
+    t.integer  "default_project_visibility"
+    t.integer  "default_snippet_visibility"
+    t.text     "restricted_signup_domains"
+    t.boolean  "user_oauth_applications",      default: true
+    t.string   "after_sign_out_path"
+    t.integer  "session_expire_delay",         default: 10080, null: false
+    t.string   "last_version_ignored"
   end
 
   create_table "broadcast_messages", force: true do |t|
@@ -130,6 +140,7 @@ ActiveRecord::Schema.define(version: 20150213121042) do
     t.string   "title"
     t.string   "type"
     t.string   "fingerprint"
+    t.boolean  "public",      default: false, null: false
   end
 
   add_index "keys", ["created_at", "id"], name: "index_keys_on_created_at_and_id", using: :btree
@@ -160,15 +171,20 @@ ActiveRecord::Schema.define(version: 20150213121042) do
     t.integer  "access_level",       null: false
     t.integer  "source_id",          null: false
     t.string   "source_type",        null: false
-    t.integer  "user_id",            null: false
+    t.integer  "user_id"
     t.integer  "notification_level", null: false
     t.string   "type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.string   "invite_email"
+    t.string   "invite_token"
+    t.datetime "invite_accepted_at"
   end
 
   add_index "members", ["access_level"], name: "index_members_on_access_level", using: :btree
   add_index "members", ["created_at", "id"], name: "index_members_on_created_at_and_id", using: :btree
+  add_index "members", ["invite_token"], name: "index_members_on_invite_token", unique: true, using: :btree
   add_index "members", ["source_id", "source_type"], name: "index_members_on_source_id_and_source_type", using: :btree
   add_index "members", ["type"], name: "index_members_on_type", using: :btree
   add_index "members", ["user_id"], name: "index_members_on_user_id", using: :btree
@@ -242,9 +258,9 @@ ActiveRecord::Schema.define(version: 20150213121042) do
   end
 
   add_index "namespaces", ["created_at", "id"], name: "index_namespaces_on_created_at_and_id", using: :btree
-  add_index "namespaces", ["name"], name: "index_namespaces_on_name", using: :btree
+  add_index "namespaces", ["name"], name: "index_namespaces_on_name", unique: true, using: :btree
   add_index "namespaces", ["owner_id"], name: "index_namespaces_on_owner_id", using: :btree
-  add_index "namespaces", ["path"], name: "index_namespaces_on_path", using: :btree
+  add_index "namespaces", ["path"], name: "index_namespaces_on_path", unique: true, using: :btree
   add_index "namespaces", ["type"], name: "index_namespaces_on_type", using: :btree
 
   create_table "notes", force: true do |t|
@@ -315,6 +331,11 @@ ActiveRecord::Schema.define(version: 20150213121042) do
   add_index "oauth_applications", ["owner_id", "owner_type"], name: "index_oauth_applications_on_owner_id_and_owner_type", using: :btree
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
 
+  create_table "project_import_data", force: true do |t|
+    t.integer "project_id"
+    t.text    "data"
+  end
+
   create_table "projects", force: true do |t|
     t.string   "name"
     t.string   "path"
@@ -340,6 +361,7 @@ ActiveRecord::Schema.define(version: 20150213121042) do
     t.integer  "star_count",             default: 0,        null: false
     t.string   "import_type"
     t.string   "import_source"
+    t.string   "git_fusion_repo"
   end
 
   add_index "projects", ["created_at", "id"], name: "index_projects_on_created_at_and_id", using: :btree
@@ -364,9 +386,14 @@ ActiveRecord::Schema.define(version: 20150213121042) do
     t.integer  "project_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "active",     default: false, null: false
+    t.boolean  "active",                default: false, null: false
     t.text     "properties"
-    t.boolean  "template",   default: false
+    t.boolean  "template",              default: false
+    t.boolean  "push_events",           default: true
+    t.boolean  "issues_events",         default: true
+    t.boolean  "merge_requests_events", default: true
+    t.boolean  "tag_push_events",       default: true
+    t.boolean  "note_events",           default: true,  null: false
   end
 
   add_index "services", ["created_at", "id"], name: "index_services_on_created_at_and_id", using: :btree
@@ -392,6 +419,17 @@ ActiveRecord::Schema.define(version: 20150213121042) do
   add_index "snippets", ["project_id"], name: "index_snippets_on_project_id", using: :btree
   add_index "snippets", ["visibility_level"], name: "index_snippets_on_visibility_level", using: :btree
 
+  create_table "subscriptions", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "subscribable_id"
+    t.string   "subscribable_type"
+    t.boolean  "subscribed"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "subscriptions", ["subscribable_id", "subscribable_type", "user_id"], name: "subscriptions_user_id_and_ref_fields", unique: true, using: :btree
+
   create_table "taggings", force: true do |t|
     t.integer  "tag_id"
     t.integer  "taggable_id"
@@ -402,20 +440,23 @@ ActiveRecord::Schema.define(version: 20150213121042) do
     t.datetime "created_at"
   end
 
-  add_index "taggings", ["tag_id"], name: "index_taggings_on_tag_id", using: :btree
+  add_index "taggings", ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true, using: :btree
   add_index "taggings", ["taggable_id", "taggable_type", "context"], name: "index_taggings_on_taggable_id_and_taggable_type_and_context", using: :btree
 
   create_table "tags", force: true do |t|
-    t.string "name"
+    t.string  "name"
+    t.integer "taggings_count", default: 0
   end
 
+  add_index "tags", ["name"], name: "index_tags_on_name", unique: true, using: :btree
+
   create_table "users", force: true do |t|
-    t.string   "email",                      default: "",    null: false
-    t.string   "encrypted_password",         default: "",    null: false
+    t.string   "email",                         default: "",    null: false
+    t.string   "encrypted_password",            default: "",    null: false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",              default: 0
+    t.integer  "sign_in_count",                 default: 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -423,22 +464,22 @@ ActiveRecord::Schema.define(version: 20150213121042) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name"
-    t.boolean  "admin",                      default: false, null: false
-    t.integer  "projects_limit",             default: 10
-    t.string   "skype",                      default: "",    null: false
-    t.string   "linkedin",                   default: "",    null: false
-    t.string   "twitter",                    default: "",    null: false
+    t.boolean  "admin",                         default: false, null: false
+    t.integer  "projects_limit",                default: 10
+    t.string   "skype",                         default: "",    null: false
+    t.string   "linkedin",                      default: "",    null: false
+    t.string   "twitter",                       default: "",    null: false
     t.string   "authentication_token"
-    t.integer  "theme_id",                   default: 1,     null: false
+    t.integer  "theme_id",                      default: 1,     null: false
     t.string   "bio"
-    t.integer  "failed_attempts",            default: 0
+    t.integer  "failed_attempts",               default: 0
     t.datetime "locked_at"
     t.string   "username"
-    t.boolean  "can_create_group",           default: true,  null: false
-    t.boolean  "can_create_team",            default: true,  null: false
+    t.boolean  "can_create_group",              default: true,  null: false
+    t.boolean  "can_create_team",               default: true,  null: false
     t.string   "state"
-    t.integer  "color_scheme_id",            default: 1,     null: false
-    t.integer  "notification_level",         default: 1,     null: false
+    t.integer  "color_scheme_id",               default: 1,     null: false
+    t.integer  "notification_level",            default: 1,     null: false
     t.datetime "password_expires_at"
     t.integer  "created_by_id"
     t.datetime "last_credential_check_at"
@@ -447,13 +488,23 @@ ActiveRecord::Schema.define(version: 20150213121042) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string   "unconfirmed_email"
-    t.boolean  "hide_no_ssh_key",            default: false
-    t.string   "website_url",                default: "",    null: false
+    t.boolean  "hide_no_ssh_key",               default: false
+    t.string   "website_url",                   default: "",    null: false
     t.string   "github_access_token"
     t.string   "gitlab_access_token"
     t.string   "notification_email"
-    t.boolean  "hide_no_password",           default: false
-    t.boolean  "password_automatically_set", default: false
+    t.boolean  "hide_no_password",              default: false
+    t.boolean  "password_automatically_set",    default: false
+    t.string   "bitbucket_access_token"
+    t.string   "bitbucket_access_token_secret"
+    t.string   "location"
+    t.string   "encrypted_otp_secret"
+    t.string   "encrypted_otp_secret_iv"
+    t.string   "encrypted_otp_secret_salt"
+    t.boolean  "otp_required_for_login"
+    t.text     "otp_backup_codes"
+    t.string   "public_email",                  default: "",    null: false
+    t.integer  "dashboard",                     default: 0
   end
 
   add_index "users", ["admin"], name: "index_users_on_admin", using: :btree
@@ -488,6 +539,7 @@ ActiveRecord::Schema.define(version: 20150213121042) do
     t.boolean  "issues_events",         default: false,         null: false
     t.boolean  "merge_requests_events", default: false,         null: false
     t.boolean  "tag_push_events",       default: false
+    t.boolean  "note_events",           default: false,         null: false
   end
 
   add_index "web_hooks", ["created_at", "id"], name: "index_web_hooks_on_created_at_and_id", using: :btree

@@ -240,8 +240,18 @@ module Gitlab
       gitlab_shell_version_file = "#{gitlab_shell_path}/VERSION"
 
       if File.readable?(gitlab_shell_version_file)
-        File.read(gitlab_shell_version_file)
+        File.read(gitlab_shell_version_file).chomp
       end
+    end
+
+    # Check if such directory exists in repositories.
+    #
+    # Usage:
+    #   exists?('gitlab')
+    #   exists?('gitlab/cookies.git')
+    #
+    def exists?(dir_name)
+      File.exists?(full_path(dir_name))
     end
 
     protected
@@ -262,10 +272,6 @@ module Gitlab
       raise ArgumentError.new("Directory name can't be blank") if dir_name.blank?
 
       File.join(repos_path, dir_name)
-    end
-
-    def exists?(dir_name)
-      File.exists?(full_path(dir_name))
     end
 
     def gitlab_shell_projects_path

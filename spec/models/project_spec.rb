@@ -32,7 +32,7 @@
 require 'spec_helper'
 
 describe Project do
-  describe 'Associations' do
+  describe 'associations' do
     it { is_expected.to belong_to(:group) }
     it { is_expected.to belong_to(:namespace) }
     it { is_expected.to belong_to(:creator).class_name('User') }
@@ -54,22 +54,29 @@ describe Project do
     it { is_expected.to have_one(:asana_service).dependent(:destroy) }
   end
 
-  describe 'Mass assignment' do
+  describe 'modules' do
+    subject { described_class }
+
+    it { is_expected.to include_module(Gitlab::ConfigHelper) }
+    it { is_expected.to include_module(Gitlab::ShellAdapter) }
+    it { is_expected.to include_module(Gitlab::VisibilityLevel) }
+    it { is_expected.to include_module(Referable) }
+    it { is_expected.to include_module(Sortable) }
   end
 
-  describe 'Validation' do
+  describe 'validation' do
     let!(:project) { create(:project) }
 
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name).scoped_to(:namespace_id) }
-    it { is_expected.to ensure_length_of(:name).is_within(0..255) }
+    it { is_expected.to validate_length_of(:name).is_within(0..255) }
 
     it { is_expected.to validate_presence_of(:path) }
     it { is_expected.to validate_uniqueness_of(:path).scoped_to(:namespace_id) }
-    it { is_expected.to ensure_length_of(:path).is_within(0..255) }
-    it { is_expected.to ensure_length_of(:description).is_within(0..2000) }
+    it { is_expected.to validate_length_of(:path).is_within(0..255) }
+    it { is_expected.to validate_length_of(:description).is_within(0..2000) }
     it { is_expected.to validate_presence_of(:creator) }
-    it { is_expected.to ensure_length_of(:issues_tracker_id).is_within(0..255) }
+    it { is_expected.to validate_length_of(:issues_tracker_id).is_within(0..255) }
     it { is_expected.to validate_presence_of(:namespace) }
 
     it 'should not allow new projects beyond user limits' do
@@ -89,6 +96,14 @@ describe Project do
     it { is_expected.to respond_to(:name_with_namespace) }
     it { is_expected.to respond_to(:owner) }
     it { is_expected.to respond_to(:path_with_namespace) }
+  end
+
+  describe '#to_reference' do
+    let(:project) { create(:empty_project) }
+
+    it 'returns a String reference to the object' do
+      expect(project.to_reference).to eq project.path_with_namespace
+    end
   end
 
   it 'should return valid url to repo' do
@@ -126,6 +141,48 @@ describe Project do
       it 'returns the project\'s last update date if it has no events' do
         expect(project.last_activity_date).to eq(project.updated_at)
       end
+    end
+  end
+
+  describe '#get_issue' do
+    let(:project) { create(:empty_project) }
+    let(:issue)   { create(:issue, project: project) }
+
+    context 'with default issues tracker' do
+      it 'returns an issue' do
+        expect(project.get_issue(issue.iid)).to eq issue
+      end
+
+      it 'returns nil when no issue found' do
+        expect(project.get_issue(999)).to be_nil
+      end
+    end
+
+    context 'with external issues tracker' do
+      before do
+        allow(project).to receive(:default_issues_tracker?).and_return(false)
+      end
+
+      it 'returns an ExternalIssue' do
+        issue = project.get_issue('FOO-1234')
+        expect(issue).to be_kind_of(ExternalIssue)
+        expect(issue.iid).to eq 'FOO-1234'
+        expect(issue.project).to eq project
+      end
+    end
+  end
+
+  describe '#issue_exists?' do
+    let(:project) { create(:empty_project) }
+
+    it 'is truthy when issue exists' do
+      expect(project).to receive(:get_issue).and_return(double)
+      expect(project.issue_exists?(1)).to be_truthy
+    end
+
+    it 'is falsey when issue does not exist' do
+      expect(project).to receive(:get_issue).and_return(nil)
+      expect(project.issue_exists?(1)).to be_falsey
     end
   end
 
@@ -168,7 +225,7 @@ describe Project do
         @project = create(:project, name: 'gitlabhq', namespace: @group)
       end
 
-      it { expect(@project.to_param).to eq('gitlab/gitlabhq') }
+      it { expect(@project.to_param).to eq('gitlabhq') }
     end
   end
 
@@ -177,25 +234,6 @@ describe Project do
 
     it 'should return valid repo' do
       expect(project.repository).to be_kind_of(Repository)
-    end
-  end
-
-  describe :issue_exists? do
-    let(:project) { create(:project) }
-    let(:existed_issue) { create(:issue, project: project) }
-    let(:not_existed_issue) { create(:issue) }
-    let(:ext_project) { create(:redmine_project) }
-
-    it 'should be true or if used internal tracker and issue exists' do
-      expect(project.issue_exists?(existed_issue.iid)).to be_truthy
-    end
-
-    it 'should be false or if used internal tracker and issue not exists' do
-      expect(project.issue_exists?(not_existed_issue.iid)).to be_falsey
-    end
-
-    it 'should always be true if used other tracker' do
-      expect(ext_project.issue_exists?(rand(100))).to be_truthy
     end
   end
 
@@ -324,6 +362,37 @@ describe Project do
     it 'should be false if avatar is html page' do
       project.update_attribute(:avatar, 'uploads/avatar.html')
       expect(project.avatar_type).to eq(['only images allowed'])
+    end
+  end
+
+  describe :avatar_url do
+    subject { project.avatar_url }
+
+    let(:project) { create(:project) }
+
+    context 'When avatar file is uploaded' do
+      before do
+        project.update_columns(avatar: 'uploads/avatar.png')
+        allow(project.avatar).to receive(:present?) { true }
+      end
+
+      let(:avatar_path) do
+        "/uploads/project/avatar/#{project.id}/uploads/avatar.png"
+      end
+
+      it { should eq "http://localhost#{avatar_path}" }
+    end
+
+    context 'When avatar file in git' do
+      before do
+        allow(project).to receive(:avatar_in_git) { true }
+      end
+
+      let(:avatar_path) do
+        "/#{project.namespace.name}/#{project.path}/avatar"
+      end
+
+      it { should eq "http://localhost#{avatar_path}" }
     end
   end
 end

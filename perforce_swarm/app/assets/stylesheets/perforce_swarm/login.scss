@@ -1,0 +1,80 @@
+/* Swarm custom login page */
+.login-page .content {
+  .brand-holder {
+    .default-brand-image {
+      text-align: center;
+      margin: 0;
+      img {
+        height: 425px;
+      }
+    }
+  }
+
+  .login-holder {
+    padding: 0 15px;
+
+    .nav-tabs {
+      border: none;
+      margin-bottom: 0;
+
+      li.active a {
+        border-color: #E5E5E5;
+        border-bottom: 1px solid #FFF;
+      }
+    }
+
+    .prepend-top-20 p {
+      text-align: center;
+    }
+
+    .login-box {
+      background: none;
+      box-shadow: none;
+      border: none;
+      padding: 0;
+
+      .login-heading.sign-in h3 {
+        font-size: 3em;
+        font-weight: 200;
+        line-height: 1.1;
+        margin-bottom: 30px;
+      }
+
+      .login-heading h3 {
+        text-align: center;
+      }
+
+      .login-body {
+        border: 1px solid #E5E5E5;
+        padding: 25px 15px 15px 15px;
+
+        .btn {
+          width: 100%;
+          padding: 10px 16px;
+          font-size: 14px;
+          line-height: 1.3333333;
+          border-radius: 6px;
+        }
+      }
+    }
+  }
+
+  @media (min-width: $screen-sm-min) {
+    .brand-holder, .login-holder {
+      display: inline-block;
+      vertical-align: middle;
+      float: none;
+    }
+  }
+
+  .footer-links {
+    padding-top: 15px;
+    text-align: center;
+    a {
+      margin-right: 25px;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

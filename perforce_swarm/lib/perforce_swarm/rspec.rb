@@ -1,5 +1,5 @@
 if ENV['RAILS_ENV'] == 'test'
-  require 'rspec'
+  require 'rspec/rails'
   require_relative '../../spec/support/test_env'
 
   # this file helps configure Rspec so that tests in the main application
@@ -53,6 +53,11 @@ if ENV['RAILS_ENV'] == 'test'
     # extra configuration files we've added in our engine
     config.before(:suite) do
       Dir[Rails.root.join('perforce_swarm/spec/support/**/*.rb')].each { |f| require f }
+    end
+
+    # Clear sidekiq worker jobs
+    config.after(:each) do
+      Sidekiq::Worker.clear_all
     end
 
     # print a warning to users who are not running any tests from the engine

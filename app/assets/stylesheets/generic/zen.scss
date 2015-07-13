@@ -1,15 +1,14 @@
 .zennable {
-  position: relative;
-
-  input {
+  .zen-toggle-comment {
     display: none;
   }
 
   .zen-enter-link {
     color: #888;
     position: absolute;
-    top: -26px;
+    top: 0px;
     right: 4px;
+    line-height: 40px;
   }
 
   .zen-leave-link {
@@ -26,10 +25,12 @@
     }
   }
 
+  // Hide the Enter link when we're in Zen mode
   input:checked ~ .zen-backdrop .zen-enter-link {
     display: none;
   }
 
+  // Show the Leave link when we're in Zen mode
   input:checked ~ .zen-backdrop .zen-leave-link {
     display: block;
     position: absolute;
@@ -62,6 +63,9 @@
     }
   }
 
+  // Make the placeholder text in the standard textarea the same color as the
+  // background, effectively hiding it
+
   .zen-backdrop textarea::-webkit-input-placeholder {
     color: white;
   }
@@ -77,6 +81,9 @@
   .zen-backdrop textarea:-ms-input-placeholder {
     color: white;
   }
+
+  // Make the color of the placeholder text in the Zenned-out textarea darker,
+  // so it becomes visible
 
   input:checked ~ .zen-backdrop textarea::-webkit-input-placeholder {
     color: #999;

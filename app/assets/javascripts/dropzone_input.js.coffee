@@ -6,20 +6,26 @@ class @DropzoneInput
     divHover = "<div class=\"div-dropzone-hover\"></div>"
     divSpinner = "<div class=\"div-dropzone-spinner\"></div>"
     divAlert = "<div class=\"" + alertClass + "\"></div>"
-    iconPicture = "<i class=\"fa fa-picture-o div-dropzone-icon\"></i>"
+    iconPaperclip = "<i class=\"fa fa-paperclip div-dropzone-icon\"></i>"
     iconSpinner = "<i class=\"fa fa-spinner fa-spin div-dropzone-icon\"></i>"
     btnAlert = "<button type=\"button\"" + alertAttr + ">&times;</button>"
-    project_image_path_upload = window.project_image_path_upload or null
+    project_uploads_path = window.project_uploads_path or null
+    markdown_preview_path = window.markdown_preview_path or null
+    max_file_size = gon.max_file_size or 10
 
     form_textarea = $(form).find("textarea.markdown-area")
     form_textarea.wrap "<div class=\"div-dropzone\"></div>"
-    form_textarea.bind 'paste', (event) =>
+    form_textarea.on 'paste', (event) =>
       handlePaste(event)
+    form_textarea.on "input", ->
+      hideReferencedUsers()
+    form_textarea.on "blur", ->
+      renderMarkdown()
 
     form_dropzone = $(form).find('.div-dropzone')
     form_dropzone.parent().addClass "div-dropzone-wrapper"
     form_dropzone.append divHover
-    $(".div-dropzone-hover").append iconPicture
+    $(".div-dropzone-hover").append iconPaperclip
     form_dropzone.append divSpinner
     $(".div-dropzone-spinner").append iconSpinner
     $(".div-dropzone-spinner").css
@@ -44,16 +50,7 @@ class @DropzoneInput
       form.find(".md-write-holder").hide()
       form.find(".md-preview-holder").show()
 
-      preview = form.find(".js-md-preview")
-      mdText = form.find(".markdown-area").val()
-      if mdText.trim().length is 0
-        preview.text "Nothing to preview."
-      else
-        preview.text "Loading..."
-        $.post($(this).data("url"),
-          md_text: mdText
-        ).success (previewData) ->
-          preview.html previewData
+      renderMarkdown()
 
     # Write button
     $(document).off "click", ".js-md-write-button"
@@ -72,13 +69,12 @@ class @DropzoneInput
       form.find(".md-preview-holder").hide()
 
     dropzone = form_dropzone.dropzone(
-      url: project_image_path_upload
+      url: project_uploads_path
       dictDefaultMessage: ""
       clickable: true
-      paramName: "markdown_img"
-      maxFilesize: 10
+      paramName: "file"
+      maxFilesize: max_file_size
       uploadMultiple: false
-      acceptedFiles: "image/jpg,image/jpeg,image/gif,image/png"
       headers:
         "X-CSRF-Token": $("meta[name=\"csrf-token\"]").attr("content")
 
@@ -109,9 +105,10 @@ class @DropzoneInput
         return
 
       error: (temp, errorMessage) ->
-        checkIfMsgExists = $(".error-alert").children().length
+        errorAlert = $(form).find('.error-alert')
+        checkIfMsgExists = errorAlert.children().length
         if checkIfMsgExists is 0
-          $(".error-alert").append divAlert
+          errorAlert.append divAlert
           $(".div-dropzone-alert").append btnAlert + errorMessage
         return
 
@@ -132,8 +129,44 @@ class @DropzoneInput
 
     child = $(dropzone[0]).children("textarea")
 
-    formatLink = (str) ->
-      "![" + str.alt + "](" + str.url + ")"
+    hideReferencedUsers = ->
+      referencedUsers = form.find(".referenced-users")
+      referencedUsers.hide()
+
+    renderReferencedUsers = (users) ->
+      referencedUsers = form.find(".referenced-users")
+
+      if referencedUsers.length
+        if users.length >= 10
+          referencedUsers.show()
+          referencedUsers.find(".js-referenced-users-count").text users.length
+        else
+          referencedUsers.hide()
+
+    renderMarkdown = ->
+      preview = form.find(".js-md-preview")
+      mdText = form.find(".markdown-area").val()
+      if mdText.trim().length is 0
+        preview.text "Nothing to preview."
+        hideReferencedUsers()
+      else
+        preview.text "Loading..."
+        $.ajax(
+          type: "POST",
+          url: markdown_preview_path,
+          data: {
+            text: mdText
+          },
+          dataType: "json"
+        ).success (data) ->
+          preview.html data.body
+
+          renderReferencedUsers data.references.users
+
+    formatLink = (link) ->
+      text = "[#{link.alt}](#{link.url})"
+      text = "!#{text}" if link.is_image
+      text
 
     handlePaste = (event) ->
       pasteEvent = event.originalEvent
@@ -177,9 +210,9 @@ class @DropzoneInput
 
     uploadFile = (item, filename) ->
       formData = new FormData()
-      formData.append "markdown_img", item, filename
+      formData.append "file", item, filename
       $.ajax
-        url: project_image_path_upload
+        url: project_uploads_path
         type: "POST"
         data: formData
         dataType: "json"
@@ -220,9 +253,10 @@ class @DropzoneInput
         "display": "none"
 
     showError = (message) ->
-      checkIfMsgExists = $(".error-alert").children().length
+      errorAlert = $(form).find('.error-alert')
+      checkIfMsgExists = errorAlert.children().length
       if checkIfMsgExists is 0
-        $(".error-alert").append divAlert
+        errorAlert.append divAlert
         $(".div-dropzone-alert").append btnAlert + message
 
     closeAlertMessage = ->
@@ -233,5 +267,7 @@ class @DropzoneInput
       $(@).closest('.gfm-form').find('.div-dropzone').click()
       return
 
-  formatLink: (str) ->
-    "![" + str.alt + "](" + str.url + ")"
+  formatLink: (link) ->
+    text = "[#{link.alt}](#{link.url})"
+    text = "!#{text}" if link.is_image
+    text

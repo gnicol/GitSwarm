@@ -13,5 +13,11 @@
 /* Styles for our navbar */
 @import "perforce_swarm/navbar";
 
-/* Theme additions and changes */
-@import "perforce_swarm/themes/*";
+/* Require login styles */
+@import "perforce_swarm/login";
+
+/* Include version check flash messages */
+@import "perforce_swarm/version_check";
+
+/* Include project page tweaks */
+@import "perforce_swarm/projects";

@@ -7,12 +7,17 @@ module ApplicationHelper
   def current_route?(route)
     return current_page?(route) unless route.include?('#')
 
-    controller, action, _ = route.split('#')
+    controller, action = route.split('#')
     current_controller?(controller) && current_action?(action)
   end
 
   # Override the Gitlab Promo links with our own Perforce links
   def promo_host
     'perforce.com'
+  end
+
+  # Override the protocol to HTTP
+  def promo_url
+    'http://' + promo_host
   end
 end

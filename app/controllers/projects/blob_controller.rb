@@ -1,31 +1,32 @@
 # Controller for viewing a file's blame
 class Projects::BlobController < Projects::ApplicationController
   include ExtractsPath
+  include ActionView::Helpers::SanitizeHelper
 
   # Raised when given an invalid file path
   class InvalidPathError < StandardError; end
 
-  before_filter :authorize_download_code!
-  before_filter :require_non_empty_project, except: [:new, :create]
-  before_filter :authorize_push_code!, only: [:destroy]
-  before_filter :assign_blob_vars
-  before_filter :commit, except: [:new, :create]
-  before_filter :blob, except: [:new, :create]
-  before_filter :from_merge_request, only: [:edit, :update]
-  before_filter :after_edit_path, only: [:edit, :update]
-  before_filter :require_branch_head, only: [:edit, :update]
+  before_action :require_non_empty_project, except: [:new, :create]
+  before_action :authorize_download_code!
+  before_action :authorize_push_code!, only: [:destroy]
+  before_action :assign_blob_vars
+  before_action :commit, except: [:new, :create]
+  before_action :blob, except: [:new, :create]
+  before_action :from_merge_request, only: [:edit, :update]
+  before_action :require_branch_head, only: [:edit, :update]
+  before_action :editor_variables, except: [:show, :preview, :diff]
+  before_action :after_edit_path, only: [:edit, :update]
 
   def new
     commit unless @repository.empty?
   end
 
   def create
-    file_path = File.join(@path, File.basename(params[:file_name]))
-    result = Files::CreateService.new(@project, current_user, params, @ref, file_path).execute
+    result = Files::CreateService.new(@project, current_user, @commit_params).execute
 
     if result[:status] == :success
       flash[:notice] = "Your changes have been successfully committed"
-      redirect_to project_blob_path(@project, File.join(@ref, file_path))
+      redirect_to namespace_project_blob_path(@project.namespace, @project, File.join(@target_branch, @file_path))
     else
       flash[:alert] = result[:message]
       render :new
@@ -40,16 +41,10 @@ class Projects::BlobController < Projects::ApplicationController
   end
 
   def update
-    result = Files::UpdateService.
-      new(@project, current_user, params, @ref, @path).execute
+    result = Files::UpdateService.new(@project, current_user, @commit_params).execute
 
     if result[:status] == :success
       flash[:notice] = "Your changes have been successfully committed"
-
-      if from_merge_request
-        from_merge_request.reload_code
-      end
-
       redirect_to after_edit_path
     else
       flash[:alert] = result[:message]
@@ -66,11 +61,11 @@ class Projects::BlobController < Projects::ApplicationController
   end
 
   def destroy
-    result = Files::DeleteService.new(@project, current_user, params, @ref, @path).execute
+    result = Files::DeleteService.new(@project, current_user, @commit_params).execute
 
     if result[:status] == :success
       flash[:notice] = "Your changes have been successfully committed"
-      redirect_to project_tree_path(@project, @ref)
+      redirect_to namespace_project_tree_path(@project.namespace, @project, @target_branch)
     else
       flash[:alert] = result[:message]
       render :show
@@ -102,7 +97,7 @@ class Projects::BlobController < Projects::ApplicationController
     else
       if tree = @repository.tree(@commit.id, @path)
         if tree.entries.any?
-          redirect_to project_tree_path(@project, File.join(@ref, @path)) and return
+          redirect_to namespace_project_tree_path(@project.namespace, @project, File.join(@ref, @path)) and return
         end
       end
 
@@ -120,7 +115,6 @@ class Projects::BlobController < Projects::ApplicationController
     @id = params[:id]
     @ref, @path = extract_ref(@id)
 
-
   rescue InvalidPathError
     not_found!
   end
@@ -128,15 +122,42 @@ class Projects::BlobController < Projects::ApplicationController
   def after_edit_path
     @after_edit_path ||=
       if from_merge_request
-        diffs_project_merge_request_path(from_merge_request.target_project, from_merge_request) +
+        diffs_namespace_project_merge_request_path(from_merge_request.target_project.namespace, from_merge_request.target_project, from_merge_request) +
           "#file-path-#{hexdigest(@path)}"
+      elsif @target_branch.present?
+        namespace_project_blob_path(@project.namespace, @project, File.join(@target_branch, @path))
       else
-        project_blob_path(@project, @id)
+        namespace_project_blob_path(@project.namespace, @project, @id)
       end
   end
 
   def from_merge_request
     # If blob edit was initiated from merge request page
     @from_merge_request ||= MergeRequest.find_by(id: params[:from_merge_request_id])
+  end
+
+  def sanitized_new_branch_name
+    @new_branch ||= sanitize(strip_tags(params[:new_branch]))
+  end
+
+  def editor_variables
+    @current_branch = @ref
+    @target_branch = (sanitized_new_branch_name || @ref)
+
+    @file_path =
+      if action_name.to_s == 'create'
+        File.join(@path, File.basename(params[:file_name]))
+      else
+        @path
+      end
+
+    @commit_params = {
+      file_path: @file_path,
+      current_branch: @current_branch,
+      target_branch: @target_branch,
+      commit_message: params[:commit_message],
+      file_content: params[:content],
+      file_content_encoding: params[:encoding]
+    }
   end
 end

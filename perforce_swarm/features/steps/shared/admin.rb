@@ -3,7 +3,7 @@ module SharedAdmin
 
   step 'I visit admin "PerforceProject" project page' do
     project_perforce = Project.find_by(name: 'PerforceProject')
-    visit admin_project_path(project_perforce)
+    visit admin_namespace_project_path(project_perforce.namespace, project_perforce)
   end
 
   step 'I should see the admin user page' do
@@ -16,12 +16,12 @@ module SharedAdmin
   end
 
   step 'I should see the admin user settings page' do
-    find(:css, '.page-title').should have_content('Profile settings')
+    find(:css, '.page-title').should have_content('Profile')
     find(:css, 'ul.nav.navbar-nav').should have_content('Admin Area')
   end
 
   step 'I transfer project "PerforceProject" to "QA"' do
-    find(:xpath, "//input[@id='namespace_id']").set group.id
+    find(:xpath, "//input[@id='new_namespace_id']").set group.id
     click_button 'Transfer'
   end
 

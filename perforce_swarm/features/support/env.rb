@@ -7,7 +7,6 @@ end
 
 ENV['RAILS_ENV'] = 'test'
 require './config/environment'
-require 'rspec'
 require 'rspec/expectations'
 require 'database_cleaner'
 require 'spinach/capybara'
@@ -48,6 +47,12 @@ end
 Spinach.hooks.before_run do
   include RSpec::Mocks::ExampleMethods
   TestEnv.init(mailer: false)
+
+  # Include the test license helper if EE edition
+  if PerforceSwarm.ee?
+    require Rails.root.join('spec', 'support', 'license')
+    TestLicense.init
+  end
 
   include FactoryGirl::Syntax::Methods
 end

@@ -50,12 +50,13 @@
 #  bitbucket_access_token        :string(255)
 #  bitbucket_access_token_secret :string(255)
 #  location                      :string(255)
+#  public_email                  :string(255)      default(""), not null
 #  encrypted_otp_secret          :string(255)
 #  encrypted_otp_secret_iv       :string(255)
 #  encrypted_otp_secret_salt     :string(255)
 #  otp_required_for_login        :boolean
 #  otp_backup_codes              :text
-#  public_email                  :string(255)      default(""), not null
+#  dashboard                     :integer          default(0)
 #
 
 require 'spec_helper'
@@ -63,7 +64,17 @@ require 'spec_helper'
 describe User do
   include Gitlab::CurrentSettings
 
-  describe "Associations" do
+  describe 'modules' do
+    subject { described_class }
+
+    it { is_expected.to include_module(Gitlab::ConfigHelper) }
+    it { is_expected.to include_module(Gitlab::CurrentSettings) }
+    it { is_expected.to include_module(Referable) }
+    it { is_expected.to include_module(Sortable) }
+    it { is_expected.to include_module(TokenAuthenticatable) }
+  end
+
+  describe 'associations' do
     it { is_expected.to have_one(:namespace) }
     it { is_expected.to have_many(:snippets).class_name('Snippet').dependent(:destroy) }
     it { is_expected.to have_many(:project_members).dependent(:destroy) }
@@ -79,9 +90,6 @@ describe User do
     it { is_expected.to have_many(:identities).dependent(:destroy) }
   end
 
-  describe "Mass assignment" do
-  end
-
   describe 'validations' do
     it { is_expected.to validate_presence_of(:username) }
     it { is_expected.to validate_presence_of(:projects_limit) }
@@ -89,7 +97,7 @@ describe User do
     it { is_expected.to allow_value(0).for(:projects_limit) }
     it { is_expected.not_to allow_value(-1).for(:projects_limit) }
 
-    it { is_expected.to ensure_length_of(:bio).is_within(0..255) }
+    it { is_expected.to validate_length_of(:bio).is_within(0..255) }
 
     describe 'email' do
       it 'accepts info@example.com' do
@@ -175,6 +183,14 @@ describe User do
     it { is_expected.to respond_to(:private_token) }
   end
 
+  describe '#to_reference' do
+    let(:user) { create(:user) }
+
+    it 'returns a String reference to the object' do
+      expect(user.to_reference).to eq "@#{user.username}"
+    end
+  end
+
   describe '#generate_password' do
     it "should execute callback when force_random_password specified" do
       user = build(:user, force_random_password: true)
@@ -233,6 +249,7 @@ describe User do
     it { expect(@user.several_namespaces?).to be_truthy }
     it { expect(@user.authorized_groups).to eq([@group]) }
     it { expect(@user.owned_groups).to eq([@group]) }
+    it { expect(@user.namespaces).to match_array([@user.namespace, @group]) }
   end
 
   describe 'group multiple owners' do
@@ -255,6 +272,7 @@ describe User do
     end
 
     it { expect(@user.several_namespaces?).to be_falsey }
+    it { expect(@user.namespaces).to eq([@user.namespace]) }
   end
 
   describe 'blocking user' do
@@ -557,7 +575,6 @@ describe User do
   end
 
   describe "#contributed_projects_ids" do
-
     subject { create(:user) }
     let!(:project1) { create(:project) }
     let!(:project2) { create(:project, forked_from_project: project3) }
@@ -581,6 +598,23 @@ describe User do
 
     it "doesn't include IDs for unrelated projects" do
       expect(subject.contributed_projects_ids).not_to include(project2.id)
+    end
+  end
+
+  describe :can_be_removed? do
+    subject { create(:user) }
+
+    context 'no owned groups' do
+      it { expect(subject.can_be_removed?).to be_truthy }
+    end
+
+    context 'has owned groups' do
+      before do
+        group = create(:group)
+        group.add_owner(subject)
+      end
+
+      it { expect(subject.can_be_removed?).to be_falsey }
     end
   end
 end

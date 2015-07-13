@@ -88,8 +88,8 @@ Is the system packaged Git too old? Remove it and compile from source.
 
     # Download and compile from source
     cd /tmp
-    curl -L --progress https://www.kernel.org/pub/software/scm/git/git-2.1.2.tar.gz | tar xz
-    cd git-2.1.2/
+    curl -L --progress https://www.kernel.org/pub/software/scm/git/git-2.4.3.tar.gz | tar xz
+    cd git-2.4.3/
     ./configure
     make prefix=/usr/local all
 
@@ -195,9 +195,9 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
 ### Clone the Source
 
     # Clone GitLab repository
-    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-11-stable gitlab
+    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-12-stable gitlab
 
-**Note:** You can change `7-11-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
+**Note:** You can change `7-12-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
 
 ### Configure It
 
@@ -241,10 +241,7 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
     # Copy the example Rack attack config
     sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb
 
-    # Configure Git global settings for git user, useful when editing via web
-    # Edit user.email according to what is set in gitlab.yml
-    sudo -u git -H git config --global user.name "GitLab"
-    sudo -u git -H git config --global user.email "example@example.com"
+    # Configure Git global settings for git user, used when editing via web editor
     sudo -u git -H git config --global core.autocrlf input
 
     # Configure Redis connection settings
@@ -301,6 +298,8 @@ GitLab Shell is an SSH access and repository management software developed speci
     sudo -u git -H editor /home/git/gitlab-shell/config.yml
 
 **Note:** If you want to use HTTPS, see [Using HTTPS](#using-https) for the additional steps.
+
+**Note:** Make sure your hostname can be resolved on the machine itself by either a proper DNS record or an additional line in /etc/hosts ("127.0.0.1  hostname"). This might be necessary for example if you set up gitlab behind a reverse proxy. If the hostname cannot be resolved, the final installation check will fail with "Check GitLab API access: FAILED. code: 401" and pushing commits will be rejected with "[remote rejected] master -> master (hook declined)".
 
 ### Initialize Database and Activate Advanced Features
 

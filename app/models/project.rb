@@ -33,11 +33,12 @@ require 'carrierwave/orm/activerecord'
 require 'file_size_validator'
 
 class Project < ActiveRecord::Base
-  include Sortable
+  include Gitlab::ConfigHelper
   include Gitlab::ShellAdapter
   include Gitlab::VisibilityLevel
-  include Gitlab::ConfigHelper
   include Rails.application.routes.url_helpers
+  include Referable
+  include Sortable
 
   extend Gitlab::ConfigHelper
   extend Enumerize
@@ -157,7 +158,7 @@ class Project < ActiveRecord::Base
   scope :without_user, ->(user)  { where('projects.id NOT IN (:ids)', ids: user.authorized_projects.map(&:id) ) }
   scope :without_team, ->(team) { team.projects.present? ? where('projects.id NOT IN (:ids)', ids: team.projects.map(&:id)) : scoped  }
   scope :not_in_group, ->(group) { where('projects.id NOT IN (:ids)', ids: group.project_ids ) }
-  scope :in_namespace, ->(namespace) { where(namespace_id: namespace.id) }
+  scope :in_namespace, ->(namespace_ids) { where(namespace_id: namespace_ids) }
   scope :in_group_namespace, -> { joins(:group) }
   scope :personal, ->(user) { where(namespace_id: user.namespace_id) }
   scope :joined, ->(user) { where('namespace_id != ?', user.namespace_id) }
@@ -247,6 +248,11 @@ class Project < ActiveRecord::Base
         order_by(method)
       end
     end
+
+    def reference_pattern
+      name_pattern = Gitlab::Regex::NAMESPACE_REGEX_STR
+      %r{(?<project>#{name_pattern}/#{name_pattern})}
+    end
   end
 
   def team
@@ -303,6 +309,10 @@ class Project < ActiveRecord::Base
 
   def to_param
     path
+  end
+
+  def to_reference(_from_project = nil)
+    path_with_namespace
   end
 
   def web_url

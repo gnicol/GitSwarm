@@ -27,6 +27,7 @@ class Dispatcher
         new Milestone()
       when 'projects:milestones:new', 'projects:milestones:edit'
         new ZenMode()
+        new DropzoneInput($('.milestone-form'))
       when 'projects:compare:show'
         new Diff()
       when 'projects:issues:new','projects:issues:edit'
@@ -54,7 +55,7 @@ class Dispatcher
       when 'projects:merge_requests:index'
         shortcut_handler = new ShortcutsNavigation()
         MergeRequests.init()
-      when 'dashboard:show'
+      when 'dashboard:show', 'root:show'
         new Dashboard()
         new Activities()
       when 'dashboard:projects:starred'

@@ -2,7 +2,6 @@ require 'sidekiq/web'
 require 'api/api'
 
 Gitlab::Application.routes.draw do
-  mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   use_doorkeeper do
     controllers applications: 'oauth/applications',
                 authorized_applications: 'oauth/authorized_applications',
@@ -166,7 +165,7 @@ Gitlab::Application.routes.draw do
       end
     end
 
-    resources :deploy_keys, only: [:index, :show, :new, :create, :destroy]
+    resources :deploy_keys, only: [:index, :new, :create, :destroy]
 
     resources :hooks, only: [:index, :create, :destroy] do
       get :test
@@ -204,7 +203,6 @@ Gitlab::Application.routes.draw do
   resource :profile, only: [:show, :update] do
     member do
       get :history
-      get :design
       get :applications
 
       put :reset_private_token
@@ -223,6 +221,7 @@ Gitlab::Application.routes.draw do
           put :reset
         end
       end
+      resource :preferences, only: [:show, :update]
       resources :keys
       resources :emails, only: [:index, :create, :destroy]
       resource :avatar, only: [:destroy]
@@ -294,7 +293,7 @@ Gitlab::Application.routes.draw do
     get '/users/auth/:provider/omniauth_error' => 'omniauth_callbacks#omniauth_error', as: :omniauth_error
   end
 
-  root to: "dashboard#show"
+  root to: "root#show"
 
   #
   # Project Area
@@ -422,7 +421,7 @@ Gitlab::Application.routes.draw do
           end
         end
 
-        resources :deploy_keys, constraints: { id: /\d+/ }, only: [:index, :show, :new, :create] do
+        resources :deploy_keys, constraints: { id: /\d+/ }, only: [:index, :new, :create] do
           member do
             put :enable
             put :disable
@@ -450,6 +449,7 @@ Gitlab::Application.routes.draw do
         resources :merge_requests, constraints: { id: /\d+/ }, except: [:destroy] do
           member do
             get :diffs
+            get :commits
             post :automerge
             get :automerge_check
             get :ci_status

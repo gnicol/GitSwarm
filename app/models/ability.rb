@@ -101,6 +101,27 @@ class Ability
           rules -= project_archived_rules
         end
 
+        unless project.issues_enabled
+          rules -= named_abilities('issue')
+        end
+
+        unless project.merge_requests_enabled
+          rules -= named_abilities('merge_request')
+        end
+
+        unless project.issues_enabled or project.merge_requests_enabled
+          rules -= named_abilities('label')
+          rules -= named_abilities('milestone')
+        end
+
+        unless project.snippets_enabled
+          rules -= named_abilities('project_snippet')
+        end
+
+        unless project.wiki_enabled
+          rules -= named_abilities('wiki')
+        end
+
         rules
       end
     end
@@ -117,6 +138,7 @@ class Ability
         :read_project,
         :read_wiki,
         :read_issue,
+        :read_label,
         :read_milestone,
         :read_project_snippet,
         :read_project_member,
@@ -241,7 +263,7 @@ class Ability
             :"modify_#{name}",
           ]
         else
-          if subject.respond_to?(:project)
+          if subject.respond_to?(:project) && subject.project
             project_abilities(user, subject.project)
           else
             []
@@ -271,6 +293,17 @@ class Ability
                        abilities << self
                        abilities
                      end
+    end
+
+    private
+
+    def named_abilities(name)
+      [
+        :"read_#{name}",
+        :"write_#{name}",
+        :"modify_#{name}",
+        :"admin_#{name}"
+      ]
     end
   end
 end

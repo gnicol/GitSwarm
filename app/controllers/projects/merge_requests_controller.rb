@@ -2,10 +2,13 @@ require 'gitlab/satellite/satellite'
 
 class Projects::MergeRequestsController < Projects::ApplicationController
   before_action :module_enabled
-  before_action :merge_request, only: [:edit, :update, :show, :diffs, :automerge, :automerge_check, :ci_status, :toggle_subscription]
-  before_action :closes_issues, only: [:edit, :update, :show, :diffs]
-  before_action :validates_merge_request, only: [:show, :diffs]
-  before_action :define_show_vars, only: [:show, :diffs]
+  before_action :merge_request, only: [
+    :edit, :update, :show, :diffs, :commits, :automerge, :automerge_check,
+    :ci_status, :toggle_subscription
+  ]
+  before_action :closes_issues, only: [:edit, :update, :show, :diffs, :commits]
+  before_action :validates_merge_request, only: [:show, :diffs, :commits]
+  before_action :define_show_vars, only: [:show, :diffs, :commits]
 
   # Allow read any merge_request
   before_action :authorize_read_merge_request!
@@ -19,7 +22,15 @@ class Projects::MergeRequestsController < Projects::ApplicationController
   def index
     terms = params['issue_search']
     @merge_requests = get_merge_requests_collection
-    @merge_requests = @merge_requests.full_search(terms) if terms.present?
+
+    if terms.present?
+      if terms =~ /\A[#!](\d+)\z/
+        @merge_requests = @merge_requests.where(iid: $1)
+      else
+        @merge_requests = @merge_requests.full_search(terms)
+      end
+    end
+
     @merge_requests = @merge_requests.page(params[:page]).per(PER_PAGE)
 
     respond_to do |format|
@@ -57,6 +68,10 @@ class Projects::MergeRequestsController < Projects::ApplicationController
       format.html
       format.json { render json: { html: view_to_html_string("projects/merge_requests/show/_diffs") } }
     end
+  end
+
+  def commits
+    render 'show'
   end
 
   def new
@@ -124,11 +139,13 @@ class Projects::MergeRequestsController < Projects::ApplicationController
       @merge_request.check_if_can_be_merged
     end
 
-    render json: { merge_status: @merge_request.automerge_status }
+    closes_issues
+
+    render partial: "projects/merge_requests/widget/show.html.haml", layout: false
   end
 
   def automerge
-    return access_denied! unless allowed_to_merge?
+    return access_denied! unless @merge_request.can_be_merged_by?(current_user)
 
     if @merge_request.automergeable?
       AutoMergeWorker.perform_async(@merge_request.id, current_user.id, params)
@@ -237,8 +254,6 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     @commits = @merge_request.commits
 
     @merge_request_diff = @merge_request.merge_request_diff
-    @allowed_to_merge = allowed_to_merge?
-    @show_merge_controls = @merge_request.open? && @commits.any? && @allowed_to_merge
     @source_branch = @merge_request.source_project.repository.find_branch(@merge_request.source_branch).try(:name)
 
     if @merge_request.locked_long_ago?
@@ -247,17 +262,9 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     end
   end
 
-  def allowed_to_merge?
-    allowed_to_push_code?(project, @merge_request.target_branch)
-  end
-
   def invalid_mr
     # Render special view for MR with removed source or target branch
     render 'invalid'
-  end
-
-  def allowed_to_push_code?(project, branch)
-    ::Gitlab::GitAccess.new(current_user, project).can_push_to_branch?(branch)
   end
 
   def merge_request_params

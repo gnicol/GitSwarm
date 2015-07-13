@@ -5,8 +5,13 @@ class Repository
 
   def initialize(path_with_namespace, default_branch = nil, project = nil)
     @path_with_namespace = path_with_namespace
-    @raw_repository = Gitlab::Git::Repository.new(path_to_repo) if path_with_namespace
     @project = project
+
+    if path_with_namespace
+      @raw_repository = Gitlab::Git::Repository.new(path_to_repo) 
+      @raw_repository.autocrlf = :input
+    end
+
   rescue Gitlab::Git::Repository::NoRepository
     nil
   end
@@ -163,10 +168,8 @@ class Repository
     end
   end
 
-  def respond_to?(method)
-    return true if raw_repository.respond_to?(method)
-
-    super
+  def respond_to_missing?(method, include_private = false)
+    raw_repository.respond_to?(method, include_private) || super
   end
 
   def blob_at(sha, path)
@@ -370,7 +373,54 @@ class Repository
     @root_ref ||= raw_repository.root_ref
   end
 
+  def commit_file(user, path, content, message, ref)
+    path[0] = '' if path[0] == '/'
+
+    committer = user_to_comitter(user)
+    options = {}
+    options[:committer] = committer
+    options[:author] = committer
+    options[:commit] = {
+      message: message,
+      branch: ref
+    }
+
+    options[:file] = {
+      content: content,
+      path: path
+    }
+
+    Gitlab::Git::Blob.commit(raw_repository, options)
+  end
+
+  def remove_file(user, path, message, ref)
+    path[0] = '' if path[0] == '/'
+
+    committer = user_to_comitter(user)
+    options = {}
+    options[:committer] = committer
+    options[:author] = committer
+    options[:commit] = {
+      message: message,
+      branch: ref
+    }
+
+    options[:file] = {
+      path: path
+    }
+
+    Gitlab::Git::Blob.remove(raw_repository, options)
+  end
+
   private
+
+  def user_to_comitter(user)
+    {
+      email: user.email,
+      name: user.name,
+      time: Time.now
+    }
+  end
 
   def cache
     @cache ||= RepositoryCache.new(path_with_namespace)

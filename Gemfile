@@ -4,18 +4,7 @@ eval_gemfile File.join(File.dirname(__FILE__), 'perforce_swarm/Gemfile')
 
 source "https://rubygems.org"
 
-def darwin_only(require_as)
-  RUBY_PLATFORM.include?('darwin') && require_as
-end
-
-def linux_only(require_as)
-  RUBY_PLATFORM.include?('linux') && require_as
-end
-
-gem "rails", "~> 4.1.0"
-
-# Make links from text
-gem 'rails_autolink', '~> 1.1'
+gem 'rails', '4.1.11'
 
 # Default values for AR models
 gem "default_value_for", "~> 3.0.0"
@@ -35,6 +24,7 @@ gem 'omniauth-shibboleth'
 gem 'omniauth-kerberos', group: :kerberos
 gem 'omniauth-gitlab'
 gem 'omniauth-bitbucket'
+gem 'omniauth-saml'
 gem 'doorkeeper', '2.1.3'
 gem "rack-oauth2", "~> 1.0.5"
 
@@ -44,22 +34,30 @@ gem 'rqrcode-rails3'
 gem 'attr_encrypted', '1.3.4'
 
 # Browser detection
-gem "browser"
+gem "browser", '~> 0.8.0'
 
 # Extracting information from a git repository
 # Provide access to Gitlab::Git library
-gem "gitlab_git", '~> 7.1.13'
+gem "gitlab_git", '~> 7.2.5'
 
 # Ruby/Rack Git Smart-HTTP Server Handler
+# GitLab fork with a lot of changes (improved thread-safety, better memory usage etc)
+# For full list of changes see https://github.com/SaitoWu/grack/compare/master...gitlabhq:master
 gem 'gitlab-grack', '~> 2.0.2', require: 'grack'
 
 # LDAP Auth
+# GitLab fork with several improvements to original library. For full list of changes 
+# see https://github.com/intridea/omniauth-ldap/compare/master...gitlabhq:master
 gem 'gitlab_omniauth-ldap', '1.2.1', require: "omniauth-ldap"
 
 # Git Wiki
 gem 'gollum-lib', '~> 4.0.2'
 
 # Language detection
+# GitLab fork of linguist does not require pygments/python dependency. 
+# New version of original gem also dropped pygments support but it has strict 
+# dependency to unstable rugged version. We have internal issue for replacing 
+# fork with original gem when we meet on same rugged version - https://dev.gitlab.org/gitlab/gitlabhq/issues/2052.
 gem "gitlab-linguist", "~> 3.0.1", require: "linguist"
 
 # API
@@ -87,7 +85,7 @@ gem "carrierwave"
 gem 'dropzonejs-rails'
 
 # for aws storage
-gem "fog", "~> 1.14"
+gem "fog", "~> 1.25.0"
 gem "unf"
 
 # Authorization
@@ -106,7 +104,7 @@ gem 'rdoc',          '~>3.6'
 gem 'org-ruby',      '= 0.9.12'
 gem 'creole',        '~>0.3.6'
 gem 'wikicloth',     '=0.8.1'
-gem 'asciidoctor',   '= 0.1.4'
+gem 'asciidoctor',   '~> 1.5.2'
 
 # Diffs
 gem 'diffy', '~> 3.0.3'
@@ -176,7 +174,7 @@ gem "underscore-rails", "~> 1.4.4"
 gem "sanitize", '~> 2.0'
 
 # Protect against bruteforcing
-gem "rack-attack"
+gem "rack-attack", '~> 4.3.0'
 
 # Ace editor
 gem 'ace-rails-ap'
@@ -190,23 +188,23 @@ gem 'charlock_holmes'
 gem "sass-rails", '~> 4.0.2'
 gem "coffee-rails"
 gem "uglifier"
-gem 'turbolinks'
+gem 'turbolinks', '~> 2.5.0'
 gem 'jquery-turbolinks'
 
-gem 'select2-rails'
-gem 'jquery-atwho-rails', '~> 1.0.0'
-gem "jquery-rails"
-gem "jquery-ui-rails"
-gem "jquery-scrollto-rails"
-gem "raphael-rails", "~> 2.1.2"
-gem 'bootstrap-sass', '~> 3.0'
-gem "font-awesome-rails", '~> 4.2'
-gem "gitlab_emoji", "~> 0.1"
-gem "gon", '~> 5.0.0'
-gem 'nprogress-rails'
-gem 'request_store'
-gem "virtus"
 gem 'addressable'
+gem 'bootstrap-sass',     '~> 3.0'
+gem 'font-awesome-rails', '~> 4.2'
+gem 'gitlab_emoji',       '~> 0.1'
+gem 'gon',                '~> 5.0.0'
+gem 'jquery-atwho-rails', '~> 1.0.0'
+gem 'jquery-rails',       '3.1.3'
+gem 'jquery-scrollto-rails'
+gem 'jquery-ui-rails'
+gem 'nprogress-rails'
+gem 'raphael-rails',      '~> 2.1.2'
+gem 'request_store'
+gem 'select2-rails'
+gem 'virtus'
 
 group :development do
   gem 'brakeman', require: false
@@ -243,34 +241,27 @@ group :development, :test do
   gem 'minitest', '~> 5.3.0'
 
   # Generate Fake data
-  gem "ffaker"
-
-  # Guard
-  gem 'guard-rspec'
-  gem 'guard-spinach'
-
-  # Notification
-  gem 'rb-fsevent', require: darwin_only('rb-fsevent')
-  gem 'growl',      require: darwin_only('growl')
-  gem 'rb-inotify', require: linux_only('rb-inotify')
+  gem 'ffaker', '~> 2.0.0'
 
   # PhantomJS driver for Capybara
   gem 'poltergeist', '~> 1.5.1'
 
-  gem 'jasmine-rails'
+  gem 'teaspoon', '~> 1.0.0'
+  gem 'teaspoon-jasmine'
 
-  gem "spring", '~> 1.3.1'
-  gem "spring-commands-rspec", '1.0.4'
-  gem "spring-commands-spinach", '1.0.0'
+  gem 'spring', '~> 1.3.1'
+  gem 'spring-commands-rspec',    '~> 1.0.0'
+  gem 'spring-commands-spinach',  '~> 1.0.0'
+  gem 'spring-commands-teaspoon', '~> 0.0.2'
 
   gem "byebug"
 end
 
 group :test do
-  gem "simplecov", require: false
-  gem "shoulda-matchers", "~> 2.7.0"
+  gem 'simplecov', require: false
+  gem 'shoulda-matchers', '~> 2.8.0', require: false
   gem 'email_spec'
-  gem "webmock"
+  gem 'webmock', '~> 1.21.0'
   gem 'test_after_commit'
 end
 
@@ -281,4 +272,4 @@ end
 gem "newrelic_rpm"
 
 gem 'octokit', '3.7.0'
-gem "rugments"
+gem "rugments", "~> 1.0.0.beta7"

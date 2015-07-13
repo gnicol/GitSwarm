@@ -50,23 +50,26 @@
 #  bitbucket_access_token        :string(255)
 #  bitbucket_access_token_secret :string(255)
 #  location                      :string(255)
+#  public_email                  :string(255)      default(""), not null
 #  encrypted_otp_secret          :string(255)
 #  encrypted_otp_secret_iv       :string(255)
 #  encrypted_otp_secret_salt     :string(255)
 #  otp_required_for_login        :boolean
 #  otp_backup_codes              :text
-#  public_email                  :string(255)      default(""), not null
+#  dashboard                     :integer          default(0)
 #
 
 require 'carrierwave/orm/activerecord'
 require 'file_size_validator'
 
 class User < ActiveRecord::Base
-  include Sortable
-  include Gitlab::ConfigHelper
-  include TokenAuthenticatable
   extend Gitlab::ConfigHelper
+
+  include Gitlab::ConfigHelper
   include Gitlab::CurrentSettings
+  include Referable
+  include Sortable
+  include TokenAuthenticatable
 
   default_value_for :admin, false
   default_value_for :can_create_group, gitlab_config.default_can_create_group
@@ -247,6 +250,18 @@ class User < ActiveRecord::Base
     def build_user(attrs = {})
       User.new(attrs)
     end
+
+    def reference_prefix
+      '@'
+    end
+
+    # Pattern used to extract `@user` user references from text
+    def reference_pattern
+      %r{
+        #{Regexp.escape(reference_prefix)}
+        (?<user>#{Gitlab::Regex::NAMESPACE_REGEX_STR})
+      }x
+    end
   end
 
   #
@@ -255,6 +270,10 @@ class User < ActiveRecord::Base
 
   def to_param
     username
+  end
+
+  def to_reference(_from_project = nil)
+    "#{self.class.reference_prefix}#{username}"
   end
 
   def notification
@@ -334,9 +353,11 @@ class User < ActiveRecord::Base
   end
 
   def owned_projects
-    @owned_projects ||= begin
-                          Project.where(namespace_id: owned_groups.pluck(:id).push(namespace.id)).joins(:namespace)
-                        end
+    @owned_projects ||=
+      begin
+        namespace_ids = owned_groups.pluck(:id).push(namespace.id)
+        Project.in_namespace(namespace_ids).joins(:namespace)
+      end
   end
 
   # Team membership in authorized projects
@@ -465,7 +486,7 @@ class User < ActiveRecord::Base
   end
 
   def sanitize_attrs
-    %w(name username skype linkedin twitter bio).each do |attr|
+    %w(name username skype linkedin twitter).each do |attr|
       value = self.send(attr)
       self.send("#{attr}=", Sanitize.clean(value)) if value.present?
     end
@@ -637,6 +658,12 @@ class User < ActiveRecord::Base
       end
   end
 
+  def namespaces
+    namespace_ids = groups.pluck(:id)
+    namespace_ids.push(namespace.id)
+    Namespace.where(id: namespace_ids)
+  end
+
   def oauth_authorized_tokens
     Doorkeeper::AccessToken.where(resource_owner_id: self.id, revoked_at: nil)
   end
@@ -671,4 +698,12 @@ class User < ActiveRecord::Base
 
     true
   end
+
+  def can_be_removed?
+    !solo_owned_groups.present?
+  end
+
+  # User's Dashboard preference
+  # Note: When adding an option, it MUST go on the end of the array.
+  enum dashboard: [:projects, :stars]
 end

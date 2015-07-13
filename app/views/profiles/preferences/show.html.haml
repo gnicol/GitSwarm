@@ -1,0 +1,70 @@
+- page_title 'Preferences'
+%h3.page-title
+  = page_title
+%p.light
+  These settings allow you to customize the appearance and behavior of the site.
+  They are saved with your account and will persist to any device you use to
+  access the site.
+%hr
+
+= form_for @user, url: profile_preferences_path, remote: true, method: :put, html: {class: 'js-preferences-form form-horizontal'} do |f|
+  .panel.panel-default.application-theme
+    .panel-heading
+      Application theme
+    .panel-body
+      .themes_opts
+        = label_tag do
+          .prev.default
+          = f.radio_button :theme_id, 1
+          Graphite
+
+        = label_tag do
+          .prev.classic
+          = f.radio_button :theme_id, 2
+          Charcoal
+
+        = label_tag do
+          .prev.modern
+          = f.radio_button :theme_id, 3
+          Green
+
+        = label_tag do
+          .prev.gray
+          = f.radio_button :theme_id, 4
+          Gray
+
+        = label_tag do
+          .prev.violet
+          = f.radio_button :theme_id, 5
+          Violet
+
+        = label_tag do
+          .prev.blue
+          = f.radio_button :theme_id, 6
+          Blue
+      %br
+      .clearfix
+
+  .panel.panel-default.code-preview-theme
+    .panel-heading
+      Code preview theme
+    .panel-body
+      .code_highlight_opts
+        - color_schemes.each do |color_scheme_id, color_scheme|
+          = label_tag do
+            .prev= image_tag "#{color_scheme}-scheme-preview.png"
+            = f.radio_button :color_scheme_id, color_scheme_id
+            = color_scheme.tr('-_', ' ').titleize
+
+  .panel.panel-default
+    .panel-heading
+      Behavior
+    .panel-body
+      .form-group
+        = f.label :dashboard, class: 'control-label' do
+          Default Dashboard
+          = link_to('(?)', help_page_path('profile', 'preferences') + '#default-dashboard', target: '_blank')
+        .col-sm-10
+          = f.select :dashboard, dashboard_choices, {}, class: 'form-control'
+    .panel-footer
+      = f.submit 'Save', class: 'btn btn-save'

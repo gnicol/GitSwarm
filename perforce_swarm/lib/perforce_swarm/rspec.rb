@@ -1,5 +1,5 @@
 if ENV['RAILS_ENV'] == 'test'
-  require 'rspec'
+  require 'rspec/rails'
   require_relative '../../spec/support/test_env'
 
   # this file helps configure Rspec so that tests in the main application
@@ -38,7 +38,7 @@ if ENV['RAILS_ENV'] == 'test'
     # @return [String] -  the relative filepath for the test
     # relative to the folder which contains the spec folder
     def test_filepath(metadata)
-      metadata[:file_path].gsub(%r{^.*/spec}, './spec')
+      metadata[:file_path].gsub(/^.*\/spec/, './spec')
     end
 
     # string label used to uniquely identify an overridden test
@@ -53,6 +53,11 @@ if ENV['RAILS_ENV'] == 'test'
     # extra configuration files we've added in our engine
     config.before(:suite) do
       Dir[Rails.root.join('perforce_swarm/spec/support/**/*.rb')].each { |f| require f }
+    end
+
+    # Clear sidekiq worker jobs
+    config.after(:each) do
+      Sidekiq::Worker.clear_all
     end
 
     # print a warning to users who are not running any tests from the engine

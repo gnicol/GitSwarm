@@ -80,7 +80,7 @@ sudo docker pull sytse/gitlab-app:7.10.1
 
 ```bash
 sudo docker run --name gitlab-data sytse/gitlab-data /bin/true
-sudo docker run --detach --name gitlab_app --publish 8080:80 --publish 2222:22 --volumes-from gitlab_data sytse/gitlab-app:7.10.1
+sudo docker run --detach --name gitlab-app --publish 8080:80 --publish 2222:22 --volumes-from gitlab-data sytse/gitlab-app:7.10.1
 ```
 
 After this you can login to the web interface as explained above in 'After starting a container'.
@@ -94,7 +94,12 @@ sudo docker build --tag gitlab-data docker/data/
 sudo docker build --tag gitlab-app:7.10.1 docker/app/
 ```
 
-After this run the images as described in the previous section.
+After this run the images:
+
+```bash
+sudo docker run --name gitlab-data gitlab-data /bin/true
+sudo docker run --detach --name gitlab-app --publish 8080:80 --publish 2222:22 --volumes-from gitlab-data gitlab-app:7.10.1
+```
 
 We assume using a data volume container, this will simplify migrations and backups.
 This empty container will exist to persist as volumes the 3 directories used by GitLab, so remember not to delete it.
@@ -107,7 +112,7 @@ The directories on data container are:
 
 ### Configure GitLab
 
-These container uses the official Omnibus GitLab distribution, so all configuration is done in the unique configuration file `/etc/gitlab/gitlab.rb`.
+This container uses the official Omnibus GitLab distribution, so all configuration is done in the unique configuration file `/etc/gitlab/gitlab.rb`.
 
 To access GitLab configuration, you can start an interactive command line in a new container using the shared data volume container, you will be able to browse the 3 directories and use your favorite text editor:
 
@@ -122,7 +127,7 @@ You can find all available options in [Omnibus GitLab documentation](https://git
 
 ### Upgrade GitLab with app and data images
 
-To updgrade GitLab to new versions, stop running container, create new docker image and container from that image.
+To upgrade GitLab to new versions, stop running container, create new docker image and container from that image.
 
 It Assumes that you're upgrading from 7.8.1 to 7.10.1 and you're in the updated GitLab repo root directory:
 
@@ -130,7 +135,7 @@ It Assumes that you're upgrading from 7.8.1 to 7.10.1 and you're in the updated 
 sudo docker stop gitlab-app
 sudo docker rm gitlab-app
 sudo docker build --tag gitlab-app:7.10.1 docker/app/
-sudo docker run --detach --name gitlab-app --publish 8080:80 --publish 2222:22 --volumes-from gitlab_data gitlab-app:7.10.1
+sudo docker run --detach --name gitlab-app --publish 8080:80 --publish 2222:22 --volumes-from gitlab-data gitlab-app:7.10.1
 ```
 
 On the first run GitLab will reconfigure and update itself. If everything runs OK don't forget to cleanup the app image:
@@ -141,13 +146,15 @@ sudo docker rmi gitlab-app:7.8.1
 
 ### Publish images to Dockerhub
 
-Login to Dockerhub with `sudo docker login` and run the following (replace '7.9.2' with the version you're using and 'Sytse Sijbrandij' with your name):
+- Ensure the containers are running
+- Login to Dockerhub with `sudo docker login`
+- Run the following (replace '7.10.1' with the version you're using and 'Sytse Sijbrandij' with your name):
 
 ```bash
-sudo docker commit -m "Initial commit" -a "Sytse Sijbrandij" gitlab-app:7.10.1 sytse/gitlab-app:7.10.1
+sudo docker commit -m "Initial commit" -a "Sytse Sijbrandij" gitlab-app sytse/gitlab-app:7.10.1
 sudo docker push sytse/gitlab-app:7.10.1
-sudo docker commit -m "Initial commit" -a "Sytse Sijbrandij" gitlab_data sytse/gitlab_data
-sudo docker push sytse/gitlab_data
+sudo docker commit -m "Initial commit" -a "Sytse Sijbrandij" gitlab-data sytse/gitlab-data
+sudo docker push sytse/gitlab-data
 ```
 
 ## Troubleshooting

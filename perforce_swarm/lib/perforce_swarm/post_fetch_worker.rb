@@ -1,5 +1,4 @@
 require 'sidekiq'
-require 'sidetiq'
 
 module PerforceSwarm
   class PostFetchWorker

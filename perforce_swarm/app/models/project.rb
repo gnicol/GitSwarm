@@ -35,7 +35,7 @@ class Project < ActiveRecord::Base
     import_job = fork do
       gitlab_shell  = File.expand_path(Gitlab.config.gitlab_shell.path)
       mirror_script = File.join(gitlab_shell, 'perforce_swarm', 'bin', 'gitswarm-mirror')
-      exec Shellwords.shelljoin([mirror_script, 'fetch', path_with_namespace + '.git'])
+      exec Shellwords.shelljoin([mirror_script, 'fetch', '--redis-on-finish', path_with_namespace + '.git'])
     end
     Process.detach(import_job)
   end

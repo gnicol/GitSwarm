@@ -60,7 +60,7 @@ module SharedProject
            project: project,
            description: 'automatic post feature',
            author: project.users.first
-          )
+    )
   end
 
   step 'project "PerforceProject" has "HipChat" open issue' do
@@ -69,7 +69,7 @@ module SharedProject
            title: 'HipChat',
            project: project,
            author: project.users.first
-          )
+    )
   end
 
   #########################

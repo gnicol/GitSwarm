@@ -2,23 +2,22 @@
 swarm.recentProjects = {
   get: ->
     projects = JSON.parse(window.localStorage.getItem('recent-projects')) || []
+    last_checked = JSON.parse(window.localStorage.getItem('last-checked')) || null
     recent_user_projects = []
-    $.ajax '/user/recent_projects',
-      type: 'GET'
-      dataType: "json"
-      async:   false
-      success: (recent_projects) ->
-        for id in recent_projects
-          for project in projects
-            if project.project.id not in recent_projects
-              swarm.recentProjects.set((x for x in projects when x.path != project.path))
-            else
-              if project.project.id == id
-                recent_user_projects.push(project)
-      error: ->
-        recent_user_projects = projects
+    if last_checked? and Date.now() - last_checked < 3600000
+      recent_user_projects = projects
+    else
+      $.ajax '/user/recent_projects',
+        type: 'GET'
+        dataType: "json"
+        async:   false
+        success: (recent_projects) ->
+          swarm.recentProjects.set((x for x in projects when x.project? and x.project.id in recent_projects))
+        error: ->
+          recent_user_projects = projects
     recent_user_projects
   set: (projects) ->
+    window.localStorage.setItem('last-checked', Date.now())
     window.localStorage.setItem('recent-projects', JSON.stringify(projects))
   clear: ->
     window.localStorage.setItem('recent-projects', null)

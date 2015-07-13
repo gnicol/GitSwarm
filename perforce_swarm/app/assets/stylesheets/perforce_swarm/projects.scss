@@ -1,0 +1,57 @@
+.project-edit-content hr.or {
+  border-top: 1px solid #ccc;
+  color: #999;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+
+.project-edit-content hr.or:after {
+  content: "OR";
+  position: relative;
+  top: -0.7em;
+  font-size: 1.1em;
+  padding: 0 1em;
+  background: white;
+}
+
+.git-fusion-import.form-group {
+  margin-bottom: 0;
+}
+
+.form-group.disabled {
+  opacity: 0.5;
+}
+
+.git-fusion-import .description {
+  margin-top: 7px;
+}
+
+.git-fusion-import .split {
+  margin-top: 10px;
+  float: none;
+}
+
+.git-fusion-import .split .left {
+  float: left;
+  width: 50%;
+}
+
+.git-fusion-import .split .right {
+  float: right;
+  width: 45%;
+}
+
+.git-fusion-import .greyed {
+  background-color: #ddd;
+  padding: 2px 30px 2px 5px;
+  whitespace: nowrap;
+}
+
+.git-fusion-import .repo-select, .git-fusion-import .repo-warning {
+  margin-top: 1em;
+}
+
+.git-fusion-import .repo-select {
+  text-align: center;
+}

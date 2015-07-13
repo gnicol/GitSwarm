@@ -12,8 +12,11 @@ module PerforceSwarm
 
       # Autoload classes from shell when needed
       shell_path = File.expand_path(Gitlab.config.gitlab_shell.path)
-      PerforceSwarm.autoload :Mirror, File.join(shell_path, 'perforce_swarm', 'mirror')
-      PerforceSwarm.autoload :Repo,   File.join(shell_path, 'perforce_swarm', 'repo')
+      PerforceSwarm.autoload :Mirror,         File.join(shell_path, 'perforce_swarm', 'mirror')
+      PerforceSwarm.autoload :Repo,           File.join(shell_path, 'perforce_swarm', 'repo')
+      PerforceSwarm.autoload :GitFusionRepo,  File.join(shell_path, 'perforce_swarm', 'git_fusion_repo')
+      PerforceSwarm.autoload :GitlabConfig,   File.join(shell_path, 'perforce_swarm', 'config')
+      PerforceSwarm.autoload :GitFusion,      File.join(shell_path, 'perforce_swarm', 'git_fusion')
     end
 
     # We want our engine's migrations to be run when the main app runs db:migrate

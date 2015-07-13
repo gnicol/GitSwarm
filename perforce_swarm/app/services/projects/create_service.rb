@@ -21,7 +21,7 @@ module PerforceSwarm
         end
         Process.detach(import_job)
       end
-      super.after_create_actions
+      super
     end
   end
 end

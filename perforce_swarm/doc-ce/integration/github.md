@@ -23,9 +23,9 @@ to use.
       "\<Organization\>'s GitSwarm" or "\<Your Name\>'s GitSwarm" or
       something else descriptive.
     - Homepage URL: The URL to your GitSwarm installation.
-      'https://gitswarm.company.com'
+      `https://gitswarm.company.com`
     - Application description: Fill this in if you wish.
-    - Authorization callback URL: 'https://gitswarm.company.com/'
+    - Authorization callback URL: `https://gitswarm.company.com/`
 1.  Select "Register application".
 
 1.  You should now see a Client ID and Client Secret near the top right of the page (see screenshot). 

@@ -35,7 +35,7 @@ module PerforceSwarm
         # leave it hung.
         last_fetched = PerforceSwarm::Mirror.last_fetched(project.repository.path_to_repo)
         if project.import_in_progress? && project.git_fusion_import? && last_fetched
-          project.finish
+          project.import_finish
           project.save
         end
 

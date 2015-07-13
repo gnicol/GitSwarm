@@ -1,3 +1,5 @@
 Rails.application.routes.draw do
-  get 'user/recent_projects' => 'users#load_recent_projects'
+  devise_scope :user do
+    get 'user/recent_projects' => 'application#load_user_recent_projects'
+  end
 end

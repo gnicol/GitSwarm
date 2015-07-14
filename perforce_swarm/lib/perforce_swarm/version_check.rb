@@ -4,7 +4,6 @@ require 'net/https'
 require 'uri'
 
 module PerforceSwarm
-  # rubocop:disable ModuleLength
   module VersionCheckSelf
     VERSIONS_CACHE_KEY ||= 'perforce_swarm:versions'
 

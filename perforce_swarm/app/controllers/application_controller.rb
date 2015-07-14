@@ -25,7 +25,7 @@ module PerforceSwarm
       render file: Rails.root.join('perforce_swarm', 'public', '404'), layout: false, status: '404'
     end
 
-    def load_user_recent_projects
+    def load_user_projects
       # Pass a list of project id's that user is allowed to see
       # to use in frontend for localStorage verification
       projects = []

@@ -10,14 +10,13 @@ swarm.recentProjects = {
       $.ajax '/user/recent_projects',
         type: 'GET'
         dataType: "json"
-        async:   false
         success: (recent_projects) ->
           swarm.recentProjects.set((x for x in projects when x.project? and x.project.id in recent_projects))
+          window.localStorage.setItem('last-checked', Date.now())
         error: ->
           recent_user_projects = projects
     recent_user_projects
   set: (projects) ->
-    window.localStorage.setItem('last-checked', Date.now())
     window.localStorage.setItem('recent-projects', JSON.stringify(projects))
   clear: ->
     window.localStorage.setItem('recent-projects', null)

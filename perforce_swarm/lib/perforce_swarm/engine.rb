@@ -27,6 +27,10 @@ module PerforceSwarm
           app.config.paths['db/migrate'] << expanded_path
         end
       end
+
+      # Include our engine's fixtures in seed-fu
+      SeedFu.fixture_paths << Rails.root.join('perforce_swarm/db/fixtures').to_s
+      SeedFu.fixture_paths << Rails.root.join('perforce_swarm/db/fixtures/' + Rails.env).to_s
     end
 
     initializer :engine_middleware do |app|

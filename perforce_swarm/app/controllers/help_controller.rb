@@ -65,6 +65,7 @@ module PerforceSwarm
 
       # fix example links value
       content.gsub!(/(your-)?gitlab.example.com/, '\1gitswarm.example.com')
+      content.gsub!(/gitlab.company.com/, 'gitswarm.company.com')
 
       # replace /etc/gitlab with /etc/gitswarm but leave /opt/gitswarm/etc/gitlab alone
       content.gsub!(%r{(?<!gitswarm)/etc/gitlab}, '/etc/gitswarm')

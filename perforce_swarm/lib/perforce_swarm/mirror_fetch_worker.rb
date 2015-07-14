@@ -27,8 +27,17 @@ module PerforceSwarm
       mirror_script = File.join(shell_path, 'perforce_swarm', 'bin', 'gitswarm-mirror')
 
       # for each project, perform a mirror fetch
-      Project.all.each do |project|
+      ::Project.all.each do |project|
         next unless PerforceSwarm::Repo.new(project.repository.path_to_repo).mirrored?
+
+        # don't let any repos get stuck in the importing phase if the pull has wrapped up
+        # normally a redis task cleans this up but a crash or other unexpected event could
+        # leave it hung.
+        last_fetched = PerforceSwarm::Mirror.last_fetched(project.repository.path_to_repo)
+        if project.import_in_progress? && project.git_fusion_import? && last_fetched
+          project.import_finish
+          project.save
+        end
 
         system(mirror_script, 'fetch', '--min-outdated=300', project.path_with_namespace + '.git')
       end

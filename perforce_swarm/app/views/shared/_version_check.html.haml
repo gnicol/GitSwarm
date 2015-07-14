@@ -23,5 +23,5 @@
       - if VersionCheck::more_info
         = link_to 'more info', VersionCheck::more_info, target: '_blank'
         |
-      = link_to "Don't show again for this version", admin_application_settings_path(application_setting: {last_version_ignored: VersionCheck::latest}), method: :put, class: 'alert-link'
+      = link_to "Don't show again for this version", admin_application_settings_path(application_setting: {last_version_ignored: VersionCheck::latest}), method: :put, remote: true, class: 'alert-link'
     = link_to 'X', '#', class: 'dismiss-version-check'

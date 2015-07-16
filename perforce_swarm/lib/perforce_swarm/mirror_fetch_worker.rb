@@ -26,6 +26,7 @@ module PerforceSwarm
       # bail completely if the feature isn't enabled
       config = PerforceSwarm::GitlabConfig.new
       return unless config.git_fusion && config.git_fusion_enabled?
+      
       repo_stats = RepoStats.new
 
       # don't let any repos get stuck in the importing phase if the pull has wrapped up.

@@ -23,6 +23,10 @@ module PerforceSwarm
     recurrence { minutely(1) }
 
     def perform
+      # bail completely if the feature isn't enabled
+      config = PerforceSwarm::GitlabConfig.new
+      return unless config.git_fusion && config.git_fusion_enabled?
+
       repo_stats = RepoStats.new
 
       # don't let any repos get stuck in the importing phase if the pull has wrapped up.
@@ -63,7 +67,7 @@ module PerforceSwarm
           stats.push(project:       project,
                      last_fetched:  PerforceSwarm::Mirror.last_fetched(repo_path),
                      active:        PerforceSwarm::Mirror.fetch_locked?(repo_path)
-          )
+                    )
         end
 
         # return sorted stats based on last_fetched time, oldest (smaller value) first

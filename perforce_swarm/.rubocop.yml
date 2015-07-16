@@ -23,6 +23,9 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Enabled: false
 
+Performance/Detect:
+  Enabled: false
+
 Style/ClassAndModuleChildren:
   Enabled: false
 

@@ -4,8 +4,8 @@ Helix Git Fusion is a Git remote repository service that uses the Helix
 Versioning Engine (P4D) as its back end. Users interact with Git Fusion as
 they would with any other Git remote repository.
 
-It takes just a couple of steps (FIXME) to import your existing Git Fusion
-projects into GitSwarm.
+It takes just a few steps to import your existing Git Fusion projects into
+GitSwarm.
 
 Once imported, GitSwarm keeps the GitFusion project up to date using
 bi-directional mirroring; any changes pushed to a GitSwarm project are
@@ -26,7 +26,7 @@ available in a future GitSwarm release.
 * Install GitSwarm and Git Fusion on separate machines to improve
   performance and scalability.
 
-* recommend SSH instead of HTTTP here.
+* Use SSH or HTTPS connections to secure mirroring connections.
 
 ### Configuration
 

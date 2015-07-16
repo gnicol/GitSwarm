@@ -67,7 +67,7 @@ module PerforceSwarm
           stats.push(project:       project,
                      last_fetched:  PerforceSwarm::Mirror.last_fetched(repo_path),
                      active:        PerforceSwarm::Mirror.fetch_locked?(repo_path)
-                    )
+          )
         end
 
         # return sorted stats based on last_fetched time, oldest (smaller value) first

@@ -37,46 +37,46 @@ Note: GitSwarm can currently only connect to a single Git Fusion service.
 
 #### Using an HTTP(S) connection
 
-Add the following configuration to `/etc/gitswarm/gitswarm.rb`:
+1.  **Add the following configuration to `/etc/gitswarm/gitswarm.rb`:**
 
-```ruby
+    ```ruby
 gitswarm['git-fusion']['enabled']             = true
 gitswarm['git-fusion']['default']['url']      = 'http://gitswarm@gitfusion.host/'
 gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
-```
+    ```
 
-Note: The `gitswarm` user needs to exist in the Git Fusion service, and
-have permission to access the repositories you wish to import from.
+    Note: The `gitswarm` user needs to exist in the Git Fusion service, and
+    have permission to access the repositories you wish to import from.
 
-Note: While we do not recommend using self-signed SSL certificates (and
-these should never be used in production), if you are using self-signed
-certificates for SSL connections in a test environment, you may want to
-specify:
+    Note: While we do not recommend using self-signed SSL certificates (and
+    these should never be used in production), if you are using self-signed
+    certificates for SSL connections in a test environment, you may want to
+    specify:
 
-```ruby
+    ```ruby
 gitswarm['git-fusion']['default']['git_config_params'] = 'http.sslVerify=false'
-```
+    ```
 
-To make these configuration change active, run:
+1.  **Make the configuration change active:**
 
-```bash
+    ```bash
 sudo gitswarm-ctl reconfigure
-```
+    ```
 
 #### Using an SSH connection
 
-Add the following configuration to `/etc/gitswarm/gitswarm.rb`:
+1.  **Add the following configuration to `/etc/gitswarm/gitswarm.rb`:**
 
-```ruby
+    ```ruby
 gitswarm['git-fusion']['enabled']                      = true
 gitswarm['git-fusion']['default']['url']               = 'git@gitfusion.host'
-```
+    ```
 
-To make this configuration change active, run:
+1.  **Make this configuration change active:**
 
-```bash
+    ```bash
 sudo gitswarm-ctl reconfigure
-```
+    ```
 
 To permit GitSwarm to connect to Git Fusion via SSH, follow these steps:
 

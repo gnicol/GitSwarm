@@ -7,7 +7,7 @@ they would with any other Git remote repository.
 It takes just a few steps to import your existing Git Fusion projects into
 GitSwarm.
 
-Once imported, GitSwarm keeps the GitFusion project up to date using
+Once imported, GitSwarm keeps the Git Fusion project up to date using
 bi-directional mirroring; any changes pushed to a GitSwarm project are
 mirrored to Git Fusion, and changes within the Git Fusion project (even if
 initiated within the Helix Versioning Engine) are mirrored into the
@@ -26,7 +26,9 @@ available in a future GitSwarm release.
 * Install GitSwarm and Git Fusion on separate machines to improve
   performance and scalability.
 
-* Use SSH or HTTPS connections to secure mirroring connections.
+* Use SSH or HTTPS connections to secure mirroring connections. SSH
+  connections are faster and more secure (no self-signed certificates,
+  or use of OpenSSL).
 
 ### Configuration
 
@@ -37,44 +39,47 @@ Note: GitSwarm can currently only connect to a single Git Fusion service.
 
 #### Using an HTTP(S) connection
 
-Add the following configuration to `/etc/gitswarm/gitswarm.rb`:
+1.  **Add the following configuration to `/etc/gitswarm/gitswarm.rb`:**
 
-```ruby
+    ```ruby
 gitswarm['git-fusion']['enabled']             = true
 gitswarm['git-fusion']['default']['url']      = 'http://gitswarm@gitfusion.host/'
 gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
-```
+    ```
 
-Note: The `gitswarm` user needs to exist in the Git Fusion service, and
-have permission to access the repositories you wish to import from.
+    Note: The `gitswarm` user needs to exist in the Helix Versioning Engine
+    that the Git Fusion service uses, and must have permission to access
+    the repositories you wish to import from.
 
-Note: If you are using self-signed certificates with SSL connections, you
-may want to specify:
+    Note: While we do not recommend using self-signed SSL certificates (and
+    these should never be used in production), if you are using self-signed
+    certificates for SSL connections in a test environment, you may want to
+    specify:
 
-```ruby
+    ```ruby
 gitswarm['git-fusion']['default']['git_config_params'] = 'http.sslVerify=false'
-```
+    ```
 
-To make these configuration change active, run:
+1.  **Make the configuration change active:**
 
-```bash
+    ```bash
 sudo gitswarm-ctl reconfigure
-```
+    ```
 
 #### Using an SSH connection
 
-Add the following configuration to `/etc/gitswarm/gitswarm.rb`:
+1.  **Add the following configuration to `/etc/gitswarm/gitswarm.rb`:**
 
-```ruby
+    ```ruby
 gitswarm['git-fusion']['enabled']                      = true
 gitswarm['git-fusion']['default']['url']               = 'git@gitfusion.host'
-```
+    ```
 
-To make this configuration change active, run:
+1.  **Make this configuration change active:**
 
-```bash
+    ```bash
 sudo gitswarm-ctl reconfigure
-```
+    ```
 
 To permit GitSwarm to connect to Git Fusion via SSH, follow these steps:
 
@@ -103,18 +108,18 @@ ssh-keygen -t rsa -b 2048
     an opportunity to enter the passphrase whenever GitSwarm
     connects to Git Fusion.
 
-1.  **Copy the public key you generated to the Git Fusion server**
+1.  **Install the public key in the Git Fusion service.**
 
-    You can find the newly generated key in the `~/.ssh` folder. It
-    has the suffix `.pub`.
+    This process involves interacting with the Helix Versioning Engine
+    that the Git Fusion service connects to. The steps are
+    described in the the [Git Fusion
+    guide](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/index.html),
+    in the section [Authenticating Git Users using
+    SSH](http://www.perforce.com/perforce/r15.1/manuals/git-fusion/appendix.ssh.html).
 
-    The public key needs to be appended to the `git` user's
-    `~/.ssh/authorized_keys` file. Make sure that the correct permissions
-    are set on this file:
-
-    ```bash
-chmod 600 ~/.ssh/authorized_keys
-    ```
+    Note: When installing the public key on the Git Fusion service,
+    a system user needs to exist (we recommend `gitswarm`), and the
+    public key needs to be installed in Git Fusion/p4d for that user.
 
 1.  **Verify the SSH key fingerprint**
 
@@ -125,8 +130,11 @@ chmod 600 ~/.ssh/authorized_keys
 ssh git@gf_host
     ```
 
-    Note: if you encounter an error, you can ignore it. The goal is
-    to verify the key fingerprint.
+    Note: you should not see a password prompt. If you do, there is
+    a configuration problem. The [Git Fusion
+    guide](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/index.html)
+    has a section on [Troubleshooting SSH key
+    issues](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/appendix.ssh.html#section_xrm_rdw_w3).
 
 1.  **Log out**
 

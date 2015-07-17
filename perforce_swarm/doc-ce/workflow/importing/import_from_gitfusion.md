@@ -117,6 +117,10 @@ ssh-keygen -t rsa -b 2048
     in the section [Authenticating Git Users using
     SSH](http://www.perforce.com/perforce/r15.1/manuals/git-fusion/appendix.ssh.html).
 
+    Note: When installing the public key on the Git Fusion service,
+    a system user needs to exist (we recommend `gitswarm`), and the
+    public key needs to be installed in Git Fusion/p4d for that user.
+
 1.  **Verify the SSH key fingerprint**
 
     This step "activates" the key for use by GitSwarm. Run this step

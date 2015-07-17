@@ -26,7 +26,9 @@ available in a future GitSwarm release.
 * Install GitSwarm and Git Fusion on separate machines to improve
   performance and scalability.
 
-* Use SSH or HTTPS connections to secure mirroring connections.
+* Use SSH or HTTPS connections to secure mirroring connections. SSH
+  connections are faster and more secure (no self-signed certificates,
+  or use of OpenSSL).
 
 ### Configuration
 
@@ -45,8 +47,9 @@ gitswarm['git-fusion']['default']['url']      = 'http://gitswarm@gitfusion.host/
 gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
     ```
 
-    Note: The `gitswarm` user needs to exist in the Git Fusion service, and
-    have permission to access the repositories you wish to import from.
+    Note: The `gitswarm` user needs to exist in the Helix Versioning Engine
+    that the Git Fusion service uses, and must have permission to access
+    the repositories you wish to import from.
 
     Note: While we do not recommend using self-signed SSL certificates (and
     these should never be used in production), if you are using self-signed
@@ -105,18 +108,14 @@ ssh-keygen -t rsa -b 2048
     an opportunity to enter the passphrase whenever GitSwarm
     connects to Git Fusion.
 
-1.  **Copy the public key you generated to the Git Fusion server**
+1.  **Install the public key in the Git Fusion service.**
 
-    You can find the newly generated key in the `~/.ssh` folder. It
-    has the suffix `.pub`.
-
-    The public key needs to be appended to the `git` user's
-    `~/.ssh/authorized_keys` file. Make sure that the correct permissions
-    are set on this file:
-
-    ```bash
-chmod 600 ~/.ssh/authorized_keys
-    ```
+    This process involves interacting with the Helix Versioning Engine
+    that the Git Fusion service connects to. The steps are
+    described in the the [Git Fusion
+    guide](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/index.html),
+    in the section [Authenticating Git Users using
+    SSH](http://www.perforce.com/perforce/r15.1/manuals/git-fusion/appendix.ssh.html).
 
 1.  **Verify the SSH key fingerprint**
 
@@ -127,8 +126,11 @@ chmod 600 ~/.ssh/authorized_keys
 ssh git@gf_host
     ```
 
-    Note: if you encounter an error, you can ignore it. The goal is
-    to verify the key fingerprint.
+    Note: you should not see a password prompt. If you do, there is
+    a configuration problem. The [Git Fusion
+    guide](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/index.html)
+    has a section on [Troubleshooting SSH key
+    issues](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/appendix.ssh.html#section_xrm_rdw_w3).
 
 1.  **Log out**
 

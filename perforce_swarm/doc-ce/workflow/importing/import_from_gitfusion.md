@@ -48,8 +48,10 @@ gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
 Note: The `gitswarm` user needs to exist in the Git Fusion service, and
 have permission to access the repositories you wish to import from.
 
-Note: If you are using self-signed certificates with SSL connections, you
-may want to specify:
+Note: While we do not recommend using self-signed SSL certificates (and
+these should never be used in production), if you are using self-signed
+certificates for SSL connections in a test environment, you may want to
+specify:
 
 ```ruby
 gitswarm['git-fusion']['default']['git_config_params'] = 'http.sslVerify=false'

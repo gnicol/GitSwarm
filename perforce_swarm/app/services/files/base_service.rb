@@ -8,7 +8,7 @@ module PerforceSwarm
       rescue Rugged::ObjectError => ex
         # Present a nicer error if the user just needs to reload
         if ex.message =~ /current tip is not the first parent/
-          error('This file was already changed on this branch. Try again.')
+          error('You were working on an out of date copy. Try again.')
         else
           raise ex
         end

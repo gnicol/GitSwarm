@@ -9,7 +9,7 @@ OAuth2 provides client applications a 'secure delegated access' to server
 resources on behalf of a resource owner. Or you can allow users to sign in
 to your application with their GitLab.com account. In fact OAuth allows to
 issue access token to third-party clients by an authorization server, with
-the approval of the resource owner, or end-user. Mostly, OAuth2 is using
+the approval of the resource owner, or end-user. Mostly, OAuth2 is used
 for SSO (Single sign-on). But you can find a lot of different usages for
 this functionality. For example, the 'GitSwarm Importer' feature uses the
 OAuth protocol to give access to repositories without sharing user

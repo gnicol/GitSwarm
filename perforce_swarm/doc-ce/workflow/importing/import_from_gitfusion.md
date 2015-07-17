@@ -7,7 +7,7 @@ they would with any other Git remote repository.
 It takes just a few steps to import your existing Git Fusion projects into
 GitSwarm.
 
-Once imported, GitSwarm keeps the GitFusion project up to date using
+Once imported, GitSwarm keeps the Git Fusion project up to date using
 bi-directional mirroring; any changes pushed to a GitSwarm project are
 mirrored to Git Fusion, and changes within the Git Fusion project (even if
 initiated within the Helix Versioning Engine) are mirrored into the

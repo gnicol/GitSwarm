@@ -6,21 +6,22 @@ authentication service providers to sign into GitSwarm, please see the
 [OAuth2 client documentation](../api/oauth2.md)
 
 OAuth2 provides client applications a 'secure delegated access' to server
-resources on behalf of a resource owner. Or you can allow users to sign in
-to your application with their GitLab.com account. In fact OAuth allows to
-issue access token to third-party clients by an authorization server, with
-the approval of the resource owner, or end-user. Mostly, OAuth2 is used
-for SSO (Single sign-on). But you can find a lot of different usages for
-this functionality. For example, the 'GitSwarm Importer' feature uses the
-OAuth protocol to give access to repositories without sharing user
-credentials to GitLab.com. Also, GitLab.com authentication can be used
-for logging in to your GitSwarm instance if needed [GitSwarm
-OmniAuth](gitlab.md).
+resources on behalf of a resource owner. In other words, OAuth2 allows
+authentication on one web site to inform authentication on another, and it
+does so without transmitting the original credentials.
 
-GitSwarm has two ways to add new OAuth2 application to an instance, you can
-add application as regular user and through admin area. So GitSwarm
-actually can have an instance-wide and a user-wide applications. There are
-no differences between them except the different permission levels.
+OAuth allows you to issue access tokens to third-party clients by an
+authorization server, with the approval of the resource owner, or end-user.
+Mostly, OAuth2 is used for SSO (Single sign-on). But you can find a lot of
+different usages for this functionality. For example, the 'GitSwarm
+Importer' feature uses the OAuth protocol to give access to repositories
+without sharing user credentials to GitLab.com. Also, GitLab.com
+authentication can be used for logging in to your GitSwarm instance if
+needed [GitSwarm OmniAuth](gitlab.md).
+
+GitSwarm has two ways to add new OAuth2 applications to an instance, you
+can add application as regular user and via the admin area. There are no
+differences between them except the different permission levels.
 
 ### Adding application through profile
 
@@ -29,8 +30,8 @@ Application'.
 
 ![applications](oauth_provider/user_wide_applications.png)
 
-After this, you see the application form, where "Name" is an arbitrary
-name, "Redirect URI" is the URL in your app where users are sent after
+After this, you see the application form where "Name" is an arbitrary
+name, and "Redirect URI" is the URL in your app where users are sent after
 authorization on GitLab.com.
 
 ![application_form](oauth_provider/application_form.png)

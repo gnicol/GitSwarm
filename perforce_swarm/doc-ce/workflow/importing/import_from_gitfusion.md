@@ -156,9 +156,10 @@ ssh git@gf_host
 ### Known Issues
 
 * Git Fusion, when installed on CentOS 7 or RHEL 7, does not support
-  HTTP authentication. This issue prevents pushing new work to a
+  HTTP(S) authentication. This issue prevents pushing new work to a
   Git Fusion repo, including any updates in GitSwarm that would be
-  mirrored to Git Fusion.
+  mirrored to Git Fusion. Instead, use SSH connections when Git Fusion
+  is hosted on CentOS/RHEL 7.
 
 * For projects that are mirrored between GitSwarm and Git Fusion, the
   project name can only contain letters, numbers, underscores, periods,
@@ -172,6 +173,13 @@ ssh git@gf_host
 
   If you are using multi-byte characters in any of your Git Fusion
   repository names, you should use an SSH connection to Git Fusion.
+
+* Once a project has been created with mirroring to Git Fusion, changing
+  the settings in `/etc/gitswarm/gitswarm.rb` does not update the
+  mirroring settings for the project (or any other project). This can
+  result in problems that prevent using the project in any way.
+  Unfortunately, the solution is to delete the project, correct the
+  settings in `gitswarm.rb`, and then re-create the project.
 
 ### Problems?
 

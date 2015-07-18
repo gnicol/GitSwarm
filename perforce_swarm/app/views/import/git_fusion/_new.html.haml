@@ -20,9 +20,9 @@
                 = select_tag(:git_fusion_repo_name, repos)
           .right
             To point GitSwarm at a different Git Fusion instance, have an admin
-            = link_to 'see these directions.', help_page_path('workflow/importing', 'import_from_gitfusion'), target: '_blank'
+            = link_to 'see these directions.', help_page_path('workflow', 'importing', 'import_from_gitfusion'), target: '_blank'
     - else
       .description
         This GitSwarm instance is not pointing to any Git Fusion servers. To import a repo from an existing Git Fusion
         instance, have an admin
-        = link_to 'see these directions.', help_page_path('workflow/importing', 'import_from_gitfusion'), target: '_blank'
+        = link_to 'see these directions.', help_page_path('workflow', 'importing', 'import_from_gitfusion'), target: '_blank'

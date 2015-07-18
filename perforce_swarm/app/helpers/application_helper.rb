@@ -21,8 +21,10 @@ module ApplicationHelper
     'http://' + promo_host
   end
 
-  # decode help page paths so we can support paths deeper than 2 levels without changing routing
   def help_page_path(*args)
-    URI.decode(super(*args))
+    return super(*args) if args.length <= 2
+
+    # we've been given more than two segments, so create our own absolute path to the requested help file
+    '/' + args.unshift('help').join('/')
   end
 end

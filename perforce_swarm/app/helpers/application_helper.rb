@@ -20,4 +20,9 @@ module ApplicationHelper
   def promo_url
     'http://' + promo_host
   end
+
+  # decode help page paths so we can support paths deeper than 2 levels without changing routing
+  def help_page_path(*args)
+    URI.decode(super(*args))
+  end
 end

@@ -41,9 +41,4 @@ module ProjectsHelper
   def gitlab_shell_config
     @gitlab_shell_config ||= PerforceSwarm::GitlabConfig.new
   end
-
-  # helper for generating the help link
-  def git_fusion_import_help(anchor = 'see these directions.')
-    link_to anchor, help_url + '/workflow/importing/import_from_gitfusion.md', target: '_blank'
-  end
 end

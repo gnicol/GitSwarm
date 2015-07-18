@@ -25,6 +25,6 @@ module ApplicationHelper
     return super(*args) if args.length <= 2
 
     # we've been given more than two segments, so create our own absolute path to the requested help file
-    '/' + args.unshift('help').join('/')
+    '/' + args.unshift('help').map { |arg| CGI.escape(arg) }.join('/')
   end
 end

@@ -28,6 +28,13 @@ module PerforceSwarm
       # Hang onto the update_ref, we will need to manually update the refs in case of mirroring
       update_ref = data[:update_ref]
 
+      # Detect if the fetch already moved our branch forward, in which case we can
+      # throw the same error commit would have if it was being passed update_ref
+      if data[:parents] && data[:parents].size > 0 &&
+         repo.references.exist?(update_ref) && data[:parents][0] != repo.references[update_ref].target
+        fail Rugged::ObjectError, 'failed to create commit: current tip is not the first parent'
+      end
+
       commit_id = nil
       resolver  = proc do |_mirror_repo, mirror_refs|
         # If mirror_refs is empty, it means no mirror push is going to happen.

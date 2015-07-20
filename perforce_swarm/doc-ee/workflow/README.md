@@ -7,7 +7,7 @@
 - [GitLab Flow](gitlab_flow.md)
 - [Groups](groups.md)
 - [Notifications](notifications.md)
-- [Importing to GitSwarm](importing/README.md)
+- [Importing into GitSwarm](importing/README.md)
 - [Keyboard shortcuts](shortcuts.md)
 - [Labels](labels.md)
 - [Manage large binaries with git annex](git_annex.md)

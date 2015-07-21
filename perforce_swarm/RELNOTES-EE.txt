@@ -25,12 +25,13 @@ Introduction
 
 Documentation
 
-    GitSwarm Release 2015.2 documentation is included in the distribution and
-    can be accessed from within GitSwarm from the "?" menu on the top toolbar
+    GitSwarm EE Release 2015.2 documentation is included in the distribution
+    and can be accessed from within GitSwarm from the "?" menu on the top
+    toolbar
 
 Supported Client Browsers
 
-    GitSwarm supports the following client web browsers and versions:
+    GitSwarm EE supports the following client web browsers and versions:
 
     * Chrome (Latest stable version)
     * Firefox (Latest released version and latest ESR version)
@@ -39,7 +40,7 @@ Supported Client Browsers
     * IE 10+
 
     We recommend the use of the latest stable version of the browsers
-    listed above for the best experience when using GitSwarm.
+    listed above for the best experience when using GitSwarm EE.
 
     Other web browsers might also work, including prior, development or
     beta builds of the above web browsers, but these browsers are not
@@ -51,8 +52,8 @@ Installation and Supported Platforms
 
 Credits
 
-    Perforce GitSwarm, based on the excellent GitLab Enterprise Edition
-    software with additional contributions from the GitSwarm Team:
+    Helix GitSwarm Enterprise Edition, based on the excellent GitLab Enterprise
+    Edition software with additional contributions from the GitSwarm Team:
     DJ Mountney, Elliot Wiltshire, Geoff Nicol, Jayesh Mistry,
     Jan Van Uytven, Elizabeth Hale, Porus Patell, Tony Kim, Ewan Edwards,
     Sean Ardley, Russ Tremain, Murtaza Amiji, Jason Novecosky, Michael Davies,

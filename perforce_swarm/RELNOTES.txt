@@ -142,7 +142,7 @@ Bugs fixed in 2015.2
 
 Credits
 
-    Perforce GitSwarm, based on the excellent GitLab Open Source Community
+    Helix GitSwarm, based on the excellent GitLab Open Source Community
     Edition software with additional contributions from the GitSwarm Team:
     DJ Mountney, Elliot Wiltshire, Geoff Nicol, Jayesh Mistry,
     Jan Van Uytven, Elizabeth Hale, Porus Patell, Tony Kim, Ewan Edwards,

@@ -10,12 +10,14 @@ Introduction
     repositories in Perforce Helix, facilitating contributions and
     collaboration between users using Git and users using P4 on complex
     products containing source code and binaries. Additionally, by
-    maintaining the code repository in Helix, GitSwarm EE enables enterprise
-    to manage and secure all of its Intellectual Property (IP) in one place.
+    maintaining the code repository in the Helix Versioning Engine,
+    GitSwarm EE enables an enterprise to manage and secure all of its
+    Intellectual Property (IP) in one place.
+
     GitSwarm EE offers additional features on top of the base GitSwarm
-    offering such as LDAP group synchronization, sharing of native GitSwarm
-    projects with other groups, Git hooks, Atlassian Jira integration, and
-    managing binaries with Git Annex.
+    offering, such as LDAP group synchronization, sharing of native
+    GitSwarm projects with other groups, Git hooks, Atlassian Jira
+    integration, and managing binaries with Git Annex.
 
     Please send all feedback to support@perforce.com.
 

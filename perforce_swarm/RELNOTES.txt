@@ -9,11 +9,12 @@ Introduction
     let users using Git maintain their code repositories in Perforce Helix,
     facilitating contributions and collaboration between users using Git and
     users using P4 on complex products containing source code and binaries.
-    Additionally, by maintaining the code repository in Helix, GitSwarm
-    enables enterprise to manage and secure all of its Intellectual Property
-    (IP) in one place.  GitSwarm offers users an interface to manage code
-    repositories, means to fork repositories hosted in Helix and collaborate
-    on a project using a "pull-request" style code review workflow.
+    Additionally, by maintaining the code repository in the Helix Versioning
+    Engine, GitSwarm enables an enterprise to manage and secure all of its
+    Intellectual Property (IP) in one place. GitSwarm offers users an
+    interface to manage code repositories, means to fork repositories hosted
+    in Helix and collaborate on a project using a "pull-request" style code
+    review workflow.
 
     Please send all feedback to support@perforce.com.
 
@@ -48,6 +49,16 @@ Installation and Supported Platforms
 Upgrading
 
     Please see the separate "upgrade" file, a peer to this file.
+
+Known Issues
+
+    * Importing large repos into GitSwarm can take long enough that a
+      timeout is reached, causing the import to fail. The workaround is
+      to manually prepare a local repository, and push that repo into
+      GitSwarm.
+
+    * Git Fusion HTTP(S) authentication is not supported on CentOS 7 or
+      Red Hat Enterprise Linux 7.
 
 ---------------------------------------------------------------------------
 

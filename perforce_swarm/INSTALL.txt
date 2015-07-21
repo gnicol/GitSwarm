@@ -20,6 +20,11 @@ Supported Operating System Platforms
     * Ubuntu 12.04 or 14.04
     * CentOS 6.6 or 7
 
+
+Upgrading
+
+    Please see the separate "upgrade" file, a peer to this file.
+
 Overview
 
     To get the GitSwarm web application installed and configured, this

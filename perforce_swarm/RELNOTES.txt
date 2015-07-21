@@ -5,11 +5,15 @@
 
 Introduction
 
-    Helix GitSwarm enables users to manage revisions of content using Git,
-    and collaborate on a project using a "pull-request" code review workflow.
-    In addition to the pull-request workflow, GitSwarm also offers an issue
-    tracker, a wiki, and a user interface to manage code repositories.
-    GitSwarm is based on the Gitlab Open Source Community Edition software.
+    Helix GitSwarm extends the Gitlab Community Edition (CE) software to
+    let users using Git maintain their code repositories in Perforce Helix,
+    facilitating contributions and collaboration between users using Git and
+    users using P4 on complex products containing source code and binaries.
+    Additionally, by maintaining the code repository in Helix, GitSwarm
+    enables enterprise to manage and secure all of its Intellectual Property
+    (IP) in one place.  GitSwarm offers users an interface to manage code
+    repositories, means to fork repositories hosted in Helix and collaborate
+    on a project using a "pull-request" style code review workflow.
 
     Please send all feedback to support@perforce.com.
 
@@ -41,6 +45,42 @@ Installation and Supported Platforms
 
     Please see the separate "install" file, a peer to this file.
 
+Upgrading
+
+    Please see the separate "upgrade" file, a peer to this file.
+
+---------------------------------------------------------------------------
+
+Major new functionality in 2015.2
+
+    #8b2e4143, #018f5314, #0768eff1, #99b1ce88 (PGL-939, PGL-938, PGL-884, PGL-871)
+        Added the ability to import from existing Git Fusion repositories
+        when creating a new project.
+
+    #cd2f7c57 (PGL-870, PGL-820, PGL-819)
+        Added Git Fusion Mirroring Support. Upgraded to our new version of
+        Shell which includes support for configuring Git Fusion Servers.
+
+Minor new functionality in 2015.2
+
+    #6fc4e897 (PGL-958)
+        On new installations, a gitswarm user is created automatically for
+        use with the import feature, so you do not have to create it manually.
+
+    #874466b8 (PGL-872, PGL-939)
+        Added a mirror fetch worker to keep mirrored repositories up to date.
+
+Bugs fixed in 2015.2
+
+    #92845475 (PGL-812)
+        Fixed an issue where you couldn't pass arguments to the rake tasks.
+
+    #ac68c503 (PGL-802)
+        Fixed an issue with the gitswarm:app:check where it would always fail.
+
+
+---------------------------------------------------------------------------
+
 Credits
 
     Perforce GitSwarm, based on the excellent GitLab Open Source Community
@@ -48,6 +88,7 @@ Credits
     DJ Mountney, Elliot Wiltshire, Geoff Nicol, Jayesh Mistry,
     Jan Van Uytven, Elizabeth Hale, Porus Patell, Tony Kim, Ewan Edwards,
     Sean Ardley, Russ Tremain, Murtaza Amiji, Jason Novecosky, Michael Davies,
-    and Janet Taylor.
+    Janet Taylor, Darrell Robins, Scott Wellard, Patrycja Tomiak, and
+    Samuel Penn.
 
 END

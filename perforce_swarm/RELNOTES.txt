@@ -61,6 +61,11 @@ Major new functionality in 2015.2
         Added Git Fusion Mirroring Support. Upgraded to our new version of
         Shell which includes support for configuring Git Fusion Servers.
 
+    GitLab 7.12
+        - Add SAML support as an omniauth provider
+        - Add web hook support for note events (Stan Hu)
+        - Add Merged tab to MR lists.
+
 Minor new functionality in 2015.2
 
     #6fc4e897 (PGL-958)
@@ -70,6 +75,28 @@ Minor new functionality in 2015.2
     #874466b8 (PGL-872, PGL-939)
         Added a mirror fetch worker to keep mirrored repositories up to date.
 
+    GitLab 7.12
+        - Update browser gem to version 0.8.0 for IE11 support (Stan Hu)
+        - Add "Remember me" checkbox to LDAP signin form.
+        - Show warning when a comment will add 10 or more people to the discussion.
+        - Add option to disallow users from registering any application to use GitLab as an OAuth provider
+        - Support editing target branch of merge request (Stan Hu)
+        - Add file attachment support in Milestone description (Stan Hu)
+        - Set milestone on new issue when creating issue from index with milestone filter active.
+        - Make namespace API available to all users (Stan Hu)
+        - Add "Resend confirmation e-mail" link in profile settings (Stan Hu)
+        - Allow to configure location of the `.gitlab_shell_secret` file. (Jakub Jirutka)
+        - Use the user list from the target project in a merge request (Stan Hu)
+        - Default extention for wiki pages is now .md instead of .markdown (Jeroen van Baarsen)
+        - Add a note when an Issue or Merge Request's title changes
+        - Group project contributions by both name and email.
+        - User has ability to leave project
+        - Allow to configure a URL to show after sign out
+        - Add an option to automatically sign-in with an Omniauth provider
+        - Better performance for web editor (switched from satellites to rugged)
+        - When remove project - move repository and schedule it removal
+        - Add option to automatically link omniauth and LDAP identities
+
 Bugs fixed in 2015.2
 
     #92845475 (PGL-812)
@@ -77,6 +104,27 @@ Bugs fixed in 2015.2
 
     #ac68c503 (PGL-802)
         Fixed an issue with the gitswarm:app:check where it would always fail.
+
+    GitLab 7.12
+        - Fix Error 500 when one user attempts to access a personal, internal snippet (Stan Hu)
+        - Disable changing of target branch in new merge request page when a branch has already been specified (Stan Hu)
+        - Fix hooks for web based events with external issue references (Daniel Gerhardt)
+        - Fix timeout when rendering file with thousands of lines.
+        - Don't notify users mentioned in code blocks or blockquotes.
+        - Omit link to generate labels if user does not have access to create them (Stan Hu)
+        - Disable changing of the source branch in merge request update API (Stan Hu)
+        - Fix Markdown preview not working in Edit Milestone page (Stan Hu)
+        - Fix Zen Mode not closing with ESC key (Stan Hu)
+        - Fix milestone "Browse Issues" button.
+        - Disable "New Issue" and "New Merge Request" buttons when features are disabled in project settings (Stan Hu)
+        - Fix clone URL losing selection after a single click in Safari and Chrome (Stan Hu)
+        - Fix git blame syntax highlighting when different commits break up lines (Stan Hu)
+        - Fix resolving of relative links to repository files in AsciiDoc documents. (Jakub Jirutka)
+        - Add validation to wiki page creation (only [a-zA-Z0-9/_-] are allowed) (Jeroen van Baarsen)
+        - Fix new/empty milestones showing 100% completion value (Jonah Bishop)
+        - You can not remove user if he/she is an only owner of group
+        - User should be able to leave group. If not - show him proper message
+        - Trigger create-hooks on backup restore task
 
 
 ---------------------------------------------------------------------------

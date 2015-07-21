@@ -10,7 +10,7 @@ In `/etc/gitswarm/gitswarm.rb`:
 
 ```ruby
 gitlab_rails['extra_sign_in_text'] = <<'EOS'
-# ACME GitLab
+# ACME GitSwarm
 Welcome to the [ACME](http://www.example.com) GitSwarm server!
 EOS
 ```

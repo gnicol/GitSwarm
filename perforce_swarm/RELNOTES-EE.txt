@@ -1,0 +1,63 @@
+                             Release Notes for
+                      Helix GitSwarm Enterprise Edition
+
+                              Version 2015.2
+
+Introduction
+
+    Helix GitSwarm Enterprise Edition (EE) extends the Gitlab Enterprise
+    Edition (EE) software to let users using Git maintain their code
+    repositories in Perforce Helix, facilitating contributions and
+    collaboration between users using Git and users using P4 on complex
+    products containing source code and binaries. Additionally, by
+    maintaining the code repository in the Helix Versioning Engine,
+    GitSwarm EE enables an enterprise to manage and secure all of its
+    Intellectual Property (IP) in one place.
+
+    GitSwarm EE offers additional features on top of the base GitSwarm
+    offering, such as LDAP group synchronization, sharing of native
+    GitSwarm projects with other groups, Git hooks, Atlassian Jira
+    integration, and managing binaries with Git Annex.
+
+    Please send all feedback to support@perforce.com.
+
+---------------------------------------------------------------------------
+
+Documentation
+
+    GitSwarm EE Release 2015.2 documentation is included in the distribution
+    and can be accessed from within GitSwarm from the "?" menu on the top
+    toolbar
+
+Supported Client Browsers
+
+    GitSwarm EE supports the following client web browsers and versions:
+
+    * Chrome (Latest stable version)
+    * Firefox (Latest released version and latest ESR version)
+    * Safari 7+ (known problem: required fields in html5 do not work)
+    * Opera (Latest released version)
+    * IE 10+
+
+    We recommend the use of the latest stable version of the browsers
+    listed above for the best experience when using GitSwarm EE.
+
+    Other web browsers might also work, including prior, development or
+    beta builds of the above web browsers, but these browsers are not
+    officially supported.
+
+Installation and Supported Platforms
+
+    Please see the separate "install" file, a peer to this file.
+
+Credits
+
+    Helix GitSwarm Enterprise Edition, based on the excellent GitLab Enterprise
+    Edition software with additional contributions from the GitSwarm Team:
+    DJ Mountney, Elliot Wiltshire, Geoff Nicol, Jayesh Mistry,
+    Jan Van Uytven, Elizabeth Hale, Porus Patell, Tony Kim, Ewan Edwards,
+    Sean Ardley, Russ Tremain, Murtaza Amiji, Jason Novecosky, Michael Davies,
+    Janet Taylor, Darrell Robins, Scott Wellard, Patrycja Tomiak, and
+    Samuel Penn.
+
+END

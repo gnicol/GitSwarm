@@ -50,11 +50,14 @@ module PerforceSwarm
       # replace GitLab attribution with our own
       content.gsub!(/GitLab B\.V\./, 'Perforce Software')
 
-      # they talk about GitLab EE only features, nuke those lines
-      content.gsub!(/^.*GitLab (EE|Enterprise Edition).*$/, '')
+      if PerforceSwarm.ee?
+        content.gsub!(/about (your )?GitLab/, 'about \1GitSwarm EE')
+        content.gsub!('Check GitLab configuration', 'Check GitSwarm EE configuration')
+      else
+        content.gsub!(/about (your )?GitLab/, 'about \1GitSwarm')
+        content.gsub!('Check GitLab configuration', 'Check GitSwarm configuration')
+      end
 
-      content.gsub!(/about (your )?GitLab/, 'about \1GitSwarm')
-      content.gsub!('Check GitLab configuration', 'Check GitSwarm configuration')
       content.gsub!('look at our ', 'look at GitLab\'s ')
 
       # hit GitLab occurrences that look ok to update
@@ -92,11 +95,17 @@ module PerforceSwarm
       content.gsub!(/gitlab:check /, 'gitswarm:check ')
 
       # deal with references to the omnibus package
-      content.gsub!(/Omnibus GitSwarm/i, 'GitSwarm')
-      content.gsub!(/Omnibus-gitlab /, 'GitSwarm ')
+      if PerforceSwarm.ee?
+        content.gsub!(/Omnibus GitSwarm/i, 'GitSwarm EE')
+        content.gsub!(/Omnibus-gitlab /, 'GitSwarm EE')
+        content.gsub!(/Omnibus-packages/, 'GitSwarm EE packages')
+      else
+        content.gsub!(/Omnibus GitSwarm/i, 'GitSwarm')
+        content.gsub!(/Omnibus-gitlab /, 'GitSwarm ')
+        content.gsub!(/Omnibus-packages/, 'GitSwarm packages')
+      end
       content.gsub!(/(omnibus)-gitlab(?!\/)/i, 'gitswarm')
       content.gsub!(/Omnibus Installation/, 'Package Installation')
-      content.gsub!(/Omnibus-packages/, 'GitSwarm packages')
 
       # do a variety of page specific touch-ups
 
@@ -109,7 +118,7 @@ module PerforceSwarm
       end
 
       # this section is just for EE users; nuke it
-      if category == 'workflow' && file == 'groups'
+      if category == 'workflow' && file == 'groups' && PerforceSwarm.ce?
         content.gsub!(/## Managing group memberships via LDAP.*?(?!##)/m, '')
       end
 
@@ -152,13 +161,23 @@ module PerforceSwarm
       # apply a note about using SSH instead of HTTP(S), to avoid
       # resource issues.
       if category == 'workflow' && file == 'workflow'
-        content += <<EOS
+        if PerforceSwarm.ee?
+          content += <<EOS
+
+Note: For performance reasons, it is better to clone from a repo via SSH
+instead of HTTP(S). GitSwarm EE maintains a limited pool of web worker
+processes, and each HTTP(S) push/pull/fetch operation ties up a worker
+process until completion.
+EOS
+        else
+          content += <<EOS
 
 Note: For performance reasons, it is better to clone from a repo via SSH
 instead of HTTP(S). GitSwarm maintains a limited pool of web worker
 processes, and each HTTP(S) push/pull/fetch operation ties up a worker
 process until completion.
 EOS
+        end
       end
 
       # return the munged string

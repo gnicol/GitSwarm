@@ -1,5 +1,59 @@
 @project
-Feature: Project Import Gitfusion
+Feature: Git Fusion Import
+
+  #############################
+  # Disabled/invalid configuration tests
+  #############################
+
+  @automated
+  Scenario: Having Git Fusion disabled results in a disabled message and no repo select drop-down on the new project page.
+    Given I sign in as a user
+    And Git Fusion support is disabled
+    When I visit new project page
+    Then I should see a Git Fusion is disabled message
+    And I should not see a Git Fusion repo dropdown
+
+  @automated
+  Scenario: Having a missing Git Fusion config results in a disabled message and no repo select drop-down on the new project page.
+    Given I sign in as a user
+    And The Git Fusion config block is missing
+    When I visit new project page
+    Then I should see a Git Fusion is disabled message
+    And I should not see a Git Fusion repo dropdown
+
+  @automated
+  Scenario: Having a config with an invalid URL results in a disabled message and no repo select drop-down on the new project page.
+    Given I sign in as a user
+    And The Git Fusion config block has a malformed URL
+    When I visit new project page
+    Then I should see a Git Fusion is disabled message
+    And I should not see a Git Fusion repo dropdown
+
+  @automated
+  Scenario: With Git Fusion enabled, but otherwise having no config results in a disabled message and no repo select drop-down on the new project page.
+    Given I sign in as a user
+    And Git Fusion is enabled but is otherwise not configured
+    When I visit new project page
+    Then I should see a Git Fusion is disabled message
+    And I should not see a Git Fusion repo dropdown
+
+  #############################
+  # Basic tests with repo listings
+  #############################
+  @automated
+  Scenario: With Git Fusion returning an empty list of managed repos, results in a configured but no repos available message and no repo select drop-down on the new project page.
+    Given I sign in as a user
+    And Git Fusion returns an empty list of managed repos
+    When I visit new project page
+    Then I should see a message saying Git Fusion has no repos available for import
+    And I should not see a Git Fusion repo dropdown
+
+  @automated
+  Scenario: With Git Fusion returning a list of repos, results in a select box filled with the same repo names.
+    Given I sign in as a user
+    And Git Fusion returns a list containing repos
+    When I visit new project page
+    Then I should see a populated Git Fusion repo dropdown
 
   #############################
   # Import valid GitFusion repo
@@ -20,7 +74,7 @@ Feature: Project Import Gitfusion
     Given ...
 
   ######################################################################
-  # Configuration file - Editting gitswarm.rb and then doing reconfigure
+  # Configuration file - Editing gitswarm.rb and then doing reconfigure
   ######################################################################
 
   Scenario: Verify that the master flag for git_fusion stanza in gitswarm.rb "enabled = true/false" works correctly in turning mirroring ON or OFF. By default it is set to OFF
@@ -51,10 +105,10 @@ Feature: Project Import Gitfusion
     # Geoff mentioned that the application will be defensive if there is an incorrect config block, and would behave as if no config was set
     Given ...
 
-  Scenerio: Set up a MULTIPLE GF config blocks in the gitswarm.rb file pointing to multiple GF server instances, where GF servers are on DIFFERENT IP addresses, and verify corresponding repos for each server get listed
+  Scenario: Set up a MULTIPLE GF config blocks in the gitswarm.rb file pointing to multiple GF server instances, where GF servers are on DIFFERENT IP addresses, and verify corresponding repos for each server get listed
     Given ...
 
-  Scenerio: Set up a MULTIPLE GF config blocks in the gitswarm.rb file pointing to multiple GF server instances, where GF servers are on SAME IP addresses, and verify corresponding repos for each server get listed
+  Scenario: Set up a MULTIPLE GF config blocks in the gitswarm.rb file pointing to multiple GF server instances, where GF servers are on SAME IP addresses, and verify corresponding repos for each server get listed
     Given ...
 
    # Using an incorrect password in the gitswarm.rb file when importing with http & https

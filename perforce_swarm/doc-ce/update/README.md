@@ -20,14 +20,14 @@ sudo dpkg -i perforce-gitswarm-2015.2.trusty.amd64.deb
 
         ```
 curl -O ftp://ftp.perforce.com/perforce/r15.2/bin.centos6x86_64/perforce-gitswarm-2015.2.el6.x86_64.rpm
-sudo rpm -i perforce-gitswarm-2015.2.el6.x86_64.rpm
+sudo rpm -U perforce-gitswarm-2015.2.el6.x86_64.rpm
         ```
 
     1.  **For CentOS/RHEL 7:**
 
         ```
 curl -O ftp://ftp.perforce.com/perforce/r15.2/bin.centos7x86_64/perforce-gitswarm-2015.2.el7.x86_64.rpm
-sudo rpm -i perforce-gitswarm-2015.2.el7.x86_64.rpm
+sudo rpm -U perforce-gitswarm-2015.2.el7.x86_64.rpm
         ```
 
 ## Post-upgrade steps

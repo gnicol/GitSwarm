@@ -1,12 +1,11 @@
-require '/opt/gitswarm/embedded/service/gitlab-shell/perforce_swarm/utils.rb'
-require '/opt/gitswarm/embedded/service/gitlab-shell/perforce_swarm/git_fusion.rb'
+require_relative "../../../../gitlab-shell/perforce_swarm/utils.rb"
+require_relative "../../../../gitlab-shell/perforce_swarm/git_fusion.rb"
 
 module PerforceSwarm
   class GitFusionConfig
     def self.check_configured_instances
-      # Get all keys from config, ignore enabled flag
-      # probably smart to add a function to filter unnecessary data.
-      # Call gf for each instance and save output
+      # For every valid Git Fusion instance configuration
+      # attempt connection and save appropriate result into an array for further processing
       @config = PerforceSwarm::GitlabConfig.new
       results = []
       @config.git_fusion_entries.each do |instance, _values|
@@ -31,7 +30,7 @@ module PerforceSwarm
         output   = ''
         config_params = PerforceSwarm::GitFusion.git_config_params(config)
         Utils.popen(['git', *config_params, 'clone', '--', url.to_s], temp) do |line|
-          # fatal: unable to access 'http://gitswarm@ul2.localhost/@info/': Couldn't resolve host 'ul2.localhost'
+          # Generic error message -> fatal: unable to access 'HOST': ERROR
           fail RunAccessError, $LAST_MATCH_INFO['error'] if line =~ /^fatal: unable to access '[^']*': (?<error>.*)$/
           next if line =~ /^fatal: repository/ || silenced
           next if line =~ /^Cloning into/ || silenced
@@ -53,6 +52,7 @@ module PerforceSwarm
       additional_text = ''
       # if we have a min_version, add a check for that, and add information about it being/not being outdated
       if ENV['gf_min_version']
+        # @TODO: add patch version support
         min_version_year, min_version_number = ENV['gf_min_version'].split('.')
         version_year, version_number = version.split('/')[1].split('.')
         if version_year < min_version_year || (version_year <= min_version_year && version_number < min_version_number)

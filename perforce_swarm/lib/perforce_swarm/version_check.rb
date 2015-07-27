@@ -5,8 +5,11 @@ require 'uri'
 
 module PerforceSwarm
   module VersionCheckSelf
-    VERSIONS_URI       ||= 'https://updates.perforce.com/static/GitSwarm/GitSwarm.json'
     VERSIONS_CACHE_KEY ||= 'perforce_swarm:versions'
+
+    def version_uri
+      "https://updates.perforce.com/static/GitSwarm/GitSwarm#{PerforceSwarm.ee? ? '-ee' : ''}.json"
+    end
 
     def versions(use_cached = true)
       if use_cached
@@ -18,7 +21,7 @@ module PerforceSwarm
       # It is unlikely, since the TTL on the cache is 25 hours, and the automated refresh happens every 24 hours, but it
       # is possible. If this happens, we may want to use local file locks to prevent it.
       begin
-        uri               = URI.parse(VERSIONS_URI + '?product=' +
+        uri               = URI.parse(version_uri + '?product=' +
                                       URI.encode('GitSwarm/' + PerforceSwarm::VERSION + '/' + Gitlab::REVISION) +
                                       '&platform=' + URI.encode(platform))
         http              = Net::HTTP.new(uri.host, uri.port)

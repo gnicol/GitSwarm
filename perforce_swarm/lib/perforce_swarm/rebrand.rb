@@ -5,7 +5,10 @@ module PerforceSwarm
     def self.rebrand(text)
       # replace safe looking instances of GitLab with GitSwarm (skipping .com, Flavored Markdown, Literal instances)
       # ensure that instances of $GitLab$ get replaced with literal word GitLab
-      text.gsub(GITSWARM_REPLACE_REGEX, 'GitSwarm').gsub('$GitLab$', 'GitLab')
+      # ensure GitLab B.V. (post processing GitSwarm B.V.) turns into Perforce Software
+      text.gsub(GITSWARM_REPLACE_REGEX, 'GitSwarm')
+        .gsub('$GitLab$', 'GitLab')
+        .gsub('GitSwarm B.V.', 'Perforce Software')
     end
   end
 end

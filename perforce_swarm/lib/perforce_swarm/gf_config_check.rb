@@ -1,5 +1,5 @@
-require_relative "../../../../gitlab-shell/perforce_swarm/utils.rb"
-require_relative "../../../../gitlab-shell/perforce_swarm/git_fusion.rb"
+require_relative '../../../../gitlab-shell/perforce_swarm/utils.rb'
+require_relative '../../../../gitlab-shell/perforce_swarm/git_fusion.rb'
 
 module PerforceSwarm
   class GitFusionConfig

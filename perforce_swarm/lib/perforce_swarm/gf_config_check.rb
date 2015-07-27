@@ -3,7 +3,7 @@ require '/opt/gitswarm/embedded/service/gitlab-shell/perforce_swarm/git_fusion.r
 
 module PerforceSwarm
   class GitFusionConfig
-    def self.call_configured_instances
+    def self.check_configured_instances
       # Get all keys from config, ignore enabled flag
       # probably smart to add a function to filter unnecessary data.
       # Call gf for each instance and save output

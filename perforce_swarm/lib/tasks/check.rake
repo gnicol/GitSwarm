@@ -8,7 +8,7 @@ namespace :gitlab do
     desc 'GITSWARM | Check the configutation of Git Fusion'
     task :check do
       puts "Checking the status of all configured Git Fusion instances...\n\n"
-      results = PerforceSwarm::GitFusionConfig.call_configured_instances
+      results = PerforceSwarm::GitFusionConfig.check_configured_instances
       results.each do |result|
         exit(1) if result['outdated']
       end

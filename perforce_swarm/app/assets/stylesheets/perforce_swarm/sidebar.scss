@@ -1,8 +1,7 @@
 // @todo remove these styles after updating to 7-13, as they have already been added to community.
-.page-with-sidebar {
+body .page-with-sidebar {
   .sidebar-wrapper {
     overflow-y: auto;
     overflow-x: hidden;
-    border: none;
   }
 }

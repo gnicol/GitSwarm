@@ -7,6 +7,12 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   include Spinach::DSL
   include LoginHelpers
 
+  step 'I click link "New Merge Request"' do
+    ancestor = page.find('.issue-search-form + div')
+    ancestor.should have_link 'New Merge Request'
+    ancestor.click_link 'New Merge Request'
+  end
+
   step 'I should see last push widget' do
     page.should have_content 'You pushed to fix'
     page.should have_link 'Create Merge Request'
@@ -94,11 +100,9 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I accept this merge request' do
-    module PerforceSwarm::GitlabSatelliteMergeAction
-      def merge!(_merge_commit_message = nil)
-        true
-      end
-    end
+    MergeRequests::AutoMergeService.any_instance.stub(
+      merge!: true
+    )
 
     page.within '.mr-state-widget' do
       click_button 'Accept Merge Request'

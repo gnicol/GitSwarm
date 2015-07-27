@@ -1088,3 +1088,19 @@ Feature: Project Issues
     When I click on the issue
     And I click the back button
     Then I should be on the issues list page
+
+  @skip-parent
+  Scenario: I submit new unassigned issue as guest
+    Given ...
+
+  @automated
+  Scenario: I submit a new unassigned issue as guest
+    Given public project "Community"
+    When I visit project "Community" page
+    And I visit project "Community" issues page
+    And I click link "New Issue"
+    And I should not see assignee field
+    And I should not see milestone field
+    And I should not see labels field
+    And I submit new issue "500 error on profile"
+    Then I should see issue "500 error on profile"

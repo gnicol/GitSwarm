@@ -20,7 +20,7 @@ namespace :perforce_swarm do
     define_method :finished_checking do |component|
       component.gsub!(/GitLab/, 'GitSwarm')
       puts ''
-      puts "Checking #{component.yellow} ... #{"Finished".green}"
+      puts "Checking #{component.yellow} ... #{'Finished'.green}"
       puts ''
     end
   end

@@ -1,6 +1,6 @@
 $LOAD_PATH.unshift File.dirname(Dir['/**/gitlab-shell/perforce_swarm/config.rb'][0])
-require "utils.rb"
-require "git_fusion.rb"
+require 'utils.rb'
+require 'git_fusion.rb'
 
 module PerforceSwarm
   class GitFusionConfig

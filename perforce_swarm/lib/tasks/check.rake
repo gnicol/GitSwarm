@@ -6,16 +6,16 @@ namespace :gitlab do
 
   namespace :git_fusion do
     desc 'GITSWARM | Check the configutation of Git Fusion'
-    task :check => :environment do
+    task :check do
       puts "Checking the status of all configured Git Fusion instances...\n\n"
       min_version = ENV['gf_min_version'] || nil
       outdated = false
       PerforceSwarm::GitFusion.validate_entries(min_version) do |result|
-        if !result[:valid]
-          display_error(result[:config]['url'], result[:error])
-        elsif result[:valid] && result[:outdated]
+        if !result[:valid] && result[:outdated]
           display_outdated_version_info(result[:config]['url'], result[:version])
           outdated = true
+        elsif !result[:valid]
+          display_error(result[:config]['url'], result[:error])
         else
           display_success_info(result[:config]['url'], result[:version])
         end
@@ -26,19 +26,16 @@ namespace :gitlab do
     def display_error(url, message)
       puts "\e[31mCould not connect to GitFusion instance at \e[37m#{url}\e[31m. Error: #{message}.\n" \
                "\tPlease update /etc/gitswarm/gitswarm.rb and re-run sudo gitswarm-ctl reconfigre.\e[0m\n\n"
-      { 'url' => url, 'outdated' => false, 'valid' => false }
     end
 
     def display_outdated_version_info(url, version)
       puts "\e[31mGit Fusion instance at \e[37m#{url}\e[31m is in version: \e[33m#{version}\e[0m\n\n"
-      { 'url' => url, 'outdated' => true, 'valid' => true }
     end
 
     def display_success_info(url, version)
-      puts "\e[32mGit Fusion instance at \e[37m#{url}\e[32m is in version: \e[33m#{version}\e[0m\n\n"
+      message = "\e[32mGit Fusion instance at \e[37m#{url}\e[32m is in version: \e[33m#{version}\e[0m\n\n"
       # output message if error, or output all if not quiet
       puts message unless ENV['gf_quiet']
-      { 'url' => url, 'outdated' => false, 'valid'=> true }
     end
   end
 end

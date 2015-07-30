@@ -6,7 +6,7 @@ namespace :gitlab do
 
   namespace :git_fusion do
     desc 'GITSWARM | Check the configutation of Git Fusion'
-    task :check do
+    task :check => :environment do
       puts "Checking the status of all configured Git Fusion instances...\n\n"
       min_version = ENV['gf_min_version'] || nil
       outdated = false

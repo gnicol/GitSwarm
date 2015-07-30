@@ -26,7 +26,7 @@ namespace :gitlab do
 
       PerforceSwarm::GitFusion.validate_entries(min_version) do |result|
         if !result[:valid] && result[:outdated]
-          display_outdated_version_info(result[:config]['url'], result[:version])
+          display_outdated_version_info(result[:config]['url'], result[:version], min_version)
           outdated = true
         elsif !result[:valid]
           display_error(result[:config]['url'], result[:error])
@@ -43,9 +43,9 @@ namespace :gitlab do
       puts ''
     end
 
-    def display_outdated_version_info(url, version)
-      puts "Git Fusion instance at #{url.white}".red + "is in an outdated version: #{version.yellow}".red
-      puts "\tMin version required: #{ENV['gf_min_version'].yellow}".red
+    def display_outdated_version_info(url, version, min_version)
+      puts "Git Fusion instance at #{url.white}".red + " is in an outdated version: #{version.yellow}".red
+      puts "\tMin version required: #{min_version.yellow}".red
       puts ''
     end
 

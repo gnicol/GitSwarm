@@ -29,7 +29,8 @@ namespace :gitlab do
     end
 
     def display_outdated_version_info(url, version)
-      puts "\e[31mGit Fusion instance at \e[37m#{url}\e[31m is in version: \e[33m#{version}\e[0m\n\n"
+      puts "\e[31mGit Fusion instance at \e[37m#{url}\e[31m is in an outdated version: \e[33m#{version}\e[31m."\
+        " Min version required: \e[32m#{ENV['gf_min_version']}\e[0m\n\n"
     end
 
     def display_success_info(url, version)

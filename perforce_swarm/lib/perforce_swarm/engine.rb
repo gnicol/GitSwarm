@@ -17,7 +17,6 @@ module PerforceSwarm
       PerforceSwarm.autoload :GitFusionRepo,  File.join(shell_path, 'perforce_swarm', 'git_fusion_repo')
       PerforceSwarm.autoload :GitlabConfig,   File.join(shell_path, 'perforce_swarm', 'config')
       PerforceSwarm.autoload :GitFusion,      File.join(shell_path, 'perforce_swarm', 'git_fusion')
-      PerforceSwarm.autoload :Utils,          File.join(shell_path, 'perforce_swarm', 'utils')
     end
 
     # We want our engine's migrations to be run when the main app runs db:migrate

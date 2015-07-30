@@ -1,3 +1,5 @@
+require 'optparse'
+
 namespace :gitlab do
   desc 'GITSWARM | Check the configuration of GitSwarm and its environment'
   namespace :app do
@@ -9,8 +11,19 @@ namespace :gitlab do
     task check: :environment do
       puts 'Checking the status of all configured Git Fusion instances...'
       puts ''
-      min_version = ENV['gf_min_version']
+      min_version = nil
+      quiet = false
       outdated = false
+
+      # throw away the rake task name, and second one if its a -- to pass it to argparse
+      ARGV.shift
+      ARGV.shift if ARGV[0] == '--'
+      op = OptionParser.new do |x|
+        x.on('-q', '--quiet') { quiet = true }
+        x.on('-vVERSION', '--min_version=VERSION', 'Minimal GF version') { |version| min_version = version }
+      end
+      op.parse!(ARGV)
+
       PerforceSwarm::GitFusion.validate_entries(min_version) do |result|
         if !result[:valid] && result[:outdated]
           display_outdated_version_info(result[:config]['url'], result[:version])
@@ -18,7 +31,7 @@ namespace :gitlab do
         elsif !result[:valid]
           display_error(result[:config]['url'], result[:error])
         else
-          display_success_info(result[:config]['url'], result[:version])
+          display_success_info(result[:config]['url'], result[:version]) unless quiet
         end
       end
       exit(66) if outdated
@@ -26,7 +39,7 @@ namespace :gitlab do
 
     def display_error(url, message)
       puts "Could not connect to GitFusion instance at #{url.white}.".red + "Error: #{message}.".red
-      puts "\tPlease update /etc/gitswarm/gitswarm.rb and re-run sudo gitswarm-ctl reconfigre.".red
+      puts '\tPlease update /etc/gitswarm/gitswarm.rb and re-run "sudo gitswarm-ctl reconfigre".'.red
       puts ''
     end
 
@@ -37,9 +50,7 @@ namespace :gitlab do
     end
 
     def display_success_info(url, version)
-      message = "Git Fusion instance at #{url.white}".green + " is in version: #{version.yellow}\n\n".green
-      # output message if error, or output all if not quiet
-      puts message unless ENV['gf_quiet']
+      puts "Git Fusion instance at #{url.white}".green + " is in version: #{version.yellow}\n\n".green
     end
   end
 end

@@ -24,17 +24,17 @@ namespace :gitlab do
     end
 
     def display_error(url, message)
-      puts "\e[31mCould not connect to GitFusion instance at \e[37m#{url}\e[31m. Error: #{message}.\n" \
-               "\tPlease update /etc/gitswarm/gitswarm.rb and re-run sudo gitswarm-ctl reconfigre.\e[0m\n\n"
+      puts "Could not connect to GitFusion instance at #{url.white}.".red + "Error: #{message}.\n".red +
+       "\tPlease update /etc/gitswarm/gitswarm.rb and re-run sudo gitswarm-ctl reconfigre.\n\n".red
     end
 
     def display_outdated_version_info(url, version)
-      puts "\e[31mGit Fusion instance at \e[37m#{url}\e[31m is in an outdated version: \e[33m#{version}\e[31m."\
-        " Min version required: \e[32m#{ENV['gf_min_version']}\e[0m\n\n"
+      puts "Git Fusion instance at #{url.white}".red + "is in an outdated version: #{version.yellow}".red +
+        " Min version required: #{ENV['gf_min_version'].yellow}\n\n".red
     end
 
     def display_success_info(url, version)
-      message = "\e[32mGit Fusion instance at \e[37m#{url}\e[32m is in version: \e[33m#{version}\e[0m\n\n"
+      message = "Git Fusion instance at #{url.white}".green + " is in version: #{version.yellow}\n\n".green
       # output message if error, or output all if not quiet
       puts message unless ENV['gf_quiet']
     end

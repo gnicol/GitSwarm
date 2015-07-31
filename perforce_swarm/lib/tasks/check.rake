@@ -7,7 +7,7 @@ namespace :gitlab do
   end
 
   namespace :git_fusion do
-    desc 'GITSWARM | Check the configutation of Git Fusion'
+    desc 'GITSWARM | Check the configuration of Git Fusion'
     task check: :environment do
       puts 'Checking the status of all configured Git Fusion instances...'
       puts ''

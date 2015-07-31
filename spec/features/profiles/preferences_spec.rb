@@ -1,37 +1,39 @@
 require 'spec_helper'
 
-describe 'Profile > Preferences' do
+describe 'Profile > Preferences', feature: true do
+  let(:user) { create(:user) }
+
   before do
-    login_as(:user)
+    login_as(user)
     visit profile_preferences_path
   end
 
   describe 'User changes their application theme', js: true do
-    let(:default_class) { Gitlab::Theme.css_class_by_id(nil) }
-    let(:theme_5_class) { Gitlab::Theme.css_class_by_id(5) }
+    let(:default) { Gitlab::Themes.default }
+    let(:theme)   { Gitlab::Themes.by_id(5) }
 
     it 'creates a flash message' do
-      choose 'user_theme_id_5'
+      choose "user_theme_id_#{theme.id}"
 
       expect_preferences_saved_message
     end
 
     it 'updates their preference' do
-      choose 'user_theme_id_5'
+      choose "user_theme_id_#{theme.id}"
 
       allowing_for_delay do
         visit page.current_path
-        expect(page).to have_checked_field("user_theme_id_5")
+        expect(page).to have_checked_field("user_theme_id_#{theme.id}")
       end
     end
 
     it 'reflects the changes immediately' do
-      expect(page).to have_selector("body.#{default_class}")
+      expect(page).to have_selector("body.#{default.css_class}")
 
-      choose 'user_theme_id_5'
+      choose "user_theme_id_#{theme.id}"
 
-      expect(page).not_to have_selector("body.#{default_class}")
-      expect(page).to have_selector("body.#{theme_5_class}")
+      expect(page).not_to have_selector("body.#{default.css_class}")
+      expect(page).to have_selector("body.#{theme.css_class}")
     end
   end
 
@@ -73,7 +75,7 @@ describe 'Profile > Preferences' do
   end
 
   def expect_preferences_saved_message
-    within('.flash-container') do
+    page.within('.flash-container') do
       expect(page).to have_content('Preferences saved.')
     end
   end

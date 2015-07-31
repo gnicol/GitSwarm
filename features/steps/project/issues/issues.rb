@@ -19,12 +19,11 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   end
 
   step 'I should see that I am subscribed' do
-    expect(find(".subscribe-button span").text).to eq "Unsubscribe"
+    expect(find('.subscribe-button span')).to have_content 'Unsubscribe'
   end
 
   step 'I should see that I am unsubscribed' do
-    sleep 0.2
-    expect(find(".subscribe-button span").text).to eq "Subscribe"
+    expect(find('.subscribe-button span')).to have_content 'Subscribe'
   end
 
   step 'I click link "Closed"' do
@@ -195,6 +194,11 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
     end
   end
 
+  When "I visit project \"Community\" issues page" do
+    project = Project.find_by(name: 'Community')
+    visit namespace_project_issues_path(project.namespace, project)
+  end
+
   When "I visit empty project's issues page" do
     project = Project.find_by(name: 'Empty Project')
     visit namespace_project_issues_path(project.namespace, project)
@@ -259,6 +263,24 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   step 'I click label \'bug\'' do
     page.within ".issues-list" do
       click_link 'bug'
+    end
+  end
+
+  step 'I should not see labels field' do
+    page.within '.issue-form' do
+      expect(page).not_to have_content("Labels")
+    end
+  end
+
+  step 'I should not see milestone field' do
+    page.within '.issue-form' do
+      expect(page).not_to have_content("Milestone")
+    end
+  end
+
+  step 'I should not see assignee field' do
+    page.within '.issue-form' do
+      expect(page).not_to have_content("Assign to")
     end
   end
 

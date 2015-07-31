@@ -104,7 +104,7 @@ sudo gitswarm-ctl reconfigure
 
     ```
 Username: root
-Password: 5iveL!fe
+Password: password
     ```
 
 1.  **Tweet about it!**

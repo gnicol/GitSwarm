@@ -13,6 +13,10 @@ Supported Operating System Platforms
     * Ubuntu 12.04 or 14.04
     * CentOS 6.6 or 7
 
+Supported Git Fusion Releases
+
+    * Git Fusion 2015.2, or newer.
+
 Storage
 
     The necessary hard drive space largely depends on the size of the repos

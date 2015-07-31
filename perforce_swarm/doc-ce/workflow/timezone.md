@@ -13,10 +13,15 @@ or
 gitlab_rails['time_zone'] = 'Europe/Brussels'
 ```
 
-To see all available time zones, run `bundle exec rake time:zones:all`.
+To see all available time zones, run:
+
+```
+sudo gitswarm-rake time:zones:all
+```
 
 After you add or modify this field, reconfigure and restart:
+
 ```
-gitswarm-ctl reconfigure
-gitswarm-ctl restart
+sudo gitswarm-ctl reconfigure
+sudo gitswarm-ctl restart
 ```

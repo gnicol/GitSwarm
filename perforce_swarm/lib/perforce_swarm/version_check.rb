@@ -8,7 +8,7 @@ module PerforceSwarm
     VERSIONS_CACHE_KEY ||= 'perforce_swarm:versions'
 
     def version_uri
-      "https://updates.perforce.com/static/GitSwarm/GitSwarm#{ee? ? '-ee' : ''}.json"
+      "https://updates.perforce.com/static/GitSwarm/GitSwarm#{PerforceSwarm.ee? ? '-ee' : ''}.json"
     end
 
     def versions(use_cached = true)

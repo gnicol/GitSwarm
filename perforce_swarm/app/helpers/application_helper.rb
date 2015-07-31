@@ -20,4 +20,11 @@ module ApplicationHelper
   def promo_url
     'http://' + promo_host
   end
+
+  def help_page_path(*args)
+    return super(*args) if args.length <= 2
+
+    # we've been given more than two segments, so create our own absolute path to the requested help file
+    '/' + args.unshift('help').map { |arg| CGI.escape(arg) }.join('/')
+  end
 end

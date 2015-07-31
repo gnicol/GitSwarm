@@ -1,0 +1,46 @@
+                           Upgrading Instructions for
+                                 Helix GitSwarm
+
+                            Version 2015.1 to 2015.2
+
+Introduction
+
+    This document describes the upgrade process for upgrading from Helix
+    GitSwarm release 2015.1 to release 2015.2.
+
+    * Note, installing and configuring GitSwarm is a System Administrator
+      function and requires root access.
+
+------------------------------------------------------------------------
+Download the 2015.2 GitSwarm package and install it.
+------------------------------------------------------------------------
+
+1. For Ubuntu 12.04:
+
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.2/bin.ubuntu12x86_64/perforce-gitswarm-2015.2.precise.amd64.deb
+   $ sudo dpkg -i perforce-gitswarm-2015.2.precise.amd64.deb
+
+2. For Ubuntu 14.04:
+
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.2/bin.ubuntu14x86_64/perforce-gitswarm-2015.2.trusty.amd64.deb
+   $ sudo dpkg -i perforce-gitswarm-2015.2.trusty.amd64.deb
+
+3. For CentOS/RHEL 6:
+
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.2/bin.centos6x86_64/perforce-gitswarm-2015.2.el6.x86_64.rpm
+   $ sudo rpm -U perforce-gitswarm-2015.2.el6.x86_64.rpm
+
+4. For CentOS/RHEL 7:
+
+   $ curl -O ftp://ftp.perforce.com/perforce/r15.2/bin.centos7x86_64/perforce-gitswarm-2015.2.el7.x86_64.rpm
+   $ sudo rpm -U perforce-gitswarm-2015.2.el7.x86_64.rpm
+
+
+------------------------------------------------------------------------
+Post-upgrade steps
+------------------------------------------------------------------------
+
+1. Create gitswarm user:
+
+    Before you can import projects from Git Fusion, you need to manually
+    create the gitswarm user within GitSwarm.

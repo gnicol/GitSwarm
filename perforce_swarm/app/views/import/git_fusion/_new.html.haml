@@ -2,7 +2,7 @@
   .col-sm-10
     - if git_fusion_import_enabled?
       .description
-        Two+ way mirroring! Project changes made here will be reflected in the Helix Versioning Engine, and changes
+        Two-way mirroring! Project changes made here will be reflected in the Helix Versioning Engine, and changes
         made via Helix clients will be reflected in GitSwarm.
         .split
           .left
@@ -20,9 +20,9 @@
                 = select_tag(:git_fusion_repo_name, repos)
           .right
             To point GitSwarm at a different Git Fusion instance, have an admin
-            = link_to 'see these directions.', help_path, target: '_blank'
+            = link_to 'see these directions.', help_page_path('workflow', 'importing', 'import_from_gitfusion'), target: '_blank'
     - else
       .description
         This GitSwarm instance is not pointing to any Git Fusion servers. To import a repo from an existing Git Fusion
         instance, have an admin
-        = link_to 'see these directions.', help_path, target: '_blank'
+        = link_to 'see these directions.', help_page_path('workflow', 'importing', 'import_from_gitfusion'), target: '_blank'

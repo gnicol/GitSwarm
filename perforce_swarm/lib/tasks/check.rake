@@ -12,8 +12,8 @@ namespace :gitlab do
       puts 'Checking the status of all configured Git Fusion instances...'
       puts ''
       min_version = nil
-      quiet = false
-      outdated = false
+      quiet       = false
+      outdated    = false
 
       # throw away the rake task name, and second one if its a -- to pass it to argparse
       ARGV.shift
@@ -50,7 +50,8 @@ namespace :gitlab do
     end
 
     def display_success_info(url, version)
-      puts "Git Fusion instance at #{url.white}".green + " is in version: #{version.yellow}\n\n".green
+      puts "Git Fusion instance at #{url.white}".green + " is in version: #{version.yellow}".green
+      puts ''
     end
   end
 end

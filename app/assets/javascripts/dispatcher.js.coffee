@@ -63,7 +63,6 @@ class Dispatcher
       when 'projects:commits:show'
         shortcut_handler = new ShortcutsNavigation()
       when 'projects:activity'
-        new Activities()
         shortcut_handler = new ShortcutsNavigation()
       when 'projects:show'
         shortcut_handler = new ShortcutsNavigation()
@@ -129,7 +128,10 @@ class Dispatcher
             shortcut_handler = new ShortcutsNavigation()
             new ZenMode()
             new DropzoneInput($('.wiki-form'))
-          when 'snippets', 'labels', 'graphs'
+          when 'snippets'
+            shortcut_handler = new ShortcutsNavigation()
+            new ZenMode() if path[2] == 'show'
+          when 'labels', 'graphs'
             shortcut_handler = new ShortcutsNavigation()
           when 'project_members', 'deploy_keys', 'hooks', 'services', 'protected_branches'
             shortcut_handler = new ShortcutsNavigation()

@@ -177,6 +177,10 @@ class User < ActiveRecord::Base
   # Note: When adding an option, it MUST go on the end of the array.
   enum dashboard: [:projects, :stars]
 
+  # User's Project preference
+  # Note: When adding an option, it MUST go on the end of the array.
+  enum project_view: [:readme, :activity]
+
   alias_attribute :private_token, :authentication_token
 
   delegate :path, to: :namespace, allow_nil: true, prefix: true
@@ -268,6 +272,10 @@ class User < ActiveRecord::Base
     def by_login(login)
       where('lower(username) = :value OR lower(email) = :value',
             value: login.to_s.downcase).first
+    end
+
+    def find_by_username!(username)
+      find_by!('lower(username) = ?', username.downcase)
     end
 
     def by_username_or_id(name_or_id)

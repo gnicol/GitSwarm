@@ -5,18 +5,24 @@ module TestEnv
 
   # When developing the seed repository, comment out the branch you will modify.
   BRANCH_SHA = {
+    'empty-branch'     => '7efb185',
     'flatten-dir'      => 'e56497b',
     'feature'          => '0b4bc9a',
     'feature_conflict' => 'bb5206f',
     'fix'              => '12d65c8',
     'improve/awesome'  => '5937ac0',
     'markdown'         => '0ed8c6c',
-    'master'           => '5937ac0'
+    'master'           => '5937ac0',
+    "'test'"           => 'e56497b',
   }
 
-  FORKED_BRANCH_SHA = BRANCH_SHA.merge({
-    'add-submodule-version-bump' => '3f547c08'
-  })
+  # gitlab-test-fork is a fork of gitlab-fork, but we don't necessarily
+  # need to keep all the branches in sync.
+  # We currently only need a subset of the branches
+  FORKED_BRANCH_SHA = {
+    'add-submodule-version-bump' => '3f547c08',
+    'master' => '5937ac0'
+  }
 
   # Test environment
   #

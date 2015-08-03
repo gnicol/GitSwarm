@@ -1,5 +1,5 @@
 if ENV['GITLAB_ROOT_PASSWORD'].blank?
-  password = '5iveL!fe'
+  password = 'password'
   expire_time = Time.now
 else
   password = ENV['GITLAB_ROOT_PASSWORD']
@@ -12,7 +12,7 @@ admin = User.create(
   username: 'root',
   password: password,
   password_expires_at: expire_time,
-  theme_id: Gitlab::Theme::MARS
+  theme_id: Gitlab::Themes::APPLICATION_DEFAULT
 
 )
 

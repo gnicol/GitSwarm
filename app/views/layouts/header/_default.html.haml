@@ -3,12 +3,10 @@
     .header-logo
       = link_to root_path, class: 'home', title: 'Dashboard', id: 'js-shortcuts-home', data: {toggle: 'tooltip', placement: 'bottom'} do
         = brand_header_logo
-        %h3 GitLab
+        .gitlab-text-container
+          %h3 GitLab
     .header-content
-      %h1.title
-        = title
-
-      %button.navbar-toggle
+      %button.navbar-toggle{type: 'button'}
         %span.sr-only Toggle navigation
         = icon('bars')
 
@@ -42,5 +40,7 @@
           %li
             = link_to destroy_user_session_path, class: 'logout', method: :delete, title: 'Sign out', data: {toggle: 'tooltip', placement: 'bottom'} do
               = icon('sign-out')
+
+      %h1.title= title
 
 = render 'shared/outdated_browser'

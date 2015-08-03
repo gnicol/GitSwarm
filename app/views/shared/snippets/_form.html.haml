@@ -12,13 +12,13 @@
 
     = render 'shared/visibility_level', f: f, visibility_level: visibility_level, can_change_visibility_level: true, form_model: @snippet
 
-    .form-group
-      .file-editor
+    .file-editor
+      .form-group
         = f.label :file_name, "File", class: 'control-label'
         .col-sm-10
           .file-holder.snippet
             .file-title
-              = f.text_field :file_name, placeholder: "example.rb", class: 'form-control snippet-file-name', required: true
+              = f.text_field :file_name, placeholder: "Optionally name this file to add code highlighting, e.g. example.rb for Ruby.", class: 'form-control snippet-file-name'
             .file-content.code
               %pre#editor= @snippet.content
               = f.hidden_field :content, class: 'snippet-file-content'

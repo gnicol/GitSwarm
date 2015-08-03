@@ -20,7 +20,7 @@ namespace :gitlab do
       ARGV.shift if ARGV[0] == '--'
       op = OptionParser.new do |x|
         x.on('-q', '--quiet') { quiet = true }
-        x.on('-vVERSION', '--min_version=VERSION', 'Minimal GF version') { |version| min_version = version }
+        x.on('-vVERSION', '--min-version=VERSION', 'Minimal GF version') { |version| min_version = version }
       end
       op.parse!(ARGV)
 
@@ -39,7 +39,7 @@ namespace :gitlab do
 
     def display_error(url, message)
       puts "Could not connect to GitFusion instance at #{url.white}.".red + "Error: #{message}.".red
-      puts '\tPlease update /etc/gitswarm/gitswarm.rb and re-run "sudo gitswarm-ctl reconfigre".'.red
+      puts "\tPlease update /etc/gitswarm/gitswarm.rb and re-run 'sudo gitswarm-ctl reconfigure'.".red
       puts ''
     end
 

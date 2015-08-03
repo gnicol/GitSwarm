@@ -12,49 +12,21 @@
     .panel-heading
       Application theme
     .panel-body
-      .themes_opts
+      - Gitlab::Themes.each do |theme|
         = label_tag do
-          .prev.default
-          = f.radio_button :theme_id, 1
-          Graphite
+          .preview{class: theme.css_class}
+          = f.radio_button :theme_id, theme.id
+          = theme.name
 
-        = label_tag do
-          .prev.classic
-          = f.radio_button :theme_id, 2
-          Charcoal
-
-        = label_tag do
-          .prev.modern
-          = f.radio_button :theme_id, 3
-          Green
-
-        = label_tag do
-          .prev.gray
-          = f.radio_button :theme_id, 4
-          Gray
-
-        = label_tag do
-          .prev.violet
-          = f.radio_button :theme_id, 5
-          Violet
-
-        = label_tag do
-          .prev.blue
-          = f.radio_button :theme_id, 6
-          Blue
-      %br
-      .clearfix
-
-  .panel.panel-default.code-preview-theme
+  .panel.panel-default.syntax-theme
     .panel-heading
-      Code preview theme
+      Syntax highlighting theme
     .panel-body
-      .code_highlight_opts
-        - color_schemes.each do |color_scheme_id, color_scheme|
-          = label_tag do
-            .prev= image_tag "#{color_scheme}-scheme-preview.png"
-            = f.radio_button :color_scheme_id, color_scheme_id
-            = color_scheme.tr('-_', ' ').titleize
+      - color_schemes.each do |color_scheme_id, color_scheme|
+        = label_tag do
+          .preview= image_tag "#{color_scheme}-scheme-preview.png"
+          = f.radio_button :color_scheme_id, color_scheme_id
+          = color_scheme.tr('-_', ' ').titleize
 
   .panel.panel-default
     .panel-heading

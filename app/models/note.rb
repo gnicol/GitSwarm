@@ -31,7 +31,7 @@ class Note < ActiveRecord::Base
   participant :author, :mentioned_users
 
   belongs_to :project
-  belongs_to :noteable, polymorphic: true
+  belongs_to :noteable, polymorphic: true, touch: true
   belongs_to :author, class_name: "User"
 
   delegate :name, to: :project, prefix: true
@@ -63,11 +63,6 @@ class Note < ActiveRecord::Base
   after_update :set_references
 
   class << self
-    # TODO (rspeicher): Update usages
-    def create_cross_reference_note(*args)
-      SystemNoteService.cross_reference(*args)
-    end
-
     def discussions_from_notes(notes)
       discussion_ids = []
       discussions = []

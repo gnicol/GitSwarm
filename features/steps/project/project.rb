@@ -28,7 +28,7 @@ class Spinach::Features::Project < Spinach::FeatureSteps
   step 'I change the project avatar' do
     attach_file(
       :project_avatar,
-      File.join(Rails.root, 'public', 'gitlab_logo.png')
+      File.join(Rails.root, 'spec', 'fixtures', 'banana_sample.gif')
     )
     click_button 'Save changes'
     @project.reload
@@ -37,7 +37,7 @@ class Spinach::Features::Project < Spinach::FeatureSteps
   step 'I should see new project avatar' do
     expect(@project.avatar).to be_instance_of AvatarUploader
     url = @project.avatar.url
-    expect(url).to eq "/uploads/project/avatar/#{ @project.id }/gitlab_logo.png"
+    expect(url).to eq "/uploads/project/avatar/#{ @project.id }/banana_sample.gif"
   end
 
   step 'I should see the "Remove avatar" button' do
@@ -47,7 +47,7 @@ class Spinach::Features::Project < Spinach::FeatureSteps
   step 'I have an project avatar' do
     attach_file(
       :project_avatar,
-      File.join(Rails.root, 'public', 'gitlab_logo.png')
+      File.join(Rails.root, 'spec', 'fixtures', 'banana_sample.gif')
     )
     click_button 'Save changes'
     @project.reload
@@ -59,7 +59,7 @@ class Spinach::Features::Project < Spinach::FeatureSteps
   end
 
   step 'I should see the default project avatar' do
-    expect(@project.avatar?).to be_false
+    expect(@project.avatar?).to eq false
   end
 
   step 'I should not see the "Remove avatar" button' do
@@ -86,13 +86,15 @@ class Spinach::Features::Project < Spinach::FeatureSteps
   end
 
   step 'I should see project "Forum" README' do
-    expect(page).to have_link 'README.md'
-    expect(page).to have_content 'Sample repo for testing gitlab features'
+    page.within('#README') do
+      expect(page).to have_content 'Sample repo for testing gitlab features'
+    end
   end
 
   step 'I should see project "Shop" README' do
-    expect(page).to have_link 'README.md'
-    expect(page).to have_content 'testme'
+    page.within('#README') do
+      expect(page).to have_content 'testme'
+    end
   end
 
   step 'I add project tags' do
@@ -113,5 +115,19 @@ class Spinach::Features::Project < Spinach::FeatureSteps
 
   step 'I should not see "Snippets" button' do
     expect(page).not_to have_link 'Snippets'
+  end
+
+  step 'project "Shop" belongs to group' do
+    group = create(:group)
+    @project.namespace = group
+    @project.save!
+  end
+
+  step 'I should see back to dashboard button' do
+    expect(page).to have_content 'Back to Dashboard'
+  end
+
+  step 'I should see back to group button' do
+    expect(page).to have_content 'Back to Group'
   end
 end

@@ -2,14 +2,14 @@
 
 Please see [Branded login page](branded_login_page.md)
 
-# Add a welcome message to the sign-in page (GitSwarm non-EE edition)
+# Add a welcome message to the sign-in page
 
 It is possible to add a markdown-formatted welcome message to your GitSwarm
 sign-in page.
 
-## Omnibus-gitlab example
+## Example
 
-In `/etc/gitlab/gitlab.rb`:
+In `/etc/gitswarm/gitswarm.rb`:
 
 ```ruby
 gitlab_rails['extra_sign_in_text'] = <<'EOS'

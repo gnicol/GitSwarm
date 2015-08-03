@@ -22,7 +22,7 @@ require 'spec_helper'
 describe Note do
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
-    it { is_expected.to belong_to(:noteable) }
+    it { is_expected.to belong_to(:noteable).touch(true) }
     it { is_expected.to belong_to(:author).class_name('User') }
   end
 
@@ -172,9 +172,9 @@ describe Note do
         @p2.project_members.create(user: @u3, access_level: ProjectMember::DEVELOPER)
       end
 
-      it { expect(@abilities.allowed?(@u1, :write_note, @p1)).to be_falsey }
-      it { expect(@abilities.allowed?(@u2, :write_note, @p1)).to be_truthy }
-      it { expect(@abilities.allowed?(@u3, :write_note, @p1)).to be_falsey }
+      it { expect(@abilities.allowed?(@u1, :create_note, @p1)).to be_falsey }
+      it { expect(@abilities.allowed?(@u2, :create_note, @p1)).to be_truthy }
+      it { expect(@abilities.allowed?(@u3, :create_note, @p1)).to be_falsey }
     end
 
     describe 'admin' do

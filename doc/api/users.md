@@ -58,7 +58,8 @@ GET /users
     "is_admin": false,
     "avatar_url": "http://localhost:3000/uploads/user/avatar/1/cd8.jpeg",
     "can_create_group": true,
-    "current_sign_in_at": "2014-03-19T13:12:15Z"
+    "current_sign_in_at": "2014-03-19T13:12:15Z",
+    "two_factor_enabled": true
   },
   {
     "id": 2,
@@ -81,7 +82,8 @@ GET /users
     "can_create_group": true,
     "can_create_project": true,
     "projects_limit": 100,
-    "current_sign_in_at": "2014-03-19T17:54:13Z"
+    "current_sign_in_at": "2014-03-19T17:54:13Z",
+    "two_factor_enabled": false
   }
 ]
 ```
@@ -394,3 +396,31 @@ Parameters:
 - `id` (required)  - SSH key ID
 
 Will return `200 OK` on success, or `404 Not found` if either user or key cannot be found.
+
+## Block user
+
+Blocks the specified user.  Available only for admin.
+
+```
+PUT /users/:uid/block
+```
+
+Parameters:
+
+- `uid` (required) - id of specified user
+
+Will return `200 OK` on success, or `404 User Not Found` is user cannot be found.
+
+## Unblock user
+
+Unblocks the specified user.  Available only for admin.
+
+```
+PUT /users/:uid/unblock
+```
+
+Parameters:
+
+- `uid` (required) - id of specified user
+
+Will return `200 OK` on success, or `404 User Not Found` is user cannot be found.

@@ -13,10 +13,12 @@ module PerforceSwarm
 
       config      = PerforceSwarm::Config.p4
       p4          = ::P4.new
-      p4.port     = config.port
-      p4.user     = config.user
+      # hard-coded values not present in config by default
+      p4.port     = config.port || 'ssl:1666'
+      p4.user     = config.user || 'gitswarm'
       p4.password = config['password'] || ''
       p4.connect
+      p4.run('trust -y')
 
       RequestStore.store[:p4] = p4
     end

@@ -3,7 +3,7 @@ require Rails.root.join('app', 'models', 'user')
 module PerforceSwarm
   module UserExtension
     def save!
-      logger.info("Send new root password to p4d. #{password}")
+      PerforceSwarm::P4DManager.update_p4d_root_password(password)
       super
     end
   end

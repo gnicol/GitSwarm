@@ -5,7 +5,7 @@ module PerforceSwarm
     def update
       if @user.update_attributes(params[:password]) && @user.id == 1
         new_root_password = params[:password]
-        logger.info("Send new root password to p4d. #{new_root_password}")
+        PerforceSwarm::P4DManager.update_p4d_root_password(new_root_password)
       end
       super
     end

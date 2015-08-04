@@ -9,4 +9,5 @@ module PerforceSwarm
   end
 end
 
-PerforceSwarm::Config['p4'] ||= Settingslogic.new({})
+# gitswarm super user password for auto-provisioned p4d is in git-fusion's default configuration
+PerforceSwarm::Config['git_fusion']['default'] ||= Settingslogic.new({})

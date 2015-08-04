@@ -2,21 +2,10 @@ require 'minitest/autorun'
 require 'yaml'
 require 'P4'
 require_relative './log'
+require_relative './config'
 
 class BaseTest < Minitest::Test
-  @@config = nil
-
   def setup
-    # One time only
-    unless @@config
-      # Load Config
-      LOG.info('Loading config...')
-      @@config = YAML.load_file('config.yml')
-      LOG.log @@config
-
-      LOG.debug('Log and Suite setup complete.')
-
-    end
     LOG.log('---------------------------------------------')
   end
 

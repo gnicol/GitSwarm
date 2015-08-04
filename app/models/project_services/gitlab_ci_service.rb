@@ -40,10 +40,14 @@ class GitlabCiService < CiService
   def execute(data)
     return unless supported_events.include?(data[:object_kind])
 
-    ci_yaml_file = ci_yaml_file(data)
+    sha = data[:checkout_sha]
 
-    if ci_yaml_file
-      data.merge!(ci_yaml_file: ci_yaml_file)
+    if sha.present?
+      file = ci_yaml_file(sha)
+
+      if file && file.data
+        data.merge!(ci_yaml_file: file.data)
+      end
     end
 
     service_hook.execute(data)
@@ -72,6 +76,7 @@ class GitlabCiService < CiService
     params = {
       id:                  new_project.id,
       name_with_namespace: new_project.name_with_namespace,
+      path_with_namespace: new_project.path_with_namespace,
       web_url:             new_project.web_url,
       default_branch:      new_project.default_branch,
       ssh_url_to_repo:     new_project.ssh_url_to_repo
@@ -129,15 +134,15 @@ class GitlabCiService < CiService
 
   private
 
-  def ci_yaml_file(data)
-    ref = data[:checkout_sha]
-    repo = project.repository
-    commit = repo.commit(ref)
-    blob = Gitlab::Git::Blob.find(repo, commit.id, ".gitlab-ci.yml")
-    blob && blob.data
+  def ci_yaml_file(sha)
+    repository.blob_at(sha, '.gitlab-ci.yml')
   end
 
   def fork_registration_path
     project_url.sub(/projects\/\d*/, "#{API_PREFIX}/forks")
+  end
+
+  def repository
+    project.repository
   end
 end

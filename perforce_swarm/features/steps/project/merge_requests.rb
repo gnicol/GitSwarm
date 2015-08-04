@@ -7,6 +7,12 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   include Spinach::DSL
   include LoginHelpers
 
+  step 'I click link "New Merge Request"' do
+    ancestor = page.find('.issue-search-form + div')
+    ancestor.should have_link 'New Merge Request'
+    ancestor.click_link 'New Merge Request'
+  end
+
   step 'I should see last push widget' do
     page.should have_content 'You pushed to fix'
     page.should have_link 'Create Merge Request'
@@ -69,12 +75,15 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     select @project.path_with_namespace, from: 'merge_request_source_project_id'
     select @project.path_with_namespace, from: 'merge_request_target_project_id'
     select 'fix', from: 'merge_request_source_branch'
+    page.find('.mr_source_commit').should have_selector('.commit')
     select 'master', from: 'merge_request_target_branch'
+    page.find('.mr_target_commit').should have_selector('.commit')
     click_button 'Compare branches'
   end
 
   step 'merge request "Dependency Fix" is mergeable' do
     merge_request = MergeRequest.find_by(title: 'Dependency Fix')
+    merge_request.project.satellite.create
     merge_request.mark_as_mergeable
   end
 
@@ -91,19 +100,17 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I accept this merge request' do
-    module PerforceSwarm::GitlabSatelliteMergeAction
-      def merge!(_merge_commit_message = nil)
-        true
-      end
-    end
+    MergeRequests::AutoMergeService.any_instance.stub(
+      merge!: true
+    )
 
-    within '.can_be_merged' do
+    page.within '.mr-state-widget' do
       click_button 'Accept Merge Request'
     end
   end
 
   step 'I click link "All"' do
-    within '.content-wrapper' do
+    page.within '.content-wrapper' do
       click_link 'All'
     end
   end

@@ -53,9 +53,10 @@
 #  encrypted_otp_secret          :string(255)
 #  encrypted_otp_secret_iv       :string(255)
 #  encrypted_otp_secret_salt     :string(255)
-#  otp_required_for_login        :boolean
+#  otp_required_for_login        :boolean          default(FALSE), not null
 #  otp_backup_codes              :text
 #  public_email                  :string(255)      default(""), not null
+#  dashboard                     :integer          default(0)
 #
 
 require 'carrierwave/orm/activerecord'
@@ -79,6 +80,7 @@ class User < ActiveRecord::Base
 
   devise :two_factor_authenticatable,
          otp_secret_encryption_key: File.read(Rails.root.join('.secret')).chomp
+  alias_attribute :two_factor_enabled, :otp_required_for_login
 
   devise :two_factor_backupable, otp_number_of_backup_codes: 10
   serialize :otp_backup_codes, JSON
@@ -136,7 +138,9 @@ class User < ActiveRecord::Base
   # Validations
   #
   validates :name, presence: true
-  validates :email, presence: true, email: { strict_mode: true }, uniqueness: true
+  # Note that a 'uniqueness' and presence check is provided by devise :validatable for email. We do not need to
+  # duplicate that here as the validation framework will have duplicate errors in the event of a failure.
+  validates :email, presence: true, email: { strict_mode: true }
   validates :notification_email, presence: true, email: { strict_mode: true }
   validates :public_email, presence: true, email: { strict_mode: true }, allow_blank: true, uniqueness: true
   validates :bio, length: { maximum: 255 }, allow_blank: true
@@ -169,6 +173,9 @@ class User < ActiveRecord::Base
   after_create :post_create_hook
   after_destroy :post_destroy_hook
 
+  # User's Dashboard preference
+  # Note: When adding an option, it MUST go on the end of the array.
+  enum dashboard: [:projects, :stars]
 
   alias_attribute :private_token, :authentication_token
 
@@ -187,11 +194,13 @@ class User < ActiveRecord::Base
   mount_uploader :avatar, AvatarUploader
 
   # Scopes
-  scope :admins, -> { where(admin:  true) }
+  scope :admins, -> { where(admin: true) }
   scope :blocked, -> { with_state(:blocked) }
   scope :active, -> { with_state(:active) }
   scope :not_in_project, ->(project) { project.users.present? ? where("id not in (:ids)", ids: project.users.map(&:id) ) : all }
   scope :without_projects, -> { where('id NOT IN (SELECT DISTINCT(user_id) FROM members)') }
+  scope :with_two_factor,    -> { where(two_factor_enabled: true) }
+  scope :without_two_factor, -> { where(two_factor_enabled: false) }
 
   #
   # Class methods
@@ -216,18 +225,37 @@ class User < ActiveRecord::Base
       end
     end
 
-    def find_for_commit(email, name)
-      # Prefer email match over name match
-      User.where(email: email).first ||
-        User.joins(:emails).where(emails: { email: email }).first ||
-        User.where(name: name).first
+    # Find a User by their primary email or any associated secondary email
+    def find_by_any_email(email)
+      user_table = arel_table
+      email_table = Email.arel_table
+
+      # Use ARel to build a query:
+      query = user_table.
+        # SELECT "users".* FROM "users"
+        project(user_table[Arel.star]).
+        # LEFT OUTER JOIN "emails"
+        join(email_table, Arel::Nodes::OuterJoin).
+        # ON "users"."id" = "emails"."user_id"
+        on(user_table[:id].eq(email_table[:user_id])).
+        # WHERE ("user"."email" = '<email>' OR "emails"."email" = '<email>')
+        where(user_table[:email].eq(email).or(email_table[:email].eq(email)))
+
+      find_by_sql(query.to_sql).first
     end
 
     def filter(filter_name)
       case filter_name
-      when "admins"; self.admins
-      when "blocked"; self.blocked
-      when "wop"; self.without_projects
+      when 'admins'
+        self.admins
+      when 'blocked'
+        self.blocked
+      when 'two_factor_disabled'
+        self.without_two_factor
+      when 'two_factor_enabled'
+        self.with_two_factor
+      when 'wop'
+        self.without_projects
       else
         self.active
       end
@@ -294,6 +322,16 @@ class User < ActiveRecord::Base
     @reset_token
   end
 
+  def disable_two_factor!
+    update_attributes(
+      two_factor_enabled:        false,
+      encrypted_otp_secret:      nil,
+      encrypted_otp_secret_iv:   nil,
+      encrypted_otp_secret_salt: nil,
+      otp_backup_codes:          nil
+    )
+  end
+
   def namespace_uniq
     namespace_name = self.username
     existing_namespace = Namespace.by_path(namespace_name)
@@ -319,6 +357,8 @@ class User < ActiveRecord::Base
   end
 
   def owns_public_email
+    return if self.public_email.blank?
+
     self.errors.add(:public_email, "is not an email you own") unless self.all_emails.include?(self.public_email)
   end
 
@@ -352,9 +392,11 @@ class User < ActiveRecord::Base
   end
 
   def owned_projects
-    @owned_projects ||= begin
-                          Project.where(namespace_id: owned_groups.pluck(:id).push(namespace.id)).joins(:namespace)
-                        end
+    @owned_projects ||=
+      begin
+        namespace_ids = owned_groups.pluck(:id).push(namespace.id)
+        Project.in_namespace(namespace_ids).joins(:namespace)
+      end
   end
 
   # Team membership in authorized projects
@@ -497,7 +539,7 @@ class User < ActiveRecord::Base
 
   def set_public_email
     if self.public_email.blank? || !self.all_emails.include?(self.public_email)
-      self.public_email = nil
+      self.public_email = ''
     end
   end
 

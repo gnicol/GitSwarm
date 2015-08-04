@@ -14,10 +14,10 @@ class Projects::MergeRequestsController < Projects::ApplicationController
   before_action :authorize_read_merge_request!
 
   # Allow write(create) merge_request
-  before_action :authorize_write_merge_request!, only: [:new, :create]
+  before_action :authorize_create_merge_request!, only: [:new, :create]
 
   # Allow modify merge_request
-  before_action :authorize_modify_merge_request!, only: [:close, :edit, :update, :sort]
+  before_action :authorize_update_merge_request!, only: [:close, :edit, :update, :sort]
 
   def index
     terms = params['issue_search']
@@ -71,7 +71,10 @@ class Projects::MergeRequestsController < Projects::ApplicationController
   end
 
   def commits
-    render 'show'
+    respond_to do |format|
+      format.html { render 'show' }
+      format.json { render json: { html: view_to_html_string('projects/merge_requests/show/_commits') } }
+    end
   end
 
   def new
@@ -139,11 +142,13 @@ class Projects::MergeRequestsController < Projects::ApplicationController
       @merge_request.check_if_can_be_merged
     end
 
-    render json: { merge_status: @merge_request.automerge_status }
+    closes_issues
+
+    render partial: "projects/merge_requests/widget/show.html.haml", layout: false
   end
 
   def automerge
-    return access_denied! unless allowed_to_merge?
+    return access_denied! unless @merge_request.can_be_merged_by?(current_user)
 
     if @merge_request.automergeable?
       AutoMergeWorker.perform_async(@merge_request.id, current_user.id, params)
@@ -213,8 +218,8 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     @closes_issues ||= @merge_request.closes_issues
   end
 
-  def authorize_modify_merge_request!
-    return render_404 unless can?(current_user, :modify_merge_request, @merge_request)
+  def authorize_update_merge_request!
+    return render_404 unless can?(current_user, :update_merge_request, @merge_request)
   end
 
   def authorize_admin_merge_request!
@@ -241,6 +246,8 @@ class Projects::MergeRequestsController < Projects::ApplicationController
   end
 
   def define_show_vars
+    @participants = @merge_request.participants(current_user, @project)
+
     # Build a note object for comment form
     @note = @project.notes.new(noteable: @merge_request)
     @notes = @merge_request.mr_and_commit_notes.inc_author.fresh
@@ -252,8 +259,6 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     @commits = @merge_request.commits
 
     @merge_request_diff = @merge_request.merge_request_diff
-    @allowed_to_merge = allowed_to_merge?
-    @show_merge_controls = @merge_request.open? && @commits.any? && @allowed_to_merge
     @source_branch = @merge_request.source_project.repository.find_branch(@merge_request.source_branch).try(:name)
 
     if @merge_request.locked_long_ago?
@@ -262,17 +267,9 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     end
   end
 
-  def allowed_to_merge?
-    allowed_to_push_code?(project, @merge_request.target_branch)
-  end
-
   def invalid_mr
     # Render special view for MR with removed source or target branch
     render 'invalid'
-  end
-
-  def allowed_to_push_code?(project, branch)
-    ::Gitlab::GitAccess.new(current_user, project).can_push_to_branch?(branch)
   end
 
   def merge_request_params

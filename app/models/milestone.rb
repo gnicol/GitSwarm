@@ -14,6 +14,10 @@
 #
 
 class Milestone < ActiveRecord::Base
+  # Represents a "No Milestone" state used for filtering Issues and Merge
+  # Requests that have no milestone assigned.
+  None = Struct.new(:title).new('No Milestone')
+
   include InternalId
   include Sortable
 
@@ -56,7 +60,7 @@ class Milestone < ActiveRecord::Base
   end
 
   def closed_items_count
-    self.issues.closed.count + self.merge_requests.closed.count
+    self.issues.closed.count + self.merge_requests.closed_and_merged.count
   end
 
   def total_items_count

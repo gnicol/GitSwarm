@@ -12,7 +12,11 @@ module PerforceSwarm
 
       # Autoload classes from shell when needed
       shell_path = File.expand_path(Gitlab.config.gitlab_shell.path)
-      PerforceSwarm.autoload :Mirror, File.join(shell_path, 'perforce_swarm', 'mirror')
+      PerforceSwarm.autoload :Mirror,         File.join(shell_path, 'perforce_swarm', 'mirror')
+      PerforceSwarm.autoload :Repo,           File.join(shell_path, 'perforce_swarm', 'repo')
+      PerforceSwarm.autoload :GitFusionRepo,  File.join(shell_path, 'perforce_swarm', 'git_fusion_repo')
+      PerforceSwarm.autoload :GitlabConfig,   File.join(shell_path, 'perforce_swarm', 'config')
+      PerforceSwarm.autoload :GitFusion,      File.join(shell_path, 'perforce_swarm', 'git_fusion')
     end
 
     # We want our engine's migrations to be run when the main app runs db:migrate
@@ -23,6 +27,10 @@ module PerforceSwarm
           app.config.paths['db/migrate'] << expanded_path
         end
       end
+
+      # Include our engine's fixtures in seed-fu
+      SeedFu.fixture_paths << Rails.root.join('perforce_swarm/db/fixtures').to_s
+      SeedFu.fixture_paths << Rails.root.join('perforce_swarm/db/fixtures/' + Rails.env).to_s
     end
 
     initializer :engine_middleware do |app|
@@ -38,6 +46,20 @@ module PerforceSwarm
         ::ActionDispatch::PublicExceptions.new("#{root}/public")
       )
     end
+  end
+
+  def self.edition
+    unless defined? GITSWARM_EDITION
+      const_set(:GITSWARM_EDITION, File.exist?(Rails.root.join('CHANGELOG-EE')) ? 'ee' : 'ce')
+    end
+    GITSWARM_EDITION
+  end
+
+  def self.ee?
+    edition == 'ee'
+  end
+  def self.ce?
+    edition == 'ce'
   end
 
   module ConfigurationExtension

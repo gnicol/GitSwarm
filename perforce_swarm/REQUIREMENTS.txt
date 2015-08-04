@@ -1,17 +1,21 @@
                          Hardware Requirements for
                               Helix GitSwarm
 
-                              Version 2015.1
+                              Version 2015.2
 
 Introduction
 
     This document describes the hardware requirements for Helix GitSwarm
-    release 2015.1.
+    release 2015.2.
 
 Supported Operating System Platforms
 
     * Ubuntu 12.04 or 14.04
     * CentOS 6.6 or 7
+
+Supported Git Fusion Releases
+
+    * Git Fusion 2015.2, or newer.
 
 Storage
 

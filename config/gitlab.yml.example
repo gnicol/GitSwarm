@@ -4,8 +4,12 @@
 #
 ###########################  NOTE  #####################################
 # This file should not receive new settings. All configuration options #
-# are being moved to ApplicationSetting model!                         #
+# that do not require application restart are being moved to           #
+# ApplicationSetting model!                                            #
+# If you change this file in a Merge Request, please also create       #
+# a MR on https://gitlab.com/gitlab-org/omnibus-gitlab/merge_requests  #
 ########################################################################
+#
 #
 # How to use:
 # 1. Copy file as gitlab.yml
@@ -58,12 +62,13 @@ production: &base
 
     # default_can_create_group: false  # default: true
     # username_changing_enabled: false # default: true - User can change her username/namespace
-    ## Default theme
-    ##   BASIC  = 1
-    ##   MARS   = 2
-    ##   MODERN = 3
-    ##   GRAY   = 4
-    ##   COLOR  = 5
+    ## Default theme ID
+    ##   1 - Graphite
+    ##   2 - Charcoal
+    ##   3 - Green
+    ##   4 - Gray
+    ##   5 - Violet
+    ##   6 - Blue
     # default_theme: 2 # default: 2
 
     ## Automatic issue closing
@@ -149,7 +154,7 @@ production: &base
         allow_username_or_email_login: false
 
         # To maintain tight control over the number of active users on your GitLab installation,
-        # enable this setting to keep new users blocked until they have been cleared by the admin 
+        # enable this setting to keep new users blocked until they have been cleared by the admin
         # (default: false).
         block_auto_created_users: false
 

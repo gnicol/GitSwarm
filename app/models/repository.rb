@@ -5,8 +5,13 @@ class Repository
 
   def initialize(path_with_namespace, default_branch = nil, project = nil)
     @path_with_namespace = path_with_namespace
-    @raw_repository = Gitlab::Git::Repository.new(path_to_repo) if path_with_namespace
     @project = project
+
+    if path_with_namespace
+      @raw_repository = Gitlab::Git::Repository.new(path_to_repo)
+      @raw_repository.autocrlf = :input
+    end
+
   rescue Gitlab::Git::Repository::NoRepository
     nil
   end
@@ -168,7 +173,9 @@ class Repository
   end
 
   def blob_at(sha, path)
-    Gitlab::Git::Blob.find(self, sha, path)
+    unless Gitlab::Git.blank_ref?(sha)
+      Gitlab::Git::Blob.find(self, sha, path)
+    end
   end
 
   def blob_by_oid(oid)
@@ -407,8 +414,6 @@ class Repository
     Gitlab::Git::Blob.remove(raw_repository, options)
   end
 
-  private
-
   def user_to_comitter(user)
     {
       email: user.email,
@@ -416,6 +421,51 @@ class Repository
       time: Time.now
     }
   end
+
+  def can_be_merged?(source_branch, target_branch)
+    our_commit = rugged.branches[target_branch].target
+    their_commit = rugged.branches[source_branch].target
+
+    if our_commit && their_commit
+      !rugged.merge_commits(our_commit, their_commit).conflicts?
+    end
+  end
+
+  def search_files(query, ref)
+    offset = 2
+    args = %W(git grep -i -n --before-context #{offset} --after-context #{offset} #{query} #{ref || root_ref})
+    Gitlab::Popen.popen(args, path_to_repo).first.scrub.split(/^--$/)
+  end
+
+  def parse_search_result(result)
+    ref = nil
+    filename = nil
+    startline = 0
+
+    lines = result.lines
+    lines.each_with_index do |line, index|
+      if line =~ /^.*:.*:\d+:/
+        ref, filename, startline = line.split(':')
+        startline = startline.to_i - index
+        break
+      end
+    end
+
+    data = lines.map do |line|
+      line.sub(ref, '').sub(filename, '').sub(/^:-\d+-/, '').sub(/^::\d+:/, '')
+    end
+
+    data = data.join("")
+
+    OpenStruct.new(
+      filename: filename,
+      ref: ref,
+      startline: startline,
+      data: data
+    )
+  end
+
+  private
 
   def cache
     @cache ||= RepositoryCache.new(path_with_namespace)

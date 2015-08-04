@@ -8,9 +8,6 @@ Metrics/AbcSize:
 Metrics/ClassLength:
   Enabled: false
 
-Metrics/ModuleLength:
-  Enabled: false
-
 Metrics/CyclomaticComplexity:
   Enabled: false
 
@@ -20,13 +17,13 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Enabled: false
 
+Metrics/ModuleLength:
+  Enabled: false
+
 Metrics/PerceivedComplexity:
   Enabled: false
 
 Style/ClassAndModuleChildren:
-  Enabled: false
-
-Style/ClosingParenthesisIndentation:
   Enabled: false
 
 Style/Documentation:

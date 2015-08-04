@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150529150355) do
+ActiveRecord::Schema.define(version: 20150702141633) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,15 +28,30 @@ ActiveRecord::Schema.define(version: 20150529150355) do
     t.integer  "default_branch_protection",    default: 2
     t.boolean  "twitter_sharing_enabled",      default: true
     t.text     "restricted_visibility_levels"
-    t.integer  "max_attachment_size",          default: 10,   null: false
+    t.boolean  "version_check_enabled"
+    t.integer  "max_attachment_size",          default: 10,    null: false
     t.integer  "default_project_visibility"
     t.integer  "default_snippet_visibility"
     t.text     "restricted_signup_domains"
-    t.boolean  "version_check_enabled"
+    t.string   "last_version_ignored"
     t.boolean  "user_oauth_applications",      default: true
     t.string   "after_sign_out_path"
-    t.string   "last_version_ignored"
+    t.integer  "session_expire_delay",         default: 10080, null: false
   end
+
+  create_table "audit_events", force: true do |t|
+    t.integer  "author_id",   null: false
+    t.string   "type",        null: false
+    t.integer  "entity_id",   null: false
+    t.string   "entity_type", null: false
+    t.text     "details"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "audit_events", ["author_id"], name: "index_audit_events_on_author_id", using: :btree
+  add_index "audit_events", ["entity_id", "entity_type"], name: "index_audit_events_on_entity_id_and_entity_type", using: :btree
+  add_index "audit_events", ["type"], name: "index_audit_events_on_type", using: :btree
 
   create_table "broadcast_messages", force: true do |t|
     t.text     "message",    null: false
@@ -354,12 +369,13 @@ ActiveRecord::Schema.define(version: 20150529150355) do
     t.string   "import_url"
     t.integer  "visibility_level",       default: 0,        null: false
     t.boolean  "archived",               default: false,    null: false
+    t.string   "avatar"
     t.string   "import_status"
     t.float    "repository_size",        default: 0.0
     t.integer  "star_count",             default: 0,        null: false
     t.string   "import_type"
     t.string   "import_source"
-    t.string   "avatar"
+    t.string   "git_fusion_repo"
   end
 
   add_index "projects", ["created_at", "id"], name: "index_projects_on_created_at_and_id", using: :btree
@@ -496,12 +512,13 @@ ActiveRecord::Schema.define(version: 20150529150355) do
     t.string   "bitbucket_access_token"
     t.string   "bitbucket_access_token_secret"
     t.string   "location"
-    t.string   "public_email",                  default: "",    null: false
     t.string   "encrypted_otp_secret"
     t.string   "encrypted_otp_secret_iv"
     t.string   "encrypted_otp_secret_salt"
-    t.boolean  "otp_required_for_login"
+    t.boolean  "otp_required_for_login",        default: false, null: false
     t.text     "otp_backup_codes"
+    t.string   "public_email",                  default: "",    null: false
+    t.integer  "dashboard",                     default: 0
   end
 
   add_index "users", ["admin"], name: "index_users_on_admin", using: :btree

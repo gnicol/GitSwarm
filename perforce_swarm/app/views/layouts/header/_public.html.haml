@@ -2,8 +2,9 @@
   .container
     .header-logo
       = link_to explore_root_path, class: 'home' do
-        %div
-        %h3 GitSwarm
+        = brand_header_logo
+        .gitlab-text-container
+          %h3 GitSwarm
     .header-content
       %div.dashboard-menu
         %h1.title= title

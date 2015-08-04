@@ -88,8 +88,8 @@ Is the system packaged Git too old? Remove it and compile from source.
 
     # Download and compile from source
     cd /tmp
-    curl -L --progress https://www.kernel.org/pub/software/scm/git/git-2.1.2.tar.gz | tar xz
-    cd git-2.1.2/
+    curl -L --progress https://www.kernel.org/pub/software/scm/git/git-2.4.3.tar.gz | tar xz
+    cd git-2.4.3/
     ./configure
     make prefix=/usr/local all
 
@@ -195,9 +195,9 @@ We recommend using a PostgreSQL database. For MySQL check [MySQL setup guide](da
 ### Clone the Source
 
     # Clone GitLab repository
-    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-11-stable gitlab
+    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 7-12-stable gitlab
 
-**Note:** You can change `7-11-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
+**Note:** You can change `7-12-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
 
 ### Configure It
 
@@ -368,6 +368,9 @@ Make sure to edit the config file to match your setup:
 
     # Change YOUR_SERVER_FQDN to the fully-qualified
     # domain name of your host serving GitLab.
+    # If using Ubuntu default nginx install:
+    # either remove the default_server from the listen line
+    # or else rm -f /etc/sites-enabled/default
     sudo editor /etc/nginx/sites-available/gitlab
 
 **Note:** If you want to use HTTPS, replace the `gitlab` Nginx config with `gitlab-ssl`. See [Using HTTPS](#using-https) for HTTPS configuration details.
@@ -401,7 +404,7 @@ NOTE: Supply `SANITIZE=true` environment variable to `gitlab:check` to omit proj
 Visit YOUR_SERVER in your web browser for your first GitLab login. The setup has created a default admin account for you. You can use it to log in:
 
     root
-    5iveL!fe
+    password
 
 **Important Note:** On login you'll be prompted to change the password.
 

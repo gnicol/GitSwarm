@@ -1,6 +1,6 @@
 - page_title "#{@merge_request.title} (##{@merge_request.iid})", "Merge Requests"
 .merge-request{'data-url' => merge_request_path(@merge_request)}
-  .merge-request-details
+  .merge-request-details.issuable-details
     = render "projects/merge_requests/show/mr_title"
     %hr
     = render "projects/merge_requests/show/mr_box"
@@ -32,7 +32,7 @@
               %li= link_to "Plain Diff",    merge_request_path(@merge_request, format: :diff)
 
     = render "projects/merge_requests/show/how_to_merge"
-    = render "projects/merge_requests/show/state_widget"
+    = render "projects/merge_requests/widget/show.html.haml"
 
   - if @commits.present?
     %ul.nav.nav-tabs.merge-request-tabs
@@ -56,7 +56,8 @@
     #notes.notes.tab-pane.voting_notes
       = render "projects/merge_requests/discussion"
     #commits.commits.tab-pane
-      = render "projects/merge_requests/show/commits"
+      - if current_page?(action: 'commits')
+        = render "projects/merge_requests/show/commits"
     #diffs.diffs.tab-pane
       - if current_page?(action: 'diffs')
         = render "projects/merge_requests/show/diffs"
@@ -64,15 +65,9 @@
   .mr-loading-status
     = spinner
 
-
 :javascript
   var merge_request;
 
   merge_request = new MergeRequest({
-    url_to_automerge_check: "#{automerge_check_namespace_project_merge_request_path(@project.namespace, @project, @merge_request)}",
-    check_enable: #{@merge_request.unchecked? ? "true" : "false"},
-    url_to_ci_check: "#{ci_status_namespace_project_merge_request_path(@project.namespace, @project, @merge_request)}",
-    ci_enable: #{@project.ci_service ? "true" : "false"},
-    current_status: "#{@merge_request.automerge_status}",
     action: "#{controller.action_name}"
   });

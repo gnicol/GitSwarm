@@ -1,9 +1,10 @@
 %header.navbar.navbar-fixed-top.navbar-gitlab{ class: nav_header_class }
   .container
     .header-logo
-      = link_to root_path, class: 'home has_bottom_tooltip', title: 'Dashboard' do
-        %div
-        %h3 GitSwarm
+      = link_to root_path, class: 'home', title: 'Dashboard', id: 'js-shortcuts-home', data: {toggle: 'tooltip', placement: 'bottom'} do
+        = brand_header_logo
+        .gitlab-text-container
+          %h3 GitSwarm
     .header-content
       - if !@recent_projects.nil?
         %div.dropdown.dashboard-menu

@@ -16,9 +16,9 @@ class Playpen < BaseTest
 
   def test_api
     keys = SSHKeyHelper.new
-    helper = GitSwarmAPIHelper.new @config['gitswarm_url'],
-                                   @config['gitswarm_username'],
-                                   @config['gitswarm_password']
+    helper = GitSwarmAPIHelper.new @@config['gitswarm_url'],
+                                   @@config['gitswarm_username'],
+                                   @@config['gitswarm_password']
 
     user = 'user-'+now
     LOG.debug 'user = '+user

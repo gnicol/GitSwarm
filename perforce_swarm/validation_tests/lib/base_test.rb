@@ -4,15 +4,15 @@ require 'P4'
 require_relative './log'
 
 class BaseTest < Minitest::Test
-  @config = nil
+  @@config = nil
 
   def setup
     # One time only
-    unless @config
+    unless @@config
       # Load Config
       LOG.info('Loading config...')
-      @config = YAML.load_file('config.yml')
-      LOG.log @config
+      @@config = YAML.load_file('config.yml')
+      LOG.log @@config
 
       LOG.debug('Log and Suite setup complete.')
 

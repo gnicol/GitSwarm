@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+gem 'p4ruby', '2014.2.0.pre2'
+gem 'selenium-webdriver'
+gem 'selenium-phantomjs'
+gem 'minitest'
+gem 'rest-client'
+gem 'sshkey'

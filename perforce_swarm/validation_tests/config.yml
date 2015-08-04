@@ -1,0 +1,7 @@
+# Configuration properties for validation tests
+
+gitswarm_url : http://mp-gs-cent-7/
+gitswarm_username : root
+gitswarm_password : 5iveL!fe
+
+p4_port : mp-p4d:1666

@@ -1,0 +1,38 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    childprocess (0.5.6)
+      ffi (~> 1.0, >= 1.0.11)
+    ffi (1.9.10)
+    mime-types (2.4.3)
+    minitest (5.7.0)
+    multi_json (1.11.2)
+    netrc (0.7.7)
+    p4ruby (2014.2.0.pre2)
+    rest-client (1.7.2)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
+    rubyzip (1.1.7)
+    selenium-phantomjs (0.0.3)
+      selenium-webdriver
+    selenium-webdriver (2.47.0)
+      childprocess (~> 0.5)
+      multi_json (~> 1.0)
+      rubyzip (~> 1.0)
+      websocket (~> 1.0)
+    sshkey (1.7.0)
+    websocket (1.2.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  minitest
+  p4ruby (= 2014.2.0.pre2)
+  rest-client
+  selenium-phantomjs
+  selenium-webdriver
+  sshkey
+
+BUNDLED WITH
+   1.10.4

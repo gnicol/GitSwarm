@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150702141633) do
+ActiveRecord::Schema.define(version: 20150717130904) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 20150702141633) do
     t.integer  "default_branch_protection",    default: 2
     t.boolean  "twitter_sharing_enabled",      default: true
     t.text     "restricted_visibility_levels"
-    t.boolean  "version_check_enabled",        default: true
+    t.boolean  "version_check_enabled"
     t.integer  "max_attachment_size",          default: 10,    null: false
     t.integer  "default_project_visibility"
     t.integer  "default_snippet_visibility"
@@ -376,6 +376,7 @@ ActiveRecord::Schema.define(version: 20150702141633) do
     t.string   "import_type"
     t.string   "import_source"
     t.string   "git_fusion_repo"
+    t.integer  "commit_count",           default: 0
   end
 
   add_index "projects", ["created_at", "id"], name: "index_projects_on_created_at_and_id", using: :btree
@@ -519,6 +520,7 @@ ActiveRecord::Schema.define(version: 20150702141633) do
     t.text     "otp_backup_codes"
     t.string   "public_email",                  default: "",    null: false
     t.integer  "dashboard",                     default: 0
+    t.integer  "project_view",                  default: 0
   end
 
   add_index "users", ["admin"], name: "index_users_on_admin", using: :btree

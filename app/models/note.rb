@@ -31,7 +31,7 @@ class Note < ActiveRecord::Base
   participant :author, :mentioned_users
 
   belongs_to :project
-  belongs_to :noteable, polymorphic: true, touch: true
+  belongs_to :noteable, polymorphic: true
   belongs_to :author, class_name: "User"
 
   delegate :name, to: :project, prefix: true
@@ -356,7 +356,7 @@ class Note < ActiveRecord::Base
   end
 
   def set_references
-    notice_added_references(project, author)
+    create_new_cross_references!(project, author)
   end
 
   def editable?

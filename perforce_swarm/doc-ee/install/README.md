@@ -47,28 +47,28 @@ sudo systemctl reload firewalld
     1.  **For Ubuntu 12.04:**
 
         ```
-curl -O http://preview.perforce.com/gitswarm/bin.ubuntu12x86_64/perforce-gitswarm-ee-2015.2.precise.amd64.deb
+curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.2.precise.amd64.deb
 sudo dpkg -i perforce-gitswarm-ee-2015.2.precise.amd64.deb
         ```
 
     1.  **For Ubuntu 14.04:**
 
         ```
-curl -O http://preview.perforce.com/gitswarm/bin.ubuntu14x86_64/perforce-gitswarm-ee-2015.2.trusty.amd64.deb
+curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.2.trusty.amd64.deb
 sudo dpkg -i perforce-gitswarm-ee-2015.2.trusty.amd64.deb
         ```
 
     1.  **For CentOS/RHEL 6:**
 
         ```
-curl -O http://preview.perforce.com/gitswarm/bin.centos6x86_64/perforce-gitswarm-ee-2015.2.el6.x86_64.rpm
+curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.2.el6.x86_64.rpm
 sudo rpm -i perforce-gitswarm-ee-2015.2.el6.x86_64.rpm
         ```
 
     1.  **For CentOS/RHEL 7:**
 
         ```
-curl -O http://preview.perforce.com/gitswarm/bin.centos7x86_64/perforce-gitswarm-ee-2015.2.el7.x86_64.rpm
+curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.2.el7.x86_64.rpm
 sudo rpm -i perforce-gitswarm-ee-2015.2.el7.x86_64.rpm
         ```
 

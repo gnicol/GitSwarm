@@ -44,25 +44,22 @@
   .project-home-panel {
     padding-left: 0 !important;
 
-    .project-home-row {
-      .project-home-desc {
-        margin-right: 0 !important;
-        float: none !important;
-      }
+    .project-avatar {
+      display: block;
+    }
 
-      .project-repo-buttons {
-        position: static;
-        margin-top: 15px;
-        width: 100%;
-        float: none;
-        text-align: left;
-      }
+    .project-repo-buttons,
+    .git-clone-holder {
+      display: none;
     }
   }
 
+  .project-stats {
+    display: none;
+  }
+
   .container .title {
-    margin-left: 15px !important;
-    max-width: 70% !important;
+    padding-left: 15px !important;
   }
 
   .issue-info, .merge-request-info {

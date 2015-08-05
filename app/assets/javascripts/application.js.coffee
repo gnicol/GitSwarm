@@ -16,7 +16,6 @@
 #= require jquery.scrollTo
 #= require jquery.blockUI
 #= require jquery.turbolinks
-#= require jquery.sticky-kit.min
 #= require turbolinks
 #= require autosave
 #= require bootstrap
@@ -141,8 +140,7 @@ $ ->
   $('.trigger-submit').on 'change', ->
     $(@).parents('form').submit()
 
-  $("abbr.timeago").timeago()
-  $('.js-timeago').timeago()
+  $('abbr.timeago, .js-timeago').timeago()
 
   # Flash
   if (flash = $(".flash-container")).length > 0

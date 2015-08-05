@@ -8,12 +8,12 @@ class Spinach::Features::EventFilters < Spinach::FeatureSteps
     click_link merge_request.title
 
     # Fill in the comment form
-    within('.js-main-target-form') do
+    page.within('.js-main-target-form') do
       fill_in 'note[note]', with: 'Excellent merge'
     end
 
     # Submit the comment
-    within('.js-main-target-form') do
+    page.within('.js-main-target-form') do
       click_button 'Add Comment'
     end
   end

@@ -5,6 +5,10 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
   include SharedUser
   include Select2Helper
 
+  step 'I should see back to dashboard button' do
+    expect(page).to have_content 'Back to Dashboard'
+  end
+
   step 'gitlab user "Mike"' do
     create(:user, name: "Mike")
   end
@@ -128,14 +132,14 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
   end
 
   step 'I change group "Owned" avatar' do
-    attach_file(:group_avatar, File.join(Rails.root, 'public', 'gitlab_logo.png'))
+    attach_file(:group_avatar, File.join(Rails.root, 'spec', 'fixtures', 'banana_sample.gif'))
     click_button "Save group"
     Group.find_by(name: "Owned").reload
   end
 
   step 'I should see new group "Owned" avatar' do
     expect(Group.find_by(name: "Owned").avatar).to be_instance_of AvatarUploader
-    expect(Group.find_by(name: "Owned").avatar.url).to eq "/uploads/group/avatar/#{ Group.find_by(name:"Owned").id }/gitlab_logo.png"
+    expect(Group.find_by(name: "Owned").avatar.url).to eq "/uploads/group/avatar/#{ Group.find_by(name:"Owned").id }/banana_sample.gif"
   end
 
   step 'I should see the "Remove avatar" button' do
@@ -143,7 +147,7 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
   end
 
   step 'I have group "Owned" avatar' do
-    attach_file(:group_avatar, File.join(Rails.root, 'public', 'gitlab_logo.png'))
+    attach_file(:group_avatar, File.join(Rails.root, 'spec', 'fixtures', 'banana_sample.gif'))
     click_button "Save group"
     Group.find_by(name: "Owned").reload
   end
@@ -154,7 +158,7 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
   end
 
   step 'I should not see group "Owned" avatar' do
-    expect(Group.find_by(name: "Owned").avatar?).to be_false
+    expect(Group.find_by(name: "Owned").avatar?).to eq false
   end
 
   step 'I should not see the "Remove avatar" button' do

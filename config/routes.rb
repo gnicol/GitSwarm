@@ -149,10 +149,17 @@ Gitlab::Application.routes.draw do
   namespace :admin do
     resources :users, constraints: { id: /[a-zA-Z.\/0-9_\-]+/ } do
       resources :keys, only: [:show, :destroy]
+      resources :identities, only: [:index, :edit, :update, :destroy]
+
       member do
+        get :projects
+        get :keys
+        get :groups
         put :team_update
         put :block
         put :unblock
+        put :unlock
+        patch :disable_two_factor
         delete 'remove/:email_id', action: 'remove_email', as: 'remove_email'
       end
     end
@@ -202,7 +209,7 @@ Gitlab::Application.routes.draw do
   #
   resource :profile, only: [:show, :update] do
     member do
-      get :history
+      get :audit_log
       get :applications
 
       put :reset_private_token
@@ -308,6 +315,7 @@ Gitlab::Application.routes.draw do
         post :toggle_star
         post :markdown_preview
         get :autocomplete_sources
+        get :activity
       end
 
       scope module: :projects do

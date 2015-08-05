@@ -24,6 +24,18 @@ module PerforceSwarm
     def render_404
       render file: Rails.root.join('perforce_swarm', 'public', '404'), layout: false, status: '404'
     end
+
+    def load_user_projects
+      # Pass a list of project id's that user is allowed to see
+      # to use in frontend for localStorage verification
+      projects = []
+      if current_user
+        current_user.projects_sorted_by_activity.each do |project|
+          projects.push(project.id)
+        end
+      end
+      render json: projects
+    end
   end
 end
 

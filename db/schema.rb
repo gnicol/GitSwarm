@@ -33,11 +33,25 @@ ActiveRecord::Schema.define(version: 20150702141633) do
     t.integer  "default_project_visibility"
     t.integer  "default_snippet_visibility"
     t.text     "restricted_signup_domains"
+    t.string   "last_version_ignored"
     t.boolean  "user_oauth_applications",      default: true
     t.string   "after_sign_out_path"
     t.integer  "session_expire_delay",         default: 10080, null: false
-    t.string   "last_version_ignored"
   end
+
+  create_table "audit_events", force: true do |t|
+    t.integer  "author_id",   null: false
+    t.string   "type",        null: false
+    t.integer  "entity_id",   null: false
+    t.string   "entity_type", null: false
+    t.text     "details"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "audit_events", ["author_id"], name: "index_audit_events_on_author_id", using: :btree
+  add_index "audit_events", ["entity_id", "entity_type"], name: "index_audit_events_on_entity_id_and_entity_type", using: :btree
+  add_index "audit_events", ["type"], name: "index_audit_events_on_type", using: :btree
 
   create_table "broadcast_messages", force: true do |t|
     t.text     "message",    null: false
@@ -501,7 +515,7 @@ ActiveRecord::Schema.define(version: 20150702141633) do
     t.string   "encrypted_otp_secret"
     t.string   "encrypted_otp_secret_iv"
     t.string   "encrypted_otp_secret_salt"
-    t.boolean  "otp_required_for_login"
+    t.boolean  "otp_required_for_login",        default: false, null: false
     t.text     "otp_backup_codes"
     t.string   "public_email",                  default: "",    null: false
     t.integer  "dashboard",                     default: 0

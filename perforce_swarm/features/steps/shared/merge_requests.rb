@@ -14,7 +14,7 @@ module SharedMergeRequests
   end
 
   step 'I should see merge request "PerforceProject Merge Request"' do
-    within '.merge-request' do
+    page.within '.merge-request' do
       page.should have_content 'PerforceProject Merge Request'
     end
   end

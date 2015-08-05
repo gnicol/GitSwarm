@@ -3,6 +3,8 @@
  *
  */
 header {
+  transition-duration: .3s;
+
   &.navbar-empty {
     background: #FFF;
     border-bottom: 1px solid #EEE;
@@ -10,6 +12,10 @@ header {
     .center-logo {
       margin: 8px 0;
       text-align: center;
+
+      img {
+        height: 32px;
+      }
     }
   }
 
@@ -63,27 +69,34 @@ header {
     float: left;
     height: $header-height;
     width: $sidebar_width;
+    overflow: hidden;
+    transition-duration: .3s;
 
     a {
       float: left;
       height: $header-height;
       width: 100%;
       padding: ($header-height - 36 ) / 2 8px;
-
-      h3 {
-        width: 158px;
-        float: left;
-        margin: 0;
-        margin-left: 14px;
-        font-size: 18px;
-        line-height: $header-height - 14;
-        font-weight: normal;
-      }
+      overflow: hidden;
 
       img {
         width: 36px;
         height: 36px;
         float: left;
+      }
+
+      .gitlab-text-container {
+        width: 230px;
+
+        h3 {
+          width: 158px;
+          float: left;
+          margin: 0;
+          margin-left: 14px;
+          font-size: 18px;
+          line-height: $header-height - 14;
+          font-weight: normal;
+        }
       }
     }
 
@@ -98,16 +111,16 @@ header {
     height: $header-height;
 
     .title {
-      position: relative;
-      float: left;
       margin: 0;
-      margin-left: 35px;
+      padding: 0 15px 0 35px;
+      overflow: hidden;
       font-size: 18px;
       line-height: $header-height;
       font-weight: bold;
       color: #444;
-
-      @include str-truncated(37%);
+      text-overflow: ellipsis;
+      vertical-align: top;
+      white-space: nowrap;
 
       a {
         color: #444;
@@ -115,6 +128,10 @@ header {
           text-decoration: underline;
         }
       }
+    }
+
+    .navbar-collapse {
+      float: right;
     }
   }
 
@@ -153,10 +170,6 @@ header {
 @mixin collapsed-header {
   .header-logo {
     width: $sidebar_collapsed_width;
-
-    h3 {
-      display: none;
-    }
   }
 
   .header-content {
@@ -167,10 +180,6 @@ header {
 }
 
 @media (max-width: $screen-md-max) {
-  header .container .title {
-    max-width: 43%;
-  }
-
   .header-collapsed, .header-expanded {
     @include collapsed-header;
   }
@@ -190,7 +199,6 @@ header {
     font-size: 18px;
 
     .title {
-      max-width: 70%;
     }
 
     .navbar-nav {

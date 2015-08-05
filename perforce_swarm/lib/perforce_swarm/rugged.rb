@@ -1,12 +1,10 @@
 require 'rugged'
 
 module PerforceSwarm
-  module RuggedRepository
-    # Filter mirror remotes out of the branch listing
-    def branches
-      super.select do |branch|
-        branch.canonical_name !~ %r{^refs/remotes/mirror/}
-      end
+  module RuggedBranchCollection
+    # Filter remote branches out of the branch listing by default
+    def each(filter = :local)
+      super
     end
   end
 
@@ -57,8 +55,8 @@ module PerforceSwarm
   end
 end
 
-class Rugged::Repository
-  prepend PerforceSwarm::RuggedRepository
+class Rugged::BranchCollection
+  prepend PerforceSwarm::RuggedBranchCollection
 end
 
 class Rugged::Commit

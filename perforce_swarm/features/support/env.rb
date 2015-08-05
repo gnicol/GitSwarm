@@ -46,6 +46,7 @@ end
 
 Spinach.hooks.before_run do
   include RSpec::Mocks::ExampleMethods
+  RSpec::Mocks.setup
   TestEnv.init(mailer: false)
 
   # Include the test license helper if EE edition

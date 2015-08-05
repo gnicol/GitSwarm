@@ -108,8 +108,8 @@ describe ProfilesController, "routing" do
     expect(get("/profile/account")).to route_to('profiles/accounts#show')
   end
 
-  it "to #history" do
-    expect(get("/profile/history")).to route_to('profiles#history')
+  it "to #audit_log" do
+    expect(get("/profile/audit_log")).to route_to('profiles#audit_log')
   end
 
   it "to #reset_private_token" do
@@ -248,4 +248,3 @@ describe "Groups", "routing" do
     expect(get('/1')).to route_to('namespaces#show', id: '1')
   end
 end
-

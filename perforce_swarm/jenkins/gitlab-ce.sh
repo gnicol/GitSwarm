@@ -80,7 +80,8 @@ bomb_if_bad git merge origin/community-master -m "Merging community into master"
 
 # Checkout the Gemfile.lock and db/schema.rb from community to serve as the base for master
 echo "::: Checking out Gemfile.lock and db/schema.rb from community master :::"
-git checkout origin/community-master -- Gemfile.lock db/schema.rb
+# git checkout origin/community-master -- Gemfile.lock db/schema.rb
+git checkout origin/community-master -- Gemfile.lock
 
 # Get the gemfile diffs and store them
 echo "::: Diff for community Gemfile, vs master :::"
@@ -91,34 +92,36 @@ echo "::: Running bundle install on integration-ce :::"
 bundle install
 
 # Load the db scheme
-echo "::: Load the database schema :::"
-export RAILS_ENV=test
-cp config/database.yml.postgresql  config/database.yml
-cp config/gitlab.yml.example config/gitlab.yml
-sed "/port\: 80/a \    user\: perforce" -i config/gitlab.yml
-sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
-sed "/test\: \&test/a \  host: localhost" -i config/database.yml
-sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
-sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
-bundle exec rake db:setup
+# echo "::: Load the database schema :::"
+# export RAILS_ENV=test
+# cp config/database.yml.postgresql  config/database.yml
+# cp config/gitlab.yml.example config/gitlab.yml
+# sed "/port\: 80/a \    user\: perforce" -i config/gitlab.yml
+# sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
+# sed "/test\: \&test/a \  host: localhost" -i config/database.yml
+# sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
+# sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
+# bundle exec rake db:setup
 
 # Run db migrate
-echo "::: Running db:migrate on ${DB_NAME} :::"
-bomb_if_bad bundle exec rake db:migrate
+# echo "::: Running db:migrate on ${DB_NAME} :::"
+# bomb_if_bad bundle exec rake db:migrate
 
-# Clear datebase
-echo "::: Clearing Database ${DB_NAME} :::"
-bundle exec rake db:drop
-rm config/database.yml
-rm config/gitlab.yml
+# Clear database
+# echo "::: Clearing Database ${DB_NAME} :::"
+# bundle exec rake db:drop
+# rm config/database.yml
+# rm config/gitlab.yml
 
 # Run a diff of resulting Gemfile.lock with master
 echo "::: Diff for master Gemfile.lock and db/schema.rb :::"
-git diff --staged Gemfile.lock db/schema.rb
+# git diff --staged Gemfile.lock db/schema.rb
+git diff --staged Gemfile.lock
 
 # Add the modified Gemfile.lock and db/schema.rb.  This should happen cleanly.
 echo "::: Adding modified Gemfile.lock and db/schema, if present :::"
-git add Gemfile.lock db/schema.rb
+# git add Gemfile.lock db/schema.rb
+git add Gemfile.lock
 git commit -m "Gemfile.lock and db/schema.rb changes"
 
 # Push the integration-ce branch to origin for testing
@@ -133,7 +136,8 @@ bomb_if_bad git merge origin/${STABLE_BRANCH} -m "Merging ${STABLE_BRANCH} into 
 
 # Checkout the Gemfile.lock and db/schema.rb from community to serve as a base
 echo "::: Checking out Gemfile.lock from ${STABLE_BRANCH} :::"
-git checkout origin/${STABLE_BRANCH} -- Gemfile.lock db/schema.rb
+# git checkout origin/${STABLE_BRANCH} -- Gemfile.lock db/schema.rb
+git checkout origin/${STABLE_BRANCH} -- Gemfile.lock
 
 # Get the gemfile diffs and store them
 echo "::: Diff for ${STABLE_BRANCH} Gemfile, vs prep :::"
@@ -144,33 +148,35 @@ echo "::: Running bundle install on integration-prep-ce :::"
 bundle install
 
 # Load the db scheme
-echo "::: Load the database schema :::"
-export RAILS_ENV=test
-cp config/database.yml.postgresql  config/database.yml
-cp config/gitlab.yml.example config/gitlab.yml
-sed "/port\: 80/a \    user\: perforce" -i config/gitlab.yml
-sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
-sed "/test\: \&test/a \  host: localhost" -i config/database.yml
-sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
-sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
-bundle exec rake db:setup
+# echo "::: Load the database schema :::"
+# export RAILS_ENV=test
+# cp config/database.yml.postgresql  config/database.yml
+# cp config/gitlab.yml.example config/gitlab.yml
+# sed "/port\: 80/a \    user\: perforce" -i config/gitlab.yml
+# sed "s/username\:.*$/username\: ${DB_USER}/" -i config/database.yml
+# sed "/test\: \&test/a \  host: localhost" -i config/database.yml
+# sed "s/password\:.*$/password\: ${DB_PASS}/" -i config/database.yml
+# sed "s/gitlabhq_test/${DB_NAME}/" -i config/database.yml
+# bundle exec rake db:setup
 
 # Run db migrate
-echo "::: Running db:migrate on ${DB_NAME} :::"
-bomb_if_bad bundle exec rake db:migrate
+# echo "::: Running db:migrate on ${DB_NAME} :::"
+# bomb_if_bad bundle exec rake db:migrate
 
 # Clear database
-echo "::: Clearing Database ${DB_NAME} :::"
-bundle exec rake db:drop
-rm config/database.yml
-rm config/gitlab.yml
+# echo "::: Clearing Database ${DB_NAME} :::"
+# bundle exec rake db:drop
+# rm config/database.yml
+# rm config/gitlab.yml
 
 # Run a diff of the resulting Gemfile.lock with prep
 echo "::: Diff for prep Gemfile.lock :::"
-git diff --staged Gemfile.lock db/schema.rb
+# git diff --staged Gemfile.lock db/schema.rb
+git diff --staged Gemfile.lock
 
 # Add the modified Gemfile.lock and db/schema.rb.  This should happen cleanly
-git add Gemfile.lock db/schema.rb
+# git add Gemfile.lock db/schema.rb
+git add Gemfile.lock
 git commit -m "Adding modified Gemfile.lock and db/schema.rb"
 
 # Push integration-prep-ce to origin for testing

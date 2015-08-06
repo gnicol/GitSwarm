@@ -8,7 +8,7 @@ module PerforceSwarm
         params[:git_fusion_repo] =
             'mirror://' + (params[:git_fusion_entry] || 'default') + '/' + params[:git_fusion_repo_name]
       end
-      super.merge(params.permit(:git_fusion_repo))
+      super.merge(params.permit(:git_fusion_repo, :git_fusion_auto_create))
     end
   end
 end

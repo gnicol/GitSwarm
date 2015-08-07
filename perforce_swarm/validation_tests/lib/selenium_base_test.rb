@@ -1,5 +1,6 @@
 require 'selenium-webdriver'
 require_relative 'base_test'
+require_relative 'page'
 
 class SeleniumBaseTest < BaseTest
   def setup

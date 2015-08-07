@@ -13,6 +13,7 @@ GEM
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
     rubyzip (1.1.7)
+    rugged (0.22.2)
     selenium-phantomjs (0.0.3)
       selenium-webdriver
     selenium-webdriver (2.47.0)
@@ -30,6 +31,7 @@ DEPENDENCIES
   minitest
   p4ruby (= 2014.2.0.pre2)
   rest-client
+  rugged
   selenium-phantomjs
   selenium-webdriver
   sshkey

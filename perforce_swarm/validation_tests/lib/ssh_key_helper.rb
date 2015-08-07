@@ -14,6 +14,9 @@ class SSHKeyHelper
     @public_key = File.open(@dir+'/public.key', 'w+')
     @public_key.write @keys.ssh_public_key
     @public_key.close
+
+    FileUtils.chmod 0600, @private_key
+    FileUtils.chmod 0600, @public_key
   end
 
   def private_key_path

@@ -4,4 +4,9 @@ gitswarm_url : http://mp-gs-cent-7/
 gitswarm_username : root
 gitswarm_password : 5iveL!fe
 
-p4_port : mp-p4d:1666
+p4_port : ssl:mp-p4d:1667
+p4_user : perforce
+p4_password : Passw0rd
+p4_gitswarm_depot_root : //depot/gitswarm/
+
+git_binary : git

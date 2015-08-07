@@ -11,10 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150702141633) do
+ActiveRecord::Schema.define(version: 20150806104937) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "abuse_reports", force: true do |t|
+    t.integer  "reporter_id"
+    t.integer  "user_id"
+    t.text     "message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "application_settings", force: true do |t|
     t.integer  "default_projects_limit"
@@ -33,10 +41,10 @@ ActiveRecord::Schema.define(version: 20150702141633) do
     t.integer  "default_project_visibility"
     t.integer  "default_snippet_visibility"
     t.text     "restricted_signup_domains"
-    t.string   "last_version_ignored"
     t.boolean  "user_oauth_applications",      default: true
     t.string   "after_sign_out_path"
     t.integer  "session_expire_delay",         default: 10080, null: false
+    t.string   "last_version_ignored"
   end
 
   create_table "audit_events", force: true do |t|
@@ -375,6 +383,7 @@ ActiveRecord::Schema.define(version: 20150702141633) do
     t.integer  "star_count",             default: 0,        null: false
     t.string   "import_type"
     t.string   "import_source"
+    t.integer  "commit_count",           default: 0
     t.string   "git_fusion_repo"
   end
 
@@ -519,6 +528,7 @@ ActiveRecord::Schema.define(version: 20150702141633) do
     t.text     "otp_backup_codes"
     t.string   "public_email",                  default: "",    null: false
     t.integer  "dashboard",                     default: 0
+    t.integer  "project_view",                  default: 0
   end
 
   add_index "users", ["admin"], name: "index_users_on_admin", using: :btree

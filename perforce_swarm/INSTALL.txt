@@ -126,7 +126,7 @@ Basic Configuration
 4. Browse to the hostname and login.
 
    Username: root
-   Password: password
+   Password: 5iveL!fe
 
 
 You are now all set to start using GitSwarm. Enjoy!

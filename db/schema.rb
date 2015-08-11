@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 20150806104937) do
     t.boolean  "user_oauth_applications",      default: true
     t.string   "after_sign_out_path"
     t.integer  "session_expire_delay",         default: 10080, null: false
+    t.string   "last_version_ignored"
   end
 
   create_table "audit_events", force: true do |t|
@@ -386,6 +387,7 @@ ActiveRecord::Schema.define(version: 20150806104937) do
     t.string   "import_type"
     t.string   "import_source"
     t.integer  "commit_count",           default: 0
+    t.string   "git_fusion_repo"
   end
 
   add_index "projects", ["created_at", "id"], name: "index_projects_on_created_at_and_id", using: :btree

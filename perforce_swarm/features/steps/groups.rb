@@ -4,7 +4,7 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
   # EE only step
   step 'I go to "Audit Events"' do
     page.within '.sidebar-wrapper' do
-      click_link 'Audit Events'
+      find(:link, 'Audit Events').trigger('click')
     end
   end
 end

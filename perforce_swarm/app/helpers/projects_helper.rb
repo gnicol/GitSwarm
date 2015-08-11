@@ -35,6 +35,9 @@ module ProjectsHelper
       options.push([name, name])
     end
     repos.empty? ? [] : options_for_select(options)
+  rescue
+    # @todo: look for actual errors and provide a message
+    return []
   end
 
   # note we can't call this gitlab_config as there is already a helper for gitlab-ce's config with that name

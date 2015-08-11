@@ -10,9 +10,13 @@ module PerforceSwarm
       # overwrite the update function to remove the redirect on success - instead just render page
       # this enables an ajax call to settings update, and returns a flash notice
       if @application_setting.update_attributes(application_setting_params)
-        flash.now[:notice] = 'Application settings saved successfully'
+        message = 'Application settings saved successfully'
+        flash.now[:notice] = message
+        respond_to do |format|
+          format.js { render :json => { :message => message }, :content_type => 'text/json'}
+          format.html { render :show }
+        end
       end
-      render :show
     end
   end
 end

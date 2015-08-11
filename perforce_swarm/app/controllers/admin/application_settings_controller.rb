@@ -11,9 +11,13 @@ module PerforceSwarm
       # this enables an ajax call to settings update, and returns a flash notice
       if @application_setting.update_attributes(application_setting_params)
         message = 'Application settings saved successfully'
-        flash.now[:notice] = message
         respond_to do |format|
           format.js { render json: { message: message }, content_type: 'text/json' }
+          format.html { redirect_to admin_application_settings_path, notice: message }
+        end
+      else
+        respond_to do |format|
+          format.js { render json: { errors: @application_setting.errors }, status: 422, content_type: 'text/json' }
           format.html { render :show }
         end
       end

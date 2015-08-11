@@ -13,7 +13,7 @@ module PerforceSwarm
         message = 'Application settings saved successfully'
         flash.now[:notice] = message
         respond_to do |format|
-          format.js { render :json => { :message => message }, :content_type => 'text/json'}
+          format.js { render json: { message: message }, content_type: 'text/json' }
           format.html { render :show }
         end
       end

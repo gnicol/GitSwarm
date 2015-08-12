@@ -55,6 +55,14 @@ Feature: Git Fusion Import
     When I visit new project page
     Then I should see a populated Git Fusion repo dropdown
 
+  @automated
+  Scenario: If a Git Fusion commands raises an exception, the new project page still loads.
+    Given I sign in as a user
+    And Git Fusion list raises an exception
+    When I visit new project page
+    Then I should see a message saying Git Fusion has no repos available for import
+    And I should not see a Git Fusion repo dropdown
+
   #############################
   # Import valid GitFusion repo
   #############################

@@ -37,13 +37,19 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
   step 'Git Fusion returns an empty list of managed repos' do
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion_entry: default_entry)
-    PerforceSwarm::GitFusionRepo.stub(list: [])
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return([])
   end
 
   step 'Git Fusion returns a list containing repos' do
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion_entry: default_entry)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
+  end
+
+  step 'Git Fusion list raises an exception' do
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion_entry: default_entry)
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list) { fail 'Some error.' }
   end
 
   step 'I should see a Git Fusion is disabled message' do

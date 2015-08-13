@@ -16,14 +16,14 @@ module ProjectsHelper
   end
 
   def git_fusion_import_enabled?
-    gitlab_shell_config.git_fusion_enabled? && git_fusion_url
+    gitlab_shell_config.git_fusion.enabled? && git_fusion_url
   rescue
     # encountering errors around mis-parsed config, empty URLs, etc. all gets treated as if the feature were disabled
     return false
   end
 
   def git_fusion_url
-    PerforceSwarm::GitFusion::URL.new(gitlab_shell_config.git_fusion_entry['url']).to_s
+    gitlab_shell_config.git_fusion.entry['url']
   rescue
     false
   end

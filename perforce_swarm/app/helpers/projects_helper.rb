@@ -32,7 +32,7 @@ module ProjectsHelper
     return [] unless git_fusion_import_enabled?
 
     options = [['<Select Server>', '']]
-    servers = PerforceSwarm::GitlabConfig.new.git_fusion_entries
+    servers = gitlab_shell_config.git_fusion.entries
     servers.each do |id, config|
       options.push([config[:url], id])
     end

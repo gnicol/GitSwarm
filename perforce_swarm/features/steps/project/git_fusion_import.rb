@@ -2,10 +2,14 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
   include SharedPaths
   include SharedAuthentication
 
+  def configify(config_hash)
+    PerforceSwarm::GitFusion::Config.new(config_hash)
+  end
+
   def default_config
     entry = default_entry
     entry['id'] = nil
-    { 'enabled' => true, 'default' => entry }
+    configify('enabled' => true, 'default' => entry)
   end
 
   def default_entry
@@ -17,38 +21,35 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
   end
 
   step 'Git Fusion support is disabled' do
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: { 'enabled' => false })
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify('enabled' => false))
   end
 
   step 'The Git Fusion config block is missing' do
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: nil)
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify(nil))
   end
 
   step 'The Git Fusion config block has a malformed URL' do
     PerforceSwarm::GitlabConfig.any_instance.stub(
-        git_fusion: { 'enabled' => true, 'default' => { 'url' => 'invalid' } }
+        git_fusion: configify('enabled' => true, 'default' => { 'url' => 'invalid' })
       )
   end
 
   step 'Git Fusion is enabled but is otherwise not configured' do
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: { 'enabled' => true, 'default' => {} })
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify('enabled' => true, 'default' => {}))
   end
 
   step 'Git Fusion returns an empty list of managed repos' do
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion_entry: default_entry)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return([])
   end
 
   step 'Git Fusion returns a list containing repos' do
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion_entry: default_entry)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
   end
 
   step 'Git Fusion list raises an exception' do
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion_entry: default_entry)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list) { fail 'Some error.' }
   end
 

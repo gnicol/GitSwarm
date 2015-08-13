@@ -4,27 +4,38 @@
       .description
         Two-way mirroring! Project changes made here will be reflected in the Helix Versioning Engine, and changes
         made via Helix clients will be reflected in GitSwarm.
+
         .split
           .left
-            .mirror-existing.form-group
-              %h4 Mirror an existing Git Fusion repository
-              Connected to Git Fusion Server:
-              %span.greyed
-                = git_fusion_url
-              - repos = git_fusion_repos
-              - if repos.empty?
-                .repo-warning
-                  Although Git Fusion is configured, there are no repos available for import.
-              - else
-                .repo-select
-                  = hidden_field_tag(:git_fusion_entry, 'default')
-                  Repo:
-                  = select_tag(:git_fusion_repo_name, repos)
-            .mirror-new.form-group
-              %h4 Create a convention-based repo in Git Fusion
-              Create a Git Fusion repo that will be mirrored in Perforce under
-              %span.auto-create-path //gitswarm/projects/namespace/project-path/...
-              = check_box_tag(:git_fusion_auto_create)
+            .control-group.form-inline
+              Git Fusion Server:
+              - servers = git_fusion_servers
+              = select_tag(:git_fusion_entry, servers, class: 'form-control')
+            .js-toggle-content.hide
+              .git-fusion-import-data
+                .radio
+                  = f.label :perforce_swarm do
+                    = f.radio_button :git_fusion_auto_create, true, checked: true
+                    .option-title
+                      Create a new convention-based repo in Git Fusion
+                    .option-descr
+                      Create a Git Fusion repo that will be mirrored in Perforce under
+                      %span.auto-create-path //gitswarm/projects/namespace/project-path/...
+                .radio
+                  = f.label :perforce_swarm do
+                    = f.radio_button :git_fusion_auto_create, false
+                    .option-title
+                      Mirror an existing Git Fusion repository
+                    .option-descr
+                      - repos = git_fusion_repos
+                      - if repos.empty?
+                        .repo-warning
+                          Although Git Fusion is configured, there are no repos available for import.
+                      - else
+                        .repo-select.form-inline
+                          Repo:
+                          = select_tag(:git_fusion_repo_name, repos, class: 'form-control')
+                %button.btn.btn-sm.btn-cancel.mirror-cancel{:type => "button"} Cancel Mirroring
 
           .right
             To point GitSwarm at a different Git Fusion instance, have an admin

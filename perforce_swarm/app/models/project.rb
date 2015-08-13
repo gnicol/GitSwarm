@@ -11,7 +11,7 @@ module PerforceSwarm
       git_fusion_repo.present?
     end
 
-    def git_fusion_auto_create
+    def auto_create_git_fusion
       # check if auto creation was enabled, and bail if not
       return self unless git_fusion_auto_create.present?
 
@@ -26,8 +26,10 @@ class Project < ActiveRecord::Base
   validates :git_fusion_repo, length: { maximum: 255 }, allow_blank: true
   prepend PerforceSwarm::ProjectExtension
 
+  attr_accessor :git_fusion_auto_create
+
   # run our code after the GL validations are done
-  before_save :git_fusion_auto_create
+  before_save :auto_create_git_fusion
 
   # The rspec tests use 'allow_any_instance_of' on Project to stub this method out during testing.
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.

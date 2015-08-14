@@ -28,6 +28,7 @@ v 7.14.0 (unreleased)
   - Fix file upload dialog for comment editing (Daniel Gerhardt)
   - Set OmniAuth full_host parameter to ensure redirect URIs are correct (Stan Hu)
   - Return comments in created order in merge request API (Stan Hu)
+  - Disable internal issue tracker controller if external tracker is used (Stan Hu)
   - Expire Rails cache entries after two weeks to prevent endless Redis growth
   - Add support for destroying project milestones (Stan Hu)
   - Allow custom backup archive permissions
@@ -54,6 +55,8 @@ v 7.14.0 (unreleased)
   - Add dropzone upload progress
   - Add a label for merged branches on branches page (Florent Baldino)
   - Detect .mkd and .mkdn files as markdown (Ben Boeckel)
+  - Fix: User search feature in admin area does not respect filters
+  - Set max-width for README, issue and merge request description for easier read on big screens
 
 v 7.13.5
   - Satellites reverted

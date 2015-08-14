@@ -1,0 +1,23 @@
+.radio
+  = label_tag :perforce_swarm do
+    = radio_button_tag :git_fusion_auto_create, true, checked: true
+    .option-title
+      Create a new convention-based repo in Git Fusion
+    .option-descr
+      Create a Git Fusion repo that will be mirrored in Perforce under
+      %span.auto-create-path //gitswarm/projects/namespace/project-path/...
+.radio
+  = label_tag :perforce_swarm do
+    = radio_button_tag :git_fusion_auto_create, false
+    .option-title
+      Mirror an existing Git Fusion repository
+    .option-descr
+      - repos = git_fusion_repos(@fusion_server)
+      - if repos.empty?
+        .repo-warning
+          Although Git Fusion is configured, there are no repos available for import.
+      - else
+        .repo-select.form-inline
+          Repo:
+          = select_tag(:git_fusion_repo_name, repos, class: 'select2 span2')
+%button.btn.btn-sm.btn-cancel.mirror-cancel{:type => "button"} Cancel Mirroring

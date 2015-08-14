@@ -25,7 +25,7 @@ module PerforceSwarm
     def perform
       # bail completely if the feature isn't enabled
       config = PerforceSwarm::GitlabConfig.new
-      return unless config.git_fusion && config.git_fusion_enabled?
+      return unless config.git_fusion.enabled?
 
       repo_stats = RepoStats.new
 

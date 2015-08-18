@@ -14,16 +14,16 @@
             .js-toggle-content.hide
               .git-fusion-import-data
                 .radio
-                  = f.label :perforce_swarm do
-                    = f.radio_button :git_fusion_auto_create, true, checked: true
+                  = label_tag do
+                    = radio_button_tag(:git_fusion_auto_create, true, checked: true)
                     .option-title
                       Create a new convention-based repo in Git Fusion
                     .option-descr
                       Create a Git Fusion repo that will be mirrored in Perforce under
                       %span.auto-create-path //gitswarm/projects/namespace/project-path/...
                 .radio
-                  = f.label :perforce_swarm do
-                    = f.radio_button :git_fusion_auto_create, false
+                  = label_tag do
+                    = radio_button_tag(:git_fusion_auto_create, false)
                     .option-title
                       Mirror an existing Git Fusion repository
                     .option-descr
@@ -34,7 +34,7 @@
                       - else
                         .repo-select.form-inline
                           Repo:
-                          = select_tag(:git_fusion_repo_name, repos, class: 'select2 span2')
+                          = select_tag(:git_fusion_repo_name, '', class: 'select2 span2', disabled: 'true')
                 %button.btn.btn-sm.btn-cancel.mirror-cancel{:type => "button"} Cancel Mirroring
 
           .right

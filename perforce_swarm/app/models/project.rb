@@ -8,14 +8,25 @@ module PerforceSwarm
     end
 
     def git_fusion_import?
-      git_fusion_repo.present?
+      git_fusion_repo.present? && !git_fusion_auto_create
+    end
+
+    def create_repository
+      if !git_fusion_entry.blank? && git_fusion_auto_create
+        # creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace: self.namespace.name, project_path: path)
+        # puts creator.generate_depot_path
+        git_fusion_repo = "mirror://#{git_fusion_entry}/#{path
+      end
+
+      super
     end
 
     def auto_create_git_fusion
-      # check if auto creation was enabled, and bail if not
-      return self unless git_fusion_auto_create.present?
+      git_fusion_auto_create = false
+      return self if git_fusion_entry.blank?
 
       # auto create enabled - try creating the required convention-based repo
+      PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace: 'root', project_path: 'my-project')
       puts 'Auto create enabled.'
       self
     end
@@ -24,12 +35,15 @@ end
 
 class Project < ActiveRecord::Base
   validates :git_fusion_repo, length: { maximum: 255 }, allow_blank: true
+  validates :git_fusion_repo, presence: true, unless: "git_fusion_entry.blank? || git_fusion_auto_create"
+
   prepend PerforceSwarm::ProjectExtension
 
   attr_accessor :git_fusion_auto_create
+  attr_accessor :git_fusion_entry
 
   # run our code after the GL validations are done
-  before_save :auto_create_git_fusion
+  # before_save :auto_create_git_fusion, if: :git_fusion_auto_create
 
   # The rspec tests use 'allow_any_instance_of' on Project to stub this method out during testing.
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.

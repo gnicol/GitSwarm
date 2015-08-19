@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   namespace :import do
     resource :git_fusion, only: [], controller: :git_fusion do
-      get :repos
+      get :configure
     end
   end
 end

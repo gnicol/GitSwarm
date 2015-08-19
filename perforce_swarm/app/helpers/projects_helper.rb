@@ -40,7 +40,7 @@ module ProjectsHelper
   end
 
   def git_fusion_repos(id = nil)
-    options = [['Select Repo', '']]
+    options = [['<Select repo to enable>', '']]
     repos   = PerforceSwarm::GitFusionRepo.list(id)
     repos.each do |name, _description|
       options.push([name, name])

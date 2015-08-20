@@ -28,9 +28,20 @@ module ProjectsHelper
     false
   end
 
-  def git_fusion_repos
+  def git_fusion_servers
+    return [] unless git_fusion_import_enabled?
+
+    options = []
+    servers = gitlab_shell_config.git_fusion.entries
+    servers.each do |id, config|
+      options.push([config[:url], id])
+    end
+    servers.empty? ? [] : options_for_select(options)
+  end
+
+  def git_fusion_repos(id = nil)
     options = [['<Select repo to enable>', '']]
-    repos   = PerforceSwarm::GitFusionRepo.list
+    repos   = PerforceSwarm::GitFusionRepo.list(id)
     repos.each do |name, _description|
       options.push([name, name])
     end

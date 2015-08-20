@@ -8,5 +8,3 @@ module PerforceSwarm
     namespace Rails.env
   end
 end
-
-PerforceSwarm::Config['p4'] ||= Settingslogic.new({})

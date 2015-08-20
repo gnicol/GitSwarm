@@ -1,4 +1,4 @@
-class @GitFusionImportConfig
+class @GitFusionProject
   server_select_selector: 'select#git_fusion_entry'
   import_url_selector:    'input#project_import_url'
   repo_name_selector:     'select#git_fusion_repo_name'
@@ -12,14 +12,14 @@ class @GitFusionImportConfig
     @load_content(this.$(@server_select_selector).val()) if this.$(@server_select_selector).val()
 
     # Wire up listeners
-    this.$el.on 'input', @import_url_selector, (e) =>
-      @update_ui()
-
     this.$el.on 'change', @server_select_selector, (e) =>
       server = $(e.currentTarget)
       @load_content(server.val())
 
     this.$el.on 'change', @repo_name_selector, (e) =>
+      @update_ui()
+
+    $(document).on 'input', @import_url_selector, (e) =>
       @update_ui()
 
   # Local jQuery finder
@@ -48,7 +48,7 @@ class @GitFusionImportConfig
     return @set_content(@repo_contents[server_id]) if @repo_contents[server_id]
 
     # Fetch the server configuration if we don't already have it loaded
-    url = '/import/git_fusion/configure.json'
+    url = '/gitswarm/git_fusion/new_project.json'
     url = gon.relative_url_root + url if gon.relative_url_root?
     $.ajax(url, {
       type: 'GET',

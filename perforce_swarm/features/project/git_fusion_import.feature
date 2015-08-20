@@ -5,7 +5,7 @@ Feature: Git Fusion Import
   # Disabled/invalid configuration tests
   #############################
 
-  @automated
+  @automated @javascript
   Scenario: Having Git Fusion disabled results in a disabled message and no repo select drop-down on the new project page.
     Given I sign in as a user
     And Git Fusion support is disabled
@@ -13,7 +13,7 @@ Feature: Git Fusion Import
     Then I should see a Git Fusion is disabled message
     And I should not see a Git Fusion repo dropdown
 
-  @automated
+  @automated @javascript
   Scenario: Having a missing Git Fusion config results in a disabled message and no repo select drop-down on the new project page.
     Given I sign in as a user
     And The Git Fusion config block is missing
@@ -21,7 +21,7 @@ Feature: Git Fusion Import
     Then I should see a Git Fusion is disabled message
     And I should not see a Git Fusion repo dropdown
 
-  @automated
+  @automated @javascript
   Scenario: Having a config with an invalid URL results in a disabled message and no repo select drop-down on the new project page.
     Given I sign in as a user
     And The Git Fusion config block has a malformed URL
@@ -29,7 +29,7 @@ Feature: Git Fusion Import
     Then I should see a Git Fusion is disabled message
     And I should not see a Git Fusion repo dropdown
 
-  @automated
+  @automated @javascript
   Scenario: With Git Fusion enabled, but otherwise having no config results in a disabled message and no repo select drop-down on the new project page.
     Given I sign in as a user
     And Git Fusion is enabled but is otherwise not configured
@@ -40,7 +40,7 @@ Feature: Git Fusion Import
   #############################
   # Basic tests with repo listings
   #############################
-  @automated
+  @automated @javascript
   Scenario: With Git Fusion returning an empty list of managed repos, results in a configured but no repos available message and no repo select drop-down on the new project page.
     Given I sign in as a user
     And Git Fusion returns an empty list of managed repos
@@ -48,14 +48,14 @@ Feature: Git Fusion Import
     Then I should see a message saying Git Fusion has no repos available for import
     And I should not see a Git Fusion repo dropdown
 
-  @automated
+  @automated @javascript
   Scenario: With Git Fusion returning a list of repos, results in a select box filled with the same repo names.
     Given I sign in as a user
     And Git Fusion returns a list containing repos
     When I visit new project page
     Then I should see a populated Git Fusion repo dropdown
 
-  @automated
+  @automated @javascript
   Scenario: If a Git Fusion commands raises an exception, the new project page still loads.
     Given I sign in as a user
     And Git Fusion list raises an exception

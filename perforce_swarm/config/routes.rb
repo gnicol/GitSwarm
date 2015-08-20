@@ -3,9 +3,9 @@ Rails.application.routes.draw do
     get 'user/recent_projects' => 'application#load_user_projects'
   end
 
-  namespace :import do
+  namespace :perforce_swarm,  path: '/gitswarm' do
     resource :git_fusion, only: [], controller: :git_fusion do
-      get :configure
+      get :new_project
     end
   end
 end

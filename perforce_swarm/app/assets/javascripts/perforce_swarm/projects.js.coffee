@@ -32,7 +32,7 @@ class @GitFusionProject
 
   update_ui: ->
     fusion_repo_selected   = this.$(@repo_name_selector).length > 0 && !!this.$(@repo_name_selector).find('option:selected').val()
-    has_import_url         = !!this.$(@import_url_selector).val()
+    has_import_url         = !!$(@import_url_selector).val()
 
     # disable the external import section and buttons if we're doing mirroring
     @disable('.external-import, .external-import a.btn, ' + @import_url_selector, fusion_repo_selected)

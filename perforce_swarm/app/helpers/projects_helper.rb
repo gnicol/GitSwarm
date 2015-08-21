@@ -31,7 +31,8 @@ module ProjectsHelper
   def git_fusion_server_error
     return nil unless git_fusion_import_enabled?
 
-    gitlab_shell_config.git_fusion.entries
+    # Call the url method on each server to validate the config
+    gitlab_shell_config.git_fusion.entries.each { | _id, config | config.url }
     nil
   rescue => e
     return e.message

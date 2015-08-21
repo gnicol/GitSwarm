@@ -5,7 +5,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     @repos         = []
     begin
       @repos = PerforceSwarm::GitFusionRepo.list(@fusion_server)
-    rescue PerforceSwarm::GitFusion::RunError => e
+    rescue => e
       @errors << e.message
     end
 

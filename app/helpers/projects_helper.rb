@@ -274,6 +274,21 @@ module ProjectsHelper
   end
 
   def readme_cache_key
-    [@project.id, @project.commit.sha, "readme"].join('-')
+    sha = @project.commit.try(:sha) || 'nil'
+    [@project.id, sha, "readme"].join('-')
+  end
+
+  def round_commit_count(project)
+    count = project.commit_count
+
+    if count > 10000
+      '10000+'
+    elsif count > 5000
+      '5000+'
+    elsif count > 1000
+      '1000+'
+    else
+      count
+    end
   end
 end

@@ -205,14 +205,7 @@ class MergeRequest < ActiveRecord::Base
   end
 
   def check_if_can_be_merged
-    can_be_merged =
-      if for_fork?
-        Gitlab::Satellite::MergeAction.new(self.author, self).can_be_merged?
-      else
-        project.repository.can_be_merged?(source_branch, target_branch)
-      end
-
-    if can_be_merged
+    if Gitlab::Satellite::MergeAction.new(self.author, self).can_be_merged?
       mark_as_mergeable
     else
       mark_as_unmergeable
@@ -233,6 +226,10 @@ class MergeRequest < ActiveRecord::Base
     MergeRequests::AutoMergeService.
       new(target_project, current_user).
       execute(self, commit_message)
+  end
+
+  def remove_source_branch?
+    self.should_remove_source_branch && !self.source_project.root_ref?(self.source_branch) && !self.for_fork?
   end
 
   def open?

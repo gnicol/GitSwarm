@@ -15,7 +15,7 @@ module PerforceSwarm
         rescue P4Exception => ex
           message = ex.message.match(/\[Error\]: (?<message>.*)$/)
           flash.now[:alert] = message['message']
-          render "edit" and return
+          render 'edit' && return
         end
       end
       super

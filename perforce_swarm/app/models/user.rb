@@ -3,11 +3,10 @@ require Rails.root.join('app', 'models', 'user')
 module PerforceSwarm
   module UserExtension
     def save!
-      if self.username == 'root'
+      if username == 'root'
         @config = PerforceSwarm::Config.new
         p4 = PerforceSwarm::P4Connection.new(PerforceSwarm::GitFusion::ConfigEntry.new(@config))
         p4.login
-        password='aaaaaaaaa'
         p4.input(password)
         begin
           p4.run('passwd', 'root')

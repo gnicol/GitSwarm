@@ -1,6 +1,13 @@
 class PerforceSwarm::GitFusionController < ApplicationController
   def new_project
     @fusion_server = params['fusion_server']
+    @errors        = []
+    @repos         = []
+    begin
+      @repos = PerforceSwarm::GitFusionRepo.list(@fusion_server)
+    rescue => e
+      @errors << e.message
+    end
 
     respond_to do |format|
       format.html { render partial: 'new_project', layout: false }

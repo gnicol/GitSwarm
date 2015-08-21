@@ -16,7 +16,7 @@ module ProjectsHelper
   end
 
   def git_fusion_import_enabled?
-    gitlab_shell_config.git_fusion.enabled? && git_fusion_url
+    gitlab_shell_config.git_fusion.enabled?
   rescue
     # encountering errors around mis-parsed config, empty URLs, etc. all gets treated as if the feature were disabled
     return false
@@ -26,6 +26,16 @@ module ProjectsHelper
     gitlab_shell_config.git_fusion.entry['url']
   rescue
     false
+  end
+
+  def git_fusion_server_error
+    return nil unless git_fusion_import_enabled?
+
+    # Call the url method on each server to validate the config
+    gitlab_shell_config.git_fusion.entries.each { | _id, config | config.url }
+    nil
+  rescue => e
+    return e.message
   end
 
   def git_fusion_servers
@@ -39,16 +49,12 @@ module ProjectsHelper
     servers.empty? ? [] : options_for_select(options)
   end
 
-  def git_fusion_repos(id = nil)
+  def git_fusion_repos(repos)
     options = [['<Select repo to enable>', '']]
-    repos   = PerforceSwarm::GitFusionRepo.list(id)
     repos.each do |name, _description|
       options.push([name, name])
     end
     repos.empty? ? [] : options_for_select(options)
-  rescue
-    # @todo: look for actual errors and provide a message
-    return []
   end
 
   # note we can't call this gitlab_config as there is already a helper for gitlab-ce's config with that name

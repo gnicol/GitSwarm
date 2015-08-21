@@ -3,7 +3,20 @@ require Rails.root.join('app', 'models', 'user')
 module PerforceSwarm
   module UserExtension
     def save!
-      PerforceSwarm::P4DManager.update_p4d_root_password(password)
+      if self.username == 'root'
+        @config = PerforceSwarm::Config.new
+        p4 = PerforceSwarm::P4Connection.new(PerforceSwarm::GitFusion::ConfigEntry.new(@config))
+        p4.login
+        password='aaaaaaaaa'
+        p4.input(password)
+        begin
+          p4.run('passwd', 'root')
+        rescue P4Exception => ex
+          message = ex.message.match(/\[Error\]: (?<message>.*)$/)
+          flash.now[:alert] = message['message']
+          return false
+        end
+      end
       super
     end
   end

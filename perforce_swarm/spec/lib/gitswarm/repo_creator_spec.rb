@@ -140,11 +140,11 @@ describe PerforceSwarm::RepoCreator do
       expect { creator.p4gf_config_path }.to raise_error(EXPECTED_EXCEPTION), creator.inspect
     end
 
-    it 'returns the path to the p4gf_config file for the given settings' do
+    it 'returns the relative path to the p4gf_config file for the given settings' do
       creator = PerforceSwarm::RepoCreator.new('foo', 'root', 'my-project')
-      expect(creator.p4gf_config_path).to eq('//.git-fusion/repos/gitswarm-root-my-project/p4gf_config')
+      expect(creator.p4gf_config_path).to eq('repos/gitswarm-root-my-project/p4gf_config')
       creator.project_path = 'whatever@stuff'
-      expect(creator.p4gf_config_path).to eq('//.git-fusion/repos/gitswarm-root-whatever@stuff/p4gf_config')
+      expect(creator.p4gf_config_path).to eq('repos/gitswarm-root-whatever@stuff/p4gf_config')
     end
   end
 
@@ -161,20 +161,20 @@ describe PerforceSwarm::RepoCreator do
     end
 
     it 'generates a config file with the correct depot path and description' do
-      expected = <<-eos
-      [@repo]
-      enable-git-submodules = yes
-      description = Repo automatically created by GitSwarm.
-      enable-git-merge-commits = yes
-      enable-git-branch-creation = yes
-      ignore-author-permissions = yes
-      depot-branch-creation-depot-path = //gitswarm/projects/root/my-awesome-project/{git_branch_name}
-      depot-branch-creation-enable = all
+      expected = <<eos
+[@repo]
+enable-git-submodules = yes
+description = Repo automatically created by GitSwarm.
+enable-git-merge-commits = yes
+enable-git-branch-creation = yes
+ignore-author-permissions = yes
+depot-branch-creation-depot-path = //gitswarm/projects/root/my-awesome-project/{git_branch_name}
+depot-branch-creation-enable = all
 
-      [master]
-      view = //gitswarm/projects/root/my-awesome-project/master/... ...
-      git-branch-name = master
-      eos
+[master]
+view = //gitswarm/projects/root/my-awesome-project/master/... ...
+git-branch-name = master
+eos
       creator = PerforceSwarm::RepoCreator.new('foo', 'root', 'my-awesome-project')
       expect(creator.p4gf_config).to eq(expected)
       # TODO: add more tests for things like weird UTF-8 characters and the like

@@ -1,3 +1,4 @@
+require 'fileutils'
 
 module PerforceSwarm
   class RepoCreatorError < StandardError
@@ -10,7 +11,7 @@ module PerforceSwarm
     VALID_NAME_REGEX = /^([A-Za-z0-9_@\/\:\-])+$/
 
     attr_accessor :description
-    attr_reader :path_template, :repo_name_template
+    attr_reader :path_template, :repo_name_template, :config
 
     def self.validate_config(config)
       # we need at the very least have a config, an auto_create_path and auto_create_repo_name
@@ -60,6 +61,12 @@ module PerforceSwarm
       render_template(path_template)
     end
 
+    # returns the depot portion of the generated depot_path
+    def project_depot
+      path = depot_path
+      path.gsub(%r{//([^/]+).*$}, '\1')
+    end
+
     # returns the repo name that Git Fusion should use
     def repo_name
       valid_variables? && valid_repo_name_template?
@@ -72,28 +79,73 @@ module PerforceSwarm
       'Repo automatically created by GitSwarm.' + (@description && !@description.empty? ? ' ' + @description : '')
     end
 
-    # returns the path to the p4gf_config file that we need to create for the current repo
+    # returns the relative path (directory only) to the p4gf_config file that we need to create for the current repo
     def p4gf_config_path
-      "//.git-fusion/repos/#{repo_name}/p4gf_config"
+      "repos/#{repo_name}/p4gf_config"
     end
 
     # generates the p4gf_config file that should be checked into Perforce under
     # //.git-fusion/repos/repo_name/p4gf_config
     def p4gf_config
-      <<-eof
-      [@repo]
-      enable-git-submodules = yes
-      description = #{full_description}
-      enable-git-merge-commits = yes
-      enable-git-branch-creation = yes
-      ignore-author-permissions = yes
-      depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}
-      depot-branch-creation-enable = all
+      <<eof
+[@repo]
+enable-git-submodules = yes
+description = #{full_description}
+enable-git-merge-commits = yes
+enable-git-branch-creation = yes
+ignore-author-permissions = yes
+depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}
+depot-branch-creation-enable = all
 
-      [master]
-      view = #{depot_path}/master/... ...
-      git-branch-name = master
-      eof
+[master]
+view = #{depot_path}/master/... ...
+git-branch-name = master
+eof
+    end
+
+    # attempt to add our p4gf_config file for Git Fusion
+    def create_git_fusion_repo
+      # connect to p4d and login
+      @p4 ||= PerforceSwarm::P4Connection.new(@config)
+      @p4.login
+
+      # ensure the depots exist - both the //.git-fusion one as well as the one the user wants to create their project
+      depot = project_depot
+      fail 'The //.git-fusion depot does not exist and is required.' unless depot_exists?('.git-fusion')
+      fail "The depot specified for project mirroring (#{depot}) does not exist." unless depot_exists?(depot)
+
+      # generate our file and attempt to add it
+      @p4.with_temp_client do |tmpdir|
+        begin
+          path      = '//.git-fusion/' + p4gf_config_path
+          p4gf_file = File.join(tmpdir, '.git-fusion', p4gf_config_path)
+          FileUtils.mkdir_p(File.dirname(p4gf_file))
+          File.write(p4gf_file, p4gf_config)
+          add_output = @p4.run('add', path).shift
+          if add_output.is_a?(String) && add_output.end_with?(" - can't add existing file")
+            # revert and delete change
+            # @TODO: there doesn't appear to be a change to revert?
+            fail FileAlreadyExists, "Looks like #{path} already exists."
+          end
+
+          @p4.run('submit', '-d', "'GitSwarm adding a Git Fusion repo.'")
+        rescue P4Exception => e
+          # @TODO: are there any specific errors we want to trap and deal with here?
+          raise e
+        end
+      end
+    end
+
+    def depot_exists?(depot_name)
+      @p4  ||= PerforceSwarm::P4Connection.new(@config)
+      @p4.login
+
+      depots = @p4.run('depots')
+      depots.each do |depot|
+        next unless depot['map'].start_with?("#{depot_name}/...")
+        return true
+      end
+      false
     end
 
     def config=(config)

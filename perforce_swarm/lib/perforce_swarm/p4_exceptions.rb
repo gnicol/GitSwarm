@@ -1,4 +1,7 @@
 module PerforceSwarm
+  class FileAlreadyExists < RuntimeError
+  end
+
   class LoginException < RuntimeError
   end
 

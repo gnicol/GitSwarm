@@ -13,8 +13,8 @@ module PerforceSwarm
     end
 
     def initialize(config = nil)
-      ENV['P4TICKETS'] = File.join(ROOT_PATH, '.p4tickets')
-      ENV['P4TRUST']   = File.join(ROOT_PATH, '.p4trust')
+      ENV['P4TICKETS'] = File.join('/Users/ptomiak', '.p4tickets')
+      ENV['P4TRUST']   = File.join('/Users/ptomiak', '.p4trust')
       @p4              = P4.new
       self.config      = config if config
     end
@@ -249,6 +249,22 @@ module PerforceSwarm
       end
       message = message.join(' ').strip
       error ? Gitlab::GitLogger.error(message) : Gitlab::GitLogger.info(message)
+    end
+
+    def change_root_password(password)
+      default_config = PerforceSwarm::GitlabConfig.new.git_fusion.entry('default')
+      auto_provisioned = default_config.perforce_port =~ /localhost/ ? true : false
+      if auto_provisioned
+        config(PerforceSwarm::GitFusion::ConfigEntry.new(default_config))
+        login
+        input(password)
+        begin
+          run('passwd', 'root')
+        rescue P4Exception => ex
+          message = ex.message.match(/\[Error\]: (?<message>.*)$/)
+          message['message']
+        end
+      end
     end
   end
 end

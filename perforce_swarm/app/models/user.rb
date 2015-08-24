@@ -4,17 +4,9 @@ module PerforceSwarm
   module UserExtension
     def save!
       if username == 'root'
-        @config = PerforceSwarm::Config.new
-        p4 = PerforceSwarm::P4Connection.new(PerforceSwarm::GitFusion::ConfigEntry.new(@config))
-        p4.login
-        p4.input(password)
-        begin
-          p4.run('passwd', 'root')
-        rescue P4Exception => ex
-          message = ex.message.match(/\[Error\]: (?<message>.*)$/)
-          flash.now[:alert] = message['message']
-          return false
-        end
+        p4 = PerforceSwarm::P4Connection.new
+        message = p4.change_root_password(password)
+        return message if message
       end
       super
     end

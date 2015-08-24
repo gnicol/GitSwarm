@@ -26,7 +26,7 @@ Feature: Git Fusion Import
     Given I sign in as a user
     And The Git Fusion config block has a malformed URL
     When I visit new project page
-    Then I should see a Git Fusion is disabled message
+    Then I should see a Git Fusion Configuration Error
     And I should not see a Git Fusion repo dropdown
 
   @automated @javascript
@@ -34,7 +34,7 @@ Feature: Git Fusion Import
     Given I sign in as a user
     And Git Fusion is enabled but is otherwise not configured
     When I visit new project page
-    Then I should see a Git Fusion is disabled message
+    Then I should see a Git Fusion Configuration Error
     And I should not see a Git Fusion repo dropdown
 
   #############################
@@ -60,7 +60,7 @@ Feature: Git Fusion Import
     Given I sign in as a user
     And Git Fusion list raises an exception
     When I visit new project page
-    Then I should see a message saying Git Fusion has no repos available for import
+    Then I should see a Git Fusion Communication Error
     And I should not see a Git Fusion repo dropdown
 
   #############################

@@ -1,19 +1,19 @@
-require_relative '../../spec_helper'
+require_relative '../../../spec_helper'
 
-describe PerforceSwarm::RepoCreator do
+describe PerforceSwarm::GitFusion::RepoCreator do
   DEFAULT_REPO_NAME_TEMPLATE = 'gitswarm-{namespace}-{project-path}'
-  EXPECTED_EXCEPTION         = PerforceSwarm::RepoCreatorError
+  EXPECTED_EXCEPTION         = PerforceSwarm::GitFusion::RepoCreatorError
 
   before(:each) do
-    @base_config = PerforceSwarm::GitFusion::Config.new(
+    @base_config = ::PerforceSwarm::GitFusion::Config.new(
         'enabled' => true,
         'global' => {},
         'foo' => {
-          'url'  => 'foo@unknown-host',
-          'user' => 'p4test',
-          'perforce' => {
-            'port' => "rsh:#{@p4d} -r #{@p4root} -i -q"
-          }
+            'url'  => 'foo@unknown-host',
+            'user' => 'p4test',
+            'perforce' => {
+                'port' => "rsh:#{@p4d} -r #{@p4root} -i -q"
+            }
         }
     )
   end
@@ -30,7 +30,9 @@ describe PerforceSwarm::RepoCreator do
        @base_config.clone.entry,
        entry
       ].each do |config|
-        expect { PerforceSwarm::RepoCreator.validate_config(config) }.to raise_error(EXPECTED_EXCEPTION), config.inspect
+        expect do
+          PerforceSwarm::GitFusion::RepoCreator.validate_config(config)
+        end.to raise_error(EXPECTED_EXCEPTION), config.inspect
       end
     end
 
@@ -48,7 +50,9 @@ describe PerforceSwarm::RepoCreator do
       ].each do |config|
         entry                = @base_config.entry
         entry['auto_create'] = config
-        expect { PerforceSwarm::RepoCreator.validate_config(entry) }.to raise_error(EXPECTED_EXCEPTION), config.inspect
+        expect do
+          PerforceSwarm::GitFusion::RepoCreator.validate_config(entry)
+        end.to raise_error(EXPECTED_EXCEPTION), config.inspect
       end
     end
 
@@ -56,7 +60,7 @@ describe PerforceSwarm::RepoCreator do
       config = @base_config.clone.entry
       config['auto_create'] = { 'path_template' => '//gitswarm/{namespace}/{project-path}',
                                 'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
-      PerforceSwarm::RepoCreator.validate_config(config)
+      PerforceSwarm::GitFusion::RepoCreator.validate_config(config)
     end
   end
 
@@ -66,7 +70,7 @@ describe PerforceSwarm::RepoCreator do
       config['foo']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
                                        'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
-      creator = PerforceSwarm::RepoCreator.new('foo')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo')
       expect { creator.depot_path }.to raise_error(EXPECTED_EXCEPTION), creator.inspect
     end
 
@@ -75,7 +79,7 @@ describe PerforceSwarm::RepoCreator do
       config['foo']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
                                        'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
-      creator = PerforceSwarm::RepoCreator.new('foo', '!namespace', 'valid-path')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', '!namespace', 'valid-path')
       expect { creator.depot_path }.to raise_error(EXPECTED_EXCEPTION)
       expect { creator.namespace('ns').project_path('').depot_path }.to raise_error(EXPECTED_EXCEPTION)
     end
@@ -85,66 +89,8 @@ describe PerforceSwarm::RepoCreator do
       config['foo']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
                                        'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
-      creator = PerforceSwarm::RepoCreator.new('foo', 'root', 'my-project')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-project')
       expect(creator.depot_path).to eq('//gitswarm/projects/root/my-project')
-      expect(creator.project_path('my-project/slash').depot_path).to eq('//gitswarm/projects/root/my-project_0xS_slash')
-      creator.project_path('my-project//double-slash')
-      expect(creator.depot_path).to eq('//gitswarm/projects/root/my-project_0xS__0xS_double-slash')
-      expect(creator.project_path('colon:cleaner').depot_path).to eq('//gitswarm/projects/root/colon_0xC_cleaner')
-    end
-  end
-
-  describe :full_description do
-    let(:config) do
-      config = @base_config
-      config['foo']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
-                                       'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
-      config
-    end
-
-    before do
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
-    end
-
-    it 'should give a default description if none is given' do
-      creator = PerforceSwarm::RepoCreator.new('foo', 'root', 'my-project')
-      expect(creator.full_description).to eq('Repo automatically created by GitSwarm.')
-    end
-
-    it 'should append our project description if one is provided and it is non-empty/non-nil' do
-      creator = PerforceSwarm::RepoCreator.new('foo', 'root', 'my-project')
-      creator.description('Project description.')
-      expect(creator.full_description).to eq('Repo automatically created by GitSwarm. Project description.')
-      [nil, false, ''].each do |description|
-        creator.description(description)
-        expect(creator.full_description).to eq('Repo automatically created by GitSwarm.')
-      end
-    end
-  end
-
-  describe :p4gf_config_path do
-    let(:config) do
-      config = @base_config.clone
-      config['foo']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
-                                       'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
-      config
-    end
-
-    before do
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
-    end
-
-    it 'raises an exception if no project path is empty' do
-      creator = PerforceSwarm::RepoCreator.new('foo', 'root', 'my-project')
-      creator.project_path.gsub!(/.*/, '')
-      expect { creator.p4gf_config_path }.to raise_error(EXPECTED_EXCEPTION), creator.inspect
-    end
-
-    it 'returns the relative path to the p4gf_config file for the given settings' do
-      creator = PerforceSwarm::RepoCreator.new('foo', 'root', 'my-project')
-      expect(creator.p4gf_config_path).to eq('repos/gitswarm-root-my-project/p4gf_config')
-      creator.project_path = 'whatever@stuff'
-      expect(creator.p4gf_config_path).to eq('repos/gitswarm-root-whatever@stuff/p4gf_config')
     end
   end
 
@@ -163,20 +109,36 @@ describe PerforceSwarm::RepoCreator do
     it 'generates a config file with the correct depot path and description' do
       expected = <<eos
 [@repo]
+description = "Repo automatically created by GitSwarm. "
 enable-git-submodules = yes
-description = Repo automatically created by GitSwarm.
 enable-git-merge-commits = yes
 enable-git-branch-creation = yes
 ignore-author-permissions = yes
-depot-branch-creation-depot-path = //gitswarm/projects/root/my-awesome-project/{git_branch_name}
+depot-branch-creation-depot-path = "//gitswarm/projects/root/my-awesome-project/{git_branch_name}"
 depot-branch-creation-enable = all
 
 [master]
-view = //gitswarm/projects/root/my-awesome-project/master/... ...
+view = "//gitswarm/projects/root/my-awesome-project/master/... ..."
 git-branch-name = master
 eos
-      creator = PerforceSwarm::RepoCreator.new('foo', 'root', 'my-awesome-project')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-awesome-project')
       expect(creator.p4gf_config).to eq(expected)
+      expected = <<eos
+[@repo]
+description = "Repo automatically created by GitSwarm. Extra description parts."
+enable-git-submodules = yes
+enable-git-merge-commits = yes
+enable-git-branch-creation = yes
+ignore-author-permissions = yes
+depot-branch-creation-depot-path = "//gitswarm/projects/root/my-awesome-project/{git_branch_name}"
+depot-branch-creation-enable = all
+
+[master]
+view = "//gitswarm/projects/root/my-awesome-project/master/... ..."
+git-branch-name = master
+eos
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-awesome-project')
+      expect(creator.description('Extra description parts.').p4gf_config).to eq(expected)
       # TODO: add more tests for things like weird UTF-8 characters and the like
     end
   end

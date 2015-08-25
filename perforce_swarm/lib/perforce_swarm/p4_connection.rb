@@ -13,8 +13,8 @@ module PerforceSwarm
     end
 
     def initialize(config = nil)
-      ENV['P4TICKETS'] = File.join('/Users/ptomiak', '.p4tickets')
-      ENV['P4TRUST']   = File.join('/Users/ptomiak', '.p4trust')
+      ENV['P4TICKETS'] = File.join(ROOT_PATH, '.p4tickets')
+      ENV['P4TRUST']   = File.join(ROOT_PATH, '.p4trust')
       @p4              = P4.new
       self.config      = config if config
     end
@@ -250,7 +250,7 @@ module PerforceSwarm
 
     def change_root_password(password)
       default_config = PerforceSwarm::GitlabConfig.new.git_fusion.entry('default')
-      if default_config["auto_provision"] == true
+      if default_config['auto_provision'] == true
         config(PerforceSwarm::GitFusion::ConfigEntry.new(default_config))
         input(password)
         begin

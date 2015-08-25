@@ -4,18 +4,18 @@ module PerforceSwarm
       class Depot
         # given a connection and either a single depot or an array of them, this method returns either a boolean
         # true/false for the existence of a single depot or a list of depots that exist if given more than one
-        def self.exists?(depots, connection)
-          found   = []
-          depots  = [*depots]
+        def self.exists?(id, connection)
+          found = []
+          ids   = [*id]
           connection.run('depots').each do |depot|
-            next unless depots.include?(depot['name'])
+            next unless ids.include?(depot['name'])
             found.push(depot['name'])
           end
           # for single existence return whether we found one, otherwise return all (if any) found
-          return depots.length == 1 ? found.length > 0 : found
+          return id.is_a?(Array) ? !found.empty? : found
         rescue
           # command bombed for whatever reason, so return false/empty
-          return depots.length == 1 ? false : []
+          return id.is_a?(Array) ? false : []
         end
       end
     end

@@ -9,11 +9,11 @@ describe PerforceSwarm::GitFusion::RepoCreator do
         'enabled' => true,
         'global' => {},
         'foo' => {
-            'url'  => 'foo@unknown-host',
-            'user' => 'p4test',
-            'perforce' => {
-                'port' => "rsh:#{@p4d} -r #{@p4root} -i -q"
-            }
+          'url'  => 'foo@unknown-host',
+          'user' => 'p4test',
+          'perforce' => {
+            'port' => "rsh:#{@p4d} -r #{@p4root} -i -q"
+          }
         }
     )
   end
@@ -109,36 +109,52 @@ describe PerforceSwarm::GitFusion::RepoCreator do
     it 'generates a config file with the correct depot path and description' do
       expected = <<eos
 [@repo]
-description = "Repo automatically created by GitSwarm. "
+description = Repo automatically created by GitSwarm.
 enable-git-submodules = yes
 enable-git-merge-commits = yes
 enable-git-branch-creation = yes
 ignore-author-permissions = yes
-depot-branch-creation-depot-path = "//gitswarm/projects/root/my-awesome-project/{git_branch_name}"
+depot-branch-creation-depot-path = //gitswarm/projects/root/my-awesome-project/{git_branch_name}
 depot-branch-creation-enable = all
 
 [master]
-view = "//gitswarm/projects/root/my-awesome-project/master/... ..."
+view = //gitswarm/projects/root/my-awesome-project/master/... ...
 git-branch-name = master
 eos
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-awesome-project')
       expect(creator.p4gf_config).to eq(expected)
       expected = <<eos
 [@repo]
-description = "Repo automatically created by GitSwarm. Extra description parts."
+description = Repo automatically created by GitSwarm. Extra description parts.
 enable-git-submodules = yes
 enable-git-merge-commits = yes
 enable-git-branch-creation = yes
 ignore-author-permissions = yes
-depot-branch-creation-depot-path = "//gitswarm/projects/root/my-awesome-project/{git_branch_name}"
+depot-branch-creation-depot-path = //gitswarm/projects/root/my-awesome-project/{git_branch_name}
 depot-branch-creation-enable = all
 
 [master]
-view = "//gitswarm/projects/root/my-awesome-project/master/... ..."
+view = //gitswarm/projects/root/my-awesome-project/master/... ...
 git-branch-name = master
 eos
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-awesome-project')
       expect(creator.description('Extra description parts.').p4gf_config).to eq(expected)
+      expected = <<eos
+[@repo]
+description = Repo automatically created by GitSwarm. With newlines. In it.
+enable-git-submodules = yes
+enable-git-merge-commits = yes
+enable-git-branch-creation = yes
+ignore-author-permissions = yes
+depot-branch-creation-depot-path = //gitswarm/projects/root/my-awesome-project/{git_branch_name}
+depot-branch-creation-enable = all
+
+[master]
+view = //gitswarm/projects/root/my-awesome-project/master/... ...
+git-branch-name = master
+eos
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-awesome-project')
+      expect(creator.description("\nWith newlines.\nIn it.").p4gf_config).to eq(expected)
       # TODO: add more tests for things like weird UTF-8 characters and the like
     end
   end

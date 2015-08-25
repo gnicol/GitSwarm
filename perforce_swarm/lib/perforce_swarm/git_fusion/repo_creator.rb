@@ -8,6 +8,9 @@ module PerforceSwarm
     class ConfigValidationError < RepoCreatorError
     end
 
+    class FileAlreadyExists < RuntimeError
+    end
+
     class RepoCreator
       VALID_NAME_REGEX = /\A([A-Za-z0-9_.-])+\z/
 
@@ -49,18 +52,20 @@ module PerforceSwarm
       # generates the p4gf_config file that should be checked into Perforce under
       # //.git-fusion/repos/repo_name/p4gf_config
       def p4gf_config
+        config_description = 'Repo automatically created by GitSwarm.'
+        config_description += @description ? ' ' + @description.gsub("\n", ' ').strip : ''
         <<eof
 [@repo]
-description = "Repo automatically created by GitSwarm. #{@description || ''}"
+description = #{config_description}
 enable-git-submodules = yes
 enable-git-merge-commits = yes
 enable-git-branch-creation = yes
 ignore-author-permissions = yes
-depot-branch-creation-depot-path = "#{depot_path}/{git_branch_name}"
+depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}
 depot-branch-creation-enable = all
 
 [master]
-view = "#{depot_path}/master/... ..."
+view = #{depot_path}/master/... ...
 git-branch-name = master
 eof
       end
@@ -82,7 +87,7 @@ eof
           file = File.join(tmpdir, '.git-fusion', 'repos', repo_name, 'p4gf_config')
           FileUtils.mkdir_p(File.dirname(file))
           File.write(file, p4gf_config)
-          add_output = p4.run('add', path).shift
+          add_output = p4.run('add', file).shift
           if add_output.is_a?(String) && add_output.end_with?(" - can't add existing file")
             fail FileAlreadyExists, "Looks like #{repo_name} already exists."
           end
@@ -95,14 +100,12 @@ eof
               p4.run('revert', file)
 
               # scrape the changelist and delete it
-              puts 'MESSAGE: ' + e.message
-            rescue StandardError => e
-              # eat any exceptions thrown during cleanup
-              e.message
+              change_id = e.message[/fix problems then use 'p4 submit -c (\d+)'\./, 1]
+              p4.run('change', '-d', change_id) if change_id
+            rescue StandardError => error
+              # eat any exceptions thrown during cleanup - line needed for rubocop since it doesn't like empty rescues
+              error.message
             end
-            # @TODO: revert the file, scrape out the changelist ID from the error message, and delete said changelist
-            # @TODO: ensure this gets wrapped in a being/end, and just eat the exception
-
             # re-raise the outer/original exception
             raise e
           end

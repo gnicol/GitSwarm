@@ -16,14 +16,14 @@ module PerforceSwarm
       def initialize(config = nil)
         ENV['P4TICKETS'] = File.join(ROOT_PATH, '.p4tickets')
         ENV['P4TRUST']   = File.join(ROOT_PATH, '.p4trust')
-        @p4              = P4.new
+        @p4              = ::P4.new
         self.config      = config if config
       end
 
       def login(all = false)
         @ticket_unlocked = all
 
-        fail PerforceSwarm::IdentityNotFound, 'Login failed. No user specified.' unless @p4.user && !@p4.user.empty?
+        fail PerforceSwarm::P4::IdentityNotFound, 'Login failed. No user specified.' unless @p4.user && !@p4.user.empty?
         args       = %w(login) + (all ? %w(-a -p) : %w(-p))
         self.input = password || ''
         begin
@@ -34,15 +34,15 @@ module PerforceSwarm
           # check for user existence
           not_exists = message.downcase.include?("doesn't exist") ||
                        message.downcase.include?("has not been enabled by 'p4 protect'")
-          raise PerforceSwarm::IdentityNotFound, 'Login failed. ' + message if not_exists
+          raise PerforceSwarm::P4::IdentityNotFound, 'Login failed. ' + message if not_exists
 
           # invalid password
           if message.downcase.include?('password invalid')
-            raise PerforceSwarm::CredentialInvalid, 'Login failed. ' + message
+            raise PerforceSwarm::P4::CredentialInvalid, 'Login failed. ' + message
           end
 
           # generic exception
-          raise PerforceSwarm::LoginException, 'Login failed. ' + message
+          raise PerforceSwarm::P4::LoginException, 'Login failed. ' + message
         end
 
         # we can get several output blocks
@@ -60,12 +60,12 @@ module PerforceSwarm
         # check if no password set for this user.
         # fail if a password was provided - succeed otherwise.
         if response.downcase.include?('no password set for this user')
-          fail PerforceSwarm::CredentialInvalid, 'Login failed. ' + response if password && !password.empty?
+          fail PerforceSwarm::P4::CredentialInvalid, 'Login failed. ' + response if password && !password.empty?
           return nil
         end
 
         unless response =~ /^[A-F0-9]{32}$/
-          fail PerforceSwarm::LoginException, 'Login failed. Unable to capture login ticket.'
+          fail PerforceSwarm::P4::LoginException, 'Login failed. Unable to capture login ticket.'
         end
         @p4.password = response
       end
@@ -142,7 +142,7 @@ module PerforceSwarm
 
       def user=(user)
         # guard against nil, false and the empty string - p4ruby borks on nil/false and uses the OS user on empty string
-        fail PerforceSwarm::IdentityNotFound, 'P4 user must be a non-empty string.' unless user && !user.empty?
+        fail PerforceSwarm::P4::IdentityNotFound, 'P4 user must be a non-empty string.' unless user && !user.empty?
         disconnect
         @p4.user = user
       end
@@ -186,7 +186,7 @@ module PerforceSwarm
 
       def password=(password)
         # guard against nil and false
-        fail PerforceSwarm::LoginException, 'P4 password must be a string.' unless password
+        fail PerforceSwarm::P4::LoginException, 'P4 password must be a string.' unless password
         disconnect
         @p4.password = password
         @password    = password

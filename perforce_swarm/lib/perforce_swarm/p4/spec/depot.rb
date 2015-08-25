@@ -9,7 +9,7 @@ module PerforceSwarm
           depots  = [*depots]
           connection.run('depots').each do |depot|
             next unless depots.include?(depot['name'])
-            found += depot['name']
+            found.push(depot['name'])
           end
           # for single existence return whether we found one, otherwise return all (if any) found
           return depots.length == 1 ? found.length > 0 : found

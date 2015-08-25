@@ -1,5 +1,4 @@
 require_relative '../../../spec_helper'
-require_
 
 describe PerforceSwarm::P4::Connection do
   # ensure we can even run the tests by looking for p4d executable
@@ -28,7 +27,7 @@ describe PerforceSwarm::P4::Connection do
   end
 
   describe :validate_config do
-    it 'throws an exception when an invalid config is given' do
+    it 'raises an exception when an invalid config is given' do
       [{},
        { 'enabled' => false },
        { 'enabled' => true },
@@ -41,7 +40,7 @@ describe PerforceSwarm::P4::Connection do
       end
     end
 
-    it 'does not throw an exception when a valid config is given' do
+    it 'does not raise an exception when a valid config is given' do
       expect do
         PerforceSwarm::P4::Connection.validate_config(@p4config)
       end.to_not raise_error(RuntimeError), @p4config.inspect

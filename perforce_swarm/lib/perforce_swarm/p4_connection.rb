@@ -21,6 +21,7 @@ module PerforceSwarm
 
     def login(all = false)
       @ticket_unlocked = all
+
       fail PerforceSwarm::IdentityNotFound, 'Login failed. No user specified.' unless @p4.user && !@p4.user.empty?
       args       = %w(login) + (all ? %w(-a -p) : %w(-p))
       self.input = password || ''
@@ -28,6 +29,7 @@ module PerforceSwarm
         result = run(*args)
       rescue P4Exception => e
         message = e.message
+
         # check for user existence
         not_exists = message.downcase.include?("doesn't exist") ||
                      message.downcase.include?("has not been enabled by 'p4 protect'")
@@ -41,6 +43,7 @@ module PerforceSwarm
         # generic exception
         raise PerforceSwarm::LoginException, 'Login failed. ' + message
       end
+
       # we can get several output blocks
       # we want the first block that looks like a ticket
       # if user has no password, the last block will be a message

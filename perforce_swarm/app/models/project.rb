@@ -12,28 +12,33 @@ module PerforceSwarm
     end
 
     def create_repository
-      if !git_fusion_entry.blank? && git_fusion_auto_create
-        # creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace: self.namespace.name, project
-        # puts creator.generate_depot_path
-        git_fusion_repo = "mirror://#{git_fusion_entry}/#{path}"
+      if git_fusion_repo.present? && git_fusion_auto_create
+        begin
+          parsed = git_fusion_repo.sub(%r{^mirror://}, '').split('/', 2)
+          creator = PerforceSwarm::GitFusion::RepoCreator.new(parsed[0], namespace.name, path)
+          creator.save
+        rescue => e
+          Gitlab::AppLogger.error e.message
+          raise e
+        end
       end
 
-      super
+      result = super
+
+      if result
+        PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
+      end
+
+      result
     end
   end
 end
 
 class Project < ActiveRecord::Base
   validates :git_fusion_repo, length: { maximum: 255 }, allow_blank: true
-  validates :git_fusion_repo, presence: true, unless: "git_fusion_entry.blank? || git_fusion_auto_create"
   prepend PerforceSwarm::ProjectExtension
 
   attr_accessor :git_fusion_auto_create
-  attr_accessor :git_fusion_entry
-
-  # run our code after the GL validations are done
-  # before_save :auto_create_git_fusion, if: :git_fusion_auto_create
-
 
   # The rspec tests use 'allow_any_instance_of' on Project to stub this method out during testing.
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.

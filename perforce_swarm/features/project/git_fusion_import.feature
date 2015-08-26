@@ -53,6 +53,8 @@ Feature: Git Fusion Import
     Given I sign in as a user
     And Git Fusion returns a list containing repos
     When I visit new project page
+    Then I should see a populated Git Fusion server dropdown
+    When I choose to import an existing repo
     Then I should see a populated Git Fusion repo dropdown
 
   @automated @javascript

@@ -1,6 +1,6 @@
-require_relative '../../spec_helper'
+require_relative '../../../spec_helper'
 
-describe PerforceSwarm::P4Connection do
+describe PerforceSwarm::P4::Connection do
   # ensure we can even run the tests by looking for p4d executable
   before(:all) do
     @p4d = `PATH=$PATH:/opt/perforce/sbin which p4d`.strip
@@ -19,7 +19,7 @@ describe PerforceSwarm::P4Connection do
         }
       }
     ).entry
-    @connection = PerforceSwarm::P4Connection.new(@p4config)
+    @connection = PerforceSwarm::P4::Connection.new(@p4config)
   end
 
   after(:each) do
@@ -27,7 +27,7 @@ describe PerforceSwarm::P4Connection do
   end
 
   describe :validate_config do
-    it 'throws an exception when an invalid config is given' do
+    it 'raises an exception when an invalid config is given' do
       [{},
        { 'enabled' => false },
        { 'enabled' => true },
@@ -35,26 +35,26 @@ describe PerforceSwarm::P4Connection do
        { 'enabled' => true, 'default' => { 'url' => 'git@unknown', 'perforce' => { 'user' => 'p4user' } } }
       ].each do |config_hash|
         expect do
-          PerforceSwarm::P4Connection.validate_config(PerforceSwarm::GitFusion::Config.new(config_hash).entry)
+          PerforceSwarm::P4::Connection.validate_config(PerforceSwarm::GitFusion::Config.new(config_hash).entry)
         end.to raise_error(RuntimeError), config_hash.inspect
       end
     end
 
-    it 'does not throw an exception when a valid config is given' do
+    it 'does not raise an exception when a valid config is given' do
       expect do
-        PerforceSwarm::P4Connection.validate_config(@p4config)
+        PerforceSwarm::P4::Connection.validate_config(@p4config)
       end.to_not raise_error(RuntimeError), @p4config.inspect
     end
   end
 
   describe :connections do
     it 'is disconnected by default' do
-      pending('P4Connection tests require the p4d executable in your path.') if @p4d.empty?
+      pending('P4::Connection tests require the p4d executable in your path.') if @p4d.empty?
       expect(@connection.connected?).to be_falsey
     end
 
     it 'we can connect to and disconnect from p4d' do
-      pending('P4Connection tests require the p4d executable in your path.') if @p4d.empty?
+      pending('P4::Connection tests require the p4d executable in your path.') if @p4d.empty?
       @connection.connect
       sleep(0.5)
       expect(@connection.connected?).to be_truthy
@@ -65,7 +65,7 @@ describe PerforceSwarm::P4Connection do
 
   describe :run do
     it 'allows us to run the info command without a client' do
-      pending('P4Connection tests require the p4d executable in your path.') if @p4d.empty?
+      pending('P4::Connection tests require the p4d executable in your path.') if @p4d.empty?
       @connection.connect
       info = @connection.run('info')
       expect(info).to_not be_nil
@@ -76,7 +76,7 @@ describe PerforceSwarm::P4Connection do
       @connection.disconnect
     end
     it 'allows us to create a user and run the users command without a client' do
-      pending('P4Connection tests require the p4d executable in your path.') if @p4d.empty?
+      pending('P4::Connection tests require the p4d executable in your path.') if @p4d.empty?
       @connection.connect
       user_spec = {
         'User'    =>  'test-user',
@@ -92,7 +92,7 @@ describe PerforceSwarm::P4Connection do
       @connection.disconnect
     end
     it 'allows us to list depots' do
-      pending('P4Connection tests require the p4d executable in your path.') if @p4d.empty?
+      pending('P4::Connection tests require the p4d executable in your path.') if @p4d.empty?
       @connection.connect
       depots = @connection.run('depots')
       expect(depots.length).to eq(1)
@@ -104,7 +104,7 @@ describe PerforceSwarm::P4Connection do
 
   describe :with_temp_client do
     it 'creates a temporary client, with a temporary directory, and that the workspace is nuked when the block ends' do
-      pending('P4Connection tests require the p4d executable in your path.') if @p4d.empty?
+      pending('P4::Connection tests require the p4d executable in your path.') if @p4d.empty?
       expect(@connection.connected?).to be_falsey
       client_name = ''
       client_root = ''
@@ -135,7 +135,7 @@ describe PerforceSwarm::P4Connection do
   describe :user do
     it 'raises an exception when the username is nil, false or the empty string' do
       [nil, false, ''].each do |user|
-        expect { @connection.user(user) }.to raise_error(PerforceSwarm::IdentityNotFound), @connection.inspect
+        expect { @connection.user(user) }.to raise_error(PerforceSwarm::P4::IdentityNotFound), @connection.inspect
       end
     end
   end
@@ -143,7 +143,7 @@ describe PerforceSwarm::P4Connection do
   describe :login do
     it 'raises an exception if an empty/nil or unknown user is given' do
       ['unknown-user', '', nil, false].each do |user|
-        expect { @connection.user(user).login }.to raise_error(PerforceSwarm::IdentityNotFound), @connection.inspect
+        expect { @connection.user(user).login }.to raise_error(PerforceSwarm::P4::IdentityNotFound), @connection.inspect
       end
     end
 
@@ -151,7 +151,7 @@ describe PerforceSwarm::P4Connection do
       [nil, false].each do |password|
         expect do
           @connection.user('test-user').password(password).login
-        end.to raise_error(PerforceSwarm::LoginException), @connection.inspect
+        end.to raise_error(PerforceSwarm::P4::LoginException), @connection.inspect
       end
     end
 
@@ -160,7 +160,7 @@ describe PerforceSwarm::P4Connection do
       ['wrongpass'].each do |password|
         expect do
           @connection.user('test-user').password(password).login
-        end.to raise_error(PerforceSwarm::CredentialInvalid), @connection.inspect
+        end.to raise_error(PerforceSwarm::P4::CredentialInvalid), @connection.inspect
       end
     end
 
@@ -169,7 +169,7 @@ describe PerforceSwarm::P4Connection do
       ['wrongpass'].each do |password|
         expect do
           @connection.user('test-user').password(password).login
-        end.to raise_error(PerforceSwarm::CredentialInvalid), @connection.inspect
+        end.to raise_error(PerforceSwarm::P4::CredentialInvalid), @connection.inspect
       end
     end
 

@@ -12,7 +12,6 @@ module PerforceSwarm
       message = sync_p4d_password(password)
       errors.add(:base, message) unless message.is_a? Array
       return false unless message.is_a? Array
-      super
     end
 
     def sync_p4d_password(password)

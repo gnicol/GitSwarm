@@ -3,13 +3,13 @@ require Rails.root.join('app', 'models', 'user')
 module PerforceSwarm
   module UserExtension
     def save!
-      message = self.sync_p4d_password(password)
+      message = sync_p4d_password(password)
       return message unless message.is_a? Array
       super
     end
 
     def validate_and_change_in_perforce
-      message = self.sync_p4d_password(password)
+      message = sync_p4d_password(password)
       errors.add(:base, message) unless message.is_a? Array
       return false unless message.is_a? Array
       super
@@ -17,7 +17,7 @@ module PerforceSwarm
 
     def sync_p4d_password(password)
       # presently we only handle the 'root' user and only for auto-provisioned servers
-      return unless self.username == 'root'
+      return unless username == 'root'
       default_config = PerforceSwarm::GitlabConfig.new.git_fusion.entry('default')
       return unless default_config['auto_provision'] == true
 

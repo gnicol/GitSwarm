@@ -16,23 +16,19 @@ module PerforceSwarm
         begin
           creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace.name, path)
           creator.save
-          git_fusion_repo = "mirror://#{git_fusion_entry}/#{creator.repo_name}"
+
+          # GitFusion Repo has been created, flag this project for import
+          self.git_fusion_repo = "mirror://#{git_fusion_entry}/#{creator.repo_name}"
+          self.git_fusion_auto_create = false
           save
 
-          result = super
-
-          if result
-            PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
-          end
-
-          result
+          true
         rescue ::P4Exception, PerforceSwarm::GitFusion::RepoCreatorError => e
           errors.add(:base, e.message)
-          false
+          return false
         end
-      else
-        super
       end
+      super
     end
   end
 end

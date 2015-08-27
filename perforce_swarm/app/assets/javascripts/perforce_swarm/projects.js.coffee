@@ -22,6 +22,9 @@ class @GitFusionProject
     this.$el.on 'change', @repo_name_selector, (e) =>
       @update_ui()
 
+    this.$el.on 'select2-open', @repo_name_selector, (e) =>
+      this.$(@repo_import_selector).prop('checked', true)
+
     this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}", (e) =>
       @update_ui()
 
@@ -52,8 +55,9 @@ class @GitFusionProject
     # if the user is doing an external import, disable mirroring controls
     @disable('.git-fusion-import, .git-fusion-import select, .git-fusion-import input', has_import_url)
 
-    # disable the repo list when auto create is selected
-    @disable(".git-fusion-import #{@repo_name_selector}", has_import_url || auto_create_selected || disabled_selector)
+    # clear the repo list when mirror existing is not selected
+    if auto_create_selected || disabled_selector
+      this.$(@repo_name_selector).val('').select2()
 
   load_content: (server_id) ->
     # Clear out pre-existing content right away

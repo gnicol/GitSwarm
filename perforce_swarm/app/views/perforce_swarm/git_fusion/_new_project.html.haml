@@ -10,9 +10,11 @@
         = label_tag do
           = radio_button_tag(:git_fusion_auto_create, 'nil', true)
           .option-title
-            Disabled
+            Not mirrored
           .option-descr
-            Will not enable Git Fusion mirroring for this project
+            Your work will only be stored in GitSwarm.
+            %br
+            A copy will not be replicated to/from the Perforce Helix Server.
       - auto_create_enabled = @project_depot && @auto_create_errors.empty?
       .radio{:class => ("disabled" unless auto_create_enabled)}
         = label_tag do

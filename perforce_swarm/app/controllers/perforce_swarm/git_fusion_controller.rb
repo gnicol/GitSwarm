@@ -5,9 +5,9 @@ class PerforceSwarm::GitFusionController < ApplicationController
     @repos              = []
     @project_depot      = false
     @auto_create_errors = []
-    @path_template      = '//gitswarm/projects/{namespace}/{project-path}/...'
+    @path_template      = ''
     begin
-      @repos                = PerforceSwarm::GitFusionRepo.list(@fusion_server)
+      @repos            = PerforceSwarm::GitFusionRepo.list(@fusion_server)
     rescue => e
       @errors << e.message
     end

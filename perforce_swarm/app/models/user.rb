@@ -3,17 +3,20 @@ require Rails.root.join('app', 'models', 'user')
 module PerforceSwarm
   module UserExtension
     def save!
-      message = sync_p4d_password(password)
-      return message unless message.is_a? Array
-      super
+      if username == 'root'
+        validate_and_change_in_p4d { |message| return message }
+      else
+        super
+      end
     end
 
-    def validate_and_change_in_p4d
+    def validate_and_change_in_p4d(&block)
       # presently we only handle the 'root' user and only for auto-provisioned servers
       # run only if were changing password
-      return unless @changed_attributes.key?('encrypted_password') && username == 'root'
+      return unless changed.include?('encrypted_password') && username == 'root'
       sync_p4d_password(password)
     rescue P4Exception => ex
+      block.call(ex.message) if block_given?
       errors.add(:base, ex.message)
       return false
     rescue RuntimeError
@@ -31,7 +34,7 @@ module PerforceSwarm
       begin
         connection.run('passwd', 'root')
       rescue P4Exception => ex
-        message = Regexp.last_match(:error) if ex.message.match(/\[Error\]: (?<error>.*)$/)
+        message = ex.message.match(/\[Error\]: (?<error>.*)$/) ? Regexp.last_match(:error) : ex.message
         raise ex, message
       end
     end

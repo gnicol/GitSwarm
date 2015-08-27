@@ -34,7 +34,7 @@ class @GitFusionProject
 
   disable: (elements, flag) ->
     flag = !!flag
-    $(elements).toggleClass('disabled', flag).prop('disabled', flag)
+    $(elements).not('[data-keep-disabled=true]').toggleClass('disabled', flag).prop('disabled', flag)
 
   update_ui: ->
     auto_create_selected = fusion_repo_selected = disabled_selector = false
@@ -75,6 +75,9 @@ class @GitFusionProject
         # Only update the list if our server_id is still selected
         if this.$(@server_select_selector).val() == server_id
           @set_content(@repo_contents[server_id])
+      error: =>
+        if this.$(@server_select_selector).val() == server_id
+          @set_content('<div class="git-fusion-import-data">Error. Refresh and try again</div>')
       beforeSend: =>
         # Add loading spinner
         @set_content(

@@ -77,7 +77,11 @@ class @GitFusionProject
           @set_content(@repo_contents[server_id])
       error: =>
         if this.$(@server_select_selector).val() == server_id
-          @set_content('<div class="git-fusion-import-data">Error. Refresh and try again</div>')
+          @set_content(
+            '<div class="git-fusion-import-data">' +
+              '<div class="description slead"><h4>Error</h4>Refresh and try again</div>' +
+            '</div>'
+          )
       beforeSend: =>
         # Add loading spinner
         @set_content(

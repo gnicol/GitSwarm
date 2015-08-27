@@ -10,14 +10,15 @@
         = radio_button_tag(:git_fusion_auto_create, 'nil', true)
         .option-title
           Not Enabled for this project
-    .radio
-      = label_tag do
-        = radio_button_tag(:git_fusion_auto_create, true)
-        .option-title
-          Create a new convention-based repo in Git Fusion
-        .option-descr
-          Create a Git Fusion repo that will be mirrored in Perforce under
-          %span.auto-create-path //gitswarm/projects/namespace/project-path/...
+    - if @project_depot && @auto_create_errors.empty?
+      .radio
+        = label_tag do
+          = radio_button_tag(:git_fusion_auto_create, true)
+          .option-title
+            Create a new convention-based repo in Git Fusion
+          .option-descr
+            Create a Git Fusion repo that will be mirrored in Perforce under
+            %span.auto-create-path #{@path_template}
     .radio
       = label_tag do
         = radio_button_tag(:git_fusion_auto_create, false, false, disabled: @repos.empty?)
@@ -31,3 +32,16 @@
             .repo-select.form-inline.control-group
               Repo:
               = select_tag(:git_fusion_repo_name, repos_options, class: 'select2 span2', disabled: 'true')
+  - if !@auto_create_errors.empty?
+    .repo-warning.slead
+      %h4 Convention-based repo creation is unavailable:
+      = @auto_create_errors.first
+      Please see
+      = link_to ' this document ', '#'
+      for help.
+  - elsif !@project_depot
+    .repo-warning.slead
+      %h4 Configured project depot #{@project_depot.inspect} is missing.
+      Please see
+      = link_to ' this document ', '#'
+      for help.

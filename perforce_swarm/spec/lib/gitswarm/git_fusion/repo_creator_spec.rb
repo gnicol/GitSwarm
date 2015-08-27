@@ -118,7 +118,7 @@ depot-branch-creation-depot-path = //gitswarm/projects/root/my-awesome-project/{
 depot-branch-creation-enable = all
 
 [master]
-view = //gitswarm/projects/root/my-awesome-project/master/... ...
+view = "//gitswarm/projects/root/my-awesome-project/master/..." ...
 git-branch-name = master
 eos
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-awesome-project')
@@ -134,7 +134,7 @@ depot-branch-creation-depot-path = //gitswarm/projects/root/my-awesome-project/{
 depot-branch-creation-enable = all
 
 [master]
-view = //gitswarm/projects/root/my-awesome-project/master/... ...
+view = "//gitswarm/projects/root/my-awesome-project/master/..." ...
 git-branch-name = master
 eos
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-awesome-project')
@@ -150,7 +150,7 @@ depot-branch-creation-depot-path = //gitswarm/projects/root/my-awesome-project/{
 depot-branch-creation-enable = all
 
 [master]
-view = //gitswarm/projects/root/my-awesome-project/master/... ...
+view = "//gitswarm/projects/root/my-awesome-project/master/..." ...
 git-branch-name = master
 eos
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-awesome-project')

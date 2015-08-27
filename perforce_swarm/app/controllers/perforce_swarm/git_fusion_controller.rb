@@ -1,12 +1,28 @@
 class PerforceSwarm::GitFusionController < ApplicationController
   def new_project
-    @fusion_server = params['fusion_server']
-    @errors        = []
-    @repos         = []
+    @fusion_server      = params['fusion_server']
+    @errors             = []
+    @repos              = []
+    @project_depot      = false
+    @auto_create_errors = []
+    @path_template      = '//gitswarm/projects/{namespace}/{project-path}/...'
     begin
-      @repos = PerforceSwarm::GitFusionRepo.list(@fusion_server)
+      @repos                = PerforceSwarm::GitFusionRepo.list(@fusion_server)
     rescue => e
       @errors << e.message
+    end
+
+    # attempt to connect to Perforce and ensure the desired project depot exists
+    # we do this in its own rescue block so we only grab errors relevant to auto_create
+    begin
+      creator        = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
+      p4             = PerforceSwarm::P4::Connection.new(creator.config)
+      p4.login
+      @project_depot = PerforceSwarm::P4::Spec::Depot.exists?([creator.project_depot], p4).shift ||
+                       creator.project_depot
+      @path_template = creator.path_template.chomp('/') + '/...'
+    rescue => auto_create_error
+      @auto_create_errors << auto_create_error.message
     end
 
     respond_to do |format|

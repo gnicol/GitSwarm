@@ -22,6 +22,9 @@ class @GitFusionProject
     this.$el.on 'change', @repo_name_selector, (e) =>
       @update_ui()
 
+    this.$el.on 'select2-open', @repo_name_selector, (e) =>
+      this.$(@repo_import_selector).prop('checked', true)
+
     this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}", (e) =>
       @update_ui()
 
@@ -34,7 +37,7 @@ class @GitFusionProject
 
   disable: (elements, flag) ->
     flag = !!flag
-    $(elements).toggleClass('disabled', flag).prop('disabled', flag)
+    $(elements).not('[data-keep-disabled=true]').toggleClass('disabled', flag).prop('disabled', flag)
 
   update_ui: ->
     auto_create_selected = fusion_repo_selected = disabled_selector = false
@@ -52,8 +55,9 @@ class @GitFusionProject
     # if the user is doing an external import, disable mirroring controls
     @disable('.git-fusion-import, .git-fusion-import select, .git-fusion-import input', has_import_url)
 
-    # disable the repo list when auto create is selected
-    @disable(".git-fusion-import #{@repo_name_selector}", has_import_url || auto_create_selected || disabled_selector)
+    # clear the repo list when mirror existing is not selected
+    if auto_create_selected || disabled_selector
+      this.$(@repo_name_selector).val('').select2()
 
   load_content: (server_id) ->
     # Clear out pre-existing content right away
@@ -75,6 +79,13 @@ class @GitFusionProject
         # Only update the list if our server_id is still selected
         if this.$(@server_select_selector).val() == server_id
           @set_content(@repo_contents[server_id])
+      error: =>
+        if this.$(@server_select_selector).val() == server_id
+          @set_content(
+            '<div class="git-fusion-import-data">' +
+              '<div class="description slead"><h4>Error</h4>Refresh and try again</div>' +
+            '</div>'
+          )
       beforeSend: =>
         # Add loading spinner
         @set_content(

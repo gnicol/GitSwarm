@@ -28,6 +28,7 @@
                 %code.auto-create-path #{@path_template}
             - elsif !@auto_create_errors.empty?
               Convention-based repo creation is unavailable:
+              %br
               = @auto_create_errors.first
               Please see
               = link_to ' this document ', '#'

@@ -69,6 +69,14 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
     page.should have_content 'Although Git Fusion is configured, there are no repos available for import.'
   end
 
+  step 'I should see a populated Git Fusion server dropdown' do
+    page.should have_select('git_fusion_entry', with_options: [default_entry['url']])
+  end
+
+  step 'I choose to import an existing repo' do
+    page.find('#git_fusion_auto_create_false').click
+  end
+
   step 'I should see a populated Git Fusion repo dropdown' do
     page.should have_select('git_fusion_repo_name', with_options: %w(RepoA RepoB))
   end

@@ -38,65 +38,65 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'I should see "Empty Project" in the recent projects dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-menu').should have_content('Empty Project')
     end
   end
 
   step 'I should see "Forum" at the top of the list in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('Forum')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('Forum')
   end
 
   step 'I should see "Forum" in the recent projects dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-menu').should have_content('Forum')
     end
   end
 
   step 'I should no longer see the project "PerforceProject" in the dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-menu').should_not have_content('PerforceProject')
     end
   end
 
   step 'I should see "PerforceProject" with "NewUserQA" user name in the recent projects dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-menu').should have_content('NewUserQA')
     end
   end
 
   step 'I should see "PerforceProject" with "QA" group name in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QA')
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QA')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
   end
 
   step 'I should see "Recent Projects" in the recent projects dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-menu').should have_content('Recent Projects')
     end
   end
 
   step 'I should not see "Recent Projects" in the recent projects dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-menu').should_not have_content('Recent Projects')
     end
   end
 
   step 'I should see "Shop" in the recent projects dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-menu').should have_content('Shop')
     end
   end
 
   step 'I should not see "Shop" in the recent projects dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-menu').should_not have_content('Shop')
     end
   end
 
   step 'I should see "Shop" then "Forum" then "Empty Project" in the recent projects dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
-      menuitems = all(:css, '.dropdown-menu li')
+    page.within '.navbar-gitlab .dashboard-menu' do
+      menuitems = page.all(:css, '.dropdown-menu li')
       menuitems[1].should have_content('Shop')
       menuitems[2].should have_content('Forum')
       menuitems[3].should have_content('Empty Project')
@@ -104,8 +104,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should not see any projects in the recent projects dropdown' do
-    all('.dashboard-menu .dropdown-menu li').count.should eq(3)
-    all('.dashboard-menu .dropdown-menu li')[0].text.should have_content('Dashboard')
+    page.all('.dashboard-menu .dropdown-menu li').count.should eq(3)
+    page.all('.dashboard-menu .dropdown-menu li')[0].text.should have_content('Dashboard')
   end
 
   #########################
@@ -113,32 +113,32 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'I should not see "Shop" as the latest project in the dropdown' do
-    within '.navbar-gitlab .dashboard-menu' do
-      all(:css, '.dropdown-menu li')[1].should_not have_content('Shop')
+    page.within '.navbar-gitlab .dashboard-menu' do
+      page.all(:css, '.dropdown-menu li')[1].should_not have_content('Shop')
     end
   end
 
   step 'I should see "New Project" at the top of the list in the recent projects dropdown' do
-    within '.navbar-gitlab' do
-      all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('new-project')
-      all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('new-project')
+    page.within '.navbar-gitlab' do
+      page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('new-project')
+      page.all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('new-project')
     end
   end
 
   step 'I should see "PerforceProject" at the top of the list in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('PerforceProject')
   end
 
   step 'I should see "QAProject" at the top of the list in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QAProject')
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content('QAProject')
   end
 
   step 'I should see the project with the project name over 100 characters at the top of the list' do
-    all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content(long_project_name + long_project_name)
+    page.all('.dashboard-menu ul.dropdown-menu li')[1].text.should have_content(long_project_name + long_project_name)
   end
 
   step 'I should not see "PerforceProject" second on the list in the recent projects dropdown' do
-    all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('PerforceProject')
+    page.all('.dashboard-menu ul.dropdown-menu li')[2].text.should_not have_content('PerforceProject')
   end
 
   #########################
@@ -154,49 +154,49 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I click on project "Forum"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:link, 'Forum').trigger('click')
     end
   end
 
   step 'I click on project "PerforceProject"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:link, 'PerforceProject').trigger('click')
     end
   end
 
   step 'I click on project "QAProject"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:link, 'QAProject').trigger('click')
     end
   end
 
   step 'I click on "View My Starred Projects" link' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:link, 'View My Starred Projects').trigger('click')
     end
   end
 
   step 'I click on "View All Projects" link' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:link, 'View All Projects').trigger('click')
     end
   end
 
   step 'I click on "Dashboard" link' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:link, 'Dashboard').trigger('click')
     end
   end
 
   step 'I click on the most recent project under "Recent Projects"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       first('.dashboard-menu ul.dropdown-menu li a').trigger('click')
     end
   end
 
   step 'I click on the older project "Shop" in "Recent Projects"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:link, 'Shop').trigger('click')
     end
   end
@@ -206,37 +206,37 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'the title of the dropdown should be "Admin"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').should have_content('Admin')
     end
   end
 
   step 'the title of the dropdown should be "Forum"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').should have_content('Forum')
     end
   end
 
   step 'the title of the dropdown should be "QAGroup"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').should have_content('QAGroup')
     end
   end
 
   step 'the title of the dropdown should be "QAProject"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').should have_content('QAProject')
     end
   end
 
   step 'the title of the dropdown should be "Search"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').should have_content('Search')
     end
   end
 
   step 'the title of the dropdown should the project name over 100 characters' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').should have_content(long_project_name)
     end
   end
@@ -293,7 +293,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see a project page' do
-    within '.sidebar-wrapper .project-navigation' do
+    page.within '.sidebar-wrapper' do
       find(:css, '.shortcuts-project').should have_content('Project')
     end
   end
@@ -316,25 +316,25 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   #########################
 
   step 'the title of the dropdown should be "Dashboard"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').text.should eq('Dashboard')
     end
   end
 
   step 'the title of the dropdown should be "Explore"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').text.should eq('Explore')
     end
   end
 
   step 'the title of the dropdown should be "New Project"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').text.should have_content('new-project')
     end
   end
 
   step 'the title of the dropdown should be "PerforceProject"' do
-    within '.navbar-gitlab .dashboard-menu' do
+    page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').text.should have_content('PerforceProject')
     end
   end

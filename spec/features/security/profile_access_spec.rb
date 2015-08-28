@@ -6,7 +6,7 @@ describe "Profile access", feature: true  do
   end
 
   describe "GET /login" do
-    it { expect(new_user_session_path).not_to be_404_for :visitor }
+    it { expect(new_user_session_path).not_to be_not_found_for :visitor }
   end
 
   describe "GET /profile/keys" do
@@ -45,8 +45,8 @@ describe "Profile access", feature: true  do
     it { is_expected.to be_denied_for :visitor }
   end
 
-  describe "GET /profile/history" do
-    subject { history_profile_path }
+  describe "GET /profile/audit_log" do
+    subject { audit_log_profile_path }
 
     it { is_expected.to be_allowed_for @u1 }
     it { is_expected.to be_allowed_for :admin }

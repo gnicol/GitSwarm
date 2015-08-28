@@ -48,10 +48,36 @@
   whitespace: nowrap;
 }
 
-.git-fusion-import .repo-select, .git-fusion-import .repo-warning {
+.git-fusion-import .repo-warning {
   margin-top: 1em;
 }
 
 .git-fusion-import .repo-select {
   text-align: center;
+}
+
+.git-fusion-import .select2-container {
+  width: auto !important;
+}
+
+.git-fusion-import .git-fusion-radios {
+  padding: 5px 0 0 15px;
+}
+
+.git-fusion-import .radio {
+  margin-bottom: 10px;
+}
+
+.git-fusion-import .option-title {
+  display: inline-block;
+  font-weight: bold;
+  color: #555;
+}
+
+.git-fusion-import .radio.disabled div {
+  color: lighten(#555, 15)
+}
+
+.git-fusion-import .option-descr {
+  color: #555;
 }

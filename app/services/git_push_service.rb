@@ -21,7 +21,6 @@ class GitPushService
 
     project.ensure_satellite_exists
     project.repository.expire_cache
-    project.update_repository_size
 
     if push_remove_branch?(ref, newrev)
       @push_commits = []
@@ -61,6 +60,7 @@ class GitPushService
     EventCreateService.new.push(project, user, @push_data)
     project.execute_hooks(@push_data.dup, :push_hooks)
     project.execute_services(@push_data.dup, :push_hooks)
+    ProjectCacheWorker.perform_async(project.id)
   end
 
   protected
@@ -105,7 +105,7 @@ class GitPushService
       author ||= commit_user(commit)
 
       refs.each do |r|
-        Note.create_cross_reference_note(r, commit, author)
+        SystemNoteService.cross_reference(r, commit, author)
       end
     end
   end
@@ -133,8 +133,7 @@ class GitPushService
   end
 
   def is_default_branch?(ref)
-    Gitlab::Git.branch_ref?(ref) &&
-      (Gitlab::Git.ref_name(ref) == project.default_branch || project.default_branch.nil?)
+    Gitlab::Git.branch_ref?(ref) && Gitlab::Git.ref_name(ref) == project.default_branch
   end
 
   def commit_user(commit)

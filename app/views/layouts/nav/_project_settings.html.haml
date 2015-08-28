@@ -1,15 +1,15 @@
-%ul.project-navigation.nav.nav-sidebar
+%ul.nav.nav-sidebar
   = nav_link do
-    = link_to project_path(@project), title: 'Back to project', data: {placement: 'right'} do
+    = link_to project_path(@project), title: 'Back to project', data: {placement: 'right'}, class: 'back-link' do
       = icon('caret-square-o-left fw')
       %span
         Back to project
 
   %li.separate-item
 
-  %ul.project-settings-nav.sidebar-subnav
+  %ul.sidebar-subnav
     = nav_link(path: 'projects#edit') do
-      = link_to edit_project_path(@project), title: 'Project', class: 'stat-tab tab', data: {placement: 'right'} do
+      = link_to edit_project_path(@project), title: 'Project Settings', data: {placement: 'right'} do
         = icon('pencil-square-o fw')
         %span
           Project Settings
@@ -32,5 +32,5 @@
       = link_to namespace_project_protected_branches_path(@project.namespace, @project), title: 'Protected Branches', data: {placement: 'right'} do
         = icon('lock fw')
         %span
-          Protected branches
+          Protected Branches
 

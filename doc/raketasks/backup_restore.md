@@ -9,6 +9,13 @@ This archive will be saved in backup_path (see `config/gitlab.yml`).
 The filename will be `[TIMESTAMP]_gitlab_backup.tar`. This timestamp can be used to restore an specific backup.
 You can only restore a backup to exactly the same version of GitLab that you created it on, for example 7.2.1.
 
+You need to keep a separate copy of `/etc/gitlab/gitlab-secrets.json`
+(for omnibus packages) or `/home/git/gitlab/.secret` (for installations
+from source). This file contains the database encryption key used
+for two-factor authentication. If you restore a GitLab backup without
+restoring the database encryption key, users who have two-factor
+authentication enabled will loose access to your GitLab server.
+
 If you are interested in GitLab CI backup please follow to the [CI backup documentation](https://gitlab.com/gitlab-org/gitlab-ci/blob/master/doc/raketasks/backup_restore.md)*
 
 ```
@@ -19,7 +26,7 @@ sudo gitlab-rake gitlab:backup:create
 sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
 ```
 
-Also you can choose what should be backed up by adding environment variable SKIP. Available options: db, 
+Also you can choose what should be backed up by adding environment variable SKIP. Available options: db,
 uploads (attachments), repositories. Use a comma to specify several options at the same time.
 
 ```
@@ -143,14 +150,38 @@ with the name of your bucket:
 
 ## Storing configuration files
 
-Please be informed that a backup does not store your configuration files.
+Please be informed that a backup does not store your configuration
+files.  One reason for this is that your database contains encrypted
+information for two-factor authentication.  Storing encrypted
+information along with its key in the same place defeats the purpose
+of using encryption in the first place!
+
 If you use an Omnibus package please see the [instructions in the readme to backup your configuration](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md#backup-and-restore-omnibus-gitlab-configuration).
 If you have a cookbook installation there should be a copy of your configuration in Chef.
-If you have an installation from source, please consider backing up your `gitlab.yml` file, any SSL keys and certificates, and your [SSH host keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
+If you have an installation from source, please consider backing up your `.secret` file, `gitlab.yml` file, any SSL keys and certificates, and your [SSH host keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
+
+At the very **minimum** you should backup `/etc/gitlab/gitlab-secrets.json`
+(Omnibus) or `/home/git/gitlab/.secret` (source) to preserve your
+database encryption key.
 
 ## Restore a previously created backup
 
 You can only restore a backup to exactly the same version of GitLab that you created it on, for example 7.2.1.
+
+### Prerequisites
+
+You need to have a working GitLab installation before you can perform
+a restore. This is mainly because the system user performing the
+restore actions ('git') is usually not allowed to create or delete
+the SQL database it needs to import data into ('gitlabhq_production').
+All existing data will be either erased (SQL) or moved to a separate
+directory (repositories, uploads).
+
+If some or all of your GitLab users are using two-factor authentication
+(2FA) then you must also make sure to restore
+`/etc/gitlab/gitlab-secrets.json` (Omnibus) or `/home/git/gitlab/.secret`
+(installations from source). Note that you need to run `gitlab-ctl
+reconfigure` after changing `gitlab-secrets.json`.
 
 ### Installation from source
 
@@ -300,6 +331,25 @@ Example: LVM snapshots + rsync
 If you are running GitLab on a virtualized server you can possibly also create VM snapshots of the entire GitLab server.
 It is not uncommon however for a VM snapshot to require you to power down the server, so this approach is probably of limited practical use.
 
-### Note
-This documentation is for GitLab CE. 
+## Troubleshooting
+
+### Restoring database backup using omnibus packages outputs warnings
+If you are using backup restore procedures you might encounter the following warnings:
+
+```
+psql:/var/opt/gitlab/backups/db/database.sql:22: ERROR:  must be owner of extension plpgsql
+psql:/var/opt/gitlab/backups/db/database.sql:2931: WARNING:  no privileges could be revoked for "public" (two occurences)
+psql:/var/opt/gitlab/backups/db/database.sql:2933: WARNING:  no privileges were granted for "public" (two occurences)
+
+```
+
+Be advised that, backup is successfully restored in spite of these warnings.
+
+The rake task runs this as the `gitlab` user which does not have the superuser access to the database. When restore is initiated it will also run as `gitlab` user but it will also try to alter the objects it does not have access to.
+Those objects have no influence on the database backup/restore but they give this annoying warning.
+
+For more information see similar questions on postgresql issue tracker[here](http://www.postgresql.org/message-id/201110220712.30886.adrian.klaver@gmail.com) and [here](http://www.postgresql.org/message-id/2039.1177339749@sss.pgh.pa.us) as well as [stack overflow](http://stackoverflow.com/questions/4368789/error-must-be-owner-of-language-plpgsql).
+
+## Note
+This documentation is for GitLab CE.
 We backup GitLab.com and make sure your data is secure, but you can't use these methods to export / backup your data yourself from GitLab.com.

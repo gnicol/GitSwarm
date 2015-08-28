@@ -16,7 +16,6 @@
 #= require jquery.scrollTo
 #= require jquery.blockUI
 #= require jquery.turbolinks
-#= require jquery.sticky-kit.min
 #= require turbolinks
 #= require autosave
 #= require bootstrap
@@ -41,6 +40,7 @@
 #= require shortcuts_issuable
 #= require shortcuts_network
 #= require cal-heatmap
+#= require jquery.nicescroll.min
 #= require_tree .
 
 window.slugify = (text) ->
@@ -105,6 +105,8 @@ if location.hash
 window.addEventListener "hashchange", shiftWindow
 
 $ ->
+  $(".nicescroll").niceScroll(cursoropacitymax: '0.4', cursorcolor: '#FFF', cursorborder: "1px solid #FFF")
+
   # Click a .js-select-on-focus field, select the contents
   $(".js-select-on-focus").on "focusin", ->
     # Prevent a mouseup event from deselecting the input
@@ -141,8 +143,7 @@ $ ->
   $('.trigger-submit').on 'change', ->
     $(@).parents('form').submit()
 
-  $("abbr.timeago").timeago()
-  $('.js-timeago').timeago()
+  $('abbr.timeago, .js-timeago').timeago()
 
   # Flash
   if (flash = $(".flash-container")).length > 0

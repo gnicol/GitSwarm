@@ -1,7 +1,7 @@
 %li{ id: dom_id(issue), class: issue_css_classes(issue), url: issue_path(issue) }
-  - if controller.controller_name == 'issues'
+  - if controller.controller_name == 'issues' && can?(current_user, :admin_issue, @project)
     .issue-check
-      = check_box_tag dom_id(issue,"selected"), nil, false, 'data-id' => issue.id, class: "selected_issue", disabled: !can?(current_user, :modify_issue, issue)
+      = check_box_tag dom_id(issue,"selected"), nil, false, 'data-id' => issue.id, class: "selected_issue"
 
   .issue-title
     %span.issue-title-text
@@ -28,7 +28,7 @@
           = 0
 
   .issue-info
-    = "##{issue.iid} opened #{time_ago_with_tooltip(issue.created_at, 'bottom')} by #{link_to_member(@project, issue.author, avatar: false)}".html_safe
+    = "#{issue.to_reference} opened #{time_ago_with_tooltip(issue.created_at, placement: 'bottom')} by #{link_to_member(@project, issue.author, avatar: false)}".html_safe
     - if issue.votes_count > 0
       = render 'votes/votes_inline', votable: issue
     - if issue.milestone
@@ -41,4 +41,4 @@
         = issue.task_status
 
     .pull-right.issue-updated-at
-      %small updated #{time_ago_with_tooltip(issue.updated_at, 'bottom', 'issue_update_ago')}
+      %small updated #{time_ago_with_tooltip(issue.updated_at, placement: 'bottom', html_class: 'issue_update_ago')}

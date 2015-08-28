@@ -6,7 +6,7 @@ per GitSwarm project. For instance, if you configure JIRA it allows you to do
 the following:
 
 - the 'Issues' link on the GitSwarm project pages takes you to the
-  appropriate Jira issue index;
+  appropriate JIRA issue index;
 - clicking 'New issue' on the issues page creates a new JIRA issue;
 - To reference JIRA issue PROJECT-1234 in comments, use syntax
   PROJECT-1234. Commit messages get turned into HTML links to the
@@ -57,5 +57,5 @@ NOTE: For each project, you will still need to configure the issue tracking
 URLs by replacing `:issues_tracker_id` in the above screenshot with the ID
 used by your external issue tracker.
 
-Support to add your commits to the Jira ticket automatically is available
+Support to add your commits to the JIRA ticket automatically is available
 in GitSwarm Enterprise Edition.

@@ -66,7 +66,6 @@ via HTTP(S) requires a **minimum** of 2 cores.
 - 16 cores supports up to 10,000 users
 - 32 cores supports up to 20,000 users
 - 64 cores supports up to 40,000 users
-- More users? Run it on [multiple application servers](high-availability.md)
 
 ### Memory
 
@@ -86,7 +85,6 @@ reconfigure run and 500 errors during usage.
 - 32GB RAM supports up to 8,000 users
 - 64GB RAM supports up to 16,000 users
 - 128GB RAM supports up to 32,000 users
-- More users? Run it on [multiple application servers](high-availability.md)
 
 Notice: The 25 workers of Sidekiq will show up as separate processes in
 your process overview (such as top or htop) but they share the same RAM

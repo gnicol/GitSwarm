@@ -10,7 +10,7 @@
         = label_tag do
           = radio_button_tag(:git_fusion_auto_create, 'nil', true)
           .option-title
-            Not mirrored
+            Not mirrored.
           .option-descr
             Your work will only be stored in GitSwarm.
             %br
@@ -20,12 +20,12 @@
         = label_tag do
           = radio_button_tag(:git_fusion_auto_create, true, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
           .option-title
-            Create a new repo to mirror
+            Create a GitSwarm project to mirror.
             - unless auto_create_enabled
               %i.fa.fa-warning
           .option-descr
             - if auto_create_enabled
-              Will create a new mirrored Git Fusion repo in Perforce under
+              Will create a new GitSwarm project in Perforce under:
               %div
                 %code.auto-create-path #{@path_template}
             - elsif !@auto_create_errors.empty?
@@ -44,13 +44,13 @@
         = label_tag do
           = radio_button_tag(:git_fusion_auto_create, false, false, disabled: @repos.empty?)
           .option-title
-            Mirror an existing repository
+            Mirror an existing repository.
           .option-descr
             - if @repos.empty?
               .repo-warning.slead
                 Although Git Fusion is configured, there are no repos available for import.
             - else
-              Will mirror an existing Git Fusion Repository
+              Will mirror an existing Git Fusion repo.
               .repo-select.form-inline.control-group
                 Repo:
                 = select_tag(:git_fusion_repo_name, repos_options, class: 'select2 span2', disabled: 'true')

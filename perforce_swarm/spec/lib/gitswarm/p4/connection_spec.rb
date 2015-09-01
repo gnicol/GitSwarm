@@ -32,7 +32,7 @@ describe PerforceSwarm::P4::Connection do
        { 'enabled' => false },
        { 'enabled' => true },
        { 'enabled' => true, 'default' => {} },
-       { 'enabled' => true, 'default' => { 'url' => 'git@unknown', 'perforce' => { 'user' => 'p4user' } } }
+       { 'enabled' => true, 'default' => { 'url' => 'git@unknown' } }
       ].each do |config_hash|
         expect do
           PerforceSwarm::P4::Connection.validate_config(PerforceSwarm::GitFusion::Config.new(config_hash).entry)

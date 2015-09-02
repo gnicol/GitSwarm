@@ -1,0 +1,56 @@
+.git-fusion-import-data
+  - if !@errors.empty?
+    .repo-warning.slead
+      %h4 There was an error communicating with Git Fusion:
+      = @errors.first
+  - else
+    - repos_options = git_fusion_repos(@repos)
+    .git-fusion-radios
+      .radio
+        = label_tag do
+          = radio_button_tag(:git_fusion_auto_create, 'nil', true)
+          .option-title
+            Not mirrored
+          .option-descr
+            Your work will only be stored in GitSwarm.
+            %br
+            A copy will not be replicated to/from the Perforce Helix Server.
+      - auto_create_enabled = @project_depot && @auto_create_errors.empty?
+      .radio{:class => ("disabled" unless auto_create_enabled)}
+        = label_tag do
+          = radio_button_tag(:git_fusion_auto_create, true, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
+          .option-title
+            Create a new repo to mirror
+            - unless auto_create_enabled
+              %i.fa.fa-warning
+          .option-descr
+            - if auto_create_enabled
+              Will create a new mirrored Git Fusion repo in Perforce under
+              %div
+                %code.auto-create-path #{@path_template}
+            - elsif !@auto_create_errors.empty?
+              Convention-based repo creation is unavailable:
+              %br
+              = @auto_create_errors.first
+              Please see
+              = link_to ' this document ', '#'
+              for help.
+            - elsif !@project_depot
+              Configured project depot #{@project_depot.inspect} is missing.
+              Please see
+              = link_to ' this document ', '#'
+              for help.
+      .radio
+        = label_tag do
+          = radio_button_tag(:git_fusion_auto_create, false, false, disabled: @repos.empty?)
+          .option-title
+            Mirror an existing repository
+          .option-descr
+            - if @repos.empty?
+              .repo-warning.slead
+                Although Git Fusion is configured, there are no repos available for import.
+            - else
+              Will mirror an existing Git Fusion Repository
+              .repo-select.form-inline.control-group
+                Repo:
+                = select_tag(:git_fusion_repo_name, repos_options, class: 'select2 span2', disabled: 'true')

@@ -1,8 +1,4 @@
 defaults: &defaults
-  p4:
-    port: "perforce:1666"
-    user: "jdoe"
-    password: "secret"
 
 development:
   <<: *defaults

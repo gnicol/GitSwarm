@@ -24,7 +24,7 @@ namespace :gitlab do
       end
       op.parse!(ARGV)
 
-      PerforceSwarm::GitFusion.validate_entries(min_version) do |result|
+      PerforceSwarm::GitlabConfig.new.git_fusion.validate_entries(min_version) do |result|
         if !result[:valid] && result[:outdated]
           display_outdated_version_info(result[:config]['url'], result[:version], min_version)
           outdated = true

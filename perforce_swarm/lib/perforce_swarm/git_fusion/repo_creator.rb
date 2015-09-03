@@ -46,13 +46,13 @@ module PerforceSwarm
 
       # returns the depot portion of the generated depot_path
       def project_depot
-        depot_path[%r{\A//([^/]+)/}, 1]
+        path_template[%r{\A//([^/]+)/}, 1]
       end
 
       # generates the p4gf_config file that should be checked into Perforce under
       # //.git-fusion/repos/repo_name/p4gf_config
       def p4gf_config
-        config_description = 'Repo automatically created by GitSwarm.'
+        config_description  = 'Repo automatically created by GitSwarm.'
         config_description += @description ? ' ' + @description.gsub("\n", ' ').strip : ''
         <<eof
 [@repo]
@@ -65,7 +65,7 @@ depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}
 depot-branch-creation-enable = all
 
 [master]
-view = #{depot_path}/master/... ...
+view = "#{depot_path}/master/..." ...
 git-branch-name = master
 eof
       end
@@ -76,6 +76,10 @@ eof
         p4.login
 
         # ensure the depots exist - both the //.git-fusion one as well as the one the user wants to create their project
+        if project_depot.include?('{namespace}') || project_depot.include?('{project-path}')
+          fail 'Depot names cannot contain substitution variables ({namespace} or {project-path}).'
+        end
+
         depots   = [project_depot, '.git-fusion']
         missing  = depots - PerforceSwarm::P4::Spec::Depot.exists?(depots, p4)
         if missing.length > 0

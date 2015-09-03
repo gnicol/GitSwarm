@@ -2,6 +2,9 @@ class @GitFusionProject
   server_select_selector: 'select#git_fusion_entry'
   import_url_selector:    'input#project_import_url'
   repo_name_selector:     'select#git_fusion_repo_name'
+  disabled_selector:      'input#git_fusion_auto_create_nil'
+  auto_create_selector:   'input#git_fusion_auto_create_true'
+  repo_import_selector:   'input#git_fusion_auto_create_false'
   repo_contents:          null
 
   constructor: (@opts) ->
@@ -19,6 +22,12 @@ class @GitFusionProject
     this.$el.on 'change', @repo_name_selector, (e) =>
       @update_ui()
 
+    this.$el.on 'select2-open', @repo_name_selector, (e) =>
+      this.$(@repo_import_selector).prop('checked', true)
+
+    this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}", (e) =>
+      @update_ui()
+
     $(document).on 'input', @import_url_selector, (e) =>
       @update_ui()
 
@@ -28,17 +37,27 @@ class @GitFusionProject
 
   disable: (elements, flag) ->
     flag = !!flag
-    $(elements).toggleClass('disabled', flag).prop('disabled', flag)
+    $(elements).not('[data-keep-disabled=true]').toggleClass('disabled', flag).prop('disabled', flag)
 
   update_ui: ->
-    fusion_repo_selected   = this.$(@repo_name_selector).length > 0 && !!this.$(@repo_name_selector).find('option:selected').val()
-    has_import_url         = !!$(@import_url_selector).val()
+    auto_create_selected = fusion_repo_selected = disabled_selector = false
+    has_import_url       = !!$(@import_url_selector).val()
+
+    if (this.$(@auto_create_selector).length)
+      disabled_selector    = this.$(@disabled_selector).is(':checked')
+      auto_create_selected = this.$(@auto_create_selector).is(':checked')
+      fusion_repo_selected = this.$(@repo_import_selector).is(':checked') &&
+        !!this.$(@repo_name_selector).find('option:selected').val()
 
     # disable the external import section and buttons if we're doing mirroring
-    @disable('.external-import, .external-import a.btn, ' + @import_url_selector, fusion_repo_selected)
+    @disable('.external-import, .external-import a.btn, ' + @import_url_selector, fusion_repo_selected || auto_create_selected)
 
     # if the user is doing an external import, disable mirroring controls
     @disable('.git-fusion-import, .git-fusion-import select, .git-fusion-import input', has_import_url)
+
+    # clear the repo list when mirror existing is not selected
+    if auto_create_selected || disabled_selector
+      this.$(@repo_name_selector).val('').select2()
 
   load_content: (server_id) ->
     # Clear out pre-existing content right away
@@ -60,6 +79,13 @@ class @GitFusionProject
         # Only update the list if our server_id is still selected
         if this.$(@server_select_selector).val() == server_id
           @set_content(@repo_contents[server_id])
+      error: =>
+        if this.$(@server_select_selector).val() == server_id
+          @set_content(
+            '<div class="git-fusion-import-data">' +
+              '<div class="description slead"><h4>Error</h4>Refresh and try again</div>' +
+            '</div>'
+          )
       beforeSend: =>
         # Add loading spinner
         @set_content(

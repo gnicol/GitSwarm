@@ -12,10 +12,10 @@ module PerforceSwarm
             found.push(depot['name'])
           end
           # for single existence return whether we found one, otherwise return all (if any) found
-          return id.is_a?(Array) ? !found.empty? : found
+          return id.is_a?(Array) ? found : !found.empty?
         rescue
           # command bombed for whatever reason, so return false/empty
-          return id.is_a?(Array) ? false : []
+          return id.is_a?(Array) ? [] : false
         end
       end
     end

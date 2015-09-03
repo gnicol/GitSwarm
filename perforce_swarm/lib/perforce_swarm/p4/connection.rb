@@ -14,8 +14,9 @@ module PerforceSwarm
       end
 
       def initialize(config = nil)
-        ENV['P4TICKETS'] = File.join(ROOT_PATH, '.p4tickets')
-        ENV['P4TRUST']   = File.join(ROOT_PATH, '.p4trust')
+        p4_dir           = File.join(Gitlab.config.gitlab['user_home'], 'p4')
+        ENV['P4TICKETS'] = File.join(p4_dir, '.p4tickets') if File.exist?(p4_dir)
+        ENV['P4TRUST']   = File.join(p4_dir, '.p4trust')   if File.exist?(p4_dir)
         @p4              = ::P4.new
         self.config      = config if config
       end

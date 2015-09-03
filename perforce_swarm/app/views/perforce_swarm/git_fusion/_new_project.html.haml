@@ -15,7 +15,7 @@
             Your work will only be stored in GitSwarm.
             %br
             A copy will not be replicated to/from the Perforce Helix Server.
-      - auto_create_enabled = @project_depot && @auto_create_errors.empty?
+      - auto_create_enabled = @depot_exists && @auto_create_errors.empty?
       .radio{:class => ("disabled" unless auto_create_enabled)}
         = label_tag do
           = radio_button_tag(:git_fusion_auto_create, true, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
@@ -35,7 +35,7 @@
               Please see
               = link_to ' this document ', '#'
               for help.
-            - elsif !@project_depot
+            - elsif !@depot_exists
               Configured project depot #{@project_depot.inspect} is missing.
               Please see
               = link_to ' this document ', '#'

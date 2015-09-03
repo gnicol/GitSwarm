@@ -38,7 +38,7 @@ namespace :gitlab do
     end
 
     def display_warning(url, message)
-      puts "Could not connect to GitFusion instance at #{url.to_s.white}.".yellow + "Error: #{message}.".yellow
+      puts "Could not connect to GitFusion instance at #{url.to_s.white}.".yellow + " Message: #{message}.".yellow
       puts "\tPlease update /etc/gitswarm/gitswarm.rb and re-run 'sudo gitswarm-ctl reconfigure'.".yellow
       puts ''
     end

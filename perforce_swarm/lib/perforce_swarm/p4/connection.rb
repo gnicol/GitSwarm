@@ -76,9 +76,10 @@ module PerforceSwarm
         connect unless connected?
         info('start command:', args)
         last_input = input
-        @p4.run(*args)
+        result = @p4.run(*args)
         # reset our stored input
         self.input = ''
+        result
       rescue P4Exception => e
         # if we have no charset and the error was related to pointing at a unicode server,
         # set ourselves to use utf8 and re-run the command

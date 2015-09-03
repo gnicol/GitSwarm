@@ -29,7 +29,7 @@ namespace :gitlab do
           display_outdated_version_info(result[:config]['url'], result[:version], min_version)
           outdated = true
         elsif !result[:valid]
-          display_error(result[:config]['url'], result[:error])
+          display_warning(result[:config]['url'], result[:error])
         else
           display_success_info(result[:config]['url'], result[:version]) unless quiet
         end
@@ -37,9 +37,9 @@ namespace :gitlab do
       exit(66) if outdated
     end
 
-    def display_error(url, message)
-      puts "Could not connect to GitFusion instance at #{url.to_s.white}.".red + "Error: #{message}.".red
-      puts "\tPlease update /etc/gitswarm/gitswarm.rb and re-run 'sudo gitswarm-ctl reconfigure'.".red
+    def display_warning(url, message)
+      puts "Could not connect to GitFusion instance at #{url.to_s.white}.".yellow + "Error: #{message}.".yellow
+      puts "\tPlease update /etc/gitswarm/gitswarm.rb and re-run 'sudo gitswarm-ctl reconfigure'.".yellow
       puts ''
     end
 

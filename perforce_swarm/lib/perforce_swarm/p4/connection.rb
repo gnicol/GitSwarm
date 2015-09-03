@@ -75,8 +75,9 @@ module PerforceSwarm
       def run(*args)
         connect unless connected?
         info('start command:', args)
-        @p4.input = input || ''
+        last_input = input
         @p4.run(*args)
+        # reset our stored input
         self.input = ''
       rescue P4Exception => e
         # if we have no charset and the error was related to pointing at a unicode server,
@@ -84,20 +85,20 @@ module PerforceSwarm
         no_charset = !@p4.charset || @p4.charset.empty? || @p4.charset == 'none'
         if no_charset && e.message.include?('Unicode server permits only unicode enabled clients.')
           @p4.charset = 'utf8'
+          self.input  = last_input
           return run(*args)
         end
 
         # if we failed due to an untrusted server, trust it and re-run
         if e.message.include?("To allow connection use the 'p4 trust' command") && !@has_trusted
           @has_trusted = true
-          retry_input = input
-          self.input = ''
           run('trust', '-y')
-          self.input = retry_input
+          self.input = last_input
           return run(*args)
         end
 
         # we encountered an error that we're unable to handle, so log and re-throw
+        self.input = ''
         error('command failed:', e)
         raise e
       end
@@ -134,7 +135,10 @@ module PerforceSwarm
         'gitswarm-temp-' + SecureRandom.uuid
       end
 
-      attr_writer :input
+      def input=(input)
+        @p4.input = input
+        @input    = input
+      end
 
       def input(*args)
         if args.length > 0

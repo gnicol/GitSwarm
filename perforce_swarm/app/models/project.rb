@@ -40,6 +40,7 @@ class Project < ActiveRecord::Base
   validates :git_fusion_repo,
             length: { maximum: 255 },
             allow_blank: true,
+            allow_nil: true,
             format: { with: %r{\Amirror://([^/]+)/([^/]+)\z},
                       message: 'must be a valid Git Fusion repo to enable mirroring.' },
             if: ->(project) { project.git_fusion_import? }

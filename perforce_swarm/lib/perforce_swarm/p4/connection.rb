@@ -75,13 +75,18 @@ module PerforceSwarm
       def run(*args)
         connect unless connected?
         info('start command:', args)
-        @p4.run(*args)
+        last_input = input
+        result = @p4.run(*args)
+        # reset our stored input
+        self.input = ''
+        result
       rescue P4Exception => e
         # if we have no charset and the error was related to pointing at a unicode server,
         # set ourselves to use utf8 and re-run the command
         no_charset = !@p4.charset || @p4.charset.empty? || @p4.charset == 'none'
         if no_charset && e.message.include?('Unicode server permits only unicode enabled clients.')
           @p4.charset = 'utf8'
+          self.input  = last_input
           return run(*args)
         end
 
@@ -89,10 +94,12 @@ module PerforceSwarm
         if e.message.include?("To allow connection use the 'p4 trust' command") && !@has_trusted
           @has_trusted = true
           run('trust', '-y')
+          self.input = last_input
           return run(*args)
         end
 
         # we encountered an error that we're unable to handle, so log and re-throw
+        self.input = ''
         error('command failed:', e)
         raise e
       end
@@ -131,6 +138,7 @@ module PerforceSwarm
 
       def input=(input)
         @p4.input = input
+        @input    = input
       end
 
       def input(*args)
@@ -138,7 +146,7 @@ module PerforceSwarm
           self.input = args[0]
           return self
         end
-        @p4.input
+        @input
       end
 
       def user=(user)

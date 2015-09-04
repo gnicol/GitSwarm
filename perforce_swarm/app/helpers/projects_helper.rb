@@ -46,7 +46,7 @@ module ProjectsHelper
     servers.each do |id, config|
       options.push([config[:url], id])
     end
-    servers.empty? ? [] : options_for_select(options)
+    servers.empty? ? [] : options_for_select(options, params['git_fusion_entry'])
   end
 
   def git_fusion_repos(repos)

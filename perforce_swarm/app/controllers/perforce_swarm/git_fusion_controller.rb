@@ -3,7 +3,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
     @fusion_server      = params['fusion_server']
     @errors             = []
     @repos              = []
-    @project_depot      = false
+    @project_depot      = ''
+    @depot_exists       = false
     @auto_create_errors = []
     @path_template      = ''
     begin
@@ -18,8 +19,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
       creator        = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
       p4             = PerforceSwarm::P4::Connection.new(creator.config)
       p4.login
-      @project_depot = PerforceSwarm::P4::Spec::Depot.exists?([creator.project_depot], p4).shift ||
-                       creator.project_depot
+      @project_depot = creator.project_depot
+      @depot_exists  = PerforceSwarm::P4::Spec::Depot.exists?(creator.project_depot, p4)
       @path_template = creator.path_template.chomp('/') + '/...'
     rescue => auto_create_error
       @auto_create_errors << auto_create_error.message

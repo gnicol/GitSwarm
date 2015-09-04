@@ -3,6 +3,9 @@
     .repo-warning.slead
       %h4 There was an error communicating with Git Fusion:
       = @errors.first
+      Please see
+      = link_to ' this document ', '#'
+      for help.
   - else
     - repos_options = git_fusion_repos(@repos)
     .git-fusion-radios

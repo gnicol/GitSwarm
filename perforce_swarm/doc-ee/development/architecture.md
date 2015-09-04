@@ -45,7 +45,7 @@ machine (SSH) instead of the front desk (HTTP). Gitlab-shell communicates
 with Sidekiq via the "communication board" (Redis), and asks quick
 questions of the Unicorn workers either directly or via the front desk.
 
-**GitSwarm (the application)** is the collection of processes and business
+**GitSwarm Enterprise Edition (the application)** is the collection of processes and business
 practices that the office is run by.
 
 ## System Layout
@@ -53,7 +53,7 @@ practices that the office is run by.
 When referring to ~git in the pictures it means the home directory of the
 git user which is typically `/home/git`.
 
-GitSwarm is primarily installed within the `/home/git` user home directory
+GitSwarm EE is primarily installed within the `/home/git` user home directory
 as `git` user. Within the home directory is where the gitlabhq server
 software resides as well as the repositories (though the repository
 location is configurable).
@@ -69,18 +69,18 @@ gitlab-shell which is installed in `/home/git/gitlab-shell`.
 
 ![GitSwarm Diagram Overview](gitswarm_diagram_overview.png)
 
-A typical install of GitSwarm is on GNU/Linux. It uses Nginx as a web front
+A typical install of GitSwarm EE is on GNU/Linux. It uses Nginx as a web front
 end to proxypass the Unicorn web server. By default, communication between
 Unicorn and the front end is via a Unix domain socket, but forwarding
 requests via TCP is also supported. The web front end accesses
 `/home/git/gitswarm/public`, bypassing the Unicorn server, to serve static
 pages, uploads (e.g. avatar images or attachments), and precompiled
-assets. GitSwarm serves web pages and a [GitSwarm API](../api/README.md)
+assets. GitSwarm EE serves web pages and a [GitSwarm API](../api/README.md)
 using the Unicorn web server. It uses Sidekiq as a job queue which, in
 turn, uses Redis as a non-persistent database backend for job information,
 meta data, and incoming jobs.
 
-GitSwarm uses PostgreSQL for persistent database information (e.g. users,
+GitSwarm EE uses PostgreSQL for persistent database information (e.g. users,
 permissions, issues, other meta data). GitSwarm stores the bare git
 repositories it serves in `/home/git/repositories` by default. It also
 keeps default branch and hook information with the bare repository.
@@ -90,14 +90,14 @@ interface, etc.
 
 The satellite repository is used by the web interface for editing
 repositories and the wiki which is also a git repository. When serving
-repositories over HTTP/HTTPS, GitSwarm utilizes the GitSwarm API to resolve
+repositories over HTTP/HTTPS, GitSwarm EE utilizes the GitSwarm API to resolve
 authorization and access as well as serving git objects.
 
 The add-on component gitlab-shell serves repositories over SSH. It manages
 the SSH keys within `/home/git/.ssh/authorized_keys` which should not be
 manually edited. gitlab-shell accesses the bare repositories directly to
 serve git objects and communicates with Redis to submit jobs to Sidekiq for
-GitSwarm to process. gitlab-shell queries the GitSwarm API to determine
+GitSwarm EE to process. gitlab-shell queries the GitSwarm API to determine
 authorization and access.
 
 ### Installation Folder Summary

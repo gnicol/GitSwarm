@@ -94,6 +94,9 @@ module PerforceSwarm
         if e.message.include?("To allow connection use the 'p4 trust' command") && !@has_trusted
           @has_trusted = true
           run('trust', '-y')
+          # We must disconnect here after trust runs. It has been observed re-running login
+          # results in an empty response from the login command
+          disconnect
           self.input = last_input
           return run(*args)
         end

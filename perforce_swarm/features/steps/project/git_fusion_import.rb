@@ -54,7 +54,7 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
   end
 
   step 'I should see a Git Fusion is disabled message' do
-    page.should have_content 'This GitSwarm instance is not pointing to any Git Fusion servers.'
+    page.should have_content 'This Helix GitSwarm instance is not pointing to any Helix Git Fusion servers.'
   end
 
   step 'I should see a Git Fusion Configuration Error' do
@@ -62,11 +62,11 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
   end
 
   step 'I should see a Git Fusion Communication Error' do
-    page.should have_content 'There was an error communicating with Git Fusion:'
+    page.should have_content 'There was an error communicating with Helix Git Fusion:'
   end
 
   step 'I should see a message saying Git Fusion has no repos available for import' do
-    page.should have_content 'Although Git Fusion is configured, there are no repos available for import.'
+    page.should have_content 'Although Helix Git Fusion is configured, there are no repositories available for import.'
   end
 
   step 'I should see a populated Git Fusion server dropdown' do

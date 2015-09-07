@@ -157,8 +157,11 @@ ssh git@gf_host
 
     ![New project page](gitfusion_importer/new_project_page.png)
 
-1.  Click the "Repo" drop-down menu and select an available
-    Git Fusion repository to import.
+1.  Click the "Git Fusion Server" drop-down menu to select an available
+    Git Fusion Server to import from.
+
+1.  Click the "Repo" drop-down menu under the "Mirror an exising repository"
+    option and select an available Git Fusion repository to import.
 
     ![Select repository to import](gitfusion_importer/choose_repo.png)
 

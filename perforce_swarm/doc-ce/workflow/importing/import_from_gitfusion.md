@@ -35,21 +35,31 @@ available in a future GitSwarm release.
 Before you can import from Git Fusion, GitSwarm needs some configuration
 that describes where the Git Fusions service(s) exist.
 
-Note: GitSwarm can currently only connect to a single Git Fusion service.
-
 #### Using an HTTP(S) connection
 
 1.  **Add the following configuration to `/etc/gitswarm/gitswarm.rb`:**
 
     ```ruby
-gitswarm['git-fusion']['enabled']             = true
-gitswarm['git-fusion']['default']['url']      = 'http://gitswarm@gitfusion.host/'
-gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['enabled']               = true
+gitswarm['git-fusion']['my-fusion']['url']      = 'http://gitswarm@gitfusion.host/'
+gitswarm['git-fusion']['my-fusion']['password'] = '<password for "gitswarm" user>'
     ```
 
-    Note: The `gitswarm` user needs to exist in the Helix Versioning Engine
-    that the Git Fusion service uses, and must have permission to access
-    the repositories you wish to import from.
+    Note: The user (e.g. `gitswarm`) used in the url field needs to exist in
+    the Helix Versioning Engine that the Git Fusion service uses, and must
+    have permission to access the repositories you wish to import from.
+
+    Note: The `my-fusion` key is used to assign config values to a particular
+    git-fusion instance. You can include more configured servers under other
+    keys.
+
+    ```ruby
+gitswarm['git-fusion']['enabled']                     = true
+gitswarm['git-fusion']['my-fusion']['url']            = 'http://gitswarm@gitfusion.host/'
+gitswarm['git-fusion']['my-fusion']['password']       = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['my-other-fusion']['url']      = 'http://gitswarm@otherfusion.host/'
+gitswarm['git-fusion']['my-other-fusion']['password'] = '<password for "gitswarm" user>'
+    ```
 
     Note: While we do not recommend using self-signed SSL certificates (and
     these should never be used in production), if you are using self-signed
@@ -57,7 +67,7 @@ gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
     specify:
 
     ```ruby
-gitswarm['git-fusion']['default']['git_config_params'] = 'http.sslVerify=false'
+gitswarm['git-fusion']['my-fusion']['git_config_params'] = 'http.sslVerify=false'
     ```
 
 1.  **Make the configuration change active:**
@@ -72,7 +82,7 @@ sudo gitswarm-ctl reconfigure
 
     ```ruby
 gitswarm['git-fusion']['enabled']                      = true
-gitswarm['git-fusion']['default']['url']               = 'git@gitfusion.host'
+gitswarm['git-fusion']['my-fusion']['url']             = 'git@gitfusion.host'
     ```
 
 1.  **Make this configuration change active:**
@@ -121,10 +131,9 @@ ssh-keygen -t rsa -b 2048
     a system user needs to exist (we recommend `gitswarm`), and the
     public key needs to be installed in Git Fusion/p4d for that user.
 
-1.  **Verify the SSH key fingerprint**
+1.  **Verify the SSH key works**
 
-    This step "activates" the key for use by GitSwarm. Run this step
-    from the GitSwarm server.
+    Run this step from the GitSwarm server.
 
     ```bash
 ssh git@gf_host

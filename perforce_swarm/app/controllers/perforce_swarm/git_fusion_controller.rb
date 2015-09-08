@@ -25,7 +25,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     rescue => auto_create_error
       @auto_create_errors << auto_create_error.message
     ensure
-      p4.disconnect
+      p4.disconnect if p4
     end
 
     respond_to do |format|

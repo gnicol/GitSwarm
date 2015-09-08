@@ -17,7 +17,7 @@ module PerforceSwarm
           # command bombed for whatever reason, so return false/empty
           return id.is_a?(Array) ? [] : false
         ensure
-          connection.disconnect
+          connection.disconnect if connection
         end
       end
     end

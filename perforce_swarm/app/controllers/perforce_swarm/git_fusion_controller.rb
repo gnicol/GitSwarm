@@ -24,6 +24,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
       @path_template = creator.path_template.chomp('/') + '/...'
     rescue => auto_create_error
       @auto_create_errors << auto_create_error.message
+    ensure
+      p4.disconnect
     end
 
     respond_to do |format|

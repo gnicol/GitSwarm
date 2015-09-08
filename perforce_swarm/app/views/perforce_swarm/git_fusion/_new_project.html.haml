@@ -43,9 +43,9 @@
               Please see
               = link_to ' this document ', '#'
               for help.
-      .radio
+      .radio{:class => ("disabled" if @repos.empty?)}
         = label_tag do
-          = radio_button_tag(:git_fusion_auto_create, false, false, disabled: @repos.empty?)
+          = radio_button_tag(:git_fusion_auto_create, false, false, disabled: @repos.empty?, 'data-keep-disabled' => @repos.empty?)
           .option-title
             Mirror an existing repository
           .option-descr

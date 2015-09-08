@@ -46,10 +46,9 @@ class @GitFusionProject
     has_import_url       = !!$(@import_url_selector).val()
 
     # re-populate auto create selection and repo name
-    original_auto_create = $(@original_settings_selector).data('auto-create')
-    if (original_auto_create)
-      $('input#' + original_auto_create).prop('checked', 'checked')
-      console.log('input#' + original_auto_create)
+    if ($(@original_settings_selector).length)
+      original_auto_create = $(@original_settings_selector).data('auto-create')
+      $('input#git_fusion_auto_create_' + original_auto_create).prop('checked', 'checked')
 
     if (this.$(@auto_create_selector).length)
       disabled_selector    = this.$(@disabled_selector).is(':checked')

@@ -11,13 +11,13 @@ module PerforceSwarm
             next unless ids.include?(depot['name'])
             found.push(depot['name'])
           end
-          connection.disconnect
-
           # for single existence return whether we found one, otherwise return all (if any) found
           return id.is_a?(Array) ? found : !found.empty?
         rescue
           # command bombed for whatever reason, so return false/empty
           return id.is_a?(Array) ? [] : false
+        ensure
+          connection.disconnect
         end
       end
     end

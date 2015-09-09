@@ -18,6 +18,8 @@ module PerforceSwarm
         ENV['P4TICKETS'] = File.join(p4_dir, '.p4tickets') if File.exist?(p4_dir)
         ENV['P4TRUST']   = File.join(p4_dir, '.p4trust')   if File.exist?(p4_dir)
         @p4              = ::P4.new
+        @p4.prog         = 'GITSWARM'
+        @p4.version      = "#{PerforceSwarm::VERSION}/#{Gitlab::REVISION}"
         self.config      = config if config
       end
 

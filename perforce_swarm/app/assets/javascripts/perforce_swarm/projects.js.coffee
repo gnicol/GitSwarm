@@ -48,7 +48,7 @@ class @GitFusionProject
     # re-populate auto create selection and repo name
     if ($(@original_settings_selector).length)
       original_auto_create = $(@original_settings_selector).data('auto-create')
-      $('input#git_fusion_auto_create_' + original_auto_create).prop('checked', 'checked')
+      $('input#git_fusion_auto_create_' + original_auto_create).prop('checked', true)
 
     if (this.$(@auto_create_selector).length)
       disabled_selector    = this.$(@disabled_selector).is(':checked')

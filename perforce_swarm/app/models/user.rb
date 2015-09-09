@@ -29,6 +29,8 @@ module PerforceSwarm
       rescue P4Exception => ex
         message = ex.message.match(/\[Error\]: (?<error>.*)$/) ? Regexp.last_match(:error) : ex.message
         raise ex, message
+      ensure
+        connection.disconnect if connection
       end
     end
   end

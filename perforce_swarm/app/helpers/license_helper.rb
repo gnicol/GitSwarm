@@ -5,7 +5,7 @@ if PerforceSwarm.ee?
     module LicenseHelper
       # rebrand GitLab in the license message
       def license_message(signed_in: signed_in?, is_admin: (current_user && current_user.is_admin?))
-        @license_message = @license_message.gsub('GitLab', 'GitSwarm') if super
+        @license_message = PerforceSwarm::Branding.rebrand(@license_message) if super
         @license_message
       end
     end

@@ -50,7 +50,7 @@ module ProjectsHelper
   end
 
   def git_fusion_repos(repos)
-    options = [['<Select repo to enable>', '']]
+    options = [['<Select repository to enable>', '']]
     repos.each do |name, _description|
       options.push([name, name])
     end

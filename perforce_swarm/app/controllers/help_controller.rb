@@ -185,6 +185,11 @@ EOS
         end
       end
 
+      # point the archived download link to our ftp.
+      if file == 'backup_restore'
+        content.gsub!('https://www.gitlab.com/downloads/archives/', 'http://ftp.perforce.com/perforce')
+      end
+
       # return the munged string
       content
     end

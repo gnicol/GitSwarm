@@ -21,14 +21,16 @@ module PerforceSwarm
       default_config = PerforceSwarm::GitlabConfig.new.git_fusion.entry('default')
       return unless default_config['auto_provision']
 
-      connection = PerforceSwarm::P4::Connection.new(default_config)
-      connection.login
-      connection.input(password)
       begin
+        connection = PerforceSwarm::P4::Connection.new(default_config)
+        connection.login
+        connection.input(password)
         connection.run('passwd', 'root')
       rescue P4Exception => ex
         message = ex.message.match(/\[Error\]: (?<error>.*)$/) ? Regexp.last_match(:error) : ex.message
         raise ex, message
+      ensure
+        connection.disconnect if connection
       end
     end
   end

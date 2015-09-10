@@ -22,12 +22,6 @@ module ProjectsHelper
     return false
   end
 
-  def git_fusion_url
-    gitlab_shell_config.git_fusion.entry['url']
-  rescue
-    false
-  end
-
   def git_fusion_server_error
     return nil unless git_fusion_import_enabled?
 
@@ -50,7 +44,7 @@ module ProjectsHelper
   end
 
   def git_fusion_repos(repos)
-    options = [['<Select repo to enable>', '']]
+    options = [['<Select repository to enable>', '']]
     repos.each do |name, _description|
       options.push([name, name])
     end

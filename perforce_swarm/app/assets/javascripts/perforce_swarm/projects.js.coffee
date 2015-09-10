@@ -1,11 +1,12 @@
 class @GitFusionProject
-  server_select_selector: 'select#git_fusion_entry'
-  import_url_selector:    'input#project_import_url'
-  repo_name_selector:     'select#git_fusion_repo_name'
-  disabled_selector:      'input#git_fusion_auto_create_nil'
-  auto_create_selector:   'input#git_fusion_auto_create_true'
-  repo_import_selector:   'input#git_fusion_auto_create_false'
-  repo_contents:          null
+  server_select_selector:     'select#git_fusion_entry'
+  import_url_selector:        'input#project_import_url'
+  repo_name_selector:         'select#git_fusion_repo_name'
+  original_settings_selector: '#original-git-fusion-settings'
+  disabled_selector:          'input#git_fusion_auto_create_nil'
+  auto_create_selector:       'input#git_fusion_auto_create_true'
+  repo_import_selector:       'input#git_fusion_auto_create_false'
+  repo_contents:               null
 
   constructor: (@opts) ->
     this.$el       = $('.git-fusion-import')
@@ -26,6 +27,7 @@ class @GitFusionProject
       this.$(@repo_import_selector).prop('checked', true)
 
     this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}", (e) =>
+      $(@original_settings_selector).remove()
       @update_ui()
 
     $(document).on 'input', @import_url_selector, (e) =>
@@ -42,6 +44,11 @@ class @GitFusionProject
   update_ui: ->
     auto_create_selected = fusion_repo_selected = disabled_selector = false
     has_import_url       = !!$(@import_url_selector).val()
+
+    # re-populate auto create selection and repo name
+    if ($(@original_settings_selector).length)
+      original_auto_create = $(@original_settings_selector).data('auto-create')
+      $('input#git_fusion_auto_create_' + original_auto_create).prop('checked', true)
 
     if (this.$(@auto_create_selector).length)
       disabled_selector    = this.$(@disabled_selector).is(':checked')
@@ -79,6 +86,7 @@ class @GitFusionProject
         # Only update the list if our server_id is still selected
         if this.$(@server_select_selector).val() == server_id
           @set_content(@repo_contents[server_id])
+
       error: =>
         if this.$(@server_select_selector).val() == server_id
           @set_content(

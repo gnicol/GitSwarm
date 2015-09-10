@@ -8,13 +8,15 @@ module PerforceSwarm
       category = clean_path_info(path_params[:category])
       file = path_params[:file]
 
-      override_doc_dir = PerforceSwarm.ee? ? 'doc-ee' : 'doc-ce'
-
       respond_to do |format|
         format.any(:markdown, :md, :html) do
-          swarm_path = Rails.root.join('perforce_swarm', override_doc_dir, category, "#{file}.md")
-          path       = Rails.root.join('doc', category, "#{file}.md")
-          if File.exist?(swarm_path)
+          swarm_path    = Rails.root.join('perforce_swarm', 'doc-ce', category, "#{file}.md")
+          swarm_ee_path = Rails.root.join('perforce_swarm', 'doc-ee', category, "#{file}.md")
+          path          = Rails.root.join('doc', category, "#{file}.md")
+          if PerforceSwarm.ee? && File.exist?(swarm_ee_path)
+            @markdown = File.read(swarm_ee_path)
+            render 'show.html.haml'
+          elsif File.exist?(swarm_path)
             @markdown = File.read(swarm_path)
             render 'show.html.haml'
           elsif File.exist?(path)
@@ -28,9 +30,12 @@ module PerforceSwarm
 
         # Allow access to images in the doc folder
         format.any(:png, :gif, :jpeg) do
-          swarm_path = Rails.root.join('perforce_swarm', override_doc_dir, category, "#{file}.#{params[:format]}")
-          path       = Rails.root.join('doc', category, "#{file}.#{params[:format]}")
-          if File.exist?(swarm_path)
+          swarm_path    = Rails.root.join('perforce_swarm', 'doc-ce', category, "#{file}.#{params[:format]}")
+          swarm_ee_path = Rails.root.join('perforce_swarm', 'doc-ee', category, "#{file}.#{params[:format]}")
+          path          = Rails.root.join('doc', category, "#{file}.#{params[:format]}")
+          if PerforceSwarm.ee? && File.exist?(swarm_ee_path)
+            send_file(swarm_ee_path, disposition: 'inline')
+          elsif File.exist?(swarm_path)
             send_file(swarm_path, disposition: 'inline')
           elsif File.exist?(path)
             send_file(path, disposition: 'inline')

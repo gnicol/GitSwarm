@@ -1,4 +1,4 @@
-# Migrating projects to a GitLab instance
+# Migrating projects to a GitSwarm instance
 
 1. [Bitbucket](import_projects_from_bitbucket.md)
 2. [Git Fusion](import_from_gitfusion.md)

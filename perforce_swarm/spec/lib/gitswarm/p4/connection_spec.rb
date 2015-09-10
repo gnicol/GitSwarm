@@ -23,6 +23,7 @@ describe PerforceSwarm::P4::Connection do
   end
 
   after(:each) do
+    @connection.disconnect if @connection
     FileUtils.remove_entry_secure @p4root
   end
 

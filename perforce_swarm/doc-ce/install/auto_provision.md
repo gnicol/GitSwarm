@@ -2,28 +2,29 @@
 
 By default GitSwarm will automatically provision a Helix Server and connected Helix Git Fusion for you.
 
-If you wish to use an existing Helix Git Fusion instance you can change the 'url' from:
+If you wish to use an existing Helix Git Fusion instance you can comment out the 'default' instance and add a new entry:
 ```
-gitswarm['git-fusion']['default']['url']               = :auto-provision
+#gitswarm['git-fusion']['default']['url']          = :auto_provision
+#gitswarm['git-fusion']['default']['password']     = '<PASSWORD>'
 ```
 
 If you are using HTTP(s) to communicate with Helix Git Fusion:
 
 ```
-gitswarm['git-fusion']['default']['url']               = 'https://gitswarm@git-fusion.host'
-gitswarm['git-fusion']['default']['password']          = '<PASSWORD>'
-gitswarm['git-fusion']['default']['git_config_params'] = 'http.maxRequests=5'
+gitswarm['git-fusion']['external']['url']               = 'https://gitswarm@git-fusion.host'
+gitswarm['git-fusion']['external']['password']          = '<PASSWORD>'
+gitswarm['git-fusion']['external']['git_config_params'] = 'http.maxRequests=5'
 ```
 
 or if you are using SSH to communicate with Helix Git Fusion:
 
 ```
-gitswarm['git-fusion']['default']['url']               = 'git@git-fusion.host'
+gitswarm['git-fusion']['external']['url']               = 'git@git-fusion.host'
+gitswarm['git-fusion']['external']['user']              = 'gitswarm'
+gitswarm['git-fusion']['external']['password']          = '<PASSWORD>'
 ```
 
-Note the default configuration includes details on the perforce user and perforce password; these values will likely require adjustment when pointing at an external Helix Git Fusion instance.
-
-When using GitSwarm is left in auto-provision mode, the Helix Server is configured with the following configuration:
+When GitSwarm is left in its default auto-provision mode, the Helix Server is configured with the following configuration:
 
 - Port 
     - ssl:1666

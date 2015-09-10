@@ -5,7 +5,7 @@
 ### Supported Unix distributions
 
 - Ubuntu 12.04 or 14.04
-- CentOS 6.6 or 7
+- CentOS 6.7 or 7
 
 See the [installation instructions](README.md).
 
@@ -25,10 +25,9 @@ Please consider using a virtual machine to run GitSwarm.
 
 ## Ruby versions
 
-GitSwarm requires Ruby (MRI) 2.0 or 2.1
-You will have to use the standard MRI implementation of Ruby.
-We love [JRuby](http://jruby.org/) and [Rubinius](http://rubini.us/) but
-GitSwarm needs several Gems that have native extensions.
+GitSwarm requires Ruby (MRI) 2.1 You will have to use the standard MRI
+implementation of Ruby. We love JRuby and Rubinius but GitSwarm needs several
+Gems that have native extensions.
 
 ## Hardware requirements
 
@@ -39,6 +38,10 @@ want to store in GitSwarm but as a *rule of thumb* you should have at least
 twice as much free space as all your repos combined take up. You need twice
 the storage because [GitSwarm satellites](structure.md) contain an extra
 copy of each repo.
+
+Note that if you are mirroring projects to Helix Server using the
+[locally provisioned](auto_provision.md) Helix Git Fusion Server, you will want
+at least four times as much free space as all your repos combined.
 
 If you want to be flexible about growing your hard drive space in the
 future consider mounting it using LVM so you can add more hard drives when
@@ -56,12 +59,10 @@ GitSwarm.
 
 ### CPU
 
-We have found through testing that supporting fetch/pull/push operations
-via HTTP(S) requires a **minimum** of 2 cores.
-
-- 1 core works supports up to 100 users but the application can be a bit slower due to having all workers and background jobs running on the same core
-- **2 cores** is the **recommended** number of cores and supports up to 500 users
-- 4 cores supports up to 2,000 users
+- 1 core works supports up to 100 users but the application can be a bit slower due to having all workers and
+  background jobs running on the same core
+- 2 cores supports up to 500 users but isn't recommended if you have the [local Helix Server](auto_provision.md) enabled
+- **4 cores** is the **recommended** number of cores and supports up to 2,000 users
 - 8 cores supports up to 5,000 users
 - 16 cores supports up to 10,000 users
 - 32 cores supports up to 20,000 users
@@ -77,11 +78,10 @@ reconfigure run and 500 errors during usage.
   **advise against** this amount of memory. See the unicorn worker section
   below for more advise.
 - 1GB RAM + 1GB swap supports up to 100 users, but it will be slow
-- **2GB RAM** is the **recommended** memory size and supports up to 100
-  users
+- 2GB RAM supports up to 100 users but isn't recommended if you have the [local Helix Server](auto_provision.md) enabled
 - 4GB RAM supports up to 1,000 users
 - 8GB RAM supports up to 2,000 users
-- 16GB RAM supports up to 4,000 users
+- **16GB RAM** is the **recommended** memory size and supports up to 4,000 users
 - 32GB RAM supports up to 8,000 users
 - 64GB RAM supports up to 16,000 users
 - 128GB RAM supports up to 32,000 users
@@ -99,6 +99,8 @@ increase the ability to handle parallel requests.
 
 For most instances we recommend using: CPU cores + 1 = unicorn workers. So
 for a machine with 2 cores, 3 unicorn workers is ideal.
+
+A **minimum** of **3** unicorn workers is required for concurrent use of the system.
 
 For all machines that have 1GB and up we recommend a minimum of three
 unicorn workers. If you have a 512MB machine with a magnetic (non-SSD) swap

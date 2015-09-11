@@ -59,7 +59,7 @@ GitSwarm.
 
 ### CPU
 
-- 1 core works supports up to 100 users but the application can be a bit slower due to having all workers and
+- 1 core supports up to 100 users but the application can be a bit slower due to having all workers and
   background jobs running on the same core
 - 2 cores supports up to 500 users but isn't recommended if you have the [local Helix Server](auto_provision.md) enabled
 - **4 cores** is the **recommended** number of cores and supports up to 2,000 users

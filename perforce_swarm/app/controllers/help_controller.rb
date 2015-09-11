@@ -163,6 +163,9 @@ module PerforceSwarm
         content.gsub!(/^We welcome all.+control systems\.$/, '')
       end
 
+      # mention the gitswarm user instead of gitlab in the jira integration (in EE docs)
+      content.gsub!('`gitlab`', '`gitswarm`') if file == 'jira'
+
       # apply a note about using SSH instead of HTTP(S), to avoid
       # resource issues.
       if category == 'workflow' && file == 'workflow'

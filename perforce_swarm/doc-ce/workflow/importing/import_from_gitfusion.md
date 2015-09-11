@@ -1,4 +1,4 @@
-## Import from Git Fusion into GitSwarm
+## Import from Helix Git Fusion into GitSwarm
 
 Helix Git Fusion is a Git remote repository service that uses the Helix
 Versioning Engine (P4D) as its back end. Users interact with Git Fusion as
@@ -19,12 +19,16 @@ available in a future GitSwarm release.
 
 ### Requirements
 
-* Git Fusion 2015.2, or newer.
+* Helix Git Fusion 2015.2, or newer.
+* Helix GitSwarm 2015.3, or newer.
 
 ### Recommendations
 
 * Install GitSwarm and Git Fusion on separate machines to improve
-  performance and scalability.
+  performance and scalability. (Note: GitSwarm 2015.3+ installs with a
+  Git Fusion server already configured. In production, we recommend disabling
+  the local Git Fusion, and using an external one. [Check out the docs on the
+  auto-provisioned Git Fusion](../../install/auto_provision.md))
 
 * Use SSH or HTTPS connections to secure mirroring connections. SSH
   connections are faster and more secure (no self-signed certificates,
@@ -49,9 +53,9 @@ gitswarm['git-fusion']['my-fusion']['password'] = '<password for "gitswarm" user
     the Helix Versioning Engine that the Git Fusion service uses, and must
     have permission to access the repositories you wish to import from.
 
-    Note: The `my-fusion` key is used to assign config values to a particular
-    git-fusion instance. You can include more configured servers under other
-    keys.
+    Note: `my-fusion` is an example key that is used to configure the connection
+    to a particular Git Fusion server. Similarly, you can include configurations
+    to other Git Fusion servers under other uniquely-named keys.
 
     ```ruby
 gitswarm['git-fusion']['enabled']                     = true
@@ -157,10 +161,10 @@ ssh git@gf_host
 
     ![New project page](gitfusion_importer/new_project_page.png)
 
-1.  Click the "Git Fusion Server" drop-down menu to select an available
+1.  Click the "Helix Git Fusion Server" drop-down menu to select an available
     Git Fusion Server to import from.
 
-1.  Click the "Repo" drop-down menu under the "Mirror an exising repository"
+1.  Click the "Repository" drop-down menu under the "Mirror an exising repository"
     option and select an available Git Fusion repository to import.
 
     ![Select repository to import](gitfusion_importer/choose_repo.png)

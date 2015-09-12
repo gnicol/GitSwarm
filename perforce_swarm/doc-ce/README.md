@@ -28,4 +28,5 @@
 - [Raketasks](raketasks/README.md) Backups, maintenance, automatic web hook setup and the importing of projects.
 - [Security](security/README.md) Learn what you can do to further secure your GitSwarm instance.
 - [System hooks](system_hooks/system_hooks.md) Notifications when users, projects and keys are changed.
+- [Update](update/README.md) Update guides to upgrade your installation.
 - [Welcome message](customization/welcome_message.md) Add a custom welcome message to the sign-in page.

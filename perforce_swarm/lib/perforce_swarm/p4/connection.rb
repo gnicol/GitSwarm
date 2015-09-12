@@ -18,6 +18,8 @@ module PerforceSwarm
         ENV['P4TICKETS'] = File.join(p4_dir, '.p4tickets') if File.exist?(p4_dir)
         ENV['P4TRUST']   = File.join(p4_dir, '.p4trust')   if File.exist?(p4_dir)
         @p4              = ::P4.new
+        @p4.prog         = 'GITSWARM'
+        @p4.version      = "#{PerforceSwarm::VERSION}/#{Gitlab::REVISION}"
         self.config      = config if config
       end
 
@@ -94,6 +96,9 @@ module PerforceSwarm
         if e.message.include?("To allow connection use the 'p4 trust' command") && !@has_trusted
           @has_trusted = true
           run('trust', '-y')
+          # We must disconnect here after trust runs. It has been observed re-running login
+          # results in an empty response from the login command
+          disconnect
           self.input = last_input
           return run(*args)
         end

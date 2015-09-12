@@ -2,10 +2,10 @@
 
 ## Software delivery
 
-There are two editions of GitSwarm: 'GitSwarm', which is based upon
+There are two editions of GitSwarm: 'GitSwarm', based upon
 [GitLab's Community Edition](https://gitlab.com/gitlab-org/gitlab-ce/tree/master),
 and 'GitSwarm Enterprise Edition (EE)', which is based upon
-[GitLab's Enterprise Edition](https://about.gitlab.com/gitlab-ce/).
+[GitLab's Enterprise Edition](https://gitlab.com/gitlab-org/gitlab-ee/tree/master).
 
 Both editions of GitSwarm are only available via packages.
 

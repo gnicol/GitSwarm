@@ -114,6 +114,8 @@ eof
             raise e
           end
         end
+      ensure
+        p4.disconnect if p4
       end
 
       def path_template

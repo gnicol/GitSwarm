@@ -39,6 +39,36 @@ that describes where the Git Fusions service(s) exist.
 
 Note: GitSwarm can currently only connect to a single Git Fusion service.
 
+#### Global Configuration
+
+GitSwarm supports a special server entry called `global`, which contains
+overrides for usernames, password, git configuration parameters, and
+convention-based repository settings.
+
+```ruby
+gitswarm['git-fusion']['global']['user']      = 'global-user'
+gitswarm['git-fusion']['global']['password']  = '<password for "global-user" user>'
+gitswarm['git-fusion']['default']['url']      = 'http://gitswarm@gitfusion.host/'
+gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['development']['url']  = 'http://dev-gitfusion.host/'
+gitswarm['git-fusion']['production']['url']   = 'http://prod-gitfusion.host/'
+```
+
+In the above example, the user `global-user` will be used to log in to the `development`
+and `production` Git Fusion servers. The user for the `default` Git Fusion server
+will remain as `gitswarm`.
+
+Note: Only `user`, `password`, `git_config_params`, `perforce['user']`,
+`perforce['password']` and `auto_create` settings can be have global
+defaults. `url` or `perforce['host']` entries will be deleted from the
+global configuration if present.
+
+Note: The following priority is given to user/password lookups:
+1. Server-specific user/password
+1. User/password specified on the Git Fusion server `url`
+1. Global user/password
+1. Default (`gitswarm` for user, `''` for password)
+
 #### Using an HTTP(S) connection
 
 1.  **Add the following configuration to `/etc/gitswarm/gitswarm.rb`:**
@@ -142,36 +172,6 @@ ssh git@gf_host
 
     Disconnect from the `gf_host`. Exit from the shell running as
     `git`.
-
-#### Global Configuration
-
-GitSwarm supports a special server entry called `global`, which contains
-overrides for usernames, password, git configuration parameters, and
-convention-based repository settings.
-
-```ruby
-gitswarm['git-fusion']['global']['user']      = 'global-user'
-gitswarm['git-fusion']['global']['password']  = '<password for "global-user" user>'
-gitswarm['git-fusion']['default']['url']      = 'http://gitswarm@gitfusion.host/'
-gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
-gitswarm['git-fusion']['development']['url']  = 'http://dev-gitfusion.host/'
-gitswarm['git-fusion']['production']['url']   = 'http://prod-gitfusion.host/'
-```
-
-In the above example, the user `global-user` will be used to log in to the `development`
-and `production` Git Fusion servers. The user for the `default` Git Fusion server
-will remain as `gitswarm`.
-
-Note: Only `user`, `password`, `git_config_params`, `perforce['user']`,
-`perforce['password']` and `auto_create` settings can be have global
-defaults. `url` or `perforce['host']` entries will be deleted from the
-global configuration if present.
-
-Note: The following priority is given to user/password lookups:
-1. Server-specific user/password
-1. User/password specified on the Git Fusion server `url`
-1. Global user/password
-1. Default (`gitswarm` for user, `''` for password)
 
 #### Convention-based Repository Configuration
 

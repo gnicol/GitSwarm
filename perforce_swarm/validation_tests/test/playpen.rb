@@ -8,6 +8,12 @@ require_relative '../lib/ssh_key_helper'
 require_relative '../lib/git_helper'
 require_relative '../lib/p4_helper'
 
+#
+# This entire class is for trying things out, not 'production' code.
+# Should not be checked in.
+#
+#
+
 class Playpen < BaseTest
   # def test_git
   #   user = 'bob'
@@ -32,20 +38,21 @@ class Playpen < BaseTest
   # end
 
   def test_api
+    LOG.log(__method__)
     keys = SSHKeyHelper.new
     helper = GitSwarmAPIHelper.new CONFIG.get('gitswarm_url'),
                                    CONFIG.get('gitswarm_username'),
                                    CONFIG.get('gitswarm_password')
 
-    user = 'user-'+now
+    user = 'user-'+unique_string
     LOG.debug 'user = '+user
     helper.create_user(user, 'Passw0rd', user+'@example.com', keys.public_key_path)
 
-    group = 'group-'+now
+    group = 'group-'+unique_string
     helper.create_group group
     helper.add_user_to_group(user, group)
 
-    project = 'project-'+now
+    project = 'project-'+unique_string
     helper.create_project(project, group)
     LOG.debug helper.get_project_info(project)
     keys.delete
@@ -55,6 +62,7 @@ class Playpen < BaseTest
   end
 
   def test_p4
+    LOG.log(__method__)
     dir = Dir.mktmpdir
     LOG.debug dir
 
@@ -67,7 +75,7 @@ class Playpen < BaseTest
 
     LOG.log Dir.entries(dir)
 
-    new_file = File.open(dir+'/'+now, 'w+')
+    new_file = File.open(dir+'/'+unique_string, 'w+')
     new_file.write 'content'
     new_file.close
 

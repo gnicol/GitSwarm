@@ -284,8 +284,8 @@ use the convention-based repository feature. GitSwarm does
   is hosted on CentOS/RHEL 7.
 
 * For projects that are mirrored between GitSwarm and Git Fusion, the
-  project name can only contain letters, numbers, underscores, periods,
-  dashes, and spaces. Project names must begin with a letter, number,
+  GitSwarm project name can only contain letters, numbers, underscores,
+  periods, and dashes. Project names must begin with a letter, number,
   or underscore.
 
   Any projects that were originally created within the Helix Versioning

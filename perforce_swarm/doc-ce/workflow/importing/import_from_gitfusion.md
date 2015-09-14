@@ -154,12 +154,12 @@ gitswarm['git-fusion']['global']['user']      = 'global-user'
 gitswarm['git-fusion']['global']['password']  = '<password for "global-user" user>'
 gitswarm['git-fusion']['default']['url']      = 'http://gitswarm@gitfusion.host/'
 gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
-gitswarm['git-fusion']['other']['url']        = 'http://other-gitfusion.host/'
-gitswarm['git-fusion']['another']['url']      = 'http://another-gitfusion.host/'
+gitswarm['git-fusion']['development']['url']  = 'http://dev-gitfusion.host/'
+gitswarm['git-fusion']['production']['url']   = 'http://prod-gitfusion.host/'
 ```
 
-In the above example, the user `global-user` will be used to log in to the `other`
-and `another` Git Fusion servers. The user for the `default` Git Fusion server
+In the above example, the user `global-user` will be used to log in to the `development`
+and `production` Git Fusion servers. The user for the `default` Git Fusion server
 will remain as `gitswarm`.
 
 Note: Only `user`, `password`, `git_config_params`, `perforce['user']`,
@@ -169,7 +169,7 @@ global configuration if present.
 
 Note: The following priority is given to user/password lookups:
 1. Server-specific user/password
-1. User/password specified on the `url`
+1. User/password specified on the Git Fusion server `url`
 1. Global user/password
 1. Default (`gitswarm` for user, `''` for password)
 
@@ -184,31 +184,27 @@ Configuring GitSwarm to connect directly to the Helix Versioning
 Engine (P4D) requires optionally setting a P4PORT and credentials:
 
 ```ruby
-gitswarm['git-fusion']['global']['user']                    = 'global-user'
-gitswarm['git-fusion']['global']['password']                = '<password for "global-user" user>'
-gitswarm['git-fusion']['my-fusion']['url']                  = 'http://nother-gitfusion.host/'
-gitswarm['git-fusion']['my-fusion']['perforce']['port']     = 'ssl:my-fusion:1666'
-gitswarm['git-fusion']['my-fusion']['perforce']['user']     = 'perforce-user'
-gitswarm['git-fusion']['my-fusion']['perforce']['password'] = '<password for "perforce-user">"'
-gitswarm['git-fusion']['other']['url']                      = 'http://other-gitfusion.host/'
+gitswarm['git-fusion']['global']['user']                 = 'global-user'
+gitswarm['git-fusion']['global']['password']             = '<password for "global-user" user>'
+gitswarm['git-fusion']['my-fusion']['url']               = 'http://nother-gitfusion.host/'
+gitswarm['git-fusion']['my-fusion']['perforce']['port']  = 'ssl:my-fusion:1666'
+gitswarm['git-fusion']['development']['url']             = 'http://dev-gitfusion.host/'
+gitswarm['git-fusion']['production']['user']             = 'prod-user'
 ```
 
 Note: If no `port` is specified under the `perforce` key, GitSwarm
 will connect to the given Git Fusion instance and use the same
-port as Git Fusion (the `other` Git Fusion instance in the above example).
+port as Git Fusion (the `development` Git Fusion instance in the above example).
 
-Note: If no `user` or `password` is specified under the `perforce` key,
-GitSwarm will use the following priority for determining them:
-1. Server-specific `perforce` user/password
+Note: In the above example, `global-user` will be the user when connecting to
+`my-fusion` or `development`, but `prod-user` will be used for `production`.
+
+Note: GitSwarm will use the following priority for determining user/password
+to connect to Perforce:
 1. Server-specific user/password
-1. User/password specified on the `url`
-1. Global `perforce` user/password
+1. User/password specified on the Git Fusion server `url`
 1. Global user/password
 1. Default (`gitswarm` for user, `''` for password)
-
-Note: In most cases, you will not need to set specific `perforce`
-values for port, user and password, as the configured Git Fusion
-credentials will be enough.
 
 Note: The user (e.g. `gitswarm`) used in the url field needs to exist in
 the Helix Versioning Engine that the Git Fusion service uses, and must

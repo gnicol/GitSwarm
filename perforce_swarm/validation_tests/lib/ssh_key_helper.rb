@@ -3,15 +3,15 @@ require 'sshkey'
 class SSHKeyHelper
   attr_reader :dir
   def initialize
-    @dir = Dir.mktmpdir
-    LOG.debug @dir
+    @local_dir_path = Dir.mktmpdir
+    LOG.debug @local_dir_path
     @keys = SSHKey.generate
 
-    @private_key = File.open(@dir+'/private.key', 'w+')
+    @private_key = File.open(@local_dir_path+'/private.key', 'w+')
     @private_key.write @keys.private_key
     @private_key.close
 
-    @public_key = File.open(@dir+'/public.key', 'w+')
+    @public_key = File.open(@local_dir_path+'/public.key', 'w+')
     @public_key.write @keys.ssh_public_key
     @public_key.close
 
@@ -28,6 +28,6 @@ class SSHKeyHelper
   end
 
   def delete
-    FileUtils.remove_dir(@dir)
+    FileUtils.remove_dir(@local_dir_path)
   end
 end

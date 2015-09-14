@@ -79,6 +79,7 @@ class GitSwarmAPIHelper
   #
   # Returns data on a given project
   # ssh_url_to_repo and http_url_to_repo are probably useful data from the return hash
+  # and will be used by tests to get the correct turl's to use after creating projects
   #
   HTTP_URL = 'http_url_to_repo'
   SSH_URL = 'SSH_url_to_repo'

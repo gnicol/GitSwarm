@@ -1,7 +1,8 @@
 require 'P4'
 require_relative 'log'
 #
-# Should cope with unicode and ssl servers
+# Copes with unicode and ssl servers.
+# Auto-detects based on p4port and post connection inquiry
 #
 class P4Helper
   attr_reader :p4

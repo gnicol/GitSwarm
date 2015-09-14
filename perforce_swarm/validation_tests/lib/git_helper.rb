@@ -35,16 +35,16 @@ class GitHelper
 
   def initialize(local_dir, user, email)
     @git = CONFIG.get('git_binary') || 'git' # the binary to call, defaulting to whatever is on the path
-    @dir = local_dir
-    Dir.mkdir @dir unless Dir.exist?(@dir)
+    @local_dir_path = local_dir
+    Dir.mkdir @local_dir_path unless Dir.exist?(@local_dir_path)
     @user = user
     @email = email
   end
 
   def clone
-    LOG.debug 'Cloning from ' + @url + ' into ' + @dir
-    system(@git + ' clone ' + @url + ' ' + @dir)
-    Dir.chdir(@dir) do
+    LOG.debug 'Cloning from ' + @url + ' into ' + @local_dir_path
+    system(@git + ' clone ' + @url + ' ' + @local_dir_path)
+    Dir.chdir(@local_dir_path) do
       system(@git + ' config user.name ' + @user)
       system(@git + ' config user.email ' + @email)
     end
@@ -52,16 +52,16 @@ class GitHelper
 
   # Adds everything under the git repo
   def add
-    Dir.chdir(@dir) { system(@git + ' add .') }
+    Dir.chdir(@local_dir_path) { system(@git + ' add .') }
   end
 
   def commit
-    Dir.chdir(@dir) { system(@git +' commit -m auto_message') }
+    Dir.chdir(@local_dir_path) { system(@git +' commit -m auto_message') }
   end
 
   def push
     LOG.debug 'Pushing to ' +@url
-    Dir.chdir(@dir) { system(@git + ' push') }
+    Dir.chdir(@local_dir_path) { system(@git + ' push') }
   end
 
   def add_commit_push
@@ -72,6 +72,6 @@ class GitHelper
 
   def pull
     LOG.debug 'pulling from ' +@url
-    Dir.chdir(@dir) { system(@git + ' pull ' + @url) }
+    Dir.chdir(@local_dir_path) { system(@git + ' pull ' + @url) }
   end
 end

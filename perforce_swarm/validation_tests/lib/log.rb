@@ -2,7 +2,6 @@ require 'logger'
 
 #
 # Class that splits log output so it goes to stdout and a file
-# Stolen shamelessly from stackoverflow
 #
 
 class MultiIO

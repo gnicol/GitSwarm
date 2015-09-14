@@ -4,6 +4,7 @@ require_relative '../lib/selenium_base_test'
 
 class BasicValidationTests < SeleniumBaseTest
   def test_login_page_tile
+    LOG.log(__method__)
     expected_title = 'Sign in | GitSwarm'
 
     @driver.navigate.to(CONFIG.get('gitswarm_url'))
@@ -12,6 +13,7 @@ class BasicValidationTests < SeleniumBaseTest
   end
 
   def test_dashboard_page_tile
+    LOG.log(__method__)
     expected_title = 'Dashboard | GitSwarm'
 
     @driver.navigate.to(CONFIG.get('gitswarm_url'))

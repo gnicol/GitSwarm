@@ -16,15 +16,16 @@ class BaseTest < Minitest::Test
     LOG.log('---------------------------------------------')
   end
 
+  # If we ever need to run cleanup code after all tests have run, this is the method to use
   # Minitest.after_run {
   #  LOG.debug('**** This is called only once after all tests ****')
   # }
 
-  def now
+  def unique_string
     Time.new.strftime('%y%m%d-%H%M%S%L')
   end
 
-  def create_file(directory, name = now)
+  def create_file(directory, name = unique_string)
     new_file = File.open(directory+'/'+name, 'w+')
     new_file.write 'content'
     new_file.close

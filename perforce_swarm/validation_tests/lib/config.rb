@@ -6,7 +6,7 @@ class CONFIG
     # Load Config
     LOG.info('Loading config...')
     @config = YAML.load_file('config.yml')
-    LOG.log @config
+    LOG.info @config
   end
 
   def self.get(property)

@@ -283,15 +283,14 @@ use the convention-based repository feature. GitSwarm does
   mirrored to Git Fusion. Instead, use SSH connections when Git Fusion
   is hosted on CentOS/RHEL 7.
 
-* For projects that are mirrored between GitSwarm and Git Fusion, the
-  GitSwarm project name can only contain letters, numbers, underscores,
-  periods, and dashes. Project names must begin with a letter, number,
+* GitSwarm project names can only contain letters, numbers, underscores,
+  periods, and dashes, and must begin with a letter, number,
   or underscore.
 
-  Any projects that were originally created within the Helix Versioning
-  Engine (P4D) can contain Unicode and other special characters. When
-  you import a project from Git Fusion, the project name you provide to
-  GitSwarm must adhere to the naming convention described above.
+  Since depot paths in the Helix Versioning Engine (P4D) can contain
+  Unicode and other special characters, we recommend depot paths for
+  projects you intend on importing into GitSwarm via Git Fusion adhere to
+  the naming convention described above.
 
   If you are using multi-byte characters in any of your Git Fusion
   repository names, you should use an SSH connection to Git Fusion.

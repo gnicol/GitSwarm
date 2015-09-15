@@ -163,6 +163,9 @@ module PerforceSwarm
         content.gsub!(/^We welcome all.+control systems\.$/, '')
       end
 
+      # mention the gitswarm user instead of gitlab in the jira integration (in EE docs)
+      content.gsub!('`gitlab`', '`gitswarm`') if file == 'jira'
+
       # apply a note about using SSH instead of HTTP(S), to avoid
       # resource issues.
       if category == 'workflow' && file == 'workflow'
@@ -183,6 +186,16 @@ processes, and each HTTP(S) push/pull/fetch operation ties up a worker
 process until completion.
 EOS
         end
+      end
+
+      # point the archived download link to our ftp.
+      if file == 'backup_restore'
+        # ee isn't on the ftp; just turn the link to plain text
+        if PerforceSwarm.ee?
+          content.gsub!(/\[required version\]\([^\)]+\)/, 'required version')
+        end
+
+        content.gsub!('https://www.gitlab.com/downloads/archives/', 'http://ftp.perforce.com/perforce')
       end
 
       # return the munged string

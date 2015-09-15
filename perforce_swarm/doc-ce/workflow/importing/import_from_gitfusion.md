@@ -1,4 +1,4 @@
-## Import from Git Fusion into GitSwarm
+## Import from Helix Git Fusion into GitSwarm
 
 Helix Git Fusion is a Git remote repository service that uses the Helix
 Versioning Engine (P4D) as its back end. Users interact with Git Fusion as
@@ -21,12 +21,17 @@ available in a future GitSwarm release.
 
 ### Requirements
 
-* Git Fusion 2015.2, or newer.
+* Helix Git Fusion 2015.2, or newer.
+* Helix GitSwarm 2015.3, or newer.
 
 ### Recommendations
 
 * Install GitSwarm and Git Fusion on separate machines to improve
-  performance and scalability.
+  performance and scalability. GitSwarm 2015.3+ installs with a local 
+  Helix Versioning Engine and a local Git Fusion server, all pre-configured 
+  to allow you to easily try out the system. In production, we recommend disabling
+  the local Git Fusion, and using an external one. [Check out the docs on the
+  auto-provisioned Git Fusion](../../install/auto_provision.md))
 
 * Use SSH or HTTPS connections to secure the mirroring connections. 
   SSH connections are faster and more secure. We recommend against using 
@@ -68,7 +73,9 @@ Note: The following priority is given to user/password lookups:
 
 #### Using an HTTP(S) connection
 
-1.  **Add the following configuration to `/etc/gitswarm/gitswarm.rb`:**
+1.  **Edit the following configuration in `/etc/gitswarm/gitswarm.rb`:**
+
+    After the `gitswarm['git-fusion']['enabled']` section:
 
     ```ruby
 gitswarm['git-fusion']['enabled']              = true
@@ -76,9 +83,20 @@ gitswarm['git-fusion']['my_entry']['url']      = 'http://gitswarm@gitfusion.host
 gitswarm['git-fusion']['my_entry']['password'] = '<password for "gitswarm" user>'
     ```
 
-    Note: The `gitswarm` user needs to exist in the Helix Versioning Engine
+    Note: The user (e.g. `gitswarm`) needs to exist in the Helix Versioning Engine
     that the Git Fusion service uses, and must have permission to access
     the repositories you wish to import from.
+
+    Note: `my_entry` is an example key that is used to configure the connection
+    to a particular Git Fusion server. Similarly, you can include configurations
+    to other Git Fusion servers under other uniquely-named keys.
+
+    ```ruby
+gitswarm['git-fusion']['default']['url']        = 'http://gitswarm@gitfusion.host/'
+gitswarm['git-fusion']['default']['password']   = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['other']['url']          = 'http://other-user@other-gitfusin.host/'
+gitswarm['git-fusion']['other']['password']     = '<password for "other-user" user>'
+    ```
 
     Note: While we do not recommend using self-signed SSL certificates (and
     these should never be used in production), if you are using self-signed
@@ -228,8 +246,11 @@ use the convention-based repository feature. GitSwarm does
 
     ![New project page](gitfusion_importer/new_project_page.png)
 
-1.  Click the "Repo" drop-down menu and select an available
-    Git Fusion repository to import.
+1.  Click the "Helix Git Fusion Server" drop-down menu to select an available
+    Git Fusion Server to import from.
+
+1.  Click the "Repository" drop-down menu under the "Mirror an existing repository"
+    option and select an available Git Fusion repository to import.
 
     ![Select repository to import](gitfusion_importer/choose_repo.png)
 

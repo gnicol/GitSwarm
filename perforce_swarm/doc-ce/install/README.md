@@ -106,7 +106,7 @@ To uninstall GitSwarm, follow the [uninstall steps](uninstall.md).
     GitSwarm will automatically provision a Helix Server and connect Helix Git Fusion for you when you initially
     install the GitSwarm packages. ([Learn more about the provisioned server](auto_provision.md))
 
-    In production you will likely already have your own Helix Server already setup and will want to configure
+    In production, you will likely already have your own Helix Server already setup and will want to configure
     GitSwarm to talk to it in order to enable [project mirroring](../workflow/importing/import_from_gitfusion.md).
 
 *   **Set up other ways of signing in:**

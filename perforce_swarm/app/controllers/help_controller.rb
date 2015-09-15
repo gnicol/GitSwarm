@@ -163,6 +163,13 @@ module PerforceSwarm
         content.gsub!(/^We welcome all.+control systems\.$/, '')
       end
 
+      # Drop the gitlab.com specific line
+      if file == 'unicorn'
+        content.gsub!(/^.*stands out in the log snippet above.*$/, '')
+        content.gsub!(/^.*'worker 4' was serving requests for only 23 seconds.*$/, '')
+        content.gsub!(/^.*a normal value for our current GitLab\.com.*$/, '')
+      end
+
       # mention the gitswarm user instead of gitlab in the jira integration (in EE docs)
       content.gsub!('`gitlab`', '`gitswarm`') if file == 'jira'
 

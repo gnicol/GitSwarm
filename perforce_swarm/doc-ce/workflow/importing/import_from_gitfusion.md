@@ -261,8 +261,8 @@ use the convention-based repository feature. GitSwarm does
   If you are using multi-byte characters in any of your Git Fusion
   repository names, you should use an SSH connection to Git Fusion.
 
-* If a new project is created and GitSwarm is used to automatically mirroring
-  it (using convention-based mirroring), updating the project's namespace
+* If a new project is created and GitSwarm is used to automatically mirror
+  it (via convention-based mirroring), updating the project's namespace
   and/or project name will *not* change the location under Helix
   Versioning Engine (P4D). In order to move the project's files to a
   new location you will need to delete the project, re-create it with

@@ -59,14 +59,22 @@ GitSwarm.
 
 ### CPU
 
-- 1 core supports up to 100 users but the application can be a bit slower due to having all workers and
-  background jobs running on the same core
-- 2 cores supports up to 500 users but isn't recommended if you have the [local Helix Server](auto_provision.md) enabled
-- **4 cores** is the **recommended** number of cores and supports up to 2,000 users
+For production use, it is recommended GitSwarm be run on a dedicated server.
+The Helix Server and Helix Git Fusion products should ideally be installed
+on their own independent machines. In that configuration:
+
+- 1 core works supports up to 100 users, but performance may suffer as
+  all workers and background jobs running on the same core
+- **2 cores** is the **recommended** number of cores and supports up to 500 users
+- 4 cores supports up to 2,000 users
 - 8 cores supports up to 5,000 users
 - 16 cores supports up to 10,000 users
 - 32 cores supports up to 20,000 users
 - 64 cores supports up to 40,000 users
+
+By default, GitSwarm will attempt to automatically provision an instance
+of Helix Server and Helix Git Fusion all on the local system. When running
+all components on the same machine, we suggest a minimum of 4 cores.
 
 ### Memory
 
@@ -74,14 +82,18 @@ You need at least 2GB of addressable memory (RAM + swap) to install and use
 GitSwarm! With less memory GitSwarm will give strange errors during the
 reconfigure run and 500 errors during usage.
 
+For production use, it is recommended GitSwarm be run on a dedicated server.
+The Helix Server and Helix Git Fusion products should ideally be installed
+on their own independent machines. In that configuration:
+
 - 512MB RAM + 1.5GB of swap is the absolute minimum but we strongly
   **advise against** this amount of memory. See the unicorn worker section
   below for more advise.
-- 1GB RAM + 1GB swap supports up to 100 users, but it will be slow
-- 2GB RAM supports up to 100 users but isn't recommended if you have the [local Helix Server](auto_provision.md) enabled
+- 1GB RAM + 1GB swap supports up to 100 users
+- **2GB RAM** is the **recommended** memory size and supports up to 100 users
 - 4GB RAM supports up to 1,000 users
 - 8GB RAM supports up to 2,000 users
-- **16GB RAM** is the **recommended** memory size and supports up to 4,000 users
+- 16GB RAM supports up to 4,000 users
 - 32GB RAM supports up to 8,000 users
 - 64GB RAM supports up to 16,000 users
 - 128GB RAM supports up to 32,000 users

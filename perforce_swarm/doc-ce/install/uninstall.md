@@ -2,13 +2,31 @@
 
 To uninstall GitSwarm, follow these steps:
 
-1.  **Optional:** Remove all GitSwarm data.
+1.  **Stop the Helix Server if it is running**
 
+    Check the status:
     ```
-sudo gitswarm-ctl cleanse
+sudo p4dctl status gitswarm
+    ```
+    If running, shut it down, and backup the config
+    ```
+sudo p4dctl stop gitswarm
+sudo mv /etc/perforce/p4dctl.conf.d/gitswarm.conf ~/gitswarm.conf.backup
     ```
 
-1.  **Stop GitSwarm and remove its supervisory processes.**
+1.  **Stop GitSwarm/Remove Data**
+
+    If you are intending to reinstall GitSwarm on the machine and keep your existing data:
+    ```
+sudo gitswarm-ctl stop
+    ```
+
+    If you instead want to completely remove all the GitSwarm data, run
+    ```
+sudo gitsawrm-ctl cleanse
+    ```
+
+1.  **Uninstall GitSwarm's supervisory processes.**
 
     ```
 sudo gitswarm-ctl uninstall
@@ -19,11 +37,40 @@ sudo gitswarm-ctl uninstall
     1.  **For Ubuntu:**
 
         ```
-sudo dpkg --purge perforce-gitswarm
+sudo apt-get purge perforce-gitswarm
         ```
 
     1.  **For CentOS/RHEL:**
 
         ```
-sudo rpm -e perforce-gitswarm
+sudo yum remove perforce-gitswarm
         ```
+
+1.  **Optional:**, Remove dependencies
+
+    1.  **For Ubuntu:**
+
+        ```
+sudo apt-get autoremove
+        ```
+
+    1.  **For CentOS/RHEL:**
+
+        ```
+sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base
+        ```
+
+## Notes on Reinstalling
+
+If you are planning to reinstall GitSwarm on the same machine, using the same data, as long as you did not `cleanse`
+the data, you can restore the default Helix server by running the following steps:
+
+```
+sudo mv ~/gitswarm.conf.backup /etc/perforce/p4dctl.conf.d/gitswarm.conf
+sudo p4dctl start gitswarm
+```
+
+And then following the normal [installation steps](README.md) for your OS distribution.
+
+**Note:** Otherwise, if you need to restore you data on a fresh install of GitSwarm, you will need to
+[restore from a backup](../raketasks/backup_restore.md).

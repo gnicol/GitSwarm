@@ -14,13 +14,19 @@ sudo p4dctl stop gitswarm
 sudo mv /etc/perforce/p4dctl.conf.d/gitswarm.conf ~/gitswarm.conf.backup
     ```
 
-1.  **Optional:** Remove all GitSwarm EE data.
+1.  **Stop GitSwarm EE /Remove Data**
 
+    If you are intending to reinstall GitSwarm EE on the machine and keep your existing data:
     ```
-sudo gitswarm-ctl cleanse
+sudo gitswarm-ctl stop
     ```
 
-1.  **Stop GitSwarm EE and remove its supervisory processes.**
+    If you instead want to completely remove all the GitSwarm EE data, run
+    ```
+sudo gitsawrm-ctl cleanse
+    ```
+
+1.  **Uninstall GitSwarm EE's supervisory processes.**
 
     ```
 sudo gitswarm-ctl uninstall
@@ -53,3 +59,18 @@ sudo dpkg --remove perforce-cli-base perforce-server-base helix-git-fusion-base
         ```
 sudo rpm -e perforce-cli-base perforce-server-base helix-git-fusion-base
         ```
+
+## Notes on Reinstalling
+
+If you are planning to reinstall GitSwarm EE on the same machine, using the same data, as long as you did not `cleanse`
+the data, you can restore the default Helix server by running the following steps:
+
+```
+sudo mv ~/gitswarm.conf.backup /etc/perforce/p4dctl.conf.d/gitswarm.conf
+sudo p4dctl start gitswarm
+```
+
+And then following the normal [installation steps](README.md) for your OS distribution.
+
+**Note:** Otherwise, if you need to restore you data on a fresh install of GitSwarm EE, you will need to
+[restore from a backup](../raketasks/backup_restore.md).

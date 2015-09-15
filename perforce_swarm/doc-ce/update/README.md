@@ -2,33 +2,35 @@
 
 1.  **Download the 2015.3 GitSwarm package and install it.**
 
-    1.  **For Ubuntu 12.04:**
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.ubuntu12x86_64/perforce-gitswarm-2015.3.precise.amd64.deb
-sudo dpkg -i perforce-gitswarm-2015.3.precise.amd64.deb
-        ```
+    ```
+curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -s -
+    ```
 
-    1.  **For Ubuntu 14.04:**
+    The script should add the Perforce package repository, and install the latest
+    version of GitSwarm. Before install we run a backup on the existing GitSwarm.
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.ubuntu14x86_64/perforce-gitswarm-2015.3.trusty.amd64.deb
-sudo dpkg -i perforce-gitswarm-2015.3.trusty.amd64.deb
-        ```
+1.  **Check the application status.**
 
-    1.  **For CentOS/RHEL 6:**
+    Check if GitSwarm and its environment are configured correctly:
+    ```
+sudo gitswarm-rake gitswarm:check
+    ```
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.centos6x86_64/perforce-gitswarm-2015.3.el6.x86_64.rpm
-sudo rpm -U perforce-gitswarm-2015.3.el6.x86_64.rpm
-        ```
+# New configuration options
 
-    1.  **For CentOS/RHEL 7:**
+*  **Allow new repo creation in Helix Git Fusion Servers**
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.centos7x86_64/perforce-gitswarm-2015.3.el7.x86_64.rpm
-sudo rpm -U perforce-gitswarm-2015.3.el7.x86_64.rpm
-        ```
+    You can configure where in the Helix Versioning Engine (P4D) you want new project to store their repos. See the
+    [Convention-based Repository Configuration instructions](../workflow/importing/import_from_gitfusion.md).
+
+*  **Discovering new config options**
+
+    GitSwarm doesn't update your `/etc/gitswarm/gitswarm.rb` for you, but we do include an updated example template:
+    `/etc/gitswarm/gitswarm.rbe`. You can see what sort of config options have been changed since last release by running
+    ```
+sudo diff /etc/gitswarm/gitswarm.rb /etc/gitswarm/gitswarm.rbe
+    ```
 
 # For users upgrading FROM 2015.1
 

@@ -188,6 +188,16 @@ EOS
         end
       end
 
+      # point the archived download link to our ftp.
+      if file == 'backup_restore'
+        # ee isn't on the ftp; just turn the link to plain text
+        if PerforceSwarm.ee?
+          content.gsub!(/\[required version\]\([^\)]+\)/, 'required version')
+        end
+
+        content.gsub!('https://www.gitlab.com/downloads/archives/', 'http://ftp.perforce.com/perforce')
+      end
+
       # return the munged string
       content
     end

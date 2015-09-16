@@ -222,8 +222,6 @@ use the convention-based repository feature. GitSwarm does
 1.  Sign in to your GitSwarm instance and go to your dashboard.
 1.  Click "New Project".
 
-    ![New project page](gitfusion_importer/new_project_page.png)
-
 1.  Click the "Git Fusion Server" drop-down menu to select an available
     Git Fusion Server that your project will be mirrored to.
 
@@ -243,8 +241,6 @@ use the convention-based repository feature. GitSwarm does
 
 1.  Sign in to your GitSwarm instance and go to your dashboard.
 1.  Click "New Project".
-
-    ![New project page](gitfusion_importer/new_project_page.png)
 
 1.  Click the "Helix Git Fusion Server" drop-down menu to select an available
     Git Fusion Server to import from.

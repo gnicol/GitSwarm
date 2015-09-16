@@ -5,8 +5,8 @@ Versioning Engine (P4D) as its back end. Users interact with Git Fusion as
 they would with any other Git remote repository.
 
 It takes just a few steps to import your existing Git Fusion projects into
-GitSwarm. Additionally, for brand new projects; GitSwarm can automatically 
-configure a new Git Fusion repository and use it to mirror your work into 
+GitSwarm. Additionally, for brand new projects; GitSwarm can automatically
+configure a new Git Fusion repository and use it to mirror your work into
 the Helix Versioning Engine (P4D).
 
 Once imported, GitSwarm keeps the Git Fusion project up to date using
@@ -27,15 +27,15 @@ available in a future GitSwarm release.
 ### Recommendations
 
 * Install GitSwarm and Git Fusion on separate machines to improve
-  performance and scalability. GitSwarm 2015.3+ installs with a local 
-  Helix Versioning Engine and a local Git Fusion server, all pre-configured 
+  performance and scalability. GitSwarm 2015.3+ installs with a local
+  Helix Versioning Engine and a local Git Fusion server, all pre-configured
   to allow you to easily try out the system. In production, we recommend disabling
   the local Git Fusion, and using an external one. [Check out the docs on the
   auto-provisioned Git Fusion](../../install/auto_provision.md))
 
-* Use SSH or HTTPS connections to secure the mirroring connections. 
-  SSH connections are faster and more secure. We recommend against using 
-  unencrypted HTTP connections or HTTPS with self-signed certificates. 
+* Use SSH or HTTPS connections to secure the mirroring connections.
+  SSH connections are faster and more secure. We recommend against using
+  unencrypted HTTP connections or HTTPS with self-signed certificates.
 
 ### Configuration
 
@@ -106,7 +106,7 @@ gitswarm['git-fusion']['other']['password']     = '<password for "other-user" us
     ```ruby
 gitswarm['git-fusion']['my_entry']['git_config_params'] = 'http.sslVerify=false'
     ```
-    
+
     Note: the key 'my_entry' can be replaced with a unique value of your choosing.
 
 1.  **Make the configuration change active:**
@@ -154,14 +154,14 @@ sudo cat ~git/.ssh/id_rsa.pub
 
 #### Convention-based Repository Configuration
 
-In order for GitSwarm to automatically create new Git Fusion 
+In order for GitSwarm to automatically create new Git Fusion
 repositories when adding projects, GitSwarm needs to connect
 to the Helix Versioning Engine (P4D) directly. GitSwam also
 needs to be configure with a path where it can place the repositories
 files.
 
 At a minimum, GitSwarm needs to be configured with a user id and
-password for the connection. When using HTTP(S) this information 
+password for the connection. When using HTTP(S) this information
 will already be present. When using SSH, you may need to add the
 settings:
 
@@ -176,7 +176,7 @@ Note: If no `port` is specified under the `perforce` key, GitSwarm
 will connect to the given Git Fusion instance and use the same
 port as Git Fusion (the `my_entry` Git Fusion instance in the above example).
 
-If the auto-detected Perforce Port is incorrect, you may optionally 
+If the auto-detected Perforce Port is incorrect, you may optionally
 specify the appropriate value manually by setting:
 
 ```ruby
@@ -190,8 +190,8 @@ to connect to Perforce:
 1. Global user/password
 1. Default (`gitswarm` for user, `''` for password)
 
-Note: The user (e.g. `gitswarm`) needs to exist in the Helix Versioning Engine 
-that the Git Fusion service uses, and must have permission to access the 
+Note: The user (e.g. `gitswarm`) needs to exist in the Helix Versioning Engine
+that the Git Fusion service uses, and must have permission to access the
 repositories you wish to import from.
 
 Note: The `my_entry` key is used to assign config values to a particular
@@ -222,8 +222,6 @@ use the convention-based repository feature. GitSwarm does
 1.  Sign in to your GitSwarm instance and go to your dashboard.
 1.  Click "New Project".
 
-    ![New project page](gitfusion_importer/new_project_page.png)
-
 1.  Click the "Git Fusion Server" drop-down menu to select an available
     Git Fusion Server that your project will be mirrored to.
 
@@ -243,8 +241,6 @@ use the convention-based repository feature. GitSwarm does
 
 1.  Sign in to your GitSwarm instance and go to your dashboard.
 1.  Click "New Project".
-
-    ![New project page](gitfusion_importer/new_project_page.png)
 
 1.  Click the "Helix Git Fusion Server" drop-down menu to select an available
     Git Fusion Server to import from.

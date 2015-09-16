@@ -72,5 +72,5 @@ sudo p4dctl start gitswarm
 
 And then following the normal [installation steps](README.md) for your OS distribution.
 
-**Note:** Otherwise, if you need to restore you data on a fresh install of GitSwarm EE, you will need to
+**Note:** Otherwise, if you need to restore your data on a fresh install of GitSwarm EE, you will need to
 [restore from a backup](../raketasks/backup_restore.md).

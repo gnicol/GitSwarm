@@ -5,8 +5,8 @@ Versioning Engine (P4D) as its back end. Users interact with Git Fusion as
 they would with any other Git remote repository.
 
 It takes just a few steps to import your existing Git Fusion projects into
-GitSwarm. Additionally, for brand new projects; GitSwarm can automatically 
-configure a new Git Fusion repository and use it to mirror your work into 
+GitSwarm. Additionally, for brand new projects; GitSwarm can automatically
+configure a new Git Fusion repository and use it to mirror your work into
 the Helix Versioning Engine (P4D).
 
 Once imported, GitSwarm keeps the Git Fusion project up to date using
@@ -27,15 +27,15 @@ available in a future GitSwarm release.
 ### Recommendations
 
 * Install GitSwarm and Git Fusion on separate machines to improve
-  performance and scalability. GitSwarm 2015.3+ installs with a local 
-  Helix Versioning Engine and a local Git Fusion server, all pre-configured 
+  performance and scalability. GitSwarm 2015.3+ installs with a local
+  Helix Versioning Engine and a local Git Fusion server, all pre-configured
   to allow you to easily try out the system. In production, we recommend disabling
   the local Git Fusion, and using an external one. [Check out the docs on the
   auto-provisioned Git Fusion](../../install/auto_provision.md))
 
-* Use SSH or HTTPS connections to secure the mirroring connections. 
-  SSH connections are faster and more secure. We recommend against using 
-  unencrypted HTTP connections or HTTPS with self-signed certificates. 
+* Use SSH or HTTPS connections to secure the mirroring connections.
+  SSH connections are faster and more secure. We recommend against using
+  unencrypted HTTP connections or HTTPS with self-signed certificates.
 
 ### Configuration
 
@@ -106,7 +106,7 @@ gitswarm['git-fusion']['other']['password']     = '<password for "other-user" us
     ```ruby
 gitswarm['git-fusion']['my_entry']['git_config_params'] = 'http.sslVerify=false'
     ```
-    
+
     Note: the key 'my_entry' can be replaced with a unique value of your choosing.
 
 1.  **Make the configuration change active:**
@@ -154,14 +154,14 @@ sudo cat ~git/.ssh/id_rsa.pub
 
 #### Convention-based Repository Configuration
 
-In order for GitSwarm to automatically create new Git Fusion 
+In order for GitSwarm to automatically create new Git Fusion
 repositories when adding projects, GitSwarm needs to connect
 to the Helix Versioning Engine (P4D) directly. GitSwam also
 needs to be configure with a path where it can place the repositories
 files.
 
 At a minimum, GitSwarm needs to be configured with a user id and
-password for the connection. When using HTTP(S) this information 
+password for the connection. When using HTTP(S) this information
 will already be present. When using SSH, you may need to add the
 settings:
 
@@ -176,7 +176,7 @@ Note: If no `port` is specified under the `perforce` key, GitSwarm
 will connect to the given Git Fusion instance and use the same
 port as Git Fusion (the `my_entry` Git Fusion instance in the above example).
 
-If the auto-detected Perforce Port is incorrect, you may optionally 
+If the auto-detected Perforce Port is incorrect, you may optionally
 specify the appropriate value manually by setting:
 
 ```ruby
@@ -190,8 +190,8 @@ to connect to Perforce:
 1. Global user/password
 1. Default (`gitswarm` for user, `''` for password)
 
-Note: The user (e.g. `gitswarm`) needs to exist in the Helix Versioning Engine 
-that the Git Fusion service uses, and must have permission to access the 
+Note: The user (e.g. `gitswarm`) needs to exist in the Helix Versioning Engine
+that the Git Fusion service uses, and must have permission to access the
 repositories you wish to import from.
 
 Note: The `my_entry` key is used to assign config values to a particular
@@ -274,13 +274,13 @@ use the convention-based repository feature. GitSwarm does
   periods, and dashes, and must begin with a letter, number,
   or underscore.
 
-  Since depot paths in the Helix Versioning Engine (P4D) can contain
-  Unicode and other special characters, we recommend depot paths for
-  projects you intend on importing into GitSwarm via Git Fusion adhere to
-  the naming convention described above.
+      Since depot paths in the Helix Versioning Engine (P4D) can contain
+      Unicode and other special characters, we recommend depot paths for
+      projects you intend on importing into GitSwarm via Git Fusion adhere to
+      the naming convention described above.
 
-  If you are using multi-byte characters in any of your Git Fusion
-  repository names, you should use an SSH connection to Git Fusion.
+      If you are using multi-byte characters in any of your Git Fusion
+      repository names, you should use an SSH connection to Git Fusion.
 
 * If a new project is created and GitSwarm is used to automatically mirror
   it (via convention-based mirroring), updating the project's namespace
@@ -295,6 +295,40 @@ use the convention-based repository feature. GitSwarm does
   result in problems that prevent pushing new changes to the project.
   Unfortunately, the solution is to delete the project, correct the
   settings in `gitswarm.rb`, and then re-create the project.
+
+* The following error can be displayed when Git Swarm is attempting to connect
+  to a remote Helix Git Fusion server (running on Centos 6) over SSH, as part of
+  mirroring setup on the `Create Project` page.
+
+    ```
+  Git Fusion Server:
+  There was an error communicating with Git Fusion:
+  Using 'ascii' file encoding will ultimately result in errors, please set LANG/LC_ALL to 'utf-8' in environment configuration.
+    ```
+
+    You can work around this error by doing the following steps:
+
+   1. Connect (SSH) to the remote Helix Git Fusion server as a user with sudo access.
+
+   1. Determine the default LANG setting for the server.
+
+       You can do this by running the command `locale`.  It should be something like `en_US.UTF-8`.  If the system
+       locale is not a UTF8 locale, please contact support@perforce.com for help on how to proceed.
+
+   1. Determine the Git Fusion OS user. This user is normally `git`, but may be different.
+
+       The username will be in your gitswarm.rb file under the `[git-fusion][xxx][url]` setting. It will be in the
+       format `username@hostname`
+
+   1. Using sudo access and an editor of your choice, edit the .bashrc file of the Git Fusion OS user.
+
+       You can find this file using the path `~username/.bashrc` (replacing username with the Git Fusion OS user)
+
+       Add a line into the .bashrc file exporting the LANG setting you determined earlier.  e.g. `export LANG=en_US.UTF-8`
+
+   1. Save the file
+
+   1. Refresh the `Create Project` page in GitSwarm.  The error should be resolved.
 
 ### Problems?
 

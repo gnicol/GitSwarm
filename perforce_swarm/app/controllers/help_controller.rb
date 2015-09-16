@@ -163,6 +163,13 @@ module PerforceSwarm
         content.gsub!(/^We welcome all.+control systems\.$/, '')
       end
 
+      # Drop the gitlab.com specific line
+      if file == 'unicorn'
+        content.gsub!(/^.*stands out in the log snippet above.*$/, '')
+        content.gsub!(/^.*'worker 4' was serving requests for only 23 seconds.*$/, '')
+        content.gsub!(/^.*a normal value for our current GitLab\.com.*$/, '')
+      end
+
       # mention the gitswarm user instead of gitlab in the jira integration (in EE docs)
       content.gsub!('`gitlab`', '`gitswarm`') if file == 'jira'
 
@@ -186,6 +193,16 @@ processes, and each HTTP(S) push/pull/fetch operation ties up a worker
 process until completion.
 EOS
         end
+      end
+
+      # point the archived download link to our ftp.
+      if file == 'backup_restore'
+        # ee isn't on the ftp; just turn the link to plain text
+        if PerforceSwarm.ee?
+          content.gsub!(/\[required version\]\([^\)]+\)/, 'required version')
+        end
+
+        content.gsub!('https://www.gitlab.com/downloads/archives/', 'http://ftp.perforce.com/perforce')
       end
 
       # return the munged string

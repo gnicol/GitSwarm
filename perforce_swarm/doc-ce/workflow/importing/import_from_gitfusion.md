@@ -15,10 +15,6 @@ mirrored to Git Fusion, and changes within the Git Fusion project (even if
 initiated within the Helix Versioning Engine) are mirrored into the
 GitSwarm project.
 
-Note: the mirroring capability is not currently available for existing
-projects in GitSwarm. Mirroring capability for all projects should be
-available in a future GitSwarm release.
-
 ### Requirements
 
 * Helix Git Fusion 2015.2, or newer.
@@ -259,6 +255,10 @@ use the convention-based repository feature. GitSwarm does
     ![Import in progress](gitfusion_importer/import_in_progress.png)
 
 ### Known Issues
+
+* Currently you cannot add mirroring to GitSwarm projects that are created as
+  `non-mirrored` projects. This ability should be added in a future GitSwarm
+  release.
 
 * Git Fusion, when installed on CentOS 7 or RHEL 7, does not support
   HTTP(S) authentication. This issue prevents pushing new work to a

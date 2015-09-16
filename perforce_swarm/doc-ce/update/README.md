@@ -8,7 +8,8 @@ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -s -
     ```
 
     The script should add the Perforce package repository, and install the latest
-    version of GitSwarm. Before install we run a backup on the existing GitSwarm.
+    version of GitSwarm. The upgrade will create a backup of your existing GitSwarm
+    data before fully installing.
 
 1.  **Check the application status.**
 
@@ -21,15 +22,17 @@ sudo gitswarm-rake gitswarm:check
 
 *  **Allow new repo creation in Helix Git Fusion Servers**
 
-    You can configure where in the Helix Versioning Engine (P4D) you want new project to store their repos. See the
+    You can configure where in the Helix Versioning Engine (P4D) you want your created GitSwarm repositories to be
+    mirrored to. See the
     [Convention-based Repository Configuration instructions](../workflow/importing/import_from_gitfusion.md).
 
 *  **Discovering new config options**
 
     GitSwarm doesn't update your `/etc/gitswarm/gitswarm.rb` for you, but we do include an updated example template:
-    `/etc/gitswarm/gitswarm.rbe`. You can see what sort of config options have been changed since last release by running
+    `/opt/gitswarm/etc/gitswarm.rb.template`. You can see what sort of config options have been changed since last
+    release by running
     ```
-sudo diff /etc/gitswarm/gitswarm.rb /etc/gitswarm/gitswarm.rbe
+sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
     ```
 
 # For users upgrading FROM 2015.1

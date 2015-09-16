@@ -17,7 +17,7 @@ Updating GitSwarm to 2015.3
 
 1. Download the 2015.3 GitSwarm package and install it.
 
-    $ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -s -
+    $ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
 
     The script should add the Perforce package repository, and install the latest
     version of GitSwarm. The upgrade will create a backup of your existing GitSwarm

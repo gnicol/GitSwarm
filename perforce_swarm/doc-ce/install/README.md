@@ -52,7 +52,7 @@ sudo systemctl reload firewalld
 1.  **Add the Perforce package server and install GitSwarm.**
 
     ```
-curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -s -
+curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
     ```
 
 1.  **Verify the external URL for your GitSwarm instance:**

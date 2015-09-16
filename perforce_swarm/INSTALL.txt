@@ -85,7 +85,7 @@ Add the Perforce package server and install GitSwarm
 
 1. For all supported platforms:
 
-   $ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -s -
+   $ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
 
 
 

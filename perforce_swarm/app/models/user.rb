@@ -22,7 +22,8 @@ module PerforceSwarm
       return unless default_config['auto_provision']
 
       begin
-        connection = PerforceSwarm::P4::Connection.new(default_config)
+        connection = PerforceSwarm::P4::Connection.new(default_config,
+                                                       File.join(Gitlab.config.gitlab['user_home'], 'p4'))
         connection.login
         connection.input(password)
         connection.run('passwd', 'root')

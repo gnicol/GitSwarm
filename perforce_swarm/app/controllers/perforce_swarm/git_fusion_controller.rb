@@ -17,7 +17,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
     # we do this in its own rescue block so we only grab errors relevant to auto_create
     begin
       creator        = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
-      p4             = PerforceSwarm::P4::Connection.new(creator.config)
+      p4             = PerforceSwarm::P4::Connection.new(creator.config,
+                                                         File.join(Gitlab.config.gitlab['user_home'], 'p4'))
       p4.login
       @project_depot = creator.project_depot
       @depot_exists  = PerforceSwarm::P4::Spec::Depot.exists?(creator.project_depot, p4)

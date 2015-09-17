@@ -87,7 +87,6 @@ Feature: Convention Based Repos
     And I select the default Git Fusion server
     Then I should see a populated Git Fusion server dropdown
     And I should see a disabled convention-based mirroring radio button
-    And I should see an invalid password message from Perforce
     And I should see a link to the convention-based mirroring help section
 
   #############################

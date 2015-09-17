@@ -22,33 +22,47 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
 
   step 'I select the default Git Fusion server' do
     default_server = find_by_id('git_fusion_entry').find('option[value="default"]').text
-    select default_server, :from => 'git_fusion_entry'
+    select default_server, 'from' => 'git_fusion_entry'
   end
 
   step 'Git Fusion returns a list containing repos without convention-based mirroring' do
-    pending 'step not implemented'
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
+    allow(PerforceSwarm::P4::Connection).to receive(:login).and_return(true)
   end
 
   step 'Git Fusion returns a list containing repos with an invalid path_template' do
-    pending 'step not implemented'
+    config = default_config.dup
+    config.entry.global['auto_create'] = { 'path_template' => '', 'repo_name_template' => '' }
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
+    allow(PerforceSwarm::P4::Connection).to receive(:login).and_return(true)
   end
 
   step 'Git Fusion returns a list containing repos with a path_template referencing a non-existent Perforce depot' do
-    pending 'step not implemented'
+    allow(PerforceSwarm::P4::Spec::Depot).to receive(:exists?).and_return(false)
   end
 
   step 'Git Fusion returns a list containing repos that have incorrect Perforce credentials' do
-    allow(PerforceSwarm::P4::Connection).to receive(:login).
-                                                and_raise(PerforceSwarm::P4::CredentialInvalid, 'Login failed. ')
+    user          = default_config.entry.perforce_user
+    error_message = 'Login failed. [P4#run] Errors during command execution( "p4 login -p" ) ' \
+                    "[Error]: User #{user} doesn't exist."
+    config = default_config.dup
+    config.entry.global['auto_create'] = {
+      'path_template' => '//depot/gitswarm/{namespace}/{project-path}',
+      'repo_name_template' => 'gitswarm-{namespace}-{project-path}'
+    }
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
+    allow(PerforceSwarm::P4::Connection).to receive(:login)
+      .and_raise(PerforceSwarm::P4::IdentityNotFound, error_message)
   end
 
   step 'I should not see a convention-based mirroring radio button' do
     page.should_not have_selector('#git_fusion_auto_create_true')
   end
 
-  step 'I should see a convention-based mirroring radio button' do
+  step 'I should see a clickable convention-based mirroring radio button' do
     page.should have_selector('#git_fusion_auto_create_true')
   end
 
@@ -56,13 +70,12 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
     page.should have_selector('#git_fusion_auto_create_true[disabled="disabled"]')
   end
 
-  step 'I should see an invalid password message from Perforce' do
-    pending 'not implemented'
-  end
-
-  step 'I should see a link to the convention-based mirroring help section ' do
+  step 'I should see a link to the convention-based mirroring help section' do
     page.should have_content 'Auto create is not configured properly. Please see this document for help.'
-    page.should have_link('help/workflow/importing/import_from_gitfusion#convention-based-repository-configuration')
+    page.should have_link(
+                    'this document',
+                    href: '/help/workflow/importing/import_from_gitfusion#convention-based-repository-configuration'
+                )
   end
 
   step 'The Git Fusion config block is missing' do
@@ -123,5 +136,4 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   step 'I should not see a Git Fusion repo dropdown' do
     page.should_not have_selector 'select#git_fusion_repo_name'
   end
-
 end

@@ -72,7 +72,7 @@ eof
 
       # attempt to submit our p4gf_config file for Git Fusion - fails if a repo of the same name already exists
       def save
-        p4 = PerforceSwarm::P4::Connection.new(@config, File.join(Gitlab.config.gitlab['user_home'], 'p4'))
+        p4 = PerforceSwarm::P4::Connection.new(@config)
         p4.login
 
         # ensure the depots exist - both the //.git-fusion one as well as the one the user wants to create their project

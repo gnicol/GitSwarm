@@ -8,6 +8,7 @@ require_relative '../lib/git_swarm_api_helper'
 require_relative '../lib/p4_helper'
 
 class BaseTest < Minitest::Test
+
   def setup
     LOG.log('---------------------------------------------')
   end

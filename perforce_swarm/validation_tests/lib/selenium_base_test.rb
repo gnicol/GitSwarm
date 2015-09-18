@@ -6,8 +6,8 @@ class SeleniumBaseTest < BaseTest
   def setup
     super
     # Try to use the base headless web driver
-    # @driver = Selenium::WebDriver.for :firefox
-    @driver = Selenium::WebDriver.for :phantomjs
+    @driver = Selenium::WebDriver.for :firefox
+    #@driver = Selenium::WebDriver.for :phantomjs
   end
 
   def teardown

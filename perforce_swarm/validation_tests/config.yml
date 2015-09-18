@@ -1,6 +1,6 @@
 # Configuration properties for validation tests
 
-gitswarm_url : http://mp-gs-cent-7-153/
+gitswarm_url : http://mp-gs-cent-6-153/
 gitswarm_username : root
 gitswarm_password : 5iveL!fe
 

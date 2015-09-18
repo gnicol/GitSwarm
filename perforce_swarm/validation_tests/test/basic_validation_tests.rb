@@ -6,8 +6,7 @@ class BasicValidationTests < SeleniumBaseTest
   def test_login_page_tile
     LOG.log(__method__)
     expected_title = 'Sign in | GitSwarm'
-
-    @driver.navigate.to(CONFIG.get('gitswarm_url'))
+    login = LoginPage.new(@driver, CONFIG.get('gitswarm_url'))
     assert_equal(@driver.title, expected_title, 'GitSwarm login page title wasn\'t as expected')
     LOG.log('Login page title was : ' + @driver.title)
   end
@@ -15,13 +14,12 @@ class BasicValidationTests < SeleniumBaseTest
   def test_dashboard_page_tile
     LOG.log(__method__)
     expected_title = 'Dashboard | GitSwarm'
+    login = LoginPage.new(@driver, CONFIG.get('gitswarm_url'))
+    login.enter_credentials(CONFIG.get('gitswarm_username'), CONFIG.get('gitswarm_password'))
 
-    @driver.navigate.to(CONFIG.get('gitswarm_url'))
-    @driver.find_element(id: 'user_login').send_keys(CONFIG.get('gitswarm_username'))
-    @driver.find_element(id: 'user_password').send_keys(CONFIG.get('gitswarm_password'))
-    @driver.find_element(class: 'btn-save').click
-
+    dashboard = login.click_login_expecting_dashboard
     assert_equal(@driver.title, expected_title, 'GitSwarm dashboard page title wasn\'t as expected')
     LOG.log('Dashboard page title was : ' + @driver.title)
+    dashboard.logout
   end
 end

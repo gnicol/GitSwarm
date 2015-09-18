@@ -1,4 +1,5 @@
 require 'active_support/core_ext/string/output_safety'
+require 'gitlab/markdown'
 require 'html/pipeline/filter'
 
 module Gitlab
@@ -9,7 +10,6 @@ module Gitlab
     #
     # Context options:
     #   :project (required) - Current project, ignored if reference is cross-project.
-    #   :reference_class    - Custom CSS class added to reference links.
     #   :only_path          - Generate path-only links.
     #
     # Results:
@@ -19,6 +19,22 @@ module Gitlab
         super
 
         result[:references] = Hash.new { |hash, type| hash[type] = [] }
+      end
+
+      # Returns a data attribute String to attach to a reference link
+      #
+      # id   - Object ID
+      # type - Object type (default: :project)
+      #
+      # Examples:
+      #
+      #   data_attribute(1)         # => "data-project-id=\"1\""
+      #   data_attribute(2, :user)  # => "data-user-id=\"2\""
+      #   data_attribute(3, :group) # => "data-group-id=\"3\""
+      #
+      # Returns a String
+      def data_attribute(id, type = :project)
+        %Q(data-#{type}-id="#{id}")
       end
 
       def escape_once(html)
@@ -54,7 +70,7 @@ module Gitlab
       end
 
       def reference_class(type)
-        "gfm gfm-#{type} #{context[:reference_class]}".strip
+        "gfm gfm-#{type}"
       end
 
       # Iterate through the document's text nodes, yielding the current node's

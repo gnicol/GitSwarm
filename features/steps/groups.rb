@@ -6,7 +6,7 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
   include Select2Helper
 
   step 'I should see back to dashboard button' do
-    expect(page).to have_content 'Back to Dashboard'
+    expect(page).to have_content 'Back to dashboard'
   end
 
   step 'gitlab user "Mike"' do
@@ -15,6 +15,26 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
 
   step 'I click link "Add members"' do
     find(:css, 'button.btn-new').click
+  end
+
+  step 'I should see group "Owned"' do
+    expect(page).to have_content '@owned'
+  end
+
+  step 'I am a signed out user' do
+    logout
+  end
+
+  step 'Group "Owned" has a public project "Public-project"' do
+    group = Group.find_by(name: "Owned")
+
+    @project = create :empty_project, :public,
+                 group: group,
+                 name: "Public-project"
+  end
+
+  step 'I should see project "Public-project"' do
+    expect(page).to have_content 'Public-project'
   end
 
   step 'I select "Mike" as "Reporter"' do
@@ -224,6 +244,15 @@ class Spinach::Features::Groups < Spinach::FeatureSteps
     expect(page).to have_content('Progress: 0 closed – 4 open')
     expect(page).to have_link(@issue1.title, href: namespace_project_issue_path(@project1.namespace, @project1, @issue1))
     expect(page).to have_link(@mr3.title, href: namespace_project_merge_request_path(@project3.namespace, @project3, @mr3))
+  end
+
+  step 'Group "Owned" has archived project' do
+    group = Group.find_by(name: 'Owned')
+    create(:project, namespace: group, archived: true, path: "archived-project")
+  end
+
+  step 'I should see "archived" label' do
+    expect(page).to have_xpath("//span[@class='label label-warning']", text: 'archived')
   end
 
   protected

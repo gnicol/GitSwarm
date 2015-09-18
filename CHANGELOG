@@ -1,5 +1,144 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+v 8.0.0 (unreleased)
+  - Fix HTML link that was improperly escaped in new user e-mail (Stan Hu)
+  - Fix broken sort in merge request API (Stan Hu)
+  - Bump rouge to 1.10.1 to remove warning noise and fix other syntax highlighting bugs (Stan Hu)
+  - Gracefully handle errors in syntax highlighting by leaving the block unformatted (Stan Hu)
+  - Add "replace" and "upload" functionalities to allow user replace existing file and upload new file into current repository
+  - Fix URL construction for merge requests, issues, notes, and commits for relative URL config (Stan Hu)
+  - Fix emoji URLs in Markdown when relative_url_root is used (Stan Hu)
+  - Omit filename in Content-Disposition header in raw file download to avoid RFC 6266 encoding issues (Stan HU)
+  - Fix broken Wiki Page History (Stan Hu)
+  - Import forked repositories asynchronously to prevent large repositories from timing out (Stan Hu)
+  - Prevent anchors from being hidden by header (Stan Hu)
+  - Fix bug where only the first 15 Bitbucket issues would be imported (Stan Hu)
+  - Sort issues by creation date in Bitbucket importer (Stan Hu)
+  - Prevent too many redirects upon login when home page URL is set to external_url (Stan Hu)
+  - Improve dropdown positioning on the project home page (Hannes Rosenögger)
+  - Upgrade browser gem to 1.0.0 to avoid warning in IE11 compatibilty mode (Stan Hu)
+  - Remove user OAuth tokens from the database and request new tokens each session (Stan Hu)
+  - Restrict users API endpoints to use integer IDs (Stan Hu)
+  - Only show recent push event if the branch still exists or a recent merge request has not been created (Stan Hu)
+  - Remove satellites
+  - Better performance for web editor (switched from satellites to rugged)
+  - Faster merge
+  - Ability to fetch merge requests from refs/merge-requests/:id
+  - Allow displaying of archived projects in the admin interface (Artem Sidorenko)
+  - Allow configuration of import sources for new projects (Artem Sidorenko)
+  - Search for comments should be case insensetive
+  - Create cross-reference for closing references on commits pushed to non-default branches (Maël Valais)
+  - Ability to search milestones
+  - Gracefully handle SMTP user input errors (e.g. incorrect email addresses) to prevent Sidekiq retries (Stan Hu)
+  - Move dashboard activity to separate page (for your projects and starred projects)
+  - Improve performance of git blame
+  - Limit content width to 1200px for most of pages to improve readability on big screens
+  - Fix 500 error when submit project snippet without body
+  - Improve search page usability
+  - Bring more UI consistency in way how projects, snippets and groups lists are rendered
+  - Make all profiles and group public
+  - Fixed login failure when extern_uid changes (Joel Koglin)
+  - Don't notify users without access to the project when they are (accidentally) mentioned in a note.
+  - Retrieving oauth token with LDAP credentials
+  - Load Application settings from running database unless env var USE_DB=false
+  - Added Drone CI integration (Kirill Zaitsev)
+  - Refactored service API and added automatically service docs generator (Kirill Zaitsev)
+  - Added web_url key project hook_attrs (Kirill Zaitsev)
+  - Add ability to get user information by ID of an SSH key via the API
+  - Fix bug which IE cannot show image at markdown when the image is raw file of gitlab
+  - Add support for Crowd
+  - Global Labels that are available to all projects
+  - Fix highlighting of deleted lines in diffs.
+  - Added service API endpoint to retrieve service parameters (Petheő Bence)
+  - Add FogBugz project import (Jared Szechy)
+  - Sort users autocomplete lists by user (Allister Antosik)
+  - Webhook for issue now contains repository field (Jungkook Park)
+  - Add ability to add custom text to the help page (Jeroen van Baarsen)
+  - Add pg_schema to backup config
+  - Removed API calls from CE to CI
+
+v 7.14.3
+  - No changes
+
+v 7.14.2
+  - Upgrade gitlab_git to 7.2.15 to fix `git blame` errors with ISO-encoded files (Stan Hu)
+  - Allow configuration of LDAP attributes GitLab will use for the new user account.
+
+v 7.14.1
+  - Improve abuse reports management from admin area
+  - Fix "Reload with full diff" URL button in compare branch view (Stan Hu)
+  - Disabled DNS lookups for SSH in docker image (Rowan Wookey)
+  - Only include base URL in OmniAuth full_host parameter (Stan Hu)
+  - Fix Error 500 in API when accessing a group that has an avatar (Stan Hu)
+  - Ability to enable SSL verification for Webhooks
+
+v 7.14.0
+  - Fix bug where non-project members of the target project could set labels on new merge requests.
+  - Update default robots.txt rules to disallow crawling of irrelevant pages (Ben Bodenmiller)
+  - Fix redirection after sign in when using auto_sign_in_with_provider
+  - Upgrade gitlab_git to 7.2.14 to ignore CRLFs in .gitmodules (Stan Hu)
+  - Clear cache to prevent listing deleted branches after MR removes source branch (Stan Hu)
+  - Provide more feedback what went wrong if HipChat service failed test (Stan Hu)
+  - Fix bug where backslashes in inline diffs could be dropped (Stan Hu)
+  - Disable turbolinks when linking to Bitbucket import status (Stan Hu)
+  - Fix broken code import and display error messages if something went wrong with creating project (Stan Hu)
+  - Fix corrupted binary files when using API files endpoint (Stan Hu)
+  - Bump Haml to 4.0.7 to speed up textarea rendering (Stan Hu)
+  - Show incompatible projects in Bitbucket import status (Stan Hu)
+  - Fix coloring of diffs on MR Discussion-tab (Gert Goet)
+  - Fix "Network" and "Graphs" pages for branches with encoded slashes (Stan Hu)
+  - Fix errors deleting and creating branches with encoded slashes (Stan Hu)
+  - Always add current user to autocomplete controller to support filter by "Me" (Stan Hu)
+  - Fix multi-line syntax highlighting (Stan Hu)
+  - Fix network graph when branch name has single quotes (Stan Hu)
+  - Add "Confirm user" button in user admin page (Stan Hu)
+  - Upgrade gitlab_git to version 7.2.6 to fix Error 500 when creating network graphs (Stan Hu)
+  - Add support for Unicode filenames in relative links (Hiroyuki Sato)
+  - Fix URL used for refreshing notes if relative_url is present (Bartłomiej Święcki)
+  - Fix commit data retrieval when branch name has single quotes (Stan Hu)
+  - Check that project was actually created rather than just validated in import:repos task (Stan Hu)
+  - Fix full screen mode for snippet comments (Daniel Gerhardt)
+  - Fix 404 error in files view after deleting the last file in a repository (Stan Hu)
+  - Fix the "Reload with full diff" URL button (Stan Hu)
+  - Fix label read access for unauthenticated users (Daniel Gerhardt)
+  - Fix access to disabled features for unauthenticated users (Daniel Gerhardt)
+  - Fix OAuth provider bug where GitLab would not go return to the redirect_uri after sign-in (Stan Hu)
+  - Fix file upload dialog for comment editing (Daniel Gerhardt)
+  - Set OmniAuth full_host parameter to ensure redirect URIs are correct (Stan Hu)
+  - Return comments in created order in merge request API (Stan Hu)
+  - Disable internal issue tracker controller if external tracker is used (Stan Hu)
+  - Expire Rails cache entries after two weeks to prevent endless Redis growth
+  - Add support for destroying project milestones (Stan Hu)
+  - Allow custom backup archive permissions
+  - Add project star and fork count, group avatar URL and user/group web URL attributes to API
+  - Show who last edited a comment if it wasn't the original author
+  - Send notification to all participants when MR is merged.
+  - Add ability to manage user email addresses via the API.
+  - Show buttons to add license, changelog and contribution guide if they're missing.
+  - Tweak project page buttons.
+  - Disabled autocapitalize and autocorrect on login field (Daryl Chan)
+  - Mention group and project name in creation, update and deletion notices (Achilleas Pipinellis)
+  - Update gravatar link on profile page to link to configured gravatar host (Ben Bodenmiller)
+  - Remove redis-store TTL monkey patch
+  - Add support for CI skipped status
+  - Fetch code from forks to refs/merge-requests/:id/head when merge request created
+  - Remove comments and email addresses when publicly exposing ssh keys (Zeger-Jan van de Weg)
+  - Add "Check out branch" button to the MR page.
+  - Improve MR merge widget text and UI consistency.
+  - Improve text in MR "How To Merge" modal.
+  - Cache all events
+  - Order commits by date when comparing branches
+  - Fix bug causing error when the target branch of a symbolic ref was deleted
+  - Include branch/tag name in archive file and directory name
+  - Add dropzone upload progress
+  - Add a label for merged branches on branches page (Florent Baldino)
+  - Detect .mkd and .mkdn files as markdown (Ben Boeckel)
+  - Fix: User search feature in admin area does not respect filters
+  - Set max-width for README, issue and merge request description for easier read on big screens
+  - Update Flowdock integration to support new Flowdock API (Boyan Tabakov)
+  - Remove author from files view (Sven Strickroth)
+  - Fix infinite loop when SAML was incorrectly configured.
+
 v 7.13.5
   - Satellites reverted
 
@@ -8,6 +147,9 @@ v 7.13.4
 
 v 7.13.3
   - Fix bug causing Bitbucket importer to crash when OAuth application had been removed.
+  - Allow users to send abuse reports
+  - Remove satellites
+  - Link username to profile on Group Members page (Tom Webster)
 
 v 7.13.2
   - Fix randomly failed spec
@@ -58,15 +200,15 @@ v 7.13.0
   - Update ssl_ciphers in Nginx example to remove DHE settings. This will deny forward secrecy for Android 2.3.7, Java 6 and OpenSSL 0.9.8
   - Admin can edit and remove user identities
   - Convert CRLF newlines to LF when committing using the web editor.
-  - API request /projects/:project_id/merge_requests?state=closed will return only closed merge requests without merged one. If you need ones that were merged - use state=merged.  
+  - API request /projects/:project_id/merge_requests?state=closed will return only closed merge requests without merged one. If you need ones that were merged - use state=merged.
   - Allow Administrators to filter the user list by those with or without Two-factor Authentication enabled.
   - Show a user's Two-factor Authentication status in the administration area.
   - Explicit error when commit not found in the CI
-  - Improve performance for issue and merge request pages 
+  - Improve performance for issue and merge request pages
   - Users with guest access level can not set assignee, labels or milestones for issue and merge request
   - Reporter role can manage issue tracker now: edit any issue, set assignee or milestone and manage labels
   - Better performance for pages with events list, issues list and commits list
-  - Faster automerge check and merge itself when source and target branches are in same repository 
+  - Faster automerge check and merge itself when source and target branches are in same repository
   - Correctly show anonymous authorized applications under Profile > Applications.
   - Query Optimization in MySQL.
   - Allow users to be blocked and unblocked via the API
@@ -74,15 +216,18 @@ v 7.13.0
   - Redesign project page. Show README as default instead of activity. Move project activity to separate page
   - Make left menu more hierarchical and less contextual by adding back item at top
   - A fork can’t have a visibility level that is greater than the original project.
-  - Faster code search in repository and wiki. Fixes search page timeout for big repositories 
+  - Faster code search in repository and wiki. Fixes search page timeout for big repositories
   - Allow administrators to disable 2FA for a specific user
   - Add error message for SSH key linebreaks
+  - Store commits count in database (will populate with valid values only after first push)
+  - Rebuild cache after push to repository in background job
+  - Fix transferring of project to another group using the API.
 
 v 7.12.2
   - Correctly show anonymous authorized applications under Profile > Applications.
   - Faster automerge check and merge itself when source and target branches are in same repository
   - Audit log for user authentication
-  - Fix transferring of project to another group using the API.
+  - Allow custom label to be set for authentication providers.
 
 v 7.12.1
   - Fix error when deleting a user who has projects (Stan Hu)
@@ -90,7 +235,7 @@ v 7.12.1
   - Add SAML to list of social_provider (Matt Firtion)
   - Fix merge requests API scope to keep compatibility in 7.12.x patch release (Dmitriy Zaporozhets)
   - Fix closed merge request scope at milestone page (Dmitriy Zaporozhets)
-  - Revert merge request states renaming 
+  - Revert merge request states renaming
   - Fix hooks for web based events with external issue references (Daniel Gerhardt)
   - Improve performance for issue and merge request pages
   - Compress database dumps to reduce backup size
@@ -151,6 +296,7 @@ v 7.12.0
   - Improve group removing logic
   - Trigger create-hooks on backup restore task
   - Add option to automatically link omniauth and LDAP identities
+  - Allow special character in users bio. I.e.: I <3 GitLab
 
 v 7.11.4
   - Fix missing bullets when creating lists
@@ -169,9 +315,6 @@ v 7.11.1
 v 7.11.0
   - Fall back to Plaintext when Syntaxhighlighting doesn't work. Fixes some buggy lexers (Hannes Rosenögger)
   - Get editing comments to work in Chrome 43 again.
-  - Allow special character in users bio. I.e.: I <3 GitLab
-
-v 7.11.0
   - Fix broken view when viewing history of a file that includes a path that used to be another file (Stan Hu)
   - Don't show duplicate deploy keys
   - Fix commit time being displayed in the wrong timezone in some cases (Hannes Rosenögger)
@@ -213,6 +356,7 @@ v 7.11.0
   - Protect OmniAuth request phase against CSRF.
   - Don't send notifications to mentioned users that don't have access to the project in question.
   - Add search issues/MR by number
+  - Change plots to bar graphs in commit statistics screen
   - Move snippets UI to fluid layout
   - Improve UI for sidebar. Increase separation between navigation and content
   - Improve new project command options (Ben Bodenmiller)

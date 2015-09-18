@@ -121,6 +121,12 @@ X-Gitlab-Event: Issue Hook
     "username": "root",
     "avatar_url": "http://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=40\u0026d=identicon"
   },
+  "repository": {
+    "name": "Gitlab Test",
+    "url": "http://example.com/gitlabhq/gitlab-test.git",
+    "description": "Aut reprehenderit ut est.",
+    "homepage": "http://example.com/gitlabhq/gitlab-test"
+  },
   "object_attributes": {
     "id": 301,
     "title": "New API: create/update/delete file",
@@ -279,6 +285,7 @@ X-Gitlab-Event: Note Hook
       "name": "Gitlab Test",
       "ssh_url": "git@example.com:gitlab-org/gitlab-test.git",
       "http_url": "http://example.com/gitlab-org/gitlab-test.git",
+      "web_url": "http://example.com/gitlab-org/gitlab-test",
       "namespace": "Gitlab Org",
       "visibility_level": 10
     },
@@ -286,6 +293,7 @@ X-Gitlab-Event: Note Hook
       "name": "Gitlab Test",
       "ssh_url": "git@example.com:gitlab-org/gitlab-test.git",
       "http_url": "http://example.com/gitlab-org/gitlab-test.git",
+      "web_url": "http://example.com/gitlab-org/gitlab-test",
       "namespace": "Gitlab Org",
       "visibility_level": 10
     },
@@ -462,6 +470,7 @@ X-Gitlab-Event: Merge Request Hook
       "name": "awesome_project",
       "ssh_url": "ssh://git@example.com/awesome_space/awesome_project.git",
       "http_url": "http://example.com/awesome_space/awesome_project.git",
+      "web_url": "http://example.com/awesome_space/awesome_project",
       "visibility_level": 20,
       "namespace": "awesome_space"
     },
@@ -469,6 +478,7 @@ X-Gitlab-Event: Merge Request Hook
       "name": "awesome_project",
       "ssh_url": "ssh://git@example.com/awesome_space/awesome_project.git",
       "http_url": "http://example.com/awesome_space/awesome_project.git",
+      "web_url": "http://example.com/awesome_space/awesome_project",
       "visibility_level": 20,
       "namespace": "awesome_space"
     },

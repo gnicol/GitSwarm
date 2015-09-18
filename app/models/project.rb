@@ -21,12 +21,13 @@
 #  import_url             :string(255)
 #  visibility_level       :integer          default(0), not null
 #  archived               :boolean          default(FALSE), not null
+#  avatar                 :string(255)
 #  import_status          :string(255)
 #  repository_size        :float            default(0.0)
 #  star_count             :integer          default(0), not null
 #  import_type            :string(255)
 #  import_source          :string(255)
-#  avatar                 :string(255)
+#  commit_count           :integer          default(0)
 #
 
 require 'carrierwave/orm/activerecord'
@@ -36,12 +37,13 @@ class Project < ActiveRecord::Base
   include Gitlab::ConfigHelper
   include Gitlab::ShellAdapter
   include Gitlab::VisibilityLevel
-  include Rails.application.routes.url_helpers
   include Referable
   include Sortable
 
   extend Gitlab::ConfigHelper
   extend Enumerize
+
+  UNKNOWN_IMPORT_URL = 'http://unknown.git'
 
   default_value_for :archived, false
   default_value_for :visibility_level, gitlab_config_features.visibility_level
@@ -73,6 +75,7 @@ class Project < ActiveRecord::Base
   has_many :services
   has_one :gitlab_ci_service, dependent: :destroy
   has_one :campfire_service, dependent: :destroy
+  has_one :drone_ci_service, dependent: :destroy
   has_one :emails_on_push_service, dependent: :destroy
   has_one :irker_service, dependent: :destroy
   has_one :pivotaltracker_service, dependent: :destroy
@@ -116,6 +119,7 @@ class Project < ActiveRecord::Base
   has_many :starrers, through: :users_star_projects, source: :user
 
   has_one :import_data, dependent: :destroy, class_name: "ProjectImportData"
+  has_one :gitlab_ci_project, dependent: :destroy, class_name: "Ci::Project", foreign_key: :gitlab_id
 
   delegate :name, to: :owner, allow_nil: true, prefix: true
   delegate :members, to: :team, prefix: true
@@ -141,7 +145,7 @@ class Project < ActiveRecord::Base
   validates_uniqueness_of :path, scope: :namespace_id
   validates :import_url,
     format: { with: /\A#{URI.regexp(%w(ssh git http https))}\z/, message: 'should be a valid url' },
-    if: :import?
+    if: :external_import?
   validates :star_count, numericality: { greater_than_or_equal_to: 0 }
   validate :check_limit, on: :create
   validate :avatar_type,
@@ -215,7 +219,7 @@ class Project < ActiveRecord::Base
     end
 
     def search(query)
-      joins(:namespace).where('projects.archived = ?', false).
+      joins(:namespace).
         where('LOWER(projects.name) LIKE :query OR
               LOWER(projects.path) LIKE :query OR
               LOWER(namespaces.name) LIKE :query OR
@@ -272,7 +276,13 @@ class Project < ActiveRecord::Base
   end
 
   def add_import_job
-    RepositoryImportWorker.perform_in(2.seconds, id)
+    if forked?
+      unless RepositoryForkWorker.perform_async(id, forked_from_project.path_with_namespace, self.namespace.path)
+        import_fail
+      end
+    else
+      RepositoryImportWorker.perform_in(2.seconds, id)
+    end
   end
 
   def clear_import_data
@@ -280,6 +290,10 @@ class Project < ActiveRecord::Base
   end
 
   def import?
+    external_import? || forked?
+  end
+
+  def external_import?
     import_url.present?
   end
 
@@ -316,7 +330,7 @@ class Project < ActiveRecord::Base
   end
 
   def web_url
-    [gitlab_config.url, path_with_namespace].join('/')
+    Gitlab::Application.routes.url_helpers.namespace_project_url(self.namespace, self)
   end
 
   def web_url_without_protocol
@@ -400,6 +414,15 @@ class Project < ActiveRecord::Base
     end
   end
 
+  def create_labels
+    Label.templates.each do |label|
+      label = label.dup
+      label.template = nil
+      label.project_id = self.id
+      label.save
+    end
+  end
+
   def find_service(list, name)
     list.find { |service| service.to_param == name }
   end
@@ -433,7 +456,7 @@ class Project < ActiveRecord::Base
     if avatar.present?
       [gitlab_config.url, avatar.url].join
     elsif avatar_in_git
-      [gitlab_config.url, namespace_project_avatar_path(namespace, self)].join
+      Gitlab::Application.routes.url_helpers.namespace_project_avatar_url(namespace, self)
     end
   end
 
@@ -520,14 +543,6 @@ class Project < ActiveRecord::Base
     !repository.exists? || repository.empty?
   end
 
-  def ensure_satellite_exists
-    self.satellite.create unless self.satellite.exists?
-  end
-
-  def satellite
-    @satellite ||= Gitlab::Satellite::Satellite.new(self)
-  end
-
   def repo
     repository.raw
   end
@@ -571,7 +586,7 @@ class Project < ActiveRecord::Base
   end
 
   def http_url_to_repo
-    [gitlab_config.url, '/', path_with_namespace, '.git'].join('')
+    "#{web_url}.git"
   end
 
   # Check if current branch name is marked as protected in the system
@@ -597,14 +612,11 @@ class Project < ActiveRecord::Base
     new_path_with_namespace = File.join(namespace_dir, path)
 
     if gitlab_shell.mv_repository(old_path_with_namespace, new_path_with_namespace)
-      # If repository moved successfully we need to remove old satellite
-      # and send update instructions to users.
+      # If repository moved successfully we need to send update instructions to users.
       # However we cannot allow rollback since we moved repository
       # So we basically we mute exceptions in next actions
       begin
         gitlab_shell.mv_repository("#{old_path_with_namespace}.wiki", "#{new_path_with_namespace}.wiki")
-        gitlab_shell.rm_satellites(old_path_with_namespace)
-        ensure_satellite_exists
         send_move_instructions
         reset_events_cache
       rescue
@@ -624,6 +636,7 @@ class Project < ActiveRecord::Base
       name: name,
       ssh_url: ssh_url_to_repo,
       http_url: http_url_to_repo,
+      web_url: web_url,
       namespace: namespace.name,
       visibility_level: visibility_level
     }
@@ -700,19 +713,12 @@ class Project < ActiveRecord::Base
   end
 
   def create_repository
-    if forked?
-      if gitlab_shell.fork_repository(forked_from_project.path_with_namespace, self.namespace.path)
-        ensure_satellite_exists
-        true
-      else
-        errors.add(:base, 'Failed to fork repository')
-        false
-      end
-    else
+    # Forked import is handled asynchronously
+    unless forked?
       if gitlab_shell.add_repository(path_with_namespace)
         true
       else
-        errors.add(:base, 'Failed to create repository')
+        errors.add(:base, 'Failed to create repository via gitlab-shell')
         false
       end
     end

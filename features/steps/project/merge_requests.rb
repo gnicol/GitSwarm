@@ -128,7 +128,8 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see the proper Inline and Side-by-side links' do
-    expect(page).to have_css('#commit-diff-viewtype', count: 2)
+    expect(page).to have_css('#parallel-diff-btn', count: 1)
+    expect(page).to have_css('#inline-diff-btn', count: 1)
   end
 
   step 'I switch to the merge request\'s comments tab' do
@@ -198,15 +199,10 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'merge request "Bug NS-05" is mergeable' do
-    merge_request.project.satellite.create
     merge_request.mark_as_mergeable
   end
 
   step 'I accept this merge request' do
-    Gitlab::Satellite::MergeAction.any_instance.stub(
-      merge!: true,
-    )
-
     page.within '.mr-state-widget' do
       click_button "Accept Merge Request"
     end
@@ -230,13 +226,13 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
   step 'I click link "Hide inline discussion" of the second file' do
     page.within '.files [id^=diff]:nth-child(2)' do
-      find('.js-toggle-diff-comments').click
+      find('.js-toggle-diff-comments').trigger('click')
     end
   end
 
   step 'I click link "Show inline discussion" of the second file' do
     page.within '.files [id^=diff]:nth-child(2)' do
-      find('.js-toggle-diff-comments').click
+      find('.js-toggle-diff-comments').trigger('click')
     end
   end
 
@@ -326,7 +322,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I should see new target branch changes' do
-    expect(page).to have_content 'From fix into feature'
+    expect(page).to have_content 'Request to merge fix into feature'
     expect(page).to have_content 'Target branch changed from master to feature'
   end
 

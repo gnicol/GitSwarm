@@ -18,8 +18,9 @@ module PerforceSwarm
     end
 
     def sync_p4d_password(password)
-      default_config = PerforceSwarm::GitlabConfig.new.git_fusion.entry('default')
-      return unless default_config['auto_provision']
+      git_fusion     = PerforceSwarm::GitlabConfig.new.git_fusion
+      default_config = git_fusion.entry('default')
+      return unless git_fusion.enabled? && default_config['auto_provision']
 
       begin
         connection = PerforceSwarm::P4::Connection.new(default_config)

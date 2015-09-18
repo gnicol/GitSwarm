@@ -23,8 +23,9 @@ sudo gitswarm-ctl stop
 
     If you instead want to completely remove all the GitSwarm data, run
     ```
-sudo gitsawrm-ctl cleanse
+sudo gitswarm-ctl cleanse
     ```
+    Note this will permanency remove all of your GitSwarm related data.
 
 1.  **Uninstall GitSwarm's supervisory processes.**
 

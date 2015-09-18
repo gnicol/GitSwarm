@@ -4,7 +4,7 @@
 
 
     ```
-curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -s -
+curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
     ```
 
     The script should add the Perforce package repository, and install the latest

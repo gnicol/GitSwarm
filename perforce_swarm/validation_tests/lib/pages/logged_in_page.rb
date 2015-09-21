@@ -2,7 +2,6 @@ require_relative '../page'
 require_relative 'logged_in_page'
 
 class LoggedInPage < Page
-
   def initialize(driver)
     super(driver)
     verify
@@ -10,16 +9,14 @@ class LoggedInPage < Page
 
   def elements_for_validation
     elems = super
-    elems << [:id,'search'] # search menu
-    elems << [:class,'profile-pic'] # the rop right menu
-    return elems
+    elems << [:id, 'search'] # search menu
+    elems << [:class, 'profile-pic'] # the rop right menu
+    elems
   end
 
-
-  def logout()
+  def logout
     @driver.find_element(:class, 'profile-pic').click
     @driver.find_element(:class, 'logout').click
-    return LoginPage.new(@driver)
+    LoginPage.new(@driver)
   end
-
 end

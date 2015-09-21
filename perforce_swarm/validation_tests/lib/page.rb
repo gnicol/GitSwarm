@@ -1,6 +1,6 @@
 require 'selenium-webdriver'
 
-Dir['./pages/*.rb'].each {|file| require file }
+Dir['./pages/*.rb'].each { |file| require file }
 
 class Page
   attr_reader :driver
@@ -19,19 +19,19 @@ class Page
   # not valid.  This should be called at the ene of every child class'
   # constructor.
   #
-  def verify()
+  def verify
     ok = true
     elements = elements_for_validation
     LOG.debug('Verifying elements : ' + elements.inspect)
-    elements.each do |(by,value)|
-      if @driver.find_elements(by, value).length !=1 then
+    elements.each do |(by, value)|
+      if @driver.find_elements(by, value).length !=1
         ok = false
         LOG.log("Element missing on page:  #{by} #{value}")
       end
     end
-    if (!ok) then
+    unless ok
       LOG.log('Could not find expected element(s) on page: ' +@driver.current_url)
-      raise InvalidUnderlyingPageError.new('Expected element(s) not found on page.')
+      fail 'Expected element(s) not found on page.'
     end
   end
 
@@ -40,14 +40,6 @@ class Page
   # to get the elements from all parent classes
   #
   def elements_for_validation
-    return []
+    []
   end
-
-
-
-end
-
-# error class for when a page is constructed, but the page the driver is on doesn't match the expected page.
-class InvalidUnderlyingPageError < StandardError
-
 end

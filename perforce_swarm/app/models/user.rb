@@ -4,8 +4,11 @@ module PerforceSwarm
   module UserExtension
     def validate_and_change_in_p4d
       # presently we only handle the 'root' user and only for auto-provisioned servers
+      # username has to be root or id has to be 1 and user has to be admin
+      # in order for the change to populate to p4d
       # run only if were changing password
-      return true unless changed.include?('encrypted_password') && username == 'root'
+      return true unless changed.include?('encrypted_password') &&
+          (username == 'root' || id == 1) && self.admin
       sync_p4d_password(password)
     rescue P4Exception => ex
       # if a p4 error occurs; attempt to raise it to the user's attention and abort the save

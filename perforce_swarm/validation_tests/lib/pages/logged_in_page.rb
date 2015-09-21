@@ -11,7 +11,6 @@ class LoggedInPage < Page
   def elements_for_validation
     elems = super
     elems << [:id,'search'] # search menu
-    elems << [:class,'brand-logo'] # top right 'gitswarm' menu
     elems << [:class,'profile-pic'] # the rop right menu
     return elems
   end

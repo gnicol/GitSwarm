@@ -1,5 +1,6 @@
 require_relative '../page'
 require_relative 'logged_in_page'
+require_relative 'password_reset_page'
 
 class LoginPage < Page
 
@@ -21,6 +22,36 @@ class LoginPage < Page
     return elems
   end
 
+  # Logs into GitSwarm
+  # if the login takes us to the page requesting password setting, this
+  # method will set the password to be the same as it currently is and
+  # re-login
+  def login(user, password)
+    enter_credentials(user, password)
+    click_login
+    if @driver.find_elements(:id, 'user_password_confirmation').length !=0 then
+      #it's probably a password reset page
+      passwordSetPage = PasswordResetPage.new(@driver)
+      passwordSetPage.set_password(password) # set the password to be the current password
+      enter_credentials(user, password)
+      click_login
+    end
+    return LoggedInPage.new(@driver)
+  end
+
+  def click_login_expecting_password_reset()
+    # click login, then return a page for the password reset page
+    click_login
+    return PasswordResetPage.new(@driver)
+  end
+
+  def click_login_expecting_dashboard()
+    # click login, then return a page for the dashboard
+    click_login
+    return LoggedInPage.new(@driver)
+  end
+
+private
   def enter_credentials(user, password)
     @driver.find_element(:id, 'user_login').send_keys(user)
     @driver.find_element(:id, 'user_password').send_keys(password)
@@ -28,17 +59,6 @@ class LoginPage < Page
 
   def click_login()
     @driver.find_element(:class, 'btn-save').click
-  end
-
-  def click_login_expecting_password_reset()
-    # click login, then return a page for the password reset page
-    raise 'Not implemented yet'
-  end
-
-  def click_login_expecting_dashboard()
-    # click login, then return a page for the dashboard
-    click_login
-    return LoggedInPage.new(@driver)
   end
 
 

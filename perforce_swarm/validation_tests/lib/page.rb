@@ -24,14 +24,14 @@ class Page
     elements = elements_for_validation
     LOG.debug('Verifying elements : ' + elements.inspect)
     elements.each do |(by,value)|
-      if (@driver.find_elements(by, value).length !=1) then
+      if @driver.find_elements(by, value).length !=1 then
         ok = false
         LOG.log("Element missing on page:  #{by} #{value}")
       end
     end
     if (!ok) then
       LOG.log('Could not find expected element(s) on page: ' +@driver.current_url)
-      raise 'Expected element(s) not found on page.'
+      raise InvalidUnderlyingPageError.new('Expected element(s) not found on page.')
     end
   end
 
@@ -43,5 +43,11 @@ class Page
     return []
   end
 
+
+
 end
 
+# error class for when a page is constructed, but the page the driver is on doesn't match the expected page.
+class InvalidUnderlyingPageError < StandardError
+
+end

@@ -1,10 +1,5 @@
 %header.navbar.navbar-fixed-top.navbar-gitlab{ class: nav_header_class }
-  .container
-    .header-logo
-      = link_to root_path, class: 'home', title: 'Dashboard', id: 'js-shortcuts-home', data: {toggle: 'tooltip', placement: 'bottom'} do
-        = brand_header_logo
-        .gitlab-text-container
-          %h3 GitSwarm
+  %div{ class: fluid_layout ? "container-fluid" : "container-fluid" }
     .header-content
       - if !@recent_projects.nil?
         %div.dropdown.dashboard-menu
@@ -29,14 +24,12 @@
             = title
 
       %ul.nav.navbar-nav.pull-right
-        %li.hidden-sm.hidden-xs
-          = render 'layouts/search'
+        - unless @disable_search_panel
+          %li.hidden-sm.hidden-xs
+            = render 'layouts/search'
         %li.visible-sm.visible-xs
           = link_to search_path, title: 'Search', data: {toggle: 'tooltip', placement: 'bottom'} do
             = icon('search')
-        %li.hidden-xs
-          = link_to help_path, title: 'Help', data: {toggle: 'tooltip', placement: 'bottom'} do
-            = icon('question-circle fw')
         - if current_user.is_admin?
           %li.hidden-xs
             = link_to admin_root_path, title: 'Admin Area', data: {toggle: 'tooltip', placement: 'bottom'} do

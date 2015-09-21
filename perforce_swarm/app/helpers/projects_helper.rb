@@ -1,17 +1,25 @@
 require Rails.root.join('app', 'helpers', 'projects_helper')
 
 module ProjectsHelper
-  # Only linkify the group part of the project title
-  def project_title(project)
-    if project.group
-      content_tag :span do
-        link_to(simple_sanitize(project.group.name), group_path(project.group)) + ' / ' + simple_sanitize(project.name)
+  # Don't linkify the last section of the title, in order to give a larger already
+  # To click for the dropdown
+  def project_title(project, name = nil, _url = nil)
+    namespace_link =
+      if project.group
+        link_to(simple_sanitize(project.group.name), group_path(project.group))
+      else
+        owner = project.namespace.owner
+        link_to(simple_sanitize(owner.name), user_path(owner))
       end
-    else
-      owner = project.namespace.owner
-      content_tag :span do
-        link_to(simple_sanitize(owner.name), user_path(owner)) + ' / ' + simple_sanitize(project.name)
-      end
+
+    project_link = simple_sanitize(project.name)
+    project_link = link_to(project_link, project_path(project)) if name
+
+    full_title = namespace_link + ' / ' + project_link
+    full_title += ' &middot; '.html_safe + simple_sanitize(name) if name
+
+    content_tag :span do
+      full_title
     end
   end
 

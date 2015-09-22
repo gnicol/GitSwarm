@@ -213,6 +213,4 @@ end
 
 class HelpController
   prepend PerforceSwarm::HelpControllerExtension
-  skip_before_filter :authenticate_user!,
-                     :reject_blocked
 end

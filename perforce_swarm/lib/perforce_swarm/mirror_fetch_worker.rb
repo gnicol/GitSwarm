@@ -7,13 +7,15 @@ module PerforceSwarm
     include Sidekiq::Worker
     include Sidetiq::Schedulable
 
-    MAX_FETCH_SLOTS = 2     # note each fetch process looks to consume ~120 megs of ram
-    MIN_OUTDATED    = 300
+    DEFAULT_MAX_FETCH_SLOTS = 2
+    DEFAULT_MIN_OUTDATED    = 300
 
     # Once a minute we'll scan all the repos to:
     #  - clean up any hung git-fusion imports
     #  - fetch outdated repos to freshen them
-    # Note we'll only allow for MAX_FETCH_SLOTS active fetches to be ongoing.
+    # Note we'll limit the number of active fetches to be ongoing via the
+    # ['git_fusion']['fetch_worker']['max_fetch_slots'] config value.
+    # Each fetch process seems to consume ~120M of RAM
     # If too many fetches are already active we won't fetch.
     # If there are free fetch slots, we'll background fetch starting with the most outdated repos.
     # We ensure we skip over repos that are already mid-fetch to avoid doubling up work.
@@ -24,8 +26,9 @@ module PerforceSwarm
 
     def perform
       # bail completely if the feature isn't enabled
-      config = PerforceSwarm::GitlabConfig.new
-      return unless config.git_fusion.enabled?
+      config     = PerforceSwarm::GitlabConfig.new
+      git_fusion = config.git_fusion
+      return unless git_fusion.enabled?
 
       repo_stats = RepoStats.new
 
@@ -43,7 +46,9 @@ module PerforceSwarm
 
       # fetch the most outdated repos using the maximum available slots
       # if we have no slots, or no worthy repos, this is a no-op
-      repo_stats.fetch_worthy(MAX_FETCH_SLOTS - repo_stats.active_count).each do |stat|
+      max_fetch_slots = git_fusion.fetch_worker['max_fetch_slots'] || DEFAULT_MAX_FETCH_SLOTS
+      limit           = max_fetch_slots - repo_stats.active_count
+      repo_stats.fetch_worthy(limit, git_fusion.fetch_worker['min_outdated']).each do |stat|
         import_job = fork do
           exec Shellwords.shelljoin([mirror_script, 'fetch', stat[:project].path_with_namespace + '.git'])
         end
@@ -95,10 +100,11 @@ module PerforceSwarm
         stats.select { |stat| !stat[:active] }
       end
 
-      def fetch_worthy(limit = nil)
-        limit = 0 if limit < 0
-        limit = stats.length unless limit
-        inactive.select { |stat| !stat[:last_fetched] || stat[:last_fetched] < (Time.now - MIN_OUTDATED) }.first(limit)
+      def fetch_worthy(limit = nil, min_outdated = nil)
+        min_outdated ||= DEFAULT_MIN_OUTDATED
+        limit          = stats.length unless limit
+        limit          = 0 if limit < 0
+        inactive.select { |stat| !stat[:last_fetched] || stat[:last_fetched] < (Time.now - min_outdated) }.first(limit)
       end
 
       # returns only entries that represent git-fusion imports that are finished but marked as in progress

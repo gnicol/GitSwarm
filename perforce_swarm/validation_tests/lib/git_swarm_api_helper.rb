@@ -24,7 +24,8 @@ class GitSwarmAPIHelper
                     username: user,
                     name: user,
                     password: password,
-                    email: email
+                    email: email,
+                    confirm: false
     login_response = RestClient.post @base_url + 'session', login: user, password: password
     user_token = (JSON.parse login_response)[TOKEN_PARAM]
 

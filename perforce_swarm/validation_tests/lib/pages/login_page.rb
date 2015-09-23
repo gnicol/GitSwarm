@@ -1,6 +1,4 @@
 require_relative '../page'
-require_relative 'logged_in_page'
-require_relative 'password_reset_page'
 
 class LoginPage < Page
   #

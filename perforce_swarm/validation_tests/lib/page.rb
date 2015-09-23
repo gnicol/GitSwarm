@@ -24,7 +24,7 @@ class Page
     elements = elements_for_validation
     LOG.debug('Verifying elements : ' + elements.inspect)
     elements.each do |(by, value)|
-      if @driver.find_elements(by, value).length !=1
+      unless page_has_element(by, value)
         ok = false
         LOG.log("Element missing on page:  #{by} #{value}")
       end
@@ -35,11 +35,20 @@ class Page
     end
   end
 
+  def page_has_element(by, value)
+    @driver.find_elements(by, value).length > 0
+  end
+
   # Method to be overridden by child classes to provide elements that should be
   # verified as on the page.  Child methods get the parent list and call super
   # to get the elements from all parent classes
   #
   def elements_for_validation
     []
+  end
+
+  def wait_for(by, value, timeout = 30)
+    wait = Selenium::WebDriver::Wait.new(timeout: timeout) # seconds
+    wait.until { @driver.find_element(by, value) }
   end
 end

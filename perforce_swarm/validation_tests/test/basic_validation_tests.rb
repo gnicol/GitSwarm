@@ -1,6 +1,8 @@
 require 'minitest/autorun'
 require 'selenium-webdriver'
 require_relative '../lib/selenium_base_test'
+require_relative '../lib/pages/login_page'
+require_relative '../lib/pages/logged_in_page'
 
 class BasicValidationTests < SeleniumBaseTest
   def test_login_page_tile
@@ -15,9 +17,7 @@ class BasicValidationTests < SeleniumBaseTest
     LOG.log(__method__)
     expected_title = 'Dashboard | GitSwarm'
     login = LoginPage.new(@driver, CONFIG.get('gitswarm_url'))
-    login.enter_credentials(CONFIG.get('gitswarm_username'), CONFIG.get('gitswarm_password'))
-
-    dashboard = login.click_login_expecting_dashboard
+    dashboard = login.login(CONFIG.get('gitswarm_username'), CONFIG.get('gitswarm_password'))
     assert_equal(@driver.title, expected_title, 'GitSwarm dashboard page title wasn\'t as expected')
     LOG.log('Dashboard page title was : ' + @driver.title)
     dashboard.logout

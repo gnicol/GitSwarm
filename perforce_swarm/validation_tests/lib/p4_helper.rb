@@ -25,7 +25,13 @@ class P4Helper
     @p4.client = @client_name
     @p4.connect
 
-    @p4.run_trust('-y') if @p4.port.start_with?('ssl')
+    if @p4.port.start_with?('ssl')
+      @p4.run_trust('-y')
+      @p4.disconnect # if we needed to trust, we need to reconnect to get unicode info
+      @p4.connect
+    end
+
+    LOG.debug 'unicode = ' + @p4.server_unicode?.inspect
     @p4.charset='utf8' if @p4.server_unicode?
 
     @p4.run_login

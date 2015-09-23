@@ -1,23 +1,34 @@
-require_relative '../lib/base_test'
+require_relative '../lib/selenium_base_test'
+require_relative '../lib/page'
+require_relative '../lib/pages/login_page'
+require_relative '../lib/pages/create_project_page'
+require_relative '../lib/pages/logged_in_page'
 
-class MirroringTests < BaseTest
+class MirroringTests < SeleniumBaseTest
   i_suck_and_my_tests_are_order_dependent!
 
   def test_mirrored_project
     LOG.log(__method__)
-    helper = GitSwarmAPIHelper.new CONFIG.get('gitswarm_url'),
-                                   CONFIG.get('gitswarm_username'),
-                                   CONFIG.get('gitswarm_password')
+    admin_helper = GitSwarmAPIHelper.new CONFIG.get('gitswarm_url'),
+                                         CONFIG.get('gitswarm_username'),
+                                         CONFIG.get('gitswarm_password')
     user = 'user-'+unique_string
     password = 'Passw0rd'
-    email = 'p4cloudtest+'+user+'@gmail.com'
+    uemail = 'p4cloudtest+'+user+'@gmail.com'
+    email = 'root@mp-gs-ubuntu-12-153'
     LOG.debug 'user = '+user
 
-    helper.create_user(user, password, email, nil)
+    admin_helper.create_user(user, password, uemail, nil)
     project = 'project-'+unique_string
-    helper.create_project(project, user)
+    # admin_helper.create_project(project, user)
 
-    project_info = helper.get_project_info(project)
+    cp = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(user, password).goto_create_project_page
+    cp.project_name(project)
+    cp.select_mirrored_auto
+    cp.create_project_and_wait_for_clone
+
+    user_helper = GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'), user, password)
+    project_info = user_helper.get_project_info(project)
     LOG.debug project_info
 
     git_dir = Dir.mktmpdir
@@ -33,7 +44,7 @@ class MirroringTests < BaseTest
 
     p4_dir = Dir.mktmpdir
     LOG.debug 'p4 dir = ' + p4_dir
-    p4_depot_path = CONFIG.get('p4_gitswarm_depot_root') + project + '/...'
+    p4_depot_path = CONFIG.get('p4_gitswarm_depot_root') + user + '/' + project + '/...'
     p4 = P4Helper.new(CONFIG.get('p4_port'), CONFIG.get('p4_user'), CONFIG.get('p4_password'), p4_dir, p4_depot_path)
     p4.connect_and_sync
 

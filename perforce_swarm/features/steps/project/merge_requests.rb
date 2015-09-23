@@ -98,16 +98,6 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     current_path.should eq namespace_project_branches_path(project.namespace, project)
   end
 
-  step 'I accept this merge request' do
-    MergeRequests::AutoMergeService.any_instance.stub(
-      merge!: true
-    )
-
-    page.within '.mr-state-widget' do
-      click_button 'Accept Merge Request'
-    end
-  end
-
   step 'I click link "All"' do
     page.within '.content-wrapper' do
       click_link 'All'

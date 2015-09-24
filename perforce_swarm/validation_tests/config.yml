@@ -1,12 +1,12 @@
 # Configuration properties for validation tests
 
-gitswarm_url : http://mp-gs-cent-6-153/
+gitswarm_url : http://10.2.0.108/
 gitswarm_username : root
 gitswarm_password : 5iveL!fe
 
-p4_port : ssl:mp-p4d:1667
-p4_user : perforce
-p4_password : Passw0rd
-p4_gitswarm_depot_root : //depot/gitswarm/
+p4_port : ssl:10.2.0.108:1666
+p4_user : root
+p4_password : 5iveL!fe
+p4_gitswarm_depot_root : //gitswarm/projects/
 
 git_binary : git

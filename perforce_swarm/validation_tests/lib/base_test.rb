@@ -22,13 +22,14 @@ class BaseTest < Minitest::Test
   # }
 
   def unique_string
-    Time.new.strftime('%y%m%d-%H%M%S%L')
+    Time.new.strftime('%H%M%S%L')
   end
 
   def create_file(directory, name = unique_string)
-    new_file = File.open(directory+'/'+name, 'w+')
+    path = directory+'/'+name
+    new_file = File.open(path, 'w+')
     new_file.write 'content'
     new_file.close
-    new_file
+    path
   end
 end

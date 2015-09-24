@@ -42,9 +42,11 @@ class MirroringTests < SeleniumBaseTest
     LOG.debug 'Creating file in git : ' + git_filename
     git.add_commit_push
 
+    sleep(5) # some time to let the file get into perforce
+
     p4_dir = Dir.mktmpdir
     LOG.debug 'p4 dir = ' + p4_dir
-    p4_depot_path = CONFIG.get('p4_gitswarm_depot_root') + user + '/' + project + '/...'
+    p4_depot_path = CONFIG.get('p4_gitswarm_depot_root') + user + '/' + project + '/master/...'
     p4 = P4Helper.new(CONFIG.get('p4_port'), CONFIG.get('p4_user'), CONFIG.get('p4_password'), p4_dir, p4_depot_path)
     p4.connect_and_sync
 
@@ -52,9 +54,9 @@ class MirroringTests < SeleniumBaseTest
     assert(File.exist?(p4_file_from_git), 'Expected file not found in perforce : ' + git_filename)
 
     p4_filename = 'p4-file-'+unique_string
-    create_file(p4_dir, p4_filename)
-    LOG.debug 'Creating file in p4 : ' + p4_filename
-    p4.add(p4_filename)
+    add_path = create_file(p4_dir, p4_filename)
+    LOG.debug 'Creating file in p4 : ' + add_path
+    p4.add(add_path)
     p4.submit
 
     git.pull

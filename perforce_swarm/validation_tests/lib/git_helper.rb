@@ -43,25 +43,25 @@ class GitHelper
 
   def clone
     LOG.debug 'Cloning from ' + @url + ' into ' + @local_dir_path
-    system(@git + ' clone ' + @url + ' ' + @local_dir_path)
+    call_system(@git + ' clone ' + @url + ' ' + @local_dir_path)
     Dir.chdir(@local_dir_path) do
-      system(@git + ' config user.name ' + @user)
-      system(@git + ' config user.email ' + @email)
+      call_system(@git + ' config user.name ' + @user)
+      call_system(@git + ' config user.email ' + @email)
     end
   end
 
   # Adds everything under the git repo
   def add
-    Dir.chdir(@local_dir_path) { system(@git + ' add .') }
+    Dir.chdir(@local_dir_path) { call_system(@git + ' add .') }
   end
 
   def commit
-    Dir.chdir(@local_dir_path) { system(@git +' commit -m auto_message') }
+    Dir.chdir(@local_dir_path) { call_system(@git +' commit -m auto_message') }
   end
 
   def push
     LOG.debug 'Pushing to ' +@url
-    Dir.chdir(@local_dir_path) { system(@git + ' push') }
+    Dir.chdir(@local_dir_path) { call_system(@git + ' push') }
   end
 
   def add_commit_push
@@ -72,6 +72,16 @@ class GitHelper
 
   def pull
     LOG.debug 'pulling from ' +@url
-    Dir.chdir(@local_dir_path) { system(@git + ' pull ' + @url) }
+    Dir.chdir(@local_dir_path) { call_system(@git + ' pull ' + @url) }
+  end
+
+  private
+
+  # utility to call teh system command and fail if it is not successful
+  def call_system(command)
+    unless system(command)
+      LOG.log('system command failed : ' + command + ' : ' + $CHILD_STATUS.inspect)
+      fail 'system command failed: ' + command
+    end
   end
 end

@@ -3,8 +3,8 @@ require Rails.root.join('app', 'models', 'user')
 module PerforceSwarm
   module UserExtension
     def validate_and_change_in_p4d
-      # presently we only handle the 'root' user and only for auto-provisioned servers
-      # run only if were changing password
+      # presently we only handle the 'root' admin user and only for auto-provisioned servers
+      # runs only if we're changing password
       return true unless changed.include?('encrypted_password') && username == 'root' && admin
       sync_p4d_password(password)
     rescue P4Exception => ex

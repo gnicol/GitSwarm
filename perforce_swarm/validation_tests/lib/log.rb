@@ -30,6 +30,10 @@ class LOG
     @internal_log.info('Logging to ' + logfile)
   end
 
+  def self.level(level)
+    @internal_log.level = level
+  end
+
   def self.info(message)
     @internal_log.info message
   end

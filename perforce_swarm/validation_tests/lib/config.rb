@@ -3,6 +3,7 @@ class CONFIG
 
   # One time only
   unless @config
+    LOG.level(Logger::INFO)
     # Load Config
     LOG.info('Loading config...')
     @config = YAML.load_file('config.yml')

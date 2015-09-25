@@ -30,8 +30,7 @@ class Page
       end
     end
     unless ok
-      LOG.log('Could not find expected element(s) on page: ' +@driver.current_url)
-      fail 'Expected element(s) not found on page.'
+      fail 'Could not find expected element(s) on page: ' +@driver.current_url
     end
   end
 

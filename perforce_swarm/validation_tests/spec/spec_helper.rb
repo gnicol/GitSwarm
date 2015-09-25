@@ -7,7 +7,6 @@ require_relative '../lib/git_swarm_api_helper'
 require_relative '../lib/p4_helper'
 
 require 'selenium-webdriver'
-require_relative '../lib/selenium_base_test'
 
 module Browser
   class << self
@@ -21,15 +20,14 @@ module Browser
 end
 
 RSpec.configure do |config|
-  config.before(:each) do
-    LOG.log('---------------------------------------------')
+  config.before(:each, browser: true) do
     # Try to use the base headless web driver
     Browser.driver = Selenium::WebDriver.for :firefox
     @driver = Browser.driver
     # @driver = Selenium::WebDriver.for :phantomjs
   end
-  config.after(:each) do
-    LOG.log('---------------------------------------------')
+
+  config.after(:each, browser: true) do
     # do whatever here
     Browser.driver.quit
   end

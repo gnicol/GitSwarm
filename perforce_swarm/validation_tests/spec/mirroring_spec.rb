@@ -4,7 +4,7 @@ require_relative '../lib/pages/login_page'
 require_relative '../lib/pages/create_project_page'
 require_relative '../lib/pages/logged_in_page'
 
-describe 'Project Mirroring' do
+describe 'Project Mirroring', browser: true do
 
   let(:admin_helper) do
     GitSwarmAPIHelper.new CONFIG.get('gitswarm_url'),

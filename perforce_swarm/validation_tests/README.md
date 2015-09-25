@@ -7,4 +7,4 @@ You need to:
 
 - edit config.yml to configure appropriate settings
 - run 'rake' in this directory.
-- this will run all .rb files under /test which have names ending in _test.rb
+- this will run all .rb files under /spec which have names ending in _spec.rb

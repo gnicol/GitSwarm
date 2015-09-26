@@ -7,9 +7,6 @@ module PerforceSwarm
     include Sidekiq::Worker
     include Sidetiq::Schedulable
 
-    DEFAULT_MAX_FETCH_SLOTS = 2
-    DEFAULT_MIN_OUTDATED    = 300
-
     # Once a minute we'll scan all the repos to:
     #  - clean up any hung git-fusion imports
     #  - fetch outdated repos to freshen them
@@ -26,9 +23,8 @@ module PerforceSwarm
 
     def perform
       # bail completely if the feature isn't enabled
-      config     = PerforceSwarm::GitlabConfig.new
-      git_fusion = config.git_fusion
-      return unless git_fusion.enabled?
+      config = PerforceSwarm::GitlabConfig.new
+      return unless config.git_fusion.enabled?
 
       repo_stats = RepoStats.new
 
@@ -46,9 +42,9 @@ module PerforceSwarm
 
       # fetch the most outdated repos using the maximum available slots
       # if we have no slots, or no worthy repos, this is a no-op
-      max_fetch_slots = git_fusion.fetch_worker['max_fetch_slots'] || DEFAULT_MAX_FETCH_SLOTS
+      max_fetch_slots = config.git_fusion.fetch_worker['max_fetch_slots']
       limit           = max_fetch_slots - repo_stats.active_count
-      repo_stats.fetch_worthy(limit, git_fusion.fetch_worker['min_outdated']).each do |stat|
+      repo_stats.fetch_worthy(limit, config.git_fusion.fetch_worker['min_outdated']).each do |stat|
         import_job = fork do
           exec Shellwords.shelljoin([mirror_script, 'fetch', stat[:project].path_with_namespace + '.git'])
         end
@@ -100,9 +96,8 @@ module PerforceSwarm
         stats.select { |stat| !stat[:active] }
       end
 
-      def fetch_worthy(limit = nil, min_outdated = nil)
-        min_outdated ||= DEFAULT_MIN_OUTDATED
-        limit          = stats.length unless limit
+      def fetch_worthy(limit = nil, min_outdated = 0)
+        limit        ||= stats.length
         limit          = 0 if limit < 0
         inactive.select { |stat| !stat[:last_fetched] || stat[:last_fetched] < (Time.now - min_outdated) }.first(limit)
       end

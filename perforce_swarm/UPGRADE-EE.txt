@@ -1,24 +1,24 @@
                              Release Notes for
                       Helix GitSwarm Enterprise Edition
 
-                               Version 2015.3
+                               Version 2015.4
 
 Introduction
 
 This document describes the upgrade process for upgrading to Helix
-GitSwarm Enterprise Edition release 2015.3
+GitSwarm Enterprise Edition release 2015.4
 
 * Note, installing and configuring GitSwarm is a System Administrator
 function and requires root access.
 
 ------------------------------------------------------------------------
-Updating GitSwarm EE to 2015.3
+Updating GitSwarm EE to 2015.4
 ------------------------------------------------------------------------
 
-1. Download the 2015.3 GitSwarm EE package and install it.
+1. Download the 2015.4 GitSwarm EE package and install it.
 
-    Please see the separate "install" file, a peer to this file, for instructions on installing version 2015.3.
-    The install instructions for 2015.3 will upgrade your previous version to 2015.3. It includes adding the
+    Please see the separate "install" file, a peer to this file, for instructions on installing version 2015.4.
+    The install instructions for 2015.4 will upgrade your previous version to 2015.4. It includes adding the
     Perforce package repository to your package manager, and installing the new dependencies.
 
 2. Check the application status.

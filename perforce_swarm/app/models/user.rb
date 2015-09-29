@@ -23,8 +23,8 @@ module PerforceSwarm
       return unless git_fusion.enabled? && !id.nil?
 
       default_config = git_fusion.entry(id)
-      connection = PerforceSwarm::P4::Connection.new(default_config)
       begin
+        connection = PerforceSwarm::P4::Connection.new(default_config)
         connection.login
         connection.input(password)
         connection.run('passwd', 'root')
@@ -32,7 +32,7 @@ module PerforceSwarm
         message = ex.message.match(/\[Error\]: (?<error>.*)$/) ? Regexp.last_match(:error) : ex.message
         raise ex, message
       ensure
-        connection.disconnect if connection.connected?
+        connection.disconnect if connection
       end
     end
   end

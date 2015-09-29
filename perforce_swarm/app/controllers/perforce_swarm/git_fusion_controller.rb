@@ -20,7 +20,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
       p4             = PerforceSwarm::P4::Connection.new(creator.config)
       p4.login
       @project_depot = creator.project_depot
-      @depot_exists  = PerforceSwarm::P4::Spec::Depot.exists?(creator.project_depot, p4)
+      @depot_exists  = PerforceSwarm::P4::Spec::Depot.exists?(p4, creator.project_depot)
       @path_template = creator.path_template.chomp('/') + '/...'
     rescue => auto_create_error
       @auto_create_errors << auto_create_error.message

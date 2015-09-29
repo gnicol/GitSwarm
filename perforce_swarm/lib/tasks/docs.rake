@@ -19,6 +19,9 @@ namespace :gitswarm do
     end
   end
 
+  # Note the general concept of using pandoc, the template and the styles are all taken from the GitLab repo:
+  # git@gitlab.com:gitlab-com/doc-gitlab-com.git
+  # Its likely worth glancing at their logic occasionally to see if any updates are warranted.
   desc 'Render the combined GitSwarm/GitLab docs to HTML output in the specified folder'
   task :render_html_docs do
     # throw away the rake task name, and second one if its a -- to pass it to argparse

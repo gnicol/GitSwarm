@@ -63,7 +63,7 @@ module PerforceSwarm
       Dir.chdir(Gitlab.config.backup.path)
       # check for existing backups in the backup dir
       file_list = Dir.glob('*_git{swarm,lab}_backup.tar')
-      puts 'no backups found'if file_list.empty?
+      puts 'no backups found' if file_list.empty?
 
       if file_list.count > 1 && ENV['BACKUP'].nil?
         puts 'Found more than one backup, please specify which one you want to restore:'

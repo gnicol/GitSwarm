@@ -1,7 +1,7 @@
                              Release Notes for
                               Helix GitSwarm
 
-                              Version 2015.3
+                              Version 2015.4
 
 Introduction
 
@@ -22,7 +22,7 @@ Introduction
 
 Documentation
 
-    GitSwarm Release 2015.3 documentation is included in the distribution and
+    GitSwarm Release 2015.4 documentation is included in the distribution and
     can be accessed from within GitSwarm from the "?" menu on the top toolbar
 
 Supported Client Browsers

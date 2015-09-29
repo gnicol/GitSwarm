@@ -81,7 +81,7 @@ eof
         end
 
         depots   = [project_depot, '.git-fusion']
-        missing  = depots - PerforceSwarm::P4::Spec::Depot.exists?(depots, p4)
+        missing  = depots - PerforceSwarm::P4::Spec::Depot.exists?(p4, depots)
         if missing.length > 0
           fail 'The following depot(s) are required and were found to be missing: ' + missing.join(', ')
         end

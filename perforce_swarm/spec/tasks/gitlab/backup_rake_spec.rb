@@ -23,7 +23,7 @@ describe 'gitlab:app namespace rake task' do
 
     context 'gitlab version' do
       before do
-        Dir.stub glob: []
+        Dir.stub glob: ['foo']
         allow(Dir).to receive(:chdir)
         File.stub exist?: true
         Kernel.stub system: true

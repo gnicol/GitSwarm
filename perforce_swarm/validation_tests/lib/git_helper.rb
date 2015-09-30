@@ -79,8 +79,6 @@ class GitHelper
 
   # utility to call the system command and fail if it is not successful
   def call_system(command)
-    unless system(command)
-      fail 'system command failed: ' + command
-    end
+    fail 'system command failed: ' + command unless system(command)
   end
 end

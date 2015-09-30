@@ -5,10 +5,10 @@ require_relative '../lib/pages/logged_in_page'
 
 describe 'BasicValidationTests', browser: true do
   describe 'login page' do
-   it 'should have expected title' do
-     LoginPage.new(@driver, CONFIG.get('gitswarm_url'))
-     expect(@driver.title).to eq('Sign in | GitSwarm')
-   end
+    it 'should have expected title' do
+      LoginPage.new(@driver, CONFIG.get('gitswarm_url'))
+      expect(@driver.title).to eq('Sign in | GitSwarm')
+    end
   end
 
   describe 'dashboard page' do

@@ -7,7 +7,7 @@ module PerforceSwarm
       # runs only if we're changing password
       return true unless changed.include?('encrypted_password') && username == 'root' && admin
       sync_p4d_password(password)
-    rescue P4Exception => ex
+    rescue PerforceSwarm::P4::Connection::P4Exception => ex
       # if a p4 error occurs; attempt to raise it to the user's attention and abort the save
       errors.add(:base, ex.message)
       return false
@@ -22,8 +22,8 @@ module PerforceSwarm
       id         = git_fusion.auto_provisioned_instance_id
       return unless git_fusion.enabled? && !id.nil?
 
-      connection = PerforceSwarm::P4::Connection.new(git_fusion.entry(id))
       begin
+        connection = PerforceSwarm::P4::Connection.new(git_fusion.entry(id))
         connection.login
         connection.input(password)
         connection.run('passwd', 'root')
@@ -31,7 +31,7 @@ module PerforceSwarm
         message = ex.message.match(/\[Error\]: (?<error>.*)$/) ? Regexp.last_match(:error) : ex.message
         raise ex, message
       ensure
-        connection.disconnect if connection.connected?
+        connection.disconnect if connection
       end
     end
   end

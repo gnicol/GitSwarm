@@ -1,7 +1,7 @@
 PATH
   remote: perforce_swarm
   specs:
-    perforce_swarm (2015.3)
+    perforce_swarm (2015.4)
       rails (~> 4.1.1)
 
 GEM
@@ -890,3 +890,6 @@ DEPENDENCIES
   virtus
   webmock (~> 1.21.0)
   wikicloth (= 0.8.1)
+
+BUNDLED WITH
+   1.10.6

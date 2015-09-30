@@ -7,7 +7,7 @@ module PerforceSwarm
       # runs only if we're changing password
       return true unless changed.include?('encrypted_password') && username == 'root' && admin
       sync_p4d_password(password)
-    rescue PerforceSwarm::P4::Connection::P4Exception => ex
+    rescue P4Exception => ex
       # if a p4 error occurs; attempt to raise it to the user's attention and abort the save
       errors.add(:base, ex.message)
       return false

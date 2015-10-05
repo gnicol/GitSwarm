@@ -15,6 +15,10 @@ module ProjectsHelper
     end
   end
 
+  def mirrored?(project)
+    project.git_fusion_repo.present?
+  end
+
   def git_fusion_import_enabled?
     gitlab_shell_config.git_fusion.enabled?
   rescue

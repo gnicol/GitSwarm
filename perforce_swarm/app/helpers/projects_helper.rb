@@ -19,6 +19,12 @@ module ProjectsHelper
     project.git_fusion_repo.present?
   end
 
+  def not_mirrored_tooltip
+    'To mirror this project in Helix versioning engine, an admin must connect ' \
+    'GitSwarm to a working Helix Git Fusion instance, and select a path for ' \
+    'newly mirrored projects. Please have an admin see these directions.'
+  end
+
   def git_fusion_import_enabled?
     gitlab_shell_config.git_fusion.enabled?
   rescue

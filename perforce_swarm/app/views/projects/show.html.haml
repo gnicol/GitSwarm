@@ -10,6 +10,7 @@
   = render 'projects/last_push'
 
 = render "home_panel"
+- mirrored = mirrored?(@project)
 
 .project-stats
   %ul.nav.nav-pills
@@ -34,9 +35,10 @@
       %li
         = link_to contribution_guide_url(@project) do
           Contribution guide
-    %li
-      = link_to((mirrored?(@project) ? '' : 'not ') + 'mirrored in helix', '#')
-
+    %li{class: "#{'has_tooltip' unless mirrored}", 'data-title' => not_mirrored_tooltip}
+      = link_to '#' do
+        = (mirrored ? '' : 'not ') + 'mirrored in helix'
+        = icon('fw question-circle') unless mirrored
 
 - if @project.archived?
   .text-warning.center.prepend-top-20

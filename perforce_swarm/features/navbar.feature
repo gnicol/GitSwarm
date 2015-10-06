@@ -57,7 +57,7 @@ Feature: NavBar
     Given I visit the public projects area
     When I click on the Swarm icon
     Then I should see the Dashboard page with no projects
-    And the title of the dropdown should be "Dashboard"
+    And the title of the dropdown should be "Projects"
 
   @javascript @automated @PGL-123
   Scenario: Click on a project on the Dashboard dropdown and verify that user is taken to the project page

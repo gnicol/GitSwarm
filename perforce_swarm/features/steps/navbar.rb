@@ -321,6 +321,12 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
     end
   end
 
+  step 'the title of the dropdown should be "Projects"' do
+    page.within '.navbar-gitlab .dashboard-menu' do
+      find(:css, '.dropdown-toggle').text.should eq('Projects')
+    end
+  end
+
   step 'the title of the dropdown should be "Explore"' do
     page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').text.should eq('Explore')
@@ -356,6 +362,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I click on "My Settings" link' do
-    find(:xpath, "//a[@href='/profile']").click
+    page.within '.profile-pic' do
+      find(:css, "a[href='/profile']").click
+    end
   end
 end

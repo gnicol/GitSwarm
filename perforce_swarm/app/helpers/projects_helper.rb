@@ -25,6 +25,24 @@ module ProjectsHelper
     'newly mirrored projects. Please have an admin see these directions.'
   end
 
+  # returns true if there is at least one configured Git Fusion repository that supports convention-based mirroring
+  # note that we are doing pre-flight style checks with the config only, and not actually connecting to Helix at this
+  # point
+  def mirroring_possible?
+    # Git Fusion integration is turned off completely
+    return false unless git_fusion_import_enabled?
+
+    # for each entry, ensure that it at least one that is configured for convention-based mirroring
+    gitlab_shell_config.git_fusion.entries.each do |_id, entry|
+      return true if entry.auto_create_configured?
+    end
+    # we didn't find one, or there are no entries at all
+    false
+  rescue
+    # if we encountered an exception with the above, mirroring is definitely not possible
+    return false
+  end
+
   def git_fusion_import_enabled?
     gitlab_shell_config.git_fusion.enabled?
   rescue

@@ -22,9 +22,10 @@
         = link_to archive_namespace_project_repository_path(@project.namespace, @project, ref: @ref, format: 'zip'), class: 'btn', rel: 'nofollow' do
           %i.fa.fa-download
 
-    - if !mirrored?(@project) && (@project.owner || @project.master)
-      = link_to '#', class: "btn #{'disabled' unless mirroring_possible?}" do
-        Mirror in Helix
+    - if !mirrored?(@project)
+      %span.has_tooltip{'data-title' => button_tooltip(@project, current_user)}
+        = link_to '#', class: "btn #{'disabled' unless mirroring_permitted?(@project, current_user) && mirroring_configured?}" do
+          Mirror in Helix
     = render 'projects/buttons/dropdown'
 
   = render "shared/clone_panel"

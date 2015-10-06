@@ -35,7 +35,7 @@
       %li
         = link_to contribution_guide_url(@project) do
           Contribution guide
-    %li{class: "#{'has_tooltip' unless mirrored}", 'data-title' => not_mirrored_tooltip}
+    %li{data: {toggle: 'tooltip', trigger: 'click', title: not_mirrored_tooltip(@project, current_user)}}
       = link_to '#' do
         = (mirrored ? '' : 'not ') + 'mirrored in helix'
         = icon('fw question-circle') unless mirrored

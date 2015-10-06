@@ -19,17 +19,56 @@ module ProjectsHelper
     project.git_fusion_repo.present?
   end
 
-  def not_mirrored_tooltip
-    'To mirror this project in Helix versioning engine, an admin must connect ' \
+  def button_tooltip(project, user)
+    configured = mirroring_configured?
+    permitted  = mirroring_permitted?(project, user)
+
+    # mirroring is neither configured nor permitted
+    tooltip = 'Gitswarm must be connected to Helix by an admin and '\
+    'project must be mirrored by the project owner or an admin to '\
+    "use Helix clients.  Click 'not mirrored in helix' below for more info."
+    return tooltip unless configured || permitted
+
+    # mirroring is configured but not permitted
+    tooltip = 'An admin must enable interaction with helix clients. '\
+    "Click 'not mirrored in helix' below for more info."
+    return tooltip unless permitted
+
+    # mirroring is permitted, but not configured
+    'Project owner or admin must enable mirroring on this project to connect Helix clients' unless configured
+  end
+
+  def not_mirrored_tooltip(project, user)
+    configured = mirroring_configured?
+    permitted  = mirroring_permitted?(project, user)
+
+    # mirroring is neither configured nor permitted
+    tooltip = 'To mirror this project in Helix versioning engine, an admin must connect ' \
     'GitSwarm to a working Helix Git Fusion instance, and select a path for ' \
     'newly mirrored projects. Please have an admin see these directions.'
+    return tooltip unless configured || permitted
+
+    # mirroring is configured but not permitted
+    tooltip = 'Project must be mirrored in Helix to use Helix clients. ' \
+    'Only the project owner or an admin can enable mirroring.' \
+    'Please ask the project owner to see this page.'
+    return tooltip unless permitted
+
+    # mirroring is permitted, but not configured
+    'In order to mirror the project in Helix so it can be accessed by Helix '\
+    'clients, an admin must connect Gitswarm to a working Helix GitFusion.'\
+    'Please have an admin see this page.' unless configured
+  end
+
+  # boolean as to whether the current user is permitted to enable mirroring on the given project
+  def mirroring_permitted?(project, user)
+    user.can?(:admin_project, project)
   end
 
   # returns true if there is at least one configured Git Fusion repository that supports convention-based mirroring
   # note that we are doing pre-flight style checks with the config only, and not actually connecting to Helix at this
   # point
-  def mirroring_possible?
-    # Git Fusion integration is turned off completely
+  def mirroring_configured?
     return false unless git_fusion_import_enabled?
 
     # for each entry, ensure that it at least one that is configured for convention-based mirroring

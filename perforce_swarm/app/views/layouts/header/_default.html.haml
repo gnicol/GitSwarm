@@ -34,7 +34,7 @@
           %li.hidden-xs
             = link_to admin_root_path, title: 'Admin Area', data: {toggle: 'tooltip', placement: 'bottom'} do
               = icon('wrench fw')
-        %li.dropdown.navbar-right
+        %li.dropdown.navbar-right.user-menu
           %a.dropdown-toggle.profile-pic{href: '#', 'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', title: 'User Menu', 'aria-label' => 'User Menu'}
             = image_tag avatar_icon(current_user.email, 26)
             %span.caret>

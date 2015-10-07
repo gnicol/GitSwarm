@@ -48,7 +48,8 @@ module SharedProject
       name:             'PerforceProject',
       namespace:        @user.namespace,
       path:             'perforce_project',
-      snippets_enabled: true
+      snippets_enabled: true,
+      visibility_level: Gitlab::VisibilityLevel::PUBLIC
     )
     @project.team << [@user, :master]
   end

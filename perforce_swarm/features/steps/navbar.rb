@@ -303,7 +303,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the user settings page' do
-    find(:css, '.page-title').should have_content('Profile')
+    find(:css, '.dashboard-menu').should have_content('Profile Settings')
   end
 
   step 'I should see the new project page' do
@@ -362,7 +362,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I click on "My Settings" link' do
-    page.within '.profile-pic' do
+    page.within '.user-menu' do
       find(:css, "a[href='/profile']").click
     end
   end

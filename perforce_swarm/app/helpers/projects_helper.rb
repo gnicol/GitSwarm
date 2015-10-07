@@ -61,7 +61,7 @@ EOM
 
   # boolean as to whether the current user is permitted to enable mirroring on the given project
   def mirroring_permitted?(project, user)
-    user.can?(:admin_project, project)
+    user && user.can?(:admin_project, project)
   end
 
   # returns true if there is at least one configured Git Fusion repository that supports convention-based mirroring

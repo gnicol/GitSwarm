@@ -19,45 +19,44 @@ module ProjectsHelper
     project.git_fusion_repo.present?
   end
 
-  def button_tooltip(project, user)
-    configured = mirroring_configured?
-    permitted  = mirroring_permitted?(project, user)
+  def mirroring_tooltip(project, user, for_button = false)
+    # Git Fusion integration is explicitly disabled
+    tooltip =<<EOM
+GitSwarm's Helix Git Fusion integration is disabled or mis-configured.
+To enable Helix mirroring, please have an admin [link]enable the Git Fusion integration[/link].
+EOM
+    return tooltip unless git_fusion_import_enabled?
 
-    # mirroring is neither configured nor permitted
-    tooltip = 'Gitswarm must be connected to Helix by an admin and '\
-    'project must be mirrored by the project owner or an admin to '\
-    "use Helix clients.  Click 'not mirrored in helix' below for more info."
-    return tooltip unless configured || permitted
+    # no Git Fusion entries found in the config
+    tooltip =<<EOM
+GitSwarm's Helix Git Fusion integration is enabled, however no Git Fusion instances have been configured.
+To enable Helix mirroring, please have an admin [link]configure at least one Git Fusion instance[/link].
+EOM
+    return tooltip unless git_fusion_instances?
 
-    # mirroring is configured but not permitted
-    tooltip = 'An admin must enable interaction with helix clients. '\
-    "Click 'not mirrored in helix' below for more info."
-    return tooltip unless permitted
+    # no Git Fusion config entries have auto create enabled, or it is mis-configured
+    tooltip =<<EOM
+None of the Helix Git Fusion instances GitSwarm knows about are configured for 'auto create'.
+To enable Helix mirroring, please have an admin [link]configure at least one Git Fusion instance for auto create[/link].
+EOM
+    return tooltip unless mirroring_configured?
 
-    # mirroring is permitted, but not configured
-    'Project owner or admin must enable mirroring on this project to connect Helix clients' unless configured
+    # user does not have adequate permissions to enable mirroring
+    tooltip =<<EOM
+Although GitSwarm is configured for Helix mirroring, you do not have adequate permissions to enable it for this project.
+To enable Helix mirroring, you must have 'edit' permissions on a project or ask an admin to enable it for you.
+EOM
+    return tooltip unless mirroring_permitted?(project, user)
+
+    # all good in the 'hood - tooltip is slightly different for the button vs the text below the clone URL
+    "Click#{' "Mirror in Helix" above ' unless for_button} to get mirroring!"
   end
 
-  def not_mirrored_tooltip(project, user)
-    configured = mirroring_configured?
-    permitted  = mirroring_permitted?(project, user)
-
-    # mirroring is neither configured nor permitted
-    tooltip = 'To mirror this project in Helix versioning engine, an admin must connect ' \
-    'GitSwarm to a working Helix Git Fusion instance, and select a path for ' \
-    'newly mirrored projects. Please have an admin see these directions.'
-    return tooltip unless configured || permitted
-
-    # mirroring is configured but not permitted
-    tooltip = 'Project must be mirrored in Helix to use Helix clients. ' \
-    'Only the project owner or an admin can enable mirroring.' \
-    'Please ask the project owner to see this page.'
-    return tooltip unless permitted
-
-    # mirroring is permitted, but not configured
-    'In order to mirror the project in Helix so it can be accessed by Helix '\
-    'clients, an admin must connect Gitswarm to a working Helix GitFusion.'\
-    'Please have an admin see this page.' unless configured
+  # boolean as to whether there are configured Git Fusion instances in the config
+  def git_fusion_instances?
+    !git_fusion_servers.empty?
+  rescue
+    false
   end
 
   # boolean as to whether the current user is permitted to enable mirroring on the given project
@@ -71,7 +70,7 @@ module ProjectsHelper
   def mirroring_configured?
     return false unless git_fusion_import_enabled?
 
-    # for each entry, ensure that it at least one that is configured for convention-based mirroring
+    # ensure that at least one entry is configured for convention-based mirroring
     gitlab_shell_config.git_fusion.entries.each do |_id, entry|
       return true if entry.auto_create_configured?
     end

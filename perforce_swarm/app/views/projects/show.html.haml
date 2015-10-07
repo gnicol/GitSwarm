@@ -10,7 +10,6 @@
   = render 'projects/last_push'
 
 = render "home_panel"
-- mirrored = mirrored?(@project)
 
 .project-stats
   %ul.nav.nav-pills
@@ -35,7 +34,8 @@
       %li
         = link_to contribution_guide_url(@project) do
           Contribution guide
-    %li{data: {toggle: 'tooltip', trigger: 'click', title: not_mirrored_tooltip(@project, current_user)}}
+    %li{data: {toggle: 'tooltip', trigger: 'click', title: mirroring_tooltip(@project, current_user)}}
+      - mirrored = mirrored?(@project)
       = link_to '#' do
         = (mirrored ? '' : 'not ') + 'mirrored in helix'
         = icon('fw question-circle') unless mirrored

@@ -23,7 +23,7 @@
           %i.fa.fa-download
 
     - if !mirrored?(@project)
-      %span.has_tooltip{'data-title' => button_tooltip(@project, current_user)}
+      %span.has_tooltip{'data-title' => mirroring_tooltip(@project, current_user, true)}
         = link_to '#', class: "btn #{'disabled' unless mirroring_permitted?(@project, current_user) && mirroring_configured?}" do
           Mirror in Helix
     = render 'projects/buttons/dropdown'

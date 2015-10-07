@@ -14,7 +14,7 @@ Feature: Event Filters
   Scenario: Create a comment on a merge request and verify that the comment event is shown in the activity feed
     Given this project has merge request event
     And this merge request has a comment
-    When I visit dashboard page
+    When I visit dashboard activity page
     Then I should see comment event
 
   Scenario: Create an issue and verify that the opened issue event is shown in the activity feed

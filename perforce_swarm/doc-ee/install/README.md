@@ -18,14 +18,14 @@
         1.  Add Perforce's packaging key to your APT keyring
 
             ```
-wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
             ```
 
         1.  Add Perforce's repository to your apt configuration
 
             Create a file called `/etc/apt/sources.list.d/perforce.sources.list` with the following line:
             ```
-deb http://package.perforce.com/apt/ubuntu precise release
+deb https://package.perforce.com/apt/ubuntu precise release
             ```
 
         1.  Install dependencies
@@ -41,14 +41,14 @@ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server
         1.  Add Perforce's packaging key to your APT keyring
 
             ```
-wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
             ```
 
         1.  Add Perforce's repository to your apt configuration
 
             Create a file called `/etc/apt/sources.list.d/perforce.sources.list` with the following line:
             ```
-deb http://package.perforce.com/apt/ubuntu trusty release
+deb https://package.perforce.com/apt/ubuntu trusty release
             ```
 
         1.  Install dependencies
@@ -64,7 +64,7 @@ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server
         1. Add Perforce's packaging key to your RPM keyring
 
             ```
-sudo rpm --import http://package.perforce.com/perforce.pubkey
+sudo rpm --import https://package.perforce.com/perforce.pubkey
             ```
 
         1. Add Perforce's yum repository to your configuration
@@ -73,7 +73,7 @@ sudo rpm --import http://package.perforce.com/perforce.pubkey
             ```
 [perforce]
 name=Perforce
-baseurl=http://package.perforce.com/yum/rhel/6/x86_64
+baseurl=https://package.perforce.com/yum/rhel/6/x86_64
 enabled=1
 gpgcheck=1
             ```
@@ -95,7 +95,7 @@ sudo lokkit -s http -s ssh
         1. Add Perforce's packaging key to your RPM keyring
 
             ```
-sudo rpm --import http://package.perforce.com/perforce.pubkey
+sudo rpm --import https://package.perforce.com/perforce.pubkey
             ```
 
         1. Add Perforce's yum repository to your configuration
@@ -104,7 +104,7 @@ sudo rpm --import http://package.perforce.com/perforce.pubkey
             ```
 [perforce]
 name=Perforce
-baseurl=http://package.perforce.com/yum/rhel/7/x86_64
+baseurl=https://package.perforce.com/yum/rhel/7/x86_64
 enabled=1
 gpgcheck=1
             ```

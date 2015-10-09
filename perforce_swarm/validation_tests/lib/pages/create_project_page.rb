@@ -66,18 +66,43 @@ class CreateProjectPage < LoggedInPage
 
   def repo_names
     check_servers_exist
-    get_text_options_from_dropdown(repo_selector)
-    fail 'The magic double dropdown is messing with this - failing to get text out of the options'
+    repo_selector.click
+    container = @driver.find_element(:class, 'select2-drop-active')
+    elements = container.find_elements(:class, 'select2-result-selectable')
+    text_values = []
+    elements.each { |x| text_values << x.text }
+    @driver.find_element(:id, 'select2-drop-mask').click # de-click the menu
+    text_values.delete_at(0) if text_values[0] == '<Select repository to enable>'
+    text_values
   end
 
   def selected_repo
-    check_servers_exist
-    selected_option(repo_selector)
+    repo_selector.text
   end
 
   def select_repo(repo)
     check_servers_exist
-    select_option_from_dropdown(repo_selector, repo)
+    # For PGL-1255
+    # Need to specifically select mirrored_specific to cater for PGL-1255
+    # For an unknown reason, the first time you select something using this automation, it doesn't select properly
+    # which I can't reproduce manually.
+    # Clicking mirrored_auto then mirrored_specific seems to workaround this issue.
+    select_mirrored_auto
+    select_mirrored_specific
+    # end: For PGL-1255
+
+    repo_selector.click # open the dropdown
+    container = @driver.find_element(:class, 'select2-drop-active')
+    elements = container.find_elements(:class, 'select2-result-selectable')
+    found = false
+    elements.each do |x|
+      if x.text==repo
+        x.click
+        found = true
+        break
+      end
+    end
+    fail('Did not find repo in dropdown: '+repo) unless found # de-click the menu
   end
 
   private
@@ -87,7 +112,7 @@ class CreateProjectPage < LoggedInPage
   end
 
   def repo_selector
-    @driver.find_element(:id, 'git_fusion_repo_name')
+    @driver.find_element(:id, 's2id_git_fusion_repo_name').find_element(:class, 'select2-choice')
   end
 
   def check_servers_exist

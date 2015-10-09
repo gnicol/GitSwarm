@@ -94,15 +94,12 @@ class CreateProjectPage < LoggedInPage
     repo_selector.click # open the dropdown
     container = @driver.find_element(:class, 'select2-drop-active')
     elements = container.find_elements(:class, 'select2-result-selectable')
-    found = false
     elements.each do |x|
-      if x.text==repo
-        x.click
-        found = true
-        break
-      end
+      next unless x.text==repo
+      x.click
+      return
     end
-    fail('Did not find repo in dropdown: '+repo) unless found # de-click the menu
+    fail('Did not find requested repo in available repos dropdown: '+repo)
   end
 
   private

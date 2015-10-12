@@ -10,7 +10,7 @@ describe 'New Mirrored Project', browser: true do
   let(:uemail) { 'p4cloudtest+'+user+'@gmail.com' }
   let(:email) { 'root@mp-gs-ubuntu-12-153' }
   let(:project) { 'project-'+unique_string }
-  let(:expected_gf_repo_name) { 'gitswarm-'+user+'-'+project}
+  let(:expected_gf_repo_name) { 'gitswarm-'+user+'-'+project }
   let(:git_dir) { Dir.mktmpdir }
   let(:p4_dir) {  Dir.mktmpdir }
   let(:another_project) { 'another_project-'+unique_string }
@@ -33,7 +33,7 @@ describe 'New Mirrored Project', browser: true do
       create_file(git_dir, @git_filename)
       LOG.debug 'Creating file in git : ' + @git_filename
       @git.add_commit_push
-      sleep(5) # some time to let the file get into perforce
+      sleep(2) # some time to let the file get into perforce
     end
 
     it 'gets pushed into Perforce' do
@@ -64,8 +64,6 @@ describe 'New Mirrored Project', browser: true do
     it 'is visible in the list of available repos' do
       cp = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(user, password).goto_create_project_page
       available_repos = cp.repo_names
-      LOG.log('expecting '+ expected_gf_repo_name)
-      available_repos.each { |x| LOG.log(x)}
       expect(available_repos.include?(expected_gf_repo_name)).to be true
     end
   end
@@ -92,13 +90,11 @@ describe 'New Mirrored Project', browser: true do
     end
 
     it 'contains files from that repo' do
-
       clone_project(another_project, another_git_dir)
       existing_git_file_from_p4 = another_git_dir + '/' + @p4_filename
       existing_p4_file_from_git = another_git_dir + '/' + @git_filename
       expect(File.exist?(existing_git_file_from_p4)).to be true
       expect(File.exist?(existing_p4_file_from_git)).to be true
-
     end
   end
 

@@ -3,6 +3,8 @@ require 'spec_helper'
 require_relative '../lib/pages/login_page'
 require_relative '../lib/pages/create_project_page'
 require_relative '../lib/pages/logged_in_page'
+require_relative '../lib/pages/project_page'
+require_relative '../lib/pages/edit_file_page'
 
 describe 'New Mirrored Project', browser: true do
   let(:user) { 'user-'+unique_string }
@@ -95,6 +97,26 @@ describe 'New Mirrored Project', browser: true do
       existing_p4_file_from_git = another_git_dir + '/' + @git_filename
       expect(File.exist?(existing_git_file_from_p4)).to be true
       expect(File.exist?(existing_p4_file_from_git)).to be true
+    end
+  end
+
+  context 'when a file is added to a project through the web ui' do
+    filename = 'Readme.md'
+    before do
+      proj_page = LoginPage.new(@driver,
+                                CONFIG.get('gitswarm_url')).login(user, password).goto_project_page(user, project)
+      edit_page = proj_page.add_readme
+      filename = edit_page.file_name
+      edit_page.content=user
+      edit_page.commit_message='auto-message'
+      p = edit_page.commit_change
+      p.logout
+    end
+
+    it 'is mirrored into perforce' do
+      @p4.connect_and_sync
+      expected_file = p4_dir + '/' + filename
+      expect(File.exist?(expected_file)).to be true
     end
   end
 

@@ -14,6 +14,11 @@ class ProjectPage < Page
     elems
   end
 
+  def add_readme
+    @driver.find_element(:link_text, 'adding README').click
+    EditFilePage.new(@driver)
+  end
+
   private
 
   def wait_for_clone

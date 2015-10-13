@@ -26,7 +26,7 @@ class P4Helper
     @p4.connect
 
     if @p4.port.start_with?('ssl')
-      @p4.run_trust('-y')
+      @p4.run_trust('-f', '-y') # force we may be trusting something we trusted before and the fingerprint has changed
       @p4.disconnect # if we needed to trust, we need to reconnect to get unicode info
       @p4.connect
     end

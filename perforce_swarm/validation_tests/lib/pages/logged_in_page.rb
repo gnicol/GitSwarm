@@ -26,4 +26,11 @@ class LoggedInPage < Page
     goto newuri
     CreateProjectPage.new(@driver)
   end
+
+  def goto_project_page(namespace, project_name)
+    uri = URI.parse @driver.current_url
+    newuri = uri.scheme + '://' + uri.host + '/' + namespace + '/' + project_name
+    goto newuri
+    ProjectPage.new(@driver)
+  end
 end

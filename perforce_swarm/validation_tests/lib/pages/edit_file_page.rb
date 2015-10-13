@@ -28,6 +28,9 @@ class EditFilePage < LoggedInPage
   end
 
   def content=(text)
+    # '-'s in the string don't make it into the text field - no clue why.
+    fail('I dont know why but this doesnt work if there is a - in the string') if text.include? '-'
+
     elem = @driver.find_element(:class, 'ace_text-input')
     elem.click
     elem.send_keys([:control, 'a'], :delete)

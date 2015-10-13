@@ -14,8 +14,18 @@ class ProjectPage < Page
     elems
   end
 
+  # This looks for a link to add the README on the page.  The exact text can change if there are other files in
+  # the repo, so using partial_link_text.  Will fail if a readme already exists in the project
   def add_readme
-    @driver.find_element(:link_text, 'adding README').click
+    fail 'No README link on this project page - README probably already exists' unless
+        page_has_element(:partial_link_text, 'README')
+    @driver.find_element(:partial_link_text, 'README').click
+    EditFilePage.new(@driver)
+  end
+
+  def add_file(filename, branchname = 'master')
+    new_url = current_url + '/new/'+branchname+'?file_name=' + filename
+    goto(new_url)
     EditFilePage.new(@driver)
   end
 

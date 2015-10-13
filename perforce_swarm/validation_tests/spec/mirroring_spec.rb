@@ -102,12 +102,13 @@ describe 'New Mirrored Project', browser: true do
 
   context 'when a file is added to a project through the web ui' do
     filename = 'Readme.md'
+    unique_content = unique_string
     before do
       proj_page = LoginPage.new(@driver,
                                 CONFIG.get('gitswarm_url')).login(user, password).goto_project_page(user, project)
       edit_page = proj_page.add_readme
       filename = edit_page.file_name
-      edit_page.content=user
+      edit_page.content=unique_content
       edit_page.commit_message='auto-message'
       p = edit_page.commit_change
       p.logout
@@ -117,6 +118,13 @@ describe 'New Mirrored Project', browser: true do
       @p4.connect_and_sync
       expected_file = p4_dir + '/' + filename
       expect(File.exist?(expected_file)).to be true
+
+      f = File.open(expected_file, 'rb')
+      contents = f.read
+      f.close
+      LOG.log('contents = ' +contents)
+      LOG.log('expected contents = ' + unique_content)
+      expect(contents).to eq(unique_content)
     end
   end
 

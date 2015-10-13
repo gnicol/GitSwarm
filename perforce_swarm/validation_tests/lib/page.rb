@@ -13,6 +13,10 @@ class Page
     @driver.navigate.to url
   end
 
+  def current_url
+    @driver.current_url
+  end
+
   #
   # Verify method checks that all expected elements exist on the page.
   # Calls child class method to get all expected elements, Blows up if

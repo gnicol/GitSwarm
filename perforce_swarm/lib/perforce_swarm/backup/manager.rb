@@ -78,7 +78,7 @@ module PerforceSwarm
         tar_file = File.join(ENV['BACKUP'] + '_gitlab_backup.tar') unless File.exist?(tar_file)
       end
 
-      unless tar_file && File.exist?(tar_file)
+      unless File.exist?(tar_file)
         puts "The specified backup doesn't exist!"
         exit 1
       end

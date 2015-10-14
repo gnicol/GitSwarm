@@ -56,7 +56,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
         Create a file called /etc/apt/sources.list.d/perforce.sources.list with the following line:
 
-        deb https://package.perforce.com/apt/ubuntu precise release
+        deb http://package.perforce.com/apt/ubuntu precise release
 
     c. Install dependencies:
 
@@ -74,7 +74,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
         Create a file called /etc/apt/sources.list.d/perforce.sources.list with the following line:
 
-        deb https://package.perforce.com/apt/ubuntu trusty release
+        deb http://package.perforce.com/apt/ubuntu trusty release
 
     c. Install dependencies:
 
@@ -94,7 +94,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
         [perforce]
         name=Perforce
-        baseurl=https://package.perforce.com/yum/rhel/6/x86_64
+        baseurl=http://package.perforce.com/yum/rhel/6/x86_64
         enabled=1
         gpgcheck=1
 
@@ -121,7 +121,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
         [perforce]
         name=Perforce
-        baseurl=https://package.perforce.com/yum/rhel/7/x86_64
+        baseurl=http://package.perforce.com/yum/rhel/7/x86_64
         enabled=1
         gpgcheck=1
 

@@ -59,10 +59,9 @@ module PerforceSwarm
 
     def unpack
       Dir.chdir(Gitlab.config.backup.path)
-
       # check for existing backups in the backup dir
-      file_list = Dir.glob('*_gitswarm_backup.tar').each.map { |f| f.split(/_/).first.to_i }
-      puts 'no backups found' if file_list.count == 0
+      file_list = Dir.glob('*_git{swarm,lab}_backup.tar')
+      puts 'no backups found' if file_list.empty?
 
       if file_list.count > 1 && ENV['BACKUP'].nil?
         puts 'Found more than one backup, please specify which one you want to restore:'
@@ -71,9 +70,10 @@ module PerforceSwarm
       end
 
       if ENV['BACKUP'].nil?
-        tar_file = File.join("#{file_list.first}_gitswarm_backup.tar")
+        tar_file = file_list.first
       else
         tar_file = File.join(ENV['BACKUP'] + '_gitswarm_backup.tar')
+        tar_file = File.join(ENV['BACKUP'] + '_gitlab_backup.tar') unless File.exist?(tar_file)
       end
 
       unless File.exist?(tar_file)
@@ -92,13 +92,30 @@ module PerforceSwarm
 
       ENV['VERSION'] = "#{settings[:db_version]}" if settings[:db_version].to_i > 0
 
+      # check for neither gitlab nor gitswarm version
+      unless settings[:gitlab_version] || settings[:gitswarm_version]
+        puts 'This does not appear to be a valid GitSwarm or GitLab backup file.'.red
+        puts ' We could not find a :gitlab_version nor a :gitswarm_version in backup_information.yml.'.red
+        exit 1
+      end
+
       # restoring mismatching backups can lead to unexpected problems
-      if settings[:gitswarm_version] != PerforceSwarm::VERSION
+      if settings[:gitswarm_version] && settings[:gitswarm_version] != PerforceSwarm::VERSION
         puts 'GitSwarm version mismatch:'.red
         puts "  Your current GitSwarm version (#{PerforceSwarm::VERSION}) differs"\
              ' from the GitSwarm version in the backup!'.red
         puts '  Please switch to the following version and try again:'.red
         puts "  version: #{settings[:gitswarm_version]}".red
+        exit 1
+      end
+
+      # no gitswarm version, but see if we have a compatible gitlab version
+      if settings[:gitlab_version] && settings[:gitlab_version] != Gitlab::VERSION
+        puts 'GitSwarm version mismatch:'.red
+        puts "  Your current GitSwarm version (#{PerforceSwarm::VERSION}) is based on"\
+             " GitLab (#{Gitlab::VERSION}) which differs from the GitLab version in the backup!".red
+        puts '  Please switch to a GitSwarm version based on GitLab:'.red
+        puts "  #{settings[:gitlab_version]} and try again.".red
         exit 1
       end
     end

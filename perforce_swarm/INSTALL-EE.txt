@@ -1,4 +1,4 @@
-Installation Instructions for
+                       Installation Instructions for
                      Helix GitSwarm Enterprise Edition
 
                               Version 2015.4

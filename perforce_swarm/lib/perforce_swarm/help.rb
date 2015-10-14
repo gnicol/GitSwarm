@@ -7,7 +7,7 @@ module PerforceSwarm
       # note the last listed path wins if a file appears in multiple locations
       stock_dir = Rails.root.join('doc')
       dirs  = [stock_dir, Rails.root.join('perforce_swarm', 'doc-ce')]
-      dirs += Rails.root.join('perforce_swarm', 'doc-ee') if PerforceSwarm.ee?
+      dirs += [Rails.root.join('perforce_swarm', 'doc-ee')] if PerforceSwarm.ee?
 
       dirs.each do |dir|
         Dir.glob(File.join(dir, '**/*')) do |file|

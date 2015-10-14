@@ -18,7 +18,7 @@
         1.  Add Perforce's packaging key to your APT keyring
 
             ```
-wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
             ```
 
         1.  Add Perforce's repository to your apt configuration
@@ -41,7 +41,7 @@ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server
         1.  Add Perforce's packaging key to your APT keyring
 
             ```
-wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
             ```
 
         1.  Add Perforce's repository to your apt configuration
@@ -64,7 +64,7 @@ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server
         1. Add Perforce's packaging key to your RPM keyring
 
             ```
-sudo rpm --import http://package.perforce.com/perforce.pubkey
+sudo rpm --import https://package.perforce.com/perforce.pubkey
             ```
 
         1. Add Perforce's yum repository to your configuration
@@ -95,7 +95,7 @@ sudo lokkit -s http -s ssh
         1. Add Perforce's packaging key to your RPM keyring
 
             ```
-sudo rpm --import http://package.perforce.com/perforce.pubkey
+sudo rpm --import https://package.perforce.com/perforce.pubkey
             ```
 
         1. Add Perforce's yum repository to your configuration

@@ -49,7 +49,7 @@ EOM
     return tooltip unless mirroring_permitted?(project, user)
 
     # all good in the 'hood - tooltip is slightly different for the button vs the text below the clone URL
-    "Click#{' "Mirror in Helix" above ' unless for_button} to get mirroring!"
+    "Click#{' "Mirror in Helix" above' unless for_button} to get mirroring!"
   end
 
   # boolean as to whether there are configured Git Fusion instances in the config

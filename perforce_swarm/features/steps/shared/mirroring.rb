@@ -42,9 +42,11 @@ module SharedMirroring
 
   step 'Git Fusion support is enabled with auto-create enabled servers' do
     config = default_config.dup
-    config['global'] = { 'auto_create' => { 'path_template' => '//gitswarm/{namespace}/{project-path}'}
-
+    config['global'] = { 'auto_create' => { 'path_template' => '//gitswarm/{namespace}/{project-path}',
+                                            'repo_name_template' => '{namespace}-{project-path}'
+                                        }
     }
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
   end
 
   step 'Git Fusion returns a list containing repos' do

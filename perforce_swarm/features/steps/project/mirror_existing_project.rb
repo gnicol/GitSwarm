@@ -9,12 +9,13 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I should see a Mirror in Helix button' do
-    page.should have_link('Mirror in Helix')
+    page.should have_text('Mirror in Helix')
     page.should_not have_selector('a.btn.disabled', :text => 'Mirror in Helix')
   end
 
   step 'I should not see a Mirror in Helix button' do
-    page.should_not have_link('Mirror in Helix')
+    save_and_open_page
+    page.should_not have_content('Mirror in Helix')
   end
 
   step 'I should see a no Git Fusion instances configured tooltip' do
@@ -35,13 +36,21 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
     page.should have_selector('li[data-title*="Helix Git Fusion integration is disabled or mis-configured."]')
   end
 
-  step 'Helix mirroring is enabled for project "Foo"' do
-    ProjectsHelper.stub(:mirrored?, true)
+  step 'Helix mirroring is enabled for project "Shop"' do
+    allow(ProjectsHelper).to receive(:mirrored?).and_return(true)
+    project = create(:project, name: "Shop", git_fusion_repo: 'mirror://default/foo' )
+    project.team << [@user, :master]
   end
 
-  step 'I visit project "Foo" page' do
-    project = Project.find_by(name: 'Foo')
-    visit namespace_project_path(project.namespace, project)
+  step 'Helix mirroring is not enabled for project "Shop"' do
+    allow(ProjectsHelper).to receive(:mirrored?).and_return(false)
+    project = create(:project, name: "Shop")
+    project.team << [@user, :master]
+  end
+
+  step 'I am an admin of project "Shop"' do
+    project = create(:project, name: "Shop")
+    project.team << [@user, :master]
   end
 
   step 'I am a member of project "Shop"' do
@@ -49,13 +58,16 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
     project.team << [@user, :reporter]
   end
 
-  step 'I am a member of project "Foo"' do
-    project = create(:project, name: "Foo")
-    project.team << [@user, :reporter]
+  step 'I am not a member of project "Shop"' do
+    project = create(:project, name: "Shop")
+    project.team << [@user, :guest]
   end
 
-  step 'I am an admin of project "Foo"' do
-    project = create(:project, name: "Foo")
-    project.team << [@user, :admin]
+  step 'I should see "not mirrored in helix" under the clone URL field' do
+    page.should have_link('not mirrored in helix')
+  end
+
+  step 'I should see "mirrored in helix" under the clone URL field' do
+    page.should have_link('mirrored in helix')
   end
 end

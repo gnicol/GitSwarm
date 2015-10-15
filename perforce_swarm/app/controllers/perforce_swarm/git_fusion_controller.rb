@@ -1,6 +1,8 @@
 class PerforceSwarm::GitFusionController < ApplicationController
   def existing_project
     initialize_variables
+    populate_repos
+    
     begin
       project        = Project.find(params['project_id'])
       repo_creator   = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
@@ -17,6 +19,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
 
   def new_project
     initialize_variables
+    populate_repos
+    populate_auto_create
 
     respond_to do |format|
       format.html { render partial: 'new_project', layout: false }
@@ -34,9 +38,6 @@ class PerforceSwarm::GitFusionController < ApplicationController
     @depot_exists       = false
     @auto_create_errors = []
     @path_template      = ''
-
-    populate_repos
-    populate_auto_create
   end
 
   def populate_auto_create

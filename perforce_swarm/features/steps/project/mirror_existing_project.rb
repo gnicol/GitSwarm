@@ -1,3 +1,5 @@
+require_relative '../shared/mirroring'
+
 class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   include SharedPaths
   include SharedAuthentication

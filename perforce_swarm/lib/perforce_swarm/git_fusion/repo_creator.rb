@@ -40,6 +40,24 @@ module PerforceSwarm
         render_template(path_template).chomp('/')
       end
 
+      # returns true/false whether there is already content in the depot path where we are expecting to store a project
+      def depot_path_content?
+        path = depot_path + '/...'
+
+        # run an fstat on the depot path to ensure there are no files present
+        p4 = PerforceSwarm::P4::Connection.new(@config)
+        p4.with_temp_client do |_tmpdir|
+          files = p4.run('fstat', '-m1', path.gsub(%r{//}, '//' + p4.client + '/'))
+          return !files.empty?
+        end
+      rescue P4Exception => e
+        return false if e.message.include?('- no such file')
+        # unexpected error, so re-raise
+        raise e
+      ensure
+        p4.disconnect if p4
+      end
+
       def repo_name
         render_template(repo_name_template)
       end

@@ -5,16 +5,15 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   include SharedMirroring
 
   step 'I should see a disabled Mirror in Helix button' do
-    page.should have_selector('a.btn.disabled', :text => 'Mirror in Helix')
+    page.should have_selector('a.btn.disabled', text: 'Mirror in Helix')
   end
 
   step 'I should see a Mirror in Helix button' do
     page.should have_text('Mirror in Helix')
-    page.should_not have_selector('a.btn.disabled', :text => 'Mirror in Helix')
+    page.should_not have_selector('a.btn.disabled', text: 'Mirror in Helix')
   end
 
   step 'I should not see a Mirror in Helix button' do
-    save_and_open_page
     page.should_not have_content('Mirror in Helix')
   end
 
@@ -38,28 +37,28 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'Helix mirroring is enabled for project "Shop"' do
     allow(ProjectsHelper).to receive(:mirrored?).and_return(true)
-    project = create(:project, name: "Shop", git_fusion_repo: 'mirror://default/foo' )
+    project = create(:project, name: 'Shop', git_fusion_repo: 'mirror://default/foo')
     project.team << [@user, :master]
   end
 
   step 'Helix mirroring is not enabled for project "Shop"' do
     allow(ProjectsHelper).to receive(:mirrored?).and_return(false)
-    project = create(:project, name: "Shop")
+    project = create(:project, name: 'Shop')
     project.team << [@user, :master]
   end
 
   step 'I am an admin of project "Shop"' do
-    project = create(:project, name: "Shop")
+    project = create(:project, name: 'Shop')
     project.team << [@user, :master]
   end
 
   step 'I am a member of project "Shop"' do
-    project = create(:project, name: "Shop")
+    project = create(:project, name: 'Shop')
     project.team << [@user, :reporter]
   end
 
   step 'I am not a member of project "Shop"' do
-    project = create(:project, name: "Shop")
+    project = create(:project, name: 'Shop')
     project.team << [@user, :guest]
   end
 

@@ -25,7 +25,7 @@ wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
 
             Create a file called `/etc/apt/sources.list.d/perforce.sources.list` with the following line:
             ```
-deb https://package.perforce.com/apt/ubuntu precise release
+deb http://package.perforce.com/apt/ubuntu precise release
             ```
 
         1.  Install dependencies
@@ -48,7 +48,7 @@ wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
 
             Create a file called `/etc/apt/sources.list.d/perforce.sources.list` with the following line:
             ```
-deb https://package.perforce.com/apt/ubuntu trusty release
+deb http://package.perforce.com/apt/ubuntu trusty release
             ```
 
         1.  Install dependencies
@@ -73,7 +73,7 @@ sudo rpm --import https://package.perforce.com/perforce.pubkey
             ```
 [perforce]
 name=Perforce
-baseurl=https://package.perforce.com/yum/rhel/6/x86_64
+baseurl=http://package.perforce.com/yum/rhel/6/x86_64
 enabled=1
 gpgcheck=1
             ```
@@ -104,7 +104,7 @@ sudo rpm --import https://package.perforce.com/perforce.pubkey
             ```
 [perforce]
 name=Perforce
-baseurl=https://package.perforce.com/yum/rhel/7/x86_64
+baseurl=http://package.perforce.com/yum/rhel/7/x86_64
 enabled=1
 gpgcheck=1
             ```

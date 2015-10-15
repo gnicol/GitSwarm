@@ -94,6 +94,82 @@ describe PerforceSwarm::GitFusion::RepoCreator do
     end
   end
 
+  describe :p4gf_config_exists? do
+    it 'raises an exception if we attempt to detect a p4gf_config file using variables that are not configured' do
+      config = @base_config.clone
+      config['foo']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
+                                       'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
+      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo')
+      expect { creator.p4gf_config_exists? }.to raise_error(EXPECTED_EXCEPTION), creator.inspect
+    end
+
+    it 'raises an exception if we attempt to detect a p4gf_config file using invalid variable values' do
+      config = @base_config.clone
+      config['foo']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
+                                       'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
+      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', '!namespace', 'valid-path')
+      expect { creator.p4gf_config_exists? }.to raise_error(EXPECTED_EXCEPTION)
+    end
+
+    it 'returns true if there is already a p4gf_config file for the project we are trying to create' do
+      p4d      = `PATH=$PATH:/opt/perforce/sbin which p4d`.strip
+      p4root   = Dir.mktmpdir
+      p4config = PerforceSwarm::GitFusion::Config.new(
+          'enabled' => true,
+          'default' => {
+            'url'   => 'foo@unknown-host',
+            'user'  => 'p4test',
+            'perforce' => {
+              'port' => "rsh:#{p4d} -r #{p4root} -i -q"
+            },
+            'auto_create' => { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
+                               'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
+          }
+      )
+      connection = PerforceSwarm::P4::Connection.new(p4config.entry, p4root)
+      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: p4config)
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('default', 'root', 'my-project')
+      # create the required depot
+      PerforceSwarm::P4::Spec::Depot.create(connection, '.git-fusion')
+
+      # add a file to the depot path where we'll be checking
+      connection.with_temp_client do |tmpdir|
+        file = creator.p4gf_config_path(tmpdir)
+        FileUtils.mkdir_p(File.dirname(file))
+        File.write(file, 'This could be a valid p4gf_config file, but who cares.')
+        connection.run('reconcile', file)
+        connection.run('submit', '-d', 'Adding p4gf_config file.')
+      end
+
+      # perform the check
+      expect(creator.p4gf_config_exists?).to be_truthy
+      connection.disconnect if connection
+      FileUtils.remove_entry_secure(p4root)
+    end
+
+    it 'returns false if there is no content at the generated depot path' do
+      p4d      = `PATH=$PATH:/opt/perforce/sbin which p4d`.strip
+      p4root   = Dir.mktmpdir
+      p4config = PerforceSwarm::GitFusion::Config.new(
+          'enabled' => true,
+          'default' => {
+            'url'   => 'foo@unknown-host',
+            'user'  => 'p4test',
+            'perforce' => {
+              'port' => "rsh:#{p4d} -r #{p4root} -i -q"
+            },
+            'auto_create' => { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
+                               'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
+          }
+      )
+      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: p4config)
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('default', 'root', 'my-project')
+      expect(creator.p4gf_config_exists?).to be_falsey
+    end
+  end
+
   describe :depot_path_content? do
     it 'raises an exception if we attempt to see if there is content using variables that are not configured' do
       config = @base_config.clone
@@ -104,7 +180,7 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       expect { creator.depot_path_content? }.to raise_error(EXPECTED_EXCEPTION), creator.inspect
     end
 
-    it 'raises an exception if we attempt to see if there is content using variables that are not configured' do
+    it 'raises an exception if we attempt to see if there is content using invalid variable values' do
       config = @base_config.clone
       config['foo']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
                                        'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
@@ -119,20 +195,20 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       p4config = PerforceSwarm::GitFusion::Config.new(
           'enabled' => true,
           'default' => {
-              'url'   => 'foo@unknown-host',
-              'user'  => 'p4test',
-              'perforce' => {
-                  'port' => "rsh:#{p4d} -r #{p4root} -i -q"
-              },
-              'auto_create' => { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
-                                 'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
+            'url'   => 'foo@unknown-host',
+            'user'  => 'p4test',
+            'perforce' => {
+              'port' => "rsh:#{p4d} -r #{p4root} -i -q"
+            },
+            'auto_create' => { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
+                               'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
           }
       )
       connection = PerforceSwarm::P4::Connection.new(p4config.entry, p4root)
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: p4config)
       creator = PerforceSwarm::GitFusion::RepoCreator.new('default', 'root', 'my-project')
       # create the required depot
-      PerforceSwarm::P4::Spec::Depot.create(connection, 'gitswarm').last
+      PerforceSwarm::P4::Spec::Depot.create(connection, 'gitswarm')
 
       # add a file to the depot path where we'll be checking
       connection.with_temp_client do |tmpdir|
@@ -155,13 +231,13 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       p4config = PerforceSwarm::GitFusion::Config.new(
           'enabled' => true,
           'default' => {
-              'url'   => 'foo@unknown-host',
-              'user'  => 'p4test',
-              'perforce' => {
-                  'port' => "rsh:#{p4d} -r #{p4root} -i -q"
-              },
-              'auto_create' => { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
-                                 'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
+            'url'   => 'foo@unknown-host',
+            'user'  => 'p4test',
+            'perforce' => {
+              'port' => "rsh:#{p4d} -r #{p4root} -i -q"
+            },
+            'auto_create' => { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
+                               'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
           }
       )
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: p4config)

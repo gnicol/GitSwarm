@@ -42,8 +42,18 @@ module PerforceSwarm
 
       # returns true/false whether there is already content in the depot path where we are expecting to store a project
       def depot_path_content?
-        path = depot_path + '/...'
+        depot_content?(depot_path + '/...')
+      end
 
+      # returns true/false whether there is already a p4gf_config file where we are expecting to store the current
+      # project's config
+      def p4gf_config_exists?
+        depot_content?(p4gf_config_path)
+      end
+
+      # returns true/false if there are any files at the specified depot path - note that the path can end in
+      # /... to check a directory
+      def depot_content?(path)
         # run an fstat on the depot path to ensure there are no files present
         p4 = PerforceSwarm::P4::Connection.new(@config)
         p4.with_temp_client do |_tmpdir|
@@ -65,6 +75,13 @@ module PerforceSwarm
       # returns the depot portion of the generated depot_path
       def project_depot
         path_template[%r{\A//([^/]+)/}, 1]
+      end
+
+      # returns the path to the p4gf_config file location - if a local_dir is given, it will return the
+      # local path, otherwise, it will return the Perforce depot path
+      def p4gf_config_path(local_dir = nil)
+        return "//.git-fusion/repos/#{repo_name}/p4gf_config" unless local_dir
+        File.join(local_dir, '.git-fusion', 'repos', repo_name, 'p4gf_config')
       end
 
       # generates the p4gf_config file that should be checked into Perforce under
@@ -106,7 +123,7 @@ eof
 
         # generate our file and attempt to add it
         p4.with_temp_client do |tmpdir|
-          file = File.join(tmpdir, '.git-fusion', 'repos', repo_name, 'p4gf_config')
+          file = p4gf_config_path(tmpdir)
           FileUtils.mkdir_p(File.dirname(file))
           File.write(file, p4gf_config)
           add_output = p4.run('add', file).shift

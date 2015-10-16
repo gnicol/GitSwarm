@@ -2,7 +2,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
   def existing_project
     initialize_variables
     populate_repos
-    
+
     begin
       project        = Project.find(params['project_id'])
       repo_creator   = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)

@@ -105,21 +105,29 @@ git-branch-name = master
 eof
       end
 
+      # ensure the depots exist - both the //.git-fusion one as well as the one the user wants to create their project
+      def ensure_depots_exist(connection = nil)
+        unless connection
+          connection = PerforceSwarm::P4::Connection.new(@config)
+          connection.login
+        end
+        depots   = [project_depot, '.git-fusion']
+        missing  = depots - PerforceSwarm::P4::Spec::Depot.exists?(connection, depots)
+        if missing.length > 0
+          fail 'The following depot(s) are required and were found to be missing: ' + missing.join(', ')
+        end
+      end
+
       # attempt to submit our p4gf_config file for Git Fusion - fails if a repo of the same name already exists
       def save
         p4 = PerforceSwarm::P4::Connection.new(@config)
         p4.login
 
-        # ensure the depots exist - both the //.git-fusion one as well as the one the user wants to create their project
         if project_depot.include?('{namespace}') || project_depot.include?('{project-path}')
           fail 'Depot names cannot contain substitution variables ({namespace} or {project-path}).'
         end
 
-        depots   = [project_depot, '.git-fusion']
-        missing  = depots - PerforceSwarm::P4::Spec::Depot.exists?(p4, depots)
-        if missing.length > 0
-          fail 'The following depot(s) are required and were found to be missing: ' + missing.join(', ')
-        end
+        ensure_depots_exist(p4)
 
         # generate our file and attempt to add it
         p4.with_temp_client do |tmpdir|

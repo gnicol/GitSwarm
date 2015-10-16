@@ -6,11 +6,11 @@
 #  * Chromedriver needs to be installed in order to run chrome
 browser : phantomjs
 
-gitswarm_url : http://10.2.0.108/
+gitswarm_url : http://CHANGE_ME/
 gitswarm_username : root
 gitswarm_password : 5iveL!fe
 
-p4_port : ssl:10.2.0.108:1666
+p4_port : ssl:CHANGE_ME:1666
 p4_user : root
 p4_password : 5iveL!fe
 p4_gitswarm_depot_root : //gitswarm/projects/

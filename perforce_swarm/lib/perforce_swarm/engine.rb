@@ -17,6 +17,7 @@ module PerforceSwarm
       PerforceSwarm.autoload :GitFusionRepo,     File.join(shell_path, 'perforce_swarm', 'git_fusion_repo')
       PerforceSwarm.autoload :GitlabConfig,      File.join(shell_path, 'perforce_swarm', 'config')
       PerforceSwarm.autoload :GitFusion,         File.join(shell_path, 'perforce_swarm', 'git_fusion')
+      PerforceSwarm.autoload :MirrorLockSocketServer, File.join(shell_path, 'perforce_swarm', 'mirror_lock_socket')
       PerforceSwarm::GitFusion.autoload :Config, File.join(shell_path, 'perforce_swarm', 'config')
       PerforceSwarm::P4.autoload :Connection,    File.join(shell_path, 'perforce_swarm', 'p4', 'connection')
       PerforceSwarm::P4.autoload :Spec,          File.join(shell_path, 'perforce_swarm', 'p4', 'spec', 'depot')

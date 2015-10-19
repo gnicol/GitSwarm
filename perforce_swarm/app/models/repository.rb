@@ -14,6 +14,6 @@ module PerforceSwarm
   end
 end
 
-class Repository < ActiveRecord::Base
+class Repository
   prepend PerforceSwarm::RepositoryExtension
 end

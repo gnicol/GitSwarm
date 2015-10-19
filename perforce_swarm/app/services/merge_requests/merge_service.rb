@@ -11,5 +11,5 @@ module PerforceSwarm
 end
 
 class MergeRequests::MergeService
-  prepend PerforceSwarm::CreateServiceExtensions
+  prepend PerforceSwarm::MergeServiceExtensions
 end

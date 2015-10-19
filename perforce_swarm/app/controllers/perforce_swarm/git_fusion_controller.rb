@@ -2,11 +2,31 @@ class PerforceSwarm::GitFusionController < ApplicationController
   def existing_project
     initialize_variables
     populate_repos
-    
+
     begin
       project        = Project.find(params['project_id'])
       repo_creator   = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
       @path_template = repo_creator.namespace(project.namespace.name).project_path(project.path).depot_path + '/...'
+
+      # pre-flight checks:
+      #   * the project is already mirrored
+      #   * both the project and //.git-fusion depots exist
+      #   * Git Fusion doesn't already have a config for this project
+      #   * there is no content in our destination depot for project files
+
+      fail 'This project appears to already be mirrored. Please contact your administrator if you believe this is ' \
+           'an error.' if project.git_fusion_repo.present?
+      repo_creator.ensure_depots_exist
+      alternate_message = 'GitSwarm will be unable to mirror to this location, but you ' \
+                          'can import the existing Git Fusion repository into a new project.'
+
+      if repo_creator.p4gf_config_exists?
+        fail 'It appears that a Git Fusion repository has already been created for that location. ' + alternate_message
+      end
+
+      if repo_creator.depot_path_content?
+        fail "It appears that there is already content in Helix at #{repo_creator.depot_path}. " + alternate_message
+      end
     rescue => error
       @errors << error
     end

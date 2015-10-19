@@ -32,15 +32,21 @@ module ProjectsHelper
     return e.message
   end
 
-  def git_fusion_servers
+  def git_fusion_servers(auto_create_default = false)
     return [] unless git_fusion_import_enabled?
 
-    options = []
-    servers = gitlab_shell_config.git_fusion.entries
+    options  = []
+    servers  = gitlab_shell_config.git_fusion.entries
+    selected = params['git_fusion_entry']
     servers.each do |id, config|
       options.push([config[:url], id])
+      # skip setting our selected element if we've already got one, or
+      # if the current config entry isn't configured for auto-create, and
+      # we're looking for the first one that is
+      next if selected || (auto_create_default && !config.auto_create_configured?)
+      selected = id
     end
-    servers.empty? ? [] : options_for_select(options, params['git_fusion_entry'])
+    servers.empty? ? [] : options_for_select(options, selected)
   end
 
   def git_fusion_repos(repos)

@@ -34,11 +34,13 @@
       %li
         = link_to contribution_guide_url(@project) do
           Contribution guide
-    %li{data: {toggle: 'tooltip', trigger: 'click', title: mirroring_tooltip(@project, current_user)}}
+    -# gitswarm changes start
+    %li{data: {toggle: 'tooltip', html: 'true', title: mirroring_tooltip(@project, current_user)}}
       - mirrored = mirrored?(@project)
       = link_to '#' do
         = (mirrored ? '' : 'not ') + 'mirrored in helix'
         = icon('fw question-circle') unless mirrored
+    -# gitswarm changes end
 
 - if @project.archived?
   .text-warning.center.prepend-top-20

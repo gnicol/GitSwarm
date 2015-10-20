@@ -21,11 +21,13 @@
       - if can? current_user, :download_code, @project
         = link_to archive_namespace_project_repository_path(@project.namespace, @project, ref: @ref, format: 'zip'), class: 'btn', rel: 'nofollow' do
           %i.fa.fa-download
-
+    -# gitswarm changes start
     - if !mirrored?(@project) && current_user
-      %span.has_tooltip{'data-title' => mirroring_tooltip(@project, current_user, true)}
+      %span.has_tooltip{data: {title: mirroring_tooltip(@project, current_user, true), html: 'true'}}
         = link_to '#', class: "btn #{'disabled' unless mirroring_permitted?(@project, current_user) && mirroring_configured?}" do
+          = icon 'helix-icon-white'
           Mirror in Helix
+    -# gitswarm changes end
     = render 'projects/buttons/dropdown'
 
   = render "shared/clone_panel"

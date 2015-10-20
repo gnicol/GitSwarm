@@ -30,11 +30,11 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I should see an inadequate permissions tooltip' do
-    page.should have_selector('li[data-title*="you do not have adequate permissions to enable it for this project."]')
+    page.should have_selector('li[data-title*="but you lack permissions to enable it for this project."]')
   end
 
   step 'I should see a disabled or mis-configured tooltip' do
-    page.should have_selector('li[data-title*="Helix Git Fusion integration is disabled or mis-configured."]')
+    page.should have_selector('li[data-title*="Helix Git Fusion integration is disabled."]')
   end
 
   step 'Helix mirroring is enabled for project "Shop"' do

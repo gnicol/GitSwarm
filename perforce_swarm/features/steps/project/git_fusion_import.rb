@@ -9,11 +9,11 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
   def default_config
     entry = default_entry
     entry['id'] = nil
-    configify('enabled' => true, 'default' => entry)
+    configify('enabled' => true, 'local' => entry)
   end
 
   def default_entry
-    { id:      'default',
+    { id:      'local',
       url: 'http://user@foo',
       password: 'bar',
       git_config_params: 'http.sslVerify=false'
@@ -30,12 +30,12 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
 
   step 'The Git Fusion config block has a malformed URL' do
     PerforceSwarm::GitlabConfig.any_instance.stub(
-        git_fusion: configify('enabled' => true, 'default' => { 'url' => 'invalid' })
+        git_fusion: configify('enabled' => true, 'local' => { 'url' => 'invalid' })
       )
   end
 
   step 'Git Fusion is enabled but is otherwise not configured' do
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify('enabled' => true, 'default' => {}))
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify('enabled' => true, 'local' => {}))
   end
 
   step 'Git Fusion returns an empty list of managed repos' do

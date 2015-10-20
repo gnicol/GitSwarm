@@ -26,7 +26,7 @@ describe PerforceSwarm::GitFusion::RepoCreator do
        {},
        { 'foo' => 'bar' },
        { 'enabled' => true },
-       { 'default' => { 'url' => 'foo@bar' } },
+       { 'local' => { 'url' => 'foo@bar' } },
        @base_config.clone.entry,
        entry
       ].each do |config|

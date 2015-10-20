@@ -64,7 +64,7 @@ Note: If you install Postfix to send email, please select Internet Site
         $ sudo apt-get upgrade
         $ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server helix-git-fusion-base
 
-2. For Ubuntu 12.04:
+2. For Ubuntu 14.04:
 
     a. Add Perforce's packaging key to your APT keyring:
 

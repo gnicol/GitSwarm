@@ -11,7 +11,7 @@ module PerforceSwarm
       ) if @project.git_fusion_repo.present?
 
       # users can only enable mirroring for an existing project at this point
-      render 'perforce_swarm/git_fusion/projects/enable_mirroring'
+      render 'perforce_swarm/git_fusion/projects/configure_mirroring'
     end
 
     def project_params

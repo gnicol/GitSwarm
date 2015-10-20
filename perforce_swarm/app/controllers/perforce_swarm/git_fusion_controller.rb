@@ -13,7 +13,6 @@ class PerforceSwarm::GitFusionController < ApplicationController
       #   * both the project and //.git-fusion depots exist
       #   * Git Fusion doesn't already have a config for this project
       #   * there is no content in our destination depot for project files
-
       fail 'This project appears to already be mirrored. Please contact your administrator if you believe this is ' \
            'an error.' if project.git_fusion_repo.present?
       repo_creator.ensure_depots_exist
@@ -28,7 +27,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
         fail "It appears that there is already content in Helix at #{repo_creator.depot_path}. " + alternate_message
       end
     rescue => error
-      @errors << error
+      @errors << ERB::Util.html_escape(error)
     end
 
     respond_to do |format|

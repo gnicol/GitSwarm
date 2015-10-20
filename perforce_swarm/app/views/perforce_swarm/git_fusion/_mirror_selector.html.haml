@@ -1,16 +1,16 @@
 - if !@errors.empty?
   .mirroring-errors
-    A problem was encountered while attempting to validate whether Helix
-    mirroring can be enabled for the current project:
+    %h4 Configuration Error:
     = @errors.first
     Please see
     = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#known-issues'
     for help.
 - else
-  .mirroring-depot-path
-    Your project's branches will be mirrored to:
-    %span.text-danger
-      = @path_template
+  .mirroring-selection
+    %p
+      Your project's branches will be mirrored to:
+      %span.depot-path
+        = @path_template
     .form-actions
-      = link_to '#', class: 'btn' do
+      = link_to '#', class: 'btn btn-create' do
         Launch Mirroring

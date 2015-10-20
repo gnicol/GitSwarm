@@ -1,7 +1,5 @@
 require 'selenium-webdriver'
 
-Dir['./pages/*.rb'].each { |file| require file }
-
 class Page
   attr_reader :driver
 
@@ -51,3 +49,5 @@ class Page
     wait.until { @driver.find_element(by, value) }
   end
 end
+
+Dir[File.join(__dir__, 'pages/*.rb')].each { |file| require file }

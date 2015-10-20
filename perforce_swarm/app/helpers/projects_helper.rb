@@ -116,7 +116,7 @@ module ProjectsHelper
     servers  = gitlab_shell_config.git_fusion.entries
     selected = params['git_fusion_entry']
     servers.each do |id, config|
-      options.push([config[:url], id])
+      options.push(["#{id} (#{config[:url]})", id])
       # skip setting our selected element if we've already got one, or
       # if the current config entry isn't configured for auto-create, and
       # we're looking for the first one that is

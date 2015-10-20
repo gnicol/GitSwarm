@@ -1,0 +1,24 @@
+- page_title    'Mirror in Helix'
+- header_title  'Mirror in Helix'
+- servers = git_fusion_servers(true)
+- if current_user && can?(current_user, :download_code, @project)
+  = render 'shared/no_ssh'
+  = render 'shared/no_password'
+.git-fusion-mirroring
+  %h2
+    Mirror in Helix
+  - if !@errors.empty?
+    .project-mirroring-errors.description
+      This Helix GitSwarm instance is not pointing to any Helix Git Fusion servers. To enable mirroring to Helix,
+      please have an admin
+      = link_to 'configure at least one Git Fusion instance', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#configuration'
+  - else
+    .git-fusion-mirroring-data
+      %h3
+        Select a Helix server to mirror the project to
+      .control-group.form-inline
+        .control-label.mirroring-server-select
+          Helix Git Fusion Server:
+          = select_tag(:git_fusion_entry, servers, class: 'form-control')
+  :javascript
+    var mirror_config = new GitFusionMirror();

@@ -64,9 +64,10 @@ module PerforceSwarm
           next unless PerforceSwarm::Repo.new(project.repository.path_to_repo).mirrored?
 
           repo_path = project.repository.path_to_repo
+          active    = PerforceSwarm::Mirror.fetch_locked?(repo_path) || PerforceSwarm::Mirror.write_locked?(repo_path)
           stats.push(project:       project,
                      last_fetched:  PerforceSwarm::Mirror.last_fetched(repo_path),
-                     active:        PerforceSwarm::Mirror.fetch_locked?(repo_path)
+                     active:        active
           )
         end
 

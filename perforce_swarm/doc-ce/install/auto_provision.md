@@ -2,16 +2,16 @@
 
 By default GitSwarm will automatically provision a Helix Server and connected Helix Git Fusion for you.
 
-If you wish to use an existing Helix Git Fusion instance you can comment out the 'default' instance and add new config
+If you wish to use an existing Helix Git Fusion instance you can comment out the 'local' instance and add new config
 entries:
 ```
-#gitswarm['git-fusion']['default']['url']          = :auto_provision
-#gitswarm['git-fusion']['default']['password']     = '<PASSWORD>'
+#gitswarm['git-fusion']['local']['url']          = :auto_provision
+#gitswarm['git-fusion']['local']['password']     = '<PASSWORD>'
 ```
 
 **[Instructions on configuring the connection to external Helix Git Fusion can be found here](../workflow/importing/import_from_gitfusion.md#configuration)**.
 
-When GitSwarm is left in its `default` auto-provision mode, the Helix Server is configured with the following configuration:
+When GitSwarm is left in its `local` auto-provision mode, the Helix Server is configured with the following configuration:
 
 - Port
     - ssl:1666

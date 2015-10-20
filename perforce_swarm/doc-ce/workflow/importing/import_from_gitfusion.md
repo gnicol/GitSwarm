@@ -47,14 +47,14 @@ convention-based repository settings.
 ```ruby
 gitswarm['git-fusion']['global']['user']      = 'global-user'
 gitswarm['git-fusion']['global']['password']  = '<password for "global-user" user>'
-gitswarm['git-fusion']['default']['url']      = 'http://gitswarm@gitfusion.host/'
-gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['local']['url']      = 'http://gitswarm@gitfusion.host/'
+gitswarm['git-fusion']['local']['password'] = '<password for "gitswarm" user>'
 gitswarm['git-fusion']['development']['url']  = 'http://dev-gitfusion.host/'
 gitswarm['git-fusion']['production']['url']   = 'http://prod-gitfusion.host/'
 ```
 
 In the above example, the user `global-user` will be used to log in to the `development`
-and `production` Git Fusion servers. The user for the `default` Git Fusion server
+and `production` Git Fusion servers. The user for the `local` Git Fusion server
 will remain as `gitswarm`.
 
 Note: Only `user`, `password`, `git_config_params`, `perforce['user']`,
@@ -88,8 +88,8 @@ gitswarm['git-fusion']['my_entry']['password'] = '<password for "gitswarm" user>
     to other Git Fusion servers under other uniquely-named keys.
 
     ```ruby
-gitswarm['git-fusion']['default']['url']        = 'http://gitswarm@gitfusion.host/'
-gitswarm['git-fusion']['default']['password']   = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['local']['url']        = 'http://gitswarm@gitfusion.host/'
+gitswarm['git-fusion']['local']['password']   = '<password for "gitswarm" user>'
 gitswarm['git-fusion']['other']['url']          = 'http://other-user@other-gitfusin.host/'
 gitswarm['git-fusion']['other']['password']     = '<password for "other-user" user>'
     ```

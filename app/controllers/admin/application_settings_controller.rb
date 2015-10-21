@@ -29,6 +29,15 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
       end
     end
 
+    import_sources = params[:application_setting][:import_sources]
+    if import_sources.nil?
+      params[:application_setting][:import_sources] = []
+    else
+      import_sources.map! do |source|
+        source.to_str
+      end
+    end
+
     params.require(:application_setting).permit(
       :default_projects_limit,
       :default_branch_protection,
@@ -37,6 +46,7 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
       :gravatar_enabled,
       :twitter_sharing_enabled,
       :sign_in_text,
+      :help_page_text,
       :home_page_url,
       :after_sign_out_path,
       :max_attachment_size,
@@ -46,7 +56,9 @@ class Admin::ApplicationSettingsController < Admin::ApplicationController
       :restricted_signup_domains_raw,
       :version_check_enabled,
       :user_oauth_applications,
+      :ci_enabled,
       restricted_visibility_levels: [],
+      import_sources: []
     )
   end
 end

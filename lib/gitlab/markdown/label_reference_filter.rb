@@ -1,3 +1,5 @@
+require 'gitlab/markdown'
+
 module Gitlab
   module Markdown
     # HTML filter that replaces label references with links.
@@ -43,8 +45,9 @@ module Gitlab
 
             url = url_for_label(project, label)
             klass = reference_class(:label)
+            data = data_attribute(project.id)
 
-            %(<a href="#{url}"
+            %(<a href="#{url}" #{data}
                  class="#{klass}">#{render_colored_label(label)}</a>)
           else
             match
@@ -53,7 +56,7 @@ module Gitlab
       end
 
       def url_for_label(project, label)
-        h = Rails.application.routes.url_helpers
+        h = Gitlab::Application.routes.url_helpers
         h.namespace_project_issues_path(project.namespace, project,
                                         label_name: label.name,
                                         only_path: context[:only_path])

@@ -35,6 +35,29 @@ Feature: Project Source Browse Files
     And I should see its new content
 
   @javascript
+  Scenario: I can upload file and commit
+    Given I click on "new file" link in repo
+    Then I can see new file page
+    And I can see "upload an existing one"
+    And I click on "upload"
+    And I upload a new text file
+    And I fill the upload file commit message
+    And I click on "Upload file"
+    Then I can see the new text file
+    And I can see the new commit message
+
+  @javascript
+  Scenario: I can replace file and commit
+    Given I click on ".gitignore" file in repo
+    And I see the ".gitignore"
+    And I click on "Replace"
+    And I replace it with a text file
+    And I fill the replace file commit message
+    And I click on "Replace file"
+    Then I can see the new text file
+    And I can see the replacement commit message
+
+  @javascript
   Scenario: I can create and commit file and specify new branch
     Given I click on "new file" link in repo
     And I edit code
@@ -158,3 +181,10 @@ Feature: Project Source Browse Files
     Given I visit project source page for "6d394385cf567f80a8fd85055db1ab4c5295806f"
     And I click on ".gitignore" file in repo
     Then I don't see the permalink link
+
+  @javascript
+  Scenario: I browse code with single quotes in the ref
+    Given I switch ref to 'test'
+    And I see the ref 'test' has been selected
+    And I visit the 'test' tree
+    Then I see the commit data

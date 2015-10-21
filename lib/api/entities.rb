@@ -6,6 +6,10 @@ module API
 
     class UserBasic < UserSafe
       expose :id, :state, :avatar_url
+
+      expose :web_url do |user, options|
+        Gitlab::Application.routes.url_helpers.user_url(user)
+      end
     end
 
     class User < UserBasic
@@ -29,6 +33,10 @@ module API
 
     class UserLogin < UserFull
       expose :private_token
+    end
+
+    class Email < Grape::Entity
+      expose :id, :email
     end
 
     class Hook < Grape::Entity
@@ -59,6 +67,7 @@ module API
       expose :namespace
       expose :forked_from_project, using: Entities::ForkedFromProject, if: lambda{ | project, options | project.forked? }
       expose :avatar_url
+      expose :star_count, :forks_count
     end
 
     class ProjectMember < UserBasic
@@ -69,6 +78,11 @@ module API
 
     class Group < Grape::Entity
       expose :id, :name, :path, :description
+      expose :avatar_url
+
+      expose :web_url do |group, options|
+        Gitlab::Application.routes.url_helpers.group_url(group)
+      end
     end
 
     class GroupDetail < Group
@@ -171,6 +185,7 @@ module API
       expose :source_project_id, :target_project_id
       expose :label_names, as: :labels
       expose :description
+      expose :work_in_progress?, as: :work_in_progress
       expose :milestone, using: Entities::Milestone
     end
 
@@ -184,12 +199,19 @@ module API
       expose :id, :title, :key, :created_at
     end
 
+    class SSHKeyWithUser < SSHKey
+      expose :user, using: Entities::UserFull
+    end
+
     class Note < Grape::Entity
       expose :id
       expose :note, as: :body
       expose :attachment_identifier, as: :attachment
       expose :author, using: Entities::UserBasic
       expose :created_at
+      expose :system?, as: :system
+      expose :upvote?, as: :upvote
+      expose :downvote?, as: :downvote
     end
 
     class MRNote < Grape::Entity
@@ -203,6 +225,7 @@ module API
       expose(:line) { |note| note.diff_new_line }
       expose(:line_type) { |note| note.diff_line_type }
       expose :author, using: Entities::UserBasic
+      expose :created_at
     end
 
     class Event < Grape::Entity

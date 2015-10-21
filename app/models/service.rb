@@ -87,8 +87,14 @@ class Service < ActiveRecord::Base
     %w(push tag_push issue merge_request)
   end
 
-  def execute
+  def execute(data)
     # implement inside child
+  end
+
+  def test(data)
+    # default implementation
+    result = execute(data)
+    { success: result.present?, result: result }
   end
 
   def can_test?
@@ -129,6 +135,7 @@ class Service < ActiveRecord::Base
       buildkite
       campfire
       custom_issue_tracker
+      drone_ci
       emails_on_push
       external_wiki
       flowdock

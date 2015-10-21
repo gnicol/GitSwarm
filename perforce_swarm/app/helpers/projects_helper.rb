@@ -1,8 +1,8 @@
 require Rails.root.join('app', 'helpers', 'projects_helper')
 
 module ProjectsHelper
-  # Don't linkify the last section of the title, in order to give a larger already
-  # To click for the dropdown
+  # Don't linkify the last section of the title, so there is a larger click
+  # area for the dropdown. Plus the link would just take you to your current page.
   def project_title(project, name = nil, _url = nil)
     namespace_link =
       if project.group

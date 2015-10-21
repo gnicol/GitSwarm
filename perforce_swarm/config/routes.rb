@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     resources :projects do
       member do
         get :configure_mirroring
+        post :enable_mirroring
       end
     end
   end

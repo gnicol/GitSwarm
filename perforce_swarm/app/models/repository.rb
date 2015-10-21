@@ -18,7 +18,7 @@ module PerforceSwarm
         socket_server.start
         status = super
       ensure
-        socket_server.stop
+        socket_server.stop if socket_server
       end
       status
     end

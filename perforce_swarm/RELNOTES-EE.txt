@@ -1,7 +1,7 @@
                              Release Notes for
                       Helix GitSwarm Enterprise Edition
 
-                              Version 2015.3
+                              Version 2015.4
 
 Introduction
 
@@ -25,7 +25,7 @@ Introduction
 
 Documentation
 
-    GitSwarm EE Release 2015.3 documentation is included in the distribution
+    GitSwarm EE Release 2015.4 documentation is included in the distribution
     and can be accessed from within GitSwarm from the "?" menu on the top
     toolbar
 

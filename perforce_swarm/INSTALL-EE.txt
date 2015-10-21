@@ -1,12 +1,12 @@
                        Installation Instructions for
                      Helix GitSwarm Enterprise Edition
 
-                              Version 2015.3
+                              Version 2015.4
 
 Introduction
 
     This document describes the installation and initial configuration
-    process for Helix GitSwarm EE release 2015.3.
+    process for Helix GitSwarm EE release 2015.4.
 
     * Note, installing and configuring GitSwarm EE is a System Administrator
       function and requires root access.
@@ -50,7 +50,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
     a. Add Perforce's packaging key to your APT keyring:
 
-        $ wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+        $ wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
 
     b. Add Perforce's repository to your apt configuration:
 
@@ -64,11 +64,11 @@ Note: If you install Postfix to send email, please select Internet Site
         $ sudo apt-get upgrade
         $ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server helix-git-fusion-base
 
-2. For Ubuntu 12.04:
+2. For Ubuntu 14.04:
 
     a. Add Perforce's packaging key to your APT keyring:
 
-        $ wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+        $ wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
 
     b. Add Perforce's repository to your apt configuration:
 
@@ -86,7 +86,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
     a. Add Perforce's packaging key to your RPM keyring:
 
-        $ sudo rpm --import http://package.perforce.com/perforce.pubkey
+        $ sudo rpm --import https://package.perforce.com/perforce.pubkey
 
     b. Add Perforce's yum repository to your configuration:
 
@@ -113,7 +113,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
     a. Add Perforce's packaging key to your RPM keyring:
 
-        $ sudo rpm --import http://package.perforce.com/perforce.pubkey
+        $ sudo rpm --import https://package.perforce.com/perforce.pubkey
 
     b. Add Perforce's yum repository to your configuration:
 
@@ -147,23 +147,23 @@ Download the GitSwarm EE package and install everything.
 
 1. For Ubuntu 12.04:
 
-    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.3.precise.amd64.deb
-    $ sudo dpkg -i perforce-gitswarm-ee-2015.3.precise.amd64.deb
+    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.precise.amd64.deb
+    $ sudo dpkg -i perforce-gitswarm-ee-2015.4.precise.amd64.deb
 
 2. For Ubuntu 14.04:
 
-    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.3.trusty.amd64.deb
-    $ sudo dpkg -i perforce-gitswarm-ee-2015.3.trusty.amd64.deb
+    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.trusty.amd64.deb
+    $ sudo dpkg -i perforce-gitswarm-ee-2015.4.trusty.amd64.deb
 
 3. For CentOS/RHEL 6:
 
-    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.3.el6.x86_64.rpm
-    $ sudo yum install perforce-gitswarm-ee-2015.3.el6.x86_64.rpm
+    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.el6.x86_64.rpm
+    $ sudo yum install perforce-gitswarm-ee-2015.4.el6.x86_64.rpm
 
 3. For CentOS/RHEL 7:
 
-    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.3.el7.x86_64.rpm
-    $ sudo yum install perforce-gitswarm-ee-2015.3.el7.x86_64.rpm
+    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.el7.x86_64.rpm
+    $ sudo yum install perforce-gitswarm-ee-2015.4.el7.x86_64.rpm
 
 
 ------------------------------------------------------------------------

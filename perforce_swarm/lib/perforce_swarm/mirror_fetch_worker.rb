@@ -44,7 +44,7 @@ module PerforceSwarm
       # if we have no slots, or no worthy repos, this is a no-op
       max_fetch_slots = config.git_fusion.fetch_worker['max_fetch_slots']
       limit           = max_fetch_slots - repo_stats.active_count
-      repo_stats.fetch_worthy(limit, config.git_fusion.fetch_worker['min_outdated']).each do |stat|
+      repo_stats.fetch_worthy(config.git_fusion.fetch_worker['min_outdated'], limit).each do |stat|
         import_job = fork do
           exec Shellwords.shelljoin([mirror_script, 'fetch', stat[:project].path_with_namespace + '.git'])
         end
@@ -96,9 +96,9 @@ module PerforceSwarm
         stats.select { |stat| !stat[:active] }
       end
 
-      def fetch_worthy(limit = nil, min_outdated = 0)
-        limit        ||= stats.length
-        limit          = 0 if limit < 0
+      def fetch_worthy(min_outdated = 300, limit = nil)
+        limit ||= stats.length
+        limit   = 0 if limit < 0
         inactive.select { |stat| !stat[:last_fetched] || stat[:last_fetched] < (Time.now - min_outdated) }.first(limit)
       end
 

@@ -4,7 +4,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     populate_repos
 
     begin
-      project        = Project.find(params['project_id'])
+      @project        = Project.find(params['project_id'])
       repo_creator   = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
       @path_template = repo_creator.namespace(project.namespace.name).project_path(project.path).depot_path + '/...'
 
@@ -14,7 +14,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
       #   * Git Fusion doesn't already have a config for this project
       #   * there is no content in our destination depot for project files
       fail 'This project appears to already be mirrored. Please contact your administrator if you believe this is ' \
-           'an error.' if project.git_fusion_repo.present?
+           'an error.' if @project.git_fusion_repo.present?
       repo_creator.ensure_depots_exist
       alternate_message = 'GitSwarm will be unable to mirror to this location, but you ' \
                           'can import the existing Git Fusion repository into a new project.'

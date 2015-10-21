@@ -3,8 +3,15 @@ require Rails.root.join('app', 'controllers', 'projects_controller')
 module PerforceSwarm
   module ProjectsControllerExtension
     def configure_mirroring
-      @errors = [] unless @errors
-      ensure_not_mirrored
+      @errors = []
+      # if the project is already mirrored, redirect back to the project page with a flash message
+      if @project.git_fusion_repo.present?
+        redirect_to(
+            project_path(@project),
+            alert: 'Project is already mirrored in Helix.'
+        )
+        return
+      end
 
       # users can only enable mirroring for an existing project at this point
       render 'perforce_swarm/git_fusion/projects/configure_mirroring'
@@ -12,18 +19,27 @@ module PerforceSwarm
 
     # actually performs the task of mirroring on the specified project and repo server
     def enable_mirroring
-      @errors = []
-      ensure_not_mirrored
+      # ensure we're not already mirrored
+      fail 'Project is already mirrored in Helix.' if @project.git_fusion_repo.present?
 
-      # pre-flight the specified Git Fusion repo
+      fusion_server = params['fusion_server']
+      repo_creator  = PerforceSwarm::GitFusion::RepoCreator.new(fusion_server)
+      repo_creator.namespace(@project.namespace.name).project_path(@project.path)
+
       # create the p4gf_config file, which creates the repo in Git Fusion
-      # if this was successful, modify the project to include the mirror URL
+      repo_creator.save
+
+      # modify the project to include the mirror URL
+      @project.update_column(:git_fusion_repo, 'mirror://' + fusion_server + '/' + repo_creator.repo_name)
+
       # kick off a background fetch operation
-      # any errors occurring in the above are shown on the configure_mirroring page
-      @errors << 'This is a potential error from configuring mirroring.'
-      redirect_to(
-          configure_mirroring_namespace_project_path(@project.namespace, @project)
-      )
+
+      fail 'Repo field updated to: ' + @project.git_fusion_repo
+    rescue => e
+      # any errors occurring in the above are shown on the configure_mirroring page, but if we've
+      # gotten as far as mirroring, this will cause a double redirect, so we hit the project details page
+      redirect_location = @project.git_fusion_repo.present? ? project_path(@project) : :back
+      redirect_to(redirect_location, alert: e.message)
     end
 
     def project_params
@@ -39,14 +55,6 @@ module PerforceSwarm
     end
 
     protected
-
-    def ensure_not_mirrored
-      # if the project is already mirrored, redirect back to the project page with a flash message
-      redirect_to(
-          project_path(@project),
-          notice: 'Project is already mirrored in Helix.'
-      ) if @project.git_fusion_repo.present?
-    end
 
     def param_from_string(str)
       case str

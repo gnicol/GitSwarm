@@ -35,13 +35,14 @@ class P4Helper
     @p4.charset='utf8' if @p4.server_unicode?
 
     @p4.run_login
-
     spec = p4.fetch_client
     spec['Root'] = @local_dir
     spec['View'] = [@depot_path + ' //'+client_name+'/...']
     @p4.save_client(spec)
+    sync
+  end
 
-    # And sync it.
+  def sync
     LOG.debug 'Syncing from ' + @depot_path + ' into ' + @local_dir
     @p4.run_sync('-f', '-q') # -q to stop it throwing a warning if no files exist under the depot path
   end

@@ -42,6 +42,10 @@ class Page
     @driver.find_elements(by, value).length > 0
   end
 
+  def page_has_text(text)
+    @driver.find_element(:tag_name, 'body').text.include?(text)
+  end
+
   # Method to be overridden by child classes to provide elements that should be
   # verified as on the page.  Child methods get the parent list and call super
   # to get the elements from all parent classes

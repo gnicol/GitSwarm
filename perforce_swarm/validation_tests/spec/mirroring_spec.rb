@@ -128,6 +128,40 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
+  context 'when I merge a branch into master' do
+    new_branch = unique_string
+    new_file = new_branch+'-file'
+    before do
+      LOG.log('Add a file to master branch so it exists')
+      create_file(git_dir, 'master-file')
+      @git.add_commit_push
+
+      LOG.log 'Branching new branch '+new_branch
+      @git.branch_and_checkout(new_branch)
+      create_file(git_dir, new_file)
+      LOG.log('Adding file to new branch '+new_file)
+      @git.add_commit_push
+    end
+
+    it 'gets pushed into Perforce' do
+      @p4.connect_and_sync
+      p4_file_from_git = p4_dir + '/' + new_file
+      LOG.log('Check the file does not exist in perforce before the branch is merged')
+      expect(File.exist?(p4_file_from_git)).to be false
+
+      branches_page = LoginPage.new(@driver,
+                                    CONFIG.get('gitswarm_url')).login(user, password).goto_branches_page(user, project)
+      branches = branches_page.available_branches
+      expect(branches.include?(new_branch)).to be true
+      LOG.log('Merge the branch')
+      branches_page.create_and_accept_merge_request(new_branch)
+
+      @p4.sync
+      LOG.log('Check the file exists in perforce after the branch is merged')
+      expect(File.exist?(p4_file_from_git)).to be true
+    end
+  end
+
   def create_user
     GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
                           CONFIG.get('gitswarm_username'),

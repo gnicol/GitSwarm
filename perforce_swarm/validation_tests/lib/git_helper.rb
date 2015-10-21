@@ -39,6 +39,7 @@ class GitHelper
     Dir.mkdir @local_dir_path unless Dir.exist?(@local_dir_path)
     @user = user
     @email = email
+    @current_branch = 'master'
   end
 
   def clone
@@ -59,11 +60,6 @@ class GitHelper
     Dir.chdir(@local_dir_path) { call_system(@git +' commit -m auto_message') }
   end
 
-  def push
-    LOG.debug 'Pushing to ' +@url
-    Dir.chdir(@local_dir_path) { call_system(@git + ' push') }
-  end
-
   def add_commit_push
     add
     commit
@@ -72,7 +68,33 @@ class GitHelper
 
   def pull
     LOG.debug 'pulling from ' +@url
-    Dir.chdir(@local_dir_path) { call_system(@git + ' pull ' + @url) }
+    Dir.chdir(@local_dir_path) { call_system(@git + ' pull origin ' + @current_branch) }
+  end
+
+  def push
+    LOG.debug 'Pushing to branch ' + @current_branch + ' at ' +@url
+    Dir.chdir(@local_dir_path) { call_system(@git + ' push origin ' + @current_branch) }
+  end
+
+  def branch(branchname)
+    LOG.debug 'branching to ' + branchname
+    Dir.chdir(@local_dir_path) { call_system(@git + ' branch ' + branchname) }
+  end
+
+  def checkout(branchname)
+    LOG.debug 'checking out ' + branchname
+    Dir.chdir(@local_dir_path) { call_system(@git + ' checkout ' + branchname) }
+    @current_branch = branchname
+  end
+
+  def branch_and_checkout(branchname)
+    branch(branchname)
+    checkout(branchname)
+  end
+
+  def checkout_and_pull(branchname)
+    checkout(branchname)
+    pull
   end
 
   private

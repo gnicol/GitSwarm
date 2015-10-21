@@ -1,4 +1,3 @@
-require_relative 'logged_in_page'
 require_relative '../page'
 
 class ProjectPage < Page

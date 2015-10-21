@@ -11,6 +11,17 @@ module PerforceSwarm
       PerforceSwarm::Mirror.fetch!(path_to_repo)
       super
     end
+
+    def commit_with_hooks(current_user, branch)
+      begin
+        socket_server = PerforceSwarm::MirrorLockSocketServer.new(path_to_repo)
+        socket_server.start
+        status = super
+      ensure
+        socket_server.stop if socket_server
+      end
+      status
+    end
   end
 end
 

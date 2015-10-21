@@ -88,16 +88,12 @@ module PerforceSwarm
         inactive.length
       end
 
-      def fetch_worthy_count
-        fetch_worthy.length
-      end
-
       # returns only stats representing mirrored repos that are not presently being fetched
       def inactive
         stats.select { |stat| !stat[:active] }
       end
 
-      def fetch_worthy(min_outdated = 300, limit = nil)
+      def fetch_worthy(min_outdated, limit = nil)
         limit ||= stats.length
         limit   = 0 if limit < 0
         inactive.select { |stat| !stat[:last_fetched] || stat[:last_fetched] < (Time.now - min_outdated) }.first(limit)

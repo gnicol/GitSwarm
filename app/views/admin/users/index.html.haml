@@ -33,6 +33,7 @@
       = form_tag admin_users_path, method: :get, class: 'form-inline' do
         .form-group
           = search_field_tag :name, params[:name], placeholder: 'Name, email or username', class: 'form-control'
+          = hidden_field_tag "filter", params[:filter]
         = button_tag class: 'btn btn-primary' do
           %i.fa.fa-search
       %hr
@@ -96,5 +97,5 @@
                 - if user.access_locked?
                   = link_to 'Unlock', unlock_admin_user_path(user), method: :put, class: "btn btn-xs btn-success", data: { confirm: 'Are you sure?' }
                 - if user.can_be_removed?
-                  = link_to 'Destroy', [:admin, user], data: { confirm: "USER #{user.name} WILL BE REMOVED! All tickets linked to this user will also be removed! Maybe block the user instead? Are you sure?" }, method: :delete, class: "btn btn-xs btn-remove"
+                  = link_to 'Destroy', [:admin, user], data: { confirm: "USER #{user.name} WILL BE REMOVED! All issues, merge requests and groups linked to this user will also be removed! Maybe block the user instead? Are you sure?" }, method: :delete, class: "btn btn-xs btn-remove"
     = paginate @users, theme: "gitlab"

@@ -9,7 +9,28 @@ class Settings < Settingslogic
       gitlab.port.to_i == (gitlab.https ? 443 : 80)
     end
 
-    private
+    # get host without www, thanks to http://stackoverflow.com/a/6674363/1233435
+    def get_host_without_www(url)
+      url = URI.encode(url)
+      uri = URI.parse(url)
+      uri = URI.parse("http://#{url}") if uri.scheme.nil?
+      host = uri.host.downcase
+      host.start_with?('www.') ? host[4..-1] : host
+    end
+
+    def build_gitlab_ci_url
+      if gitlab_on_standard_port?
+        custom_port = nil
+      else
+        custom_port = ":#{gitlab.port}"
+      end
+      [ gitlab.protocol,
+        "://",
+        gitlab.host,
+        custom_port,
+        gitlab.relative_url_root
+      ].join('')
+    end
 
     def build_gitlab_shell_ssh_path_prefix
       if gitlab_shell.ssh_port != 22
@@ -23,14 +44,12 @@ class Settings < Settingslogic
       end
     end
 
+    def build_base_gitlab_url
+      base_gitlab_url.join('')
+    end
+
     def build_gitlab_url
-      custom_port = gitlab_on_standard_port? ? nil : ":#{gitlab.port}"
-      [ gitlab.protocol,
-        "://",
-        gitlab.host,
-        custom_port,
-        gitlab.relative_url_root
-      ].join('')
+      (base_gitlab_url + [gitlab.relative_url_root]).join('')
     end
 
     # check that values in `current` (string or integer) is a contant in `modul`.
@@ -54,6 +73,17 @@ class Settings < Settingslogic
         value = modul.const_get(current.upcase) rescue default
       end
       value
+    end
+
+    private
+
+    def base_gitlab_url
+      custom_port = gitlab_on_standard_port? ? nil : ":#{gitlab.port}"
+      [ gitlab.protocol,
+        "://",
+        gitlab.host,
+        custom_port
+      ]
     end
   end
 end
@@ -79,6 +109,7 @@ if Settings.ldap['enabled'] || Rails.env.test?
     server['block_auto_created_users'] = false if server['block_auto_created_users'].nil?
     server['allow_username_or_email_login'] = false if server['allow_username_or_email_login'].nil?
     server['active_directory'] = true if server['active_directory'].nil?
+    server['attributes'] = {} if server['attributes'].nil?
     server['provider_name'] ||= "ldap#{key}".downcase
     server['provider_class'] = OmniAuth::Utils.camelize(server['provider_name'])
   end
@@ -114,6 +145,7 @@ Settings.gitlab['email_enabled'] ||= true if Settings.gitlab['email_enabled'].ni
 Settings.gitlab['email_from'] ||= "gitlab@#{Settings.gitlab.host}"
 Settings.gitlab['email_display_name'] ||= "GitLab"
 Settings.gitlab['email_reply_to'] ||= "noreply@#{Settings.gitlab.host}"
+Settings.gitlab['base_url']   ||= Settings.send(:build_base_gitlab_url)
 Settings.gitlab['url']        ||= Settings.send(:build_gitlab_url)
 Settings.gitlab['user']       ||= 'git'
 Settings.gitlab['user_home']  ||= begin
@@ -139,6 +171,24 @@ Settings.gitlab.default_projects_features['snippets']       = false if Settings.
 Settings.gitlab.default_projects_features['visibility_level']    = Settings.send(:verify_constant, Gitlab::VisibilityLevel, Settings.gitlab.default_projects_features['visibility_level'], Gitlab::VisibilityLevel::PRIVATE)
 Settings.gitlab['repository_downloads_path'] = File.absolute_path(Settings.gitlab['repository_downloads_path'] || 'tmp/repositories', Rails.root)
 Settings.gitlab['restricted_signup_domains'] ||= []
+Settings.gitlab['import_sources'] ||= ['github','bitbucket','gitlab','gitorious','google_code','fogbugz','git']
+
+
+#
+# CI
+#
+Settings['gitlab_ci'] ||= Settingslogic.new({})
+Settings.gitlab_ci['enabled']             = true if Settings.gitlab_ci['enabled'].nil?
+Settings.gitlab_ci['all_broken_builds']   = true if Settings.gitlab_ci['all_broken_builds'].nil?
+Settings.gitlab_ci['add_pusher']          = false if Settings.gitlab_ci['add_pusher'].nil?
+Settings.gitlab_ci['url']                 ||= Settings.send(:build_gitlab_ci_url)
+Settings.gitlab_ci['builds_path']         = File.expand_path(Settings.gitlab_ci['builds_path'] || "builds/", Rails.root)
+
+#
+# Reply by email
+#
+Settings['incoming_email'] ||= Settingslogic.new({})
+Settings.incoming_email['enabled'] = false if Settings.incoming_email['enabled'].nil?
 
 #
 # Gravatar
@@ -147,6 +197,7 @@ Settings['gravatar'] ||= Settingslogic.new({})
 Settings.gravatar['enabled']      = true if Settings.gravatar['enabled'].nil?
 Settings.gravatar['plain_url']  ||= 'http://www.gravatar.com/avatar/%{hash}?s=%{size}&d=identicon'
 Settings.gravatar['ssl_url']    ||= 'https://secure.gravatar.com/avatar/%{hash}?s=%{size}&d=identicon'
+Settings.gravatar['host']         = Settings.get_host_without_www(Settings.gravatar['plain_url'])
 
 #
 # GitLab Shell
@@ -169,7 +220,9 @@ Settings.gitlab_shell['ssh_path_prefix'] ||= Settings.send(:build_gitlab_shell_s
 #
 Settings['backup'] ||= Settingslogic.new({})
 Settings.backup['keep_time']  ||= 0
+Settings.backup['pg_schema']    = nil
 Settings.backup['path']         = File.expand_path(Settings.backup['path'] || "tmp/backups/", Rails.root)
+Settings.backup['archive_permissions']          ||= 0600
 Settings.backup['upload'] ||= Settingslogic.new({ 'remote_directory' => nil, 'connection' => nil })
 # Convert upload connection settings to use symbol keys, to make Fog happy
 if Settings.backup['upload']['connection']

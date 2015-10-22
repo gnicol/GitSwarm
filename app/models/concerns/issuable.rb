@@ -12,6 +12,7 @@ module Issuable
   included do
     belongs_to :author, class_name: "User"
     belongs_to :assignee, class_name: "User"
+    belongs_to :updated_by, class_name: "User"
     belongs_to :milestone
     has_many :notes, as: :noteable, dependent: :destroy
     has_many :label_links, as: :target, dependent: :destroy
@@ -139,6 +140,12 @@ module Issuable
     {
       object_kind: self.class.name.underscore,
       user: user.hook_attrs,
+      repository: {
+          name: project.name,
+          url: project.url_to_repo,
+          description: project.description,
+          homepage: project.web_url
+      },
       object_attributes: hook_attrs
     }
   end

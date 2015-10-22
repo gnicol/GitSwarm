@@ -10,6 +10,10 @@ class ProjectsController < ApplicationController
 
   layout :determine_layout
 
+  def index
+    redirect_to(current_user ? root_path : explore_root_path)
+  end
+
   def new
     @project = Project.new
   end
@@ -24,7 +28,7 @@ class ProjectsController < ApplicationController
     if @project.saved?
       redirect_to(
         project_path(@project),
-        notice: 'Project was successfully created.'
+        notice: "Project '#{@project.name}' was successfully created."
       )
     else
       render 'new'
@@ -36,11 +40,11 @@ class ProjectsController < ApplicationController
 
     respond_to do |format|
       if status
-        flash[:notice] = 'Project was successfully updated.'
+        flash[:notice] = "Project '#{@project.name}' was successfully updated."
         format.html do
           redirect_to(
             edit_project_path(@project),
-            notice: 'Project was successfully updated.'
+            notice: "Project '#{@project.name}' was successfully updated."
           )
         end
         format.js
@@ -82,6 +86,10 @@ class ProjectsController < ApplicationController
           if @project.empty_repo?
             render 'projects/empty'
           else
+            if current_user
+              @membership = @project.project_member_by_id(current_user.id)
+            end
+
             render :show
           end
         else
@@ -100,12 +108,12 @@ class ProjectsController < ApplicationController
     return access_denied! unless can?(current_user, :remove_project, @project)
 
     ::Projects::DestroyService.new(@project, current_user, {}).execute
-    flash[:alert] = 'Project deleted.'
+    flash[:alert] = "Project '#{@project.name}' was deleted."
 
     if request.referer.include?('/admin')
       redirect_to admin_namespaces_projects_path
     else
-      redirect_to dashboard_path
+      redirect_to dashboard_projects_path
     end
   rescue Projects::DestroyService::DestroyError => ex
     redirect_to edit_project_path(@project), alert: ex.message

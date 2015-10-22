@@ -1,3 +1,5 @@
+require 'gitlab/markdown'
+
 module Gitlab
   module Markdown
     # HTML filter that replaces merge request references with links. References
@@ -47,10 +49,11 @@ module Gitlab
 
             title = escape_once("Merge Request: #{merge_request.title}")
             klass = reference_class(:merge_request)
+            data  = data_attribute(project.id)
 
             url = url_for_merge_request(merge_request, project)
 
-            %(<a href="#{url}"
+            %(<a href="#{url}" #{data}
                  title="#{title}"
                  class="#{klass}">#{match}</a>)
           else
@@ -60,7 +63,7 @@ module Gitlab
       end
 
       def url_for_merge_request(mr, project)
-        h = Rails.application.routes.url_helpers
+        h = Gitlab::Application.routes.url_helpers
         h.namespace_project_merge_request_url(project.namespace, project, mr,
                                             only_path: context[:only_path])
       end

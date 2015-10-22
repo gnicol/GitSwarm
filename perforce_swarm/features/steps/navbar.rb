@@ -303,7 +303,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the user settings page' do
-    find(:css, '.page-title').should have_content('Profile')
+    find(:css, '.dashboard-menu').should have_content('Profile Settings')
   end
 
   step 'I should see the new project page' do
@@ -318,6 +318,12 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   step 'the title of the dropdown should be "Dashboard"' do
     page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').text.should eq('Dashboard')
+    end
+  end
+
+  step 'the title of the dropdown should be "Projects"' do
+    page.within '.navbar-gitlab .dashboard-menu' do
+      find(:css, '.dropdown-toggle').text.should eq('Projects')
     end
   end
 
@@ -356,6 +362,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I click on "My Settings" link' do
-    find(:xpath, "//a[@href='/profile']").click
+    page.within '.user-menu' do
+      find(:css, "a[href='/profile']").click
+    end
   end
 end

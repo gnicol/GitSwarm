@@ -83,7 +83,6 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
   step 'merge request "Dependency Fix" is mergeable' do
     merge_request = MergeRequest.find_by(title: 'Dependency Fix')
-    merge_request.project.satellite.create
     merge_request.mark_as_mergeable
   end
 
@@ -97,16 +96,6 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     page.find('.js-branch-fix').should have_content 'fix'
     project = Project.find_by(name: 'Shop')
     current_path.should eq namespace_project_branches_path(project.namespace, project)
-  end
-
-  step 'I accept this merge request' do
-    MergeRequests::AutoMergeService.any_instance.stub(
-      merge!: true
-    )
-
-    page.within '.mr-state-widget' do
-      click_button 'Accept Merge Request'
-    end
   end
 
   step 'I click link "All"' do

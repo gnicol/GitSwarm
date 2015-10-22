@@ -5,14 +5,15 @@ module PerforceSwarm
   # perforce_swarm directory for files
   module HelpControllerExtension
     def show
-      category = clean_path_info(path_params[:category])
-      file = path_params[:file]
+      @category = clean_path_info(path_params[:category])
+      @file = path_params[:file]
 
       respond_to do |format|
         format.any(:markdown, :md, :html) do
-          swarm_path    = Rails.root.join('perforce_swarm', 'doc-ce', category, "#{file}.md")
-          swarm_ee_path = Rails.root.join('perforce_swarm', 'doc-ee', category, "#{file}.md")
-          path          = Rails.root.join('doc', category, "#{file}.md")
+          # Note: We are purposefully NOT using `Rails.root.join`
+          swarm_path    = File.join(Rails.root, 'perforce_swarm', 'doc-ce', @category, "#{@file}.md")
+          swarm_ee_path = File.join(Rails.root, 'perforce_swarm', 'doc-ee', @category, "#{@file}.md")
+          path          = File.join(Rails.root, 'doc', @category, "#{@file}.md")
           if PerforceSwarm.ee? && File.exist?(swarm_ee_path)
             @markdown = File.read(swarm_ee_path)
             render 'show.html.haml'
@@ -20,7 +21,7 @@ module PerforceSwarm
             @markdown = File.read(swarm_path)
             render 'show.html.haml'
           elsif File.exist?(path)
-            @markdown = PerforceSwarm::Help.preprocess(category, file)
+            @markdown = PerforceSwarm::Help.preprocess(@category, @file)
             render 'show.html.haml'
           else
             # Force template to Haml
@@ -30,9 +31,10 @@ module PerforceSwarm
 
         # Allow access to images in the doc folder
         format.any(:png, :gif, :jpeg) do
-          swarm_path    = Rails.root.join('perforce_swarm', 'doc-ce', category, "#{file}.#{params[:format]}")
-          swarm_ee_path = Rails.root.join('perforce_swarm', 'doc-ee', category, "#{file}.#{params[:format]}")
-          path          = Rails.root.join('doc', category, "#{file}.#{params[:format]}")
+          # Note: We are purposefully NOT using `Rails.root.join`
+          swarm_path    = File.join(Rails.root, 'perforce_swarm', 'doc-ce', @category, "#{@file}.#{params[:format]}")
+          swarm_ee_path = File.join(Rails.root, 'perforce_swarm', 'doc-ee', @category, "#{@file}.#{params[:format]}")
+          path          = File.join(Rails.root, 'doc', @category, "#{@file}.#{params[:format]}")
           if PerforceSwarm.ee? && File.exist?(swarm_ee_path)
             send_file(swarm_ee_path, disposition: 'inline')
           elsif File.exist?(swarm_path)
@@ -53,6 +55,4 @@ end
 
 class HelpController
   prepend PerforceSwarm::HelpControllerExtension
-  skip_before_filter :authenticate_user!,
-                     :reject_blocked
 end

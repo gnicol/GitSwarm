@@ -17,6 +17,7 @@ require 'carrierwave/orm/activerecord'
 require 'file_size_validator'
 
 class Group < Namespace
+  include Gitlab::ConfigHelper
   include Referable
 
   has_many :group_members, dependent: :destroy, as: :source, class_name: 'GroupMember'
@@ -56,6 +57,12 @@ class Group < Namespace
     name
   end
 
+  def avatar_url(size = nil)
+    if avatar.present?
+      [gitlab_config.url, avatar.url].join
+    end
+  end
+
   def owners
     @owners ||= group_members.owners.map(&:user)
   end
@@ -70,8 +77,24 @@ class Group < Namespace
     add_users([user], access_level, current_user)
   end
 
+  def add_guest(user, current_user = nil)
+    add_user(user, Gitlab::Access::GUEST, current_user)
+  end
+
+  def add_reporter(user, current_user = nil)
+    add_user(user, Gitlab::Access::REPORTER, current_user)
+  end
+
+  def add_developer(user, current_user = nil)
+    add_user(user, Gitlab::Access::DEVELOPER, current_user)
+  end
+
+  def add_master(user, current_user = nil)
+    add_user(user, Gitlab::Access::MASTER, current_user)
+  end
+
   def add_owner(user, current_user = nil)
-    self.add_user(user, Gitlab::Access::OWNER, current_user)
+    add_user(user, Gitlab::Access::OWNER, current_user)
   end
 
   def has_owner?(user)

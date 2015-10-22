@@ -25,52 +25,61 @@
       %hr
 
       .project-import.js-toggle-container
-        .form-group.external-import
+        .form-group
           %label.control-label Import project from
           .col-sm-10
             - if github_import_enabled?
-              = link_to status_import_github_path, class: 'btn' do
-                %i.fa.fa-github
-                GitHub
-            - else
-              = link_to '#', class: 'how_to_import_link light btn' do
-                %i.fa.fa-github
-                GitHub
-              = render 'github_import_modal'
-
+              - if github_import_configured?
+                = link_to status_import_github_path, class: 'btn import_github' do
+                  %i.fa.fa-github
+                  GitHub
+              - else
+                = link_to '#', class: 'how_to_import_link light btn import_github' do
+                  %i.fa.fa-github
+                  GitHub
+                = render 'github_import_modal'
 
             - if bitbucket_import_enabled?
-              = link_to status_import_bitbucket_path, class: 'btn' do
-                %i.fa.fa-bitbucket
-                Bitbucket
-            - else
-              = link_to '#', class: 'how_to_import_link light btn' do
-                %i.fa.fa-bitbucket
-                Bitbucket
-              = render 'bitbucket_import_modal'
+              - if bitbucket_import_configured?
+                = link_to status_import_bitbucket_path, class: 'btn import_bitbucket', "data-no-turbolink" => "true" do
+                  %i.fa.fa-bitbucket
+                  Bitbucket
+              - else
+                = link_to status_import_bitbucket_path, class: 'how_to_import_link light btn import_bitbucket', "data-no-turbolink" => "true" do
+                  %i.fa.fa-bitbucket
+                  Bitbucket
+                = render 'bitbucket_import_modal'
 
-            - unless request.host == 'gitlab.com'
-              - if gitlab_import_enabled?
-                = link_to status_import_gitlab_path, class: 'btn' do
+            - if gitlab_import_enabled?
+              - if gitlab_import_configured?
+                = link_to status_import_gitlab_path, class: 'btn import_gitlab' do
                   %i.fa.fa-heart
                   GitLab.com
               - else
-                = link_to '#', class: 'how_to_import_link light btn' do
+                = link_to status_import_gitlab_path, class: 'how_to_import_link light btn import_gitlab' do
                   %i.fa.fa-heart
                   GitLab.com
                 = render 'gitlab_import_modal'
 
-            = link_to new_import_gitorious_path, class: 'btn' do
-              %i.icon-gitorious.icon-gitorious-small
-              Gitorious.org
+            - if gitorious_import_enabled?
+              = link_to new_import_gitorious_path, class: 'btn import_gitorious' do
+                %i.icon-gitorious.icon-gitorious-small
+                Gitorious.org
 
-            = link_to new_import_google_code_path, class: 'btn' do
-              %i.fa.fa-google
-              Google Code
+            - if google_code_import_enabled?
+              = link_to new_import_google_code_path, class: 'btn import_google_code' do
+                %i.fa.fa-google
+                Google Code
 
-            = link_to "#", class: 'btn js-toggle-button generic-git-import' do
-              %i.fa.fa-git
-              %span Any repo by URL
+            - if fogbugz_import_enabled?
+              = link_to new_import_fogbugz_path, class: 'btn import_fogbugz' do
+                %i.fa.fa-bug
+                Fogbugz
+
+            - if git_import_enabled?
+              = link_to "#", class: 'btn js-toggle-button import_git' do
+                %i.fa.fa-git
+                %span Any repo by URL
 
         .js-toggle-content.hide
           .form-group.import-url-data

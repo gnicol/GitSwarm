@@ -1,38 +1,5 @@
 /* Custom navbar for our NavBar */
-header.navbar-gitlab .container {
-  /* Swarm Logo */
-  .header-logo {
-    height: 44px;
-    margin-right: 0;
-
-    a {
-      padding: 0 4px;
-      .brand-logo {
-        float: left;
-        background: url("data:image/png;charset=utf-8;base64,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") no-repeat center center;
-        height: 44px;
-        width: 44px;
-      }
-      h3 {
-        line-height: 44px;
-      }
-    }
-  }
-
-  .header-content {
-    height: 44px;
-    padding-right: 15px;
-  }
-
-  .search {
-    margin-top: 8px;
-  }
-
-  /* Fix Navbar height */
-  .header-logo a {
-    height: 44px;
-  }
-
+header.navbar-gitlab .container-fluid {
   /* Style the dashboard title and dropdown */
   .dashboard-menu {
     position: relative;
@@ -54,13 +21,8 @@ header.navbar-gitlab .container {
 
     .title {
       max-width: 100%;
-      float: none;
-      position: static;
-      height: 44px;
-      margin: 0;
       padding-left: 10px;
       padding-right: 10px;
-      line-height: 44px;
     }
 
     .caret {
@@ -89,8 +51,8 @@ header.navbar-gitlab .container {
   .nav {
     > li {
       > a {
-        padding: 6px 14px;
-        line-height: 32px;
+        padding: 6px 21px;
+        line-height: 46px;
         background-color: transparent;
         margin: 0;
         border-radius: 0;
@@ -112,11 +74,11 @@ header.navbar-gitlab .container {
       }
 
       .profile-pic {
-        padding: 9px 5px 9px 9px !important;
-        line-height: 24px;
+        padding: 9px 6px 9px 14px !important;
+        line-height: 38px;
         margin-left: 0;
         width: auto;
-        height: 44px;
+        height: 58px;
         top: 0;
         img {
           width: 26px;

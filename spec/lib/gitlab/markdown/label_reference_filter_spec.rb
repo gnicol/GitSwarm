@@ -25,9 +25,12 @@ module Gitlab::Markdown
       expect(doc.css('a').first.attr('class')).to eq 'gfm gfm-label'
     end
 
-    it 'includes an optional custom class' do
-      doc = filter("Label #{reference}", reference_class: 'custom')
-      expect(doc.css('a').first.attr('class')).to include 'custom'
+    it 'includes a data-project-id attribute' do
+      doc = filter("Label #{reference}")
+      link = doc.css('a').first
+
+      expect(link).to have_attribute('data-project-id')
+      expect(link.attr('data-project-id')).to eq project.id.to_s
     end
 
     it 'supports an :only_path context' do

@@ -7,7 +7,8 @@ describe API::API, api: true  do
   let(:user2) { create(:user) }
   let(:user3) { create(:user) }
   let(:admin) { create(:admin) }
-  let!(:group1) { create(:group) }
+  let(:avatar_file_path) { File.join(Rails.root, 'spec', 'fixtures', 'banana_sample.gif') }
+  let!(:group1) { create(:group, avatar: File.open(avatar_file_path)) }
   let!(:group2) { create(:group) }
 
   before do
@@ -135,7 +136,7 @@ describe API::API, api: true  do
 
       it "should not remove a group if not an owner" do
         user4 = create(:user)
-        group1.add_user(user4, Gitlab::Access::MASTER)
+        group1.add_master(user4)
         delete api("/groups/#{group1.id}", user3)
         expect(response.status).to eq(403)
       end

@@ -7,8 +7,7 @@ class TrendingProjectsFinder
     # Determine trending projects based on comments count
     # for period of time - ex. month
     projects.joins(:notes).where('notes.created_at > ?', start_date).
-      select("projects.*, count(notes.id) as ncount").
-      group("projects.id").reorder("ncount DESC")
+      group("projects.id").reorder("count(notes.id) DESC")
   end
 
   private

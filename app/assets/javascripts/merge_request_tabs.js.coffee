@@ -49,12 +49,6 @@ class @MergeRequestTabs
     # Store the `location` object, allowing for easier stubbing in tests
     @_location = location
 
-    switch @opts.action
-      when 'commits'
-        @commitsLoaded = true
-      when 'diffs'
-        @diffsLoaded = true
-
     @bindEvents()
     @activateTab(@opts.action)
 
@@ -71,6 +65,11 @@ class @MergeRequestTabs
       @loadDiff($target.attr('href'))
 
     @setCurrentAction(action)
+
+  scrollToElement: (container) ->
+    if window.location.hash
+      top = $(container + " " + window.location.hash).offset().top
+      $('body').scrollTo(top)
 
   # Activate a tab based on the current action
   activateTab: (action) ->
@@ -102,7 +101,7 @@ class @MergeRequestTabs
     action = 'notes' if action == 'show'
 
     # Remove a trailing '/commits' or '/diffs'
-    new_state = @_location.pathname.replace(/\/(commits|diffs)\/?$/, '')
+    new_state = @_location.pathname.replace(/\/(commits|diffs)(\.html)?\/?$/, '')
 
     # Append the new action if we're on a tab other than 'notes'
     unless action == 'notes'
@@ -128,23 +127,28 @@ class @MergeRequestTabs
         document.getElementById('commits').innerHTML = data.html
         $('.js-timeago').timeago()
         @commitsLoaded = true
+        @scrollToElement(".commits")
 
   loadDiff: (source) ->
     return if @diffsLoaded
 
     @_get
-      url: "#{source}.json"
+      url: "#{source}.json" + @_location.search
       success: (data) =>
         document.getElementById('diffs').innerHTML = data.html
         @diffsLoaded = true
+        @scrollToElement(".diffs")
 
-  toggleLoading: ->
-    $('.mr-loading-status .loading').toggle()
+  # Show or hide the loading spinner
+  #
+  # status - Boolean, true to show, false to hide
+  toggleLoading: (status) ->
+    $('.mr-loading-status .loading').toggle(status)
 
   _get: (options) ->
     defaults = {
-      beforeSend: @toggleLoading
-      complete: @toggleLoading
+      beforeSend: => @toggleLoading(true)
+      complete:   => @toggleLoading(false)
       dataType: 'json'
       type: 'GET'
     }

@@ -92,7 +92,6 @@ describe PerforceSwarm::GitFusionController, type: :controller do
       }
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
       # create our user
-      
       get(:existing_project, project_id: project.id)
       expect(response).to be_success
       expect(response.body).to include("//depots/projects/#{project.namespace.name}/#{project.path}/...")

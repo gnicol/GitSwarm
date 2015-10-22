@@ -1,0 +1,59 @@
+.git-fusion-import-data
+  - if !@errors.empty?
+    .repo-warning.slead
+      %h4 There was an error communicating with Helix Git Fusion:
+      = @errors.first
+      Please see
+      = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#known-issues'
+      for help.
+  - else
+    - repos_options = git_fusion_repos(@repos)
+    .git-fusion-radios
+      .radio
+        = label_tag do
+          = radio_button_tag(:git_fusion_auto_create, 'nil', true)
+          .option-title
+            Not mirrored.
+          .option-descr
+            Your work will only be stored in Helix GitSwarm.
+            %br
+            A copy will not be replicated to/from the Helix Versioning Engine (P4D).
+      - auto_create_enabled = @depot_exists && @auto_create_errors.empty?
+      .radio{:class => ("disabled" unless auto_create_enabled)}
+        = label_tag do
+          = radio_button_tag(:git_fusion_auto_create, true, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
+          .option-title
+            Create a Helix GitSwarm project to mirror.
+            - unless auto_create_enabled
+              %i.fa.fa-warning
+          .option-descr
+            - if auto_create_enabled
+              Will create a new Helix GitSwarm project in the Helix Versioning Engine (P4D) under:
+              %div
+                %code.auto-create-path #{@path_template}
+            - elsif !@auto_create_errors.empty?
+              Convention-based repository creation is unavailable:
+              %br
+              = @auto_create_errors.first
+              Please see
+              = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#convention-based-repository-configuration'
+              for help.
+            - elsif !@depot_exists
+              Configured project depot #{@project_depot.inspect} is missing.
+              Please see
+              = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + 'convention-based-repository-configuration'
+              for help.
+      .radio{:class => ("disabled" if @repos.empty?)}
+        = label_tag do
+          = radio_button_tag(:git_fusion_auto_create, false, false, disabled: @repos.empty?, 'data-keep-disabled' => @repos.empty?)
+          .option-title
+            Mirror an existing repository.
+          .option-descr
+            - if @repos.empty?
+              .repo-warning.slead
+                Although Helix Git Fusion is configured, there are no repositories available for import.
+            - else
+              Will mirror an existing Helix project.
+              .repo-select.form-inline.control-group
+                Repository:
+                = select_tag(:git_fusion_repo_name, repos_options, class: 'select2 span2', disabled: 'true')

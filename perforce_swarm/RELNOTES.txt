@@ -1,7 +1,7 @@
                              Release Notes for
                               Helix GitSwarm
 
-                              Version 2015.3
+                              Version 2015.4
 
 Introduction
 
@@ -22,7 +22,7 @@ Introduction
 
 Documentation
 
-    GitSwarm Release 2015.3 documentation is included in the distribution and
+    GitSwarm Release 2015.4 documentation is included in the distribution and
     can be accessed from within GitSwarm from the "?" menu on the top toolbar
 
 Supported Client Browsers
@@ -61,6 +61,104 @@ Known Issues
       Red Hat Enterprise Linux 7.
 
 ---------------------------------------------------------------------------
+
+Major new functionality in 2015.3
+
+    #8491fa96, #d307adc4, #eb9349ae, #fc04a46a (PGL-841, PGL-842, PGL-849, PGL-859, PGL-860, PGL-861)
+        Introduced a new all-in-one package that includes a default Helix Server for trying out the product
+
+    #a8940a55, #5fe7603f (PGL-993, PGL-997, PGL-1043)
+        Add configuration options for connecting to multiple Git Fusion Servers
+
+    #61ff0890, #93bd4d8a, #cf5ff0c8 (PGL-995, PGL-996, PGL-998, PGL-999, PGL-1050)
+        Add support for creating new repos in Git Fusion when creating a new project
+
+    GitLab 7.13
+        - Allow users to send abuse reports
+        - Support commenting on diffs in side-by-side mode (Stan Hu)
+        - Allow users to customize their default Dashboard page.
+        - Reporter role can manage issue tracker now: edit any issue, set assignee or milestone and manage labels
+        - Redesign project page. Show README as default instead of activity. Move project activity to separate page
+
+Minor new functionality in 2015.3
+
+    #2834d83c, #65e0d404 (PGL-992)
+        Added support for a global Git Fusion config section for setting defaults across multiple Git Fusion servers
+
+    #562da480, #3fd23a8b (PGL-1016)
+        Provided a check for determining if your connected Git Fusion servers meet our minimum version requirements
+
+    #a4490a66 (PGL-1033)
+        When connecting a new Git Fusion server, we add the server to the ssh trust list the first time it is used
+
+    #40b18cb3 (PGL-1034, PGL-1054, PGL-1078)
+        Improved error messages in the UI when trying to create a mirrored project
+
+    #f8311f34 (PGL-1096)
+        Increased our merge timeout values so mirrored merges have a bit more time
+
+    GitLab 7.13
+        - Add admin_merge_request ability to Developer level and up
+        - Show the first tab automatically on MergeRequests#new
+        - Only enable HSTS header for HTTPS and port 443 (Stan Hu)
+        - Add branch switching support for graphs (Daniel Gerhardt)
+        - Add support for unlocking users in admin settings (Stan Hu)
+        - Add Irker service configuration options (Stan Hu)
+        - Add `two_factor_enabled` field to admin user API (Stan Hu)
+        - Admin can edit and remove user identities
+        - Convert CRLF newlines to LF when committing using the web editor.
+        - API request /projects/:project_id/merge_requests?state=closed will return only closed merge requests without merged one. If you need ones that were merged - use state=merged.
+        - Allow Administrators to filter the user list by those with or without Two-factor Authentication enabled.
+        - Show a user's Two-factor Authentication status in the administration area.
+        - Better performance for pages with events list, issues list and commits list
+        - Allow users to be blocked and unblocked via the API
+        - Use native Postgres database cleaning during backup restore
+        - Make left menu more hierarchical and less contextual by adding back item at top
+        - Allow administrators to disable 2FA for a specific user
+
+Bugs fixed in 2015.3
+
+    #b480a7e7
+        Fixed a race condition during setup of the database and the database user
+
+    #61336ea4 (PGL-1007)
+        Fixed an issue where certain URL parameters broke the version check
+
+    #42546246 (PGL-816, PGL-817)
+        Fixed an issue where check for updates status changes would cause a page reload
+
+    GitLab 7.13
+        - Fix bug causing Bitbucket importer to crash when OAuth application had been removed.
+        - Fix Error 500 when browsing projects with no HEAD (Stan Hu)
+        - Fix labels / assignee / milestone for the merge requests when issues are disabled
+        - Fix: Label modifications are not reflected in existing notes and in the issue list
+        - Fix: Label not shown in the Issue list, although it's set through web interface
+        - Fix: Group/project references are linked incorrectly
+        - Fix of migration: Check if session_expire_delay column exists before adding the column
+        - Fix: ActionView::Template::Error
+        - Fix: "Create Merge Request" isn't always shown in event for newly pushed branch
+        - Fix bug causing "Remove source-branch" option not to work for merge requests from the same project.
+        - Render Note field hints consistently for "new" and "edit" forms
+        - Remove repository graph log to fix slow cache updates after push event (Stan Hu)
+        - Fix user autocomplete for unauthenticated users accessing public projects (Stan Hu)
+        - Fix redirection to home page URL for unauthorized users (Daniel Gerhardt)
+        - Fix external issue tracker hook/test for HTTPS URLs (Daniel Gerhardt)
+        - Remove link leading to a 404 error in Deploy Keys page (Stan Hu)
+        - Fix order of issues imported from GitHub (Hiroyuki Sato)
+        - Bump rugments to 1.0.0beta8 to fix C prototype function highlighting (Jonathon Reinhart)
+        - Fix Merge Request webhook to properly fire "merge" action when accepted from the web UI
+        - Fix invalid timestamps in RSS feeds (Rowan Wookey)
+        - Fix downloading of patches on public merge requests when user logged out (Stan Hu)
+        - Fix Error 500 when relative submodule resolves to a namespace that has a different name from its path (Stan Hu)
+        - Extract the longest-matching ref from a commit path when multiple matches occur (Stan Hu)
+        - Fix JavaScript error when clicking on the comment button on a diff line that has a comment already (Stan Hu)
+        - Return 40x error codes if branch could not be deleted in UI (Stan Hu)
+        - Update ssl_ciphers in Nginx example to remove DHE settings. This will deny forward secrecy for Android 2.3.7, Java 6 and OpenSSL 0.9.8
+        - Users with guest access level can not set assignee, labels or milestones for issue and merge request
+        - Correctly show anonymous authorized applications under Profile > Applications.
+        - A fork can’t have a visibility level that is greater than the original project.
+        - Faster code search in repository and wiki. Fixes search page timeout for big repositories
+        - Add error message for SSH key linebreaks
 
 Major new functionality in 2015.2
 
@@ -147,7 +245,7 @@ Credits
     DJ Mountney, Elliot Wiltshire, Geoff Nicol, Jayesh Mistry,
     Jan Van Uytven, Elizabeth Hale, Porus Patell, Tony Kim, Ewan Edwards,
     Sean Ardley, Russ Tremain, Murtaza Amiji, Jason Novecosky, Michael Davies,
-    Janet Taylor, Darrell Robins, Scott Wellard, Patrycja Tomiak, and
-    Samuel Penn.
+    Janet Taylor, Darrell Robins, Scott Wellard, Patrycja Tomiak, Samuel Penn,
+    David Birch, and Martin Phillips.
 
 END

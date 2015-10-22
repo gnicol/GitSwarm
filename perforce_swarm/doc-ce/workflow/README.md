@@ -8,7 +8,7 @@
 - [Importing into GitSwarm](importing/README.md)
 - [Keyboard shortcuts](shortcuts.md)
 - [Labels](labels.md)
-- [Notifications](notifications.md)
+- [Notification emails](notifications.md)
 - [Project Features](project_features.md)
 - [Project forking workflow](forking_workflow.md)
 - [Protected branches](protected_branches.md)

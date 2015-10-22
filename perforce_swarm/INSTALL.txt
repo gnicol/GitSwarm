@@ -1,12 +1,12 @@
                        Installation Instructions for
                               Helix GitSwarm
 
-                              Version 2015.3
+                              Version 2015.4
 
 Introduction
 
     This document describes the installation and initial configuration
-    process for Helix GitSwarm release 2015.3.
+    process for Helix GitSwarm release 2015.4.
 
     * Note, installing and configuring GitSwarm is a System Administrator
       function and requires root access.
@@ -18,7 +18,7 @@ Hardware Requirements
 Supported Operating System Platforms
 
     * Ubuntu 12.04 or 14.04
-    * CentOS 6.6 or 7
+    * CentOS 6.7 or 7
 
 
 Upgrading
@@ -43,12 +43,18 @@ Note: If you install Postfix to send email, please select Internet Site
       configure a custom SMTP server. Do not use Exim to send email from
       GitSwarm.
 
-1. For Ubuntu:
+      We advise installing GitSwarm on a fully up-to-date operating system. We've
+      included the system specific upgrade commands below.
 
+1. For Ubuntu (12.04 and 14.04):
+
+   $ sudo apt-get update
+   $ sudo apt-get upgrade
    $ sudo apt-get install curl openssh-server ca-certificates postfix
 
 2. For CentOS/RHEL 6:
 
+   $ sudo yum update
    $ sudo yum install curl openssh-server postfix cronie
    $ sudo service postfix start
    $ sudo chkconfig postfix on
@@ -59,6 +65,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
 3. For CentOS/RHEL 7:
 
+   $ sudo yum update
    $ sudo yum install curl openssh-server
    $ sudo systemctl enable sshd
    $ sudo systemctl start sshd
@@ -73,28 +80,12 @@ Note: If you install Postfix to send email, please select Internet Site
 
 
 ------------------------------------------------------------------------
-GitSwarm Installation
+Add the Perforce package server and install GitSwarm
 ------------------------------------------------------------------------
 
-1. For Ubuntu 12.04:
+1. For all supported platforms:
 
-   $ curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.ubuntu12x86_64/perforce-gitswarm-2015.3.precise.amd64.deb
-   $ sudo dpkg -i perforce-gitswarm-2015.3.precise.amd64.deb
-
-2. For Ubuntu 14.04:
-
-   $ curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.ubuntu14x86_64/perforce-gitswarm-2015.3.trusty.amd64.deb
-   $ sudo dpkg -i perforce-gitswarm-2015.3.trusty.amd64.deb
-
-3. For CentOS/RHEL 6:
-
-   $ curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.centos6x86_64/perforce-gitswarm-2015.3.el6.x86_64.rpm
-   $ sudo rpm -i perforce-gitswarm-2015.3.el6.x86_64.rpm
-
-4. For CentOS/RHEL 7:
-
-   $ curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.centos7x86_64/perforce-gitswarm-2015.3.el7.x86_64.rpm
-   $ sudo rpm -i perforce-gitswarm-2015.3.el7.x86_64.rpm
+   $ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
 
 
 

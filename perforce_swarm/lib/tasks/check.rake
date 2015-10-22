@@ -24,12 +24,12 @@ namespace :gitlab do
       end
       op.parse!(ARGV)
 
-      PerforceSwarm::GitFusion.validate_entries(min_version) do |result|
+      PerforceSwarm::GitlabConfig.new.git_fusion.validate_entries(min_version) do |result|
         if !result[:valid] && result[:outdated]
           display_outdated_version_info(result[:config]['url'], result[:version], min_version)
           outdated = true
         elsif !result[:valid]
-          display_error(result[:config]['url'], result[:error])
+          display_warning(result[:config]['url'], result[:error])
         else
           display_success_info(result[:config]['url'], result[:version]) unless quiet
         end
@@ -37,20 +37,20 @@ namespace :gitlab do
       exit(66) if outdated
     end
 
-    def display_error(url, message)
-      puts "Could not connect to GitFusion instance at #{url.white}.".red + "Error: #{message}.".red
-      puts "\tPlease update /etc/gitswarm/gitswarm.rb and re-run 'sudo gitswarm-ctl reconfigure'.".red
+    def display_warning(url, message)
+      puts "Could not connect to GitFusion instance at #{url.to_s.white}.".yellow + " Message: #{message}.".yellow
+      puts "\tPlease update /etc/gitswarm/gitswarm.rb and re-run 'sudo gitswarm-ctl reconfigure'.".yellow
       puts ''
     end
 
     def display_outdated_version_info(url, version, min_version)
-      puts "Git Fusion instance at #{url.white}".red + " is in an outdated version: #{version.yellow}".red
-      puts "\tMin version required: #{min_version.yellow}".red
+      puts "Git Fusion instance at #{url.to_s.white}".red + " is in an outdated version: #{version.to_s.yellow}".red
+      puts "\tMin version required: #{min_version.to_s.yellow}".red
       puts ''
     end
 
     def display_success_info(url, version)
-      puts "Git Fusion instance at #{url.white}".green + " is in version: #{version.yellow}".green
+      puts "Git Fusion instance at #{url.to_s.white}".green + " is in version: #{version.to_s.yellow}".green
       puts ''
     end
   end
@@ -64,14 +64,14 @@ namespace :perforce_swarm do
 
     define_method :start_checking do |component|
       component.gsub!(/GitLab/, 'GitSwarm')
-      puts "Checking #{component.yellow} ..."
+      puts "Checking #{component.to_s.yellow} ..."
       puts ''
     end
 
     define_method :finished_checking do |component|
       component.gsub!(/GitLab/, 'GitSwarm')
       puts ''
-      puts "Checking #{component.yellow} ... #{'Finished'.green}"
+      puts "Checking #{component.to_s.yellow} ... #{'Finished'.green}"
       puts ''
     end
   end

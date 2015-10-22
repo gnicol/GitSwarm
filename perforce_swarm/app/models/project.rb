@@ -10,12 +10,44 @@ module PerforceSwarm
     def git_fusion_import?
       git_fusion_repo.present?
     end
+
+    def create_repository
+      # Attempt to submit the config for a new GitFusion repo to perforce if
+      # git_fusion_auto_create was set on this project
+      if git_fusion_entry.present? && git_fusion_auto_create
+        begin
+          creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace.name, path)
+          creator.save
+
+          # GitFusion Repo has been created, flag this project for import
+          # We choose to always import from GitFusion because there may have
+          # been perforce changes that will come down, even on a new repo
+          self.git_fusion_repo = "mirror://#{git_fusion_entry}/#{creator.repo_name}"
+          save
+
+          true
+        rescue ::P4Exception, PerforceSwarm::GitFusion::RepoCreatorError => e
+          errors.add(:base, e.message)
+          return false
+        end
+      end
+      super
+    end
   end
 end
 
 class Project < ActiveRecord::Base
-  validates :git_fusion_repo, length: { maximum: 255 }, allow_blank: true
+  validates :git_fusion_repo,
+            length: { maximum: 255 },
+            allow_blank: true,
+            allow_nil: true,
+            format: { with: %r{\Amirror://([^/]+)/([^/]+)\z},
+                      message: 'must be a valid Git Fusion repo to enable mirroring.' },
+            if: ->(project) { project.git_fusion_import? }
   prepend PerforceSwarm::ProjectExtension
+
+  attr_accessor :git_fusion_auto_create
+  attr_accessor :git_fusion_entry
 
   # The rspec tests use 'allow_any_instance_of' on Project to stub this method out during testing.
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.

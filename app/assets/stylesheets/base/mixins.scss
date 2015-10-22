@@ -55,8 +55,11 @@
 }
 
 @mixin md-typography {
-  font-size: 15px;
-  line-height: 1.5;
+  color: $md-text-color;
+
+  a {
+    color: $md-link-color;
+  }
 
   img {
     max-width: 100%;
@@ -166,7 +169,7 @@
   padding: 0px;
   list-style: none;
 
-  li {
+  > li {
     padding: 10px 0;
     border-bottom: 1px solid #EEE;
     overflow: hidden;
@@ -174,7 +177,7 @@
     margin: 0px;
 
     &:last-child {
-      border:none
+      border-bottom: none;
     }
 
     &.active {
@@ -190,8 +193,61 @@
 
     &.light {
       a {
-        color: #777;
+        color: $gl-gray;
       }
+    }
+  }
+}
+
+@mixin input-big {
+  height: 36px;
+  padding: 5px 10px;
+  font-size: 16px;
+  line-height: 24px;
+  color: #7f8fa4;
+  background-color: #fff;
+  border-color: #e7e9ed;
+}
+
+@mixin btn-big {
+  height: 36px;
+  padding: 5px 10px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@mixin nav-menu {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  margin-top: 5px;
+  height: 56px;
+
+  li {
+    display: inline-block;
+
+    a {
+      padding: 14px;
+      font-size: 17px;
+      line-height: 28px;
+      color: #7f8fa4;
+      border-bottom: 2px solid transparent;
+
+      &:hover, &:active, &:focus {
+        text-decoration: none;
+      }
+    }
+
+    &.active a {
+      color: #4c4e54;
+      border-bottom: 2px solid #1cacfc;
+    }
+
+    .badge {
+      font-weight: normal;
+      background-color: #fff;
+      background-color: #eee;
+      color: #78a;
     }
   }
 }

@@ -1,33 +1,24 @@
-# Updating GitSwarm EE
+# Updating GitSwarm EE to 2015.4
 
-For this first release of GitSwarm EE, no update process is currently
-available.
+1.  **Download the 2015.4 GitSwarm EE package and install it.**
 
-However, if you have GitSwarm 2015.1 installed, follow these steps to
-update to GitSwarm EE 2015.2:
+    Following the [installation steps](../install/README.md) for 2015.4 will upgrade your previous version to 2015.4.
+    It includes adding the Perforce package repository to your package manager, and installing the new dependencies.
 
-1.  **Uninstall GitSwarm:**
+1.  **Check the application status.**
 
-    1.  **Stop GitSwarm and remove its supervisory processes.**
+    Check if GitSwarm EE and its environment are configured correctly:
+    ```
+sudo gitswarm-rake gitswarm:check
+    ```
 
-        ```
-sudo gitswarm-ctl uninstall
-        ```
+# New configuration options
 
-    1.  **Uninstall the GitSwarm package.**
+*  **Discovering new config options**
 
-        1.  **For Ubuntu:**
-
-            ```
-sudo dpkg --purge perforce-gitswarm
-            ```
-
-        1.  **For CentOS/RHEL:**
-
-            ```
-sudo rpm -e perforce-gitswarm
-            ```
-
-2.  **Install GitSwarm EE:**
-
-    Follow the [installation steps](../install/README.md)
+    GitSwarm EE doesn't update your `/etc/gitswarm/gitswarm.rb` for you, but we do include an updated example template:
+    `/opt/gitswarm/etc/gitswarm.rb.template`. You can see what sort of config options have been changed since last
+    release by running
+    ```
+sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
+    ```

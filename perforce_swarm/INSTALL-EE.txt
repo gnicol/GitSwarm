@@ -1,0 +1,202 @@
+                       Installation Instructions for
+                     Helix GitSwarm Enterprise Edition
+
+                              Version 2015.4
+
+Introduction
+
+    This document describes the installation and initial configuration
+    process for Helix GitSwarm EE release 2015.4.
+
+    * Note, installing and configuring GitSwarm EE is a System Administrator
+      function and requires root access.
+
+Hardware Requirements
+
+    Please see the separate "requirements" file, a peer to this file.
+
+Supported Operating System Platforms
+
+    * Ubuntu 12.04 or 14.04
+    * CentOS 6.7 or 7
+
+
+Upgrading
+
+    Please see the separate "upgrade" file, a peer to this file.
+
+Overview
+
+    To get the GitSwarm EE web application installed and configured, this
+    document will cover these main areas:
+
+    * Install Dependencies
+    * GitSwarm Installation
+    * Basic Configuration
+
+------------------------------------------------------------------------
+Install Dependencies
+------------------------------------------------------------------------
+
+Note: If you install Postfix to send email, please select Internet Site
+      during setup. Instead of using Postfix, you can also use Sendmail or
+      configure a custom SMTP server. Do not use Exim to send email from
+      GitSwarm.
+
+      We advise installing GitSwarm EE on a fully up-to-date operating system. We've
+      included the system specific upgrade commands below.
+
+1. For Ubuntu 12.04:
+
+    a. Add Perforce's packaging key to your APT keyring:
+
+        $ wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+
+    b. Add Perforce's repository to your apt configuration:
+
+        Create a file called /etc/apt/sources.list.d/perforce.sources.list with the following line:
+
+        deb http://package.perforce.com/apt/ubuntu precise release
+
+    c. Install dependencies:
+
+        $ sudo apt-get update
+        $ sudo apt-get upgrade
+        $ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server helix-git-fusion-base
+
+2. For Ubuntu 14.04:
+
+    a. Add Perforce's packaging key to your APT keyring:
+
+        $ wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+
+    b. Add Perforce's repository to your apt configuration:
+
+        Create a file called /etc/apt/sources.list.d/perforce.sources.list with the following line:
+
+        deb http://package.perforce.com/apt/ubuntu trusty release
+
+    c. Install dependencies:
+
+        $ sudo apt-get update
+        $ sudo apt-get upgrade
+        $ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server helix-git-fusion-base
+
+3. For CentOS/RHEL 6:
+
+    a. Add Perforce's packaging key to your RPM keyring:
+
+        $ sudo rpm --import https://package.perforce.com/perforce.pubkey
+
+    b. Add Perforce's yum repository to your configuration:
+
+        Create a file called /etc/yum.repos.d/perforce.repo with the  following content:
+
+        [perforce]
+        name=Perforce
+        baseurl=http://package.perforce.com/yum/rhel/6/x86_64
+        enabled=1
+        gpgcheck=1
+
+   c. Install dependencies and configure firewall:
+
+       $ sudo yum update
+       $ sudo yum install curl openssh-server postfix cronie
+       $ sudo service postfix start
+       $ sudo chkconfig postfix on
+       $ sudo lokkit -s http -s ssh
+
+       Note: The commands above also open HTTP and SSH access in the system
+             firewall.
+
+4. For CentOS/RHEL 7:
+
+    a. Add Perforce's packaging key to your RPM keyring:
+
+        $ sudo rpm --import https://package.perforce.com/perforce.pubkey
+
+    b. Add Perforce's yum repository to your configuration:
+
+        Create a file called /etc/yum.repos.d/perforce.repo with the  following content:
+
+        [perforce]
+        name=Perforce
+        baseurl=http://package.perforce.com/yum/rhel/7/x86_64
+        enabled=1
+        gpgcheck=1
+
+    c. Install dependencies and configure firewall:
+
+        $ sudo yum update
+        $ sudo yum install curl openssh-server
+        $ sudo systemctl enable sshd
+        $ sudo systemctl start sshd
+        $ sudo yum install postfix
+        $ sudo systemctl enable postfix
+        $ sudo systemctl start postfix
+        $ sudo firewall-cmd --permanent --add-service=http
+        $ sudo systemctl reload firewalld
+
+        Note: The commands above also open HTTP and SSH access in the system
+              firewall.
+
+
+------------------------------------------------------------------------
+Download the GitSwarm EE package and install everything.
+------------------------------------------------------------------------
+
+1. For Ubuntu 12.04:
+
+    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.precise.amd64.deb
+    $ sudo dpkg -i perforce-gitswarm-ee-2015.4.precise.amd64.deb
+
+2. For Ubuntu 14.04:
+
+    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.trusty.amd64.deb
+    $ sudo dpkg -i perforce-gitswarm-ee-2015.4.trusty.amd64.deb
+
+3. For CentOS/RHEL 6:
+
+    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.el6.x86_64.rpm
+    $ sudo yum install perforce-gitswarm-ee-2015.4.el6.x86_64.rpm
+
+3. For CentOS/RHEL 7:
+
+    $ curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.el7.x86_64.rpm
+    $ sudo yum install perforce-gitswarm-ee-2015.4.el7.x86_64.rpm
+
+
+------------------------------------------------------------------------
+Basic Configuration
+------------------------------------------------------------------------
+
+1. Verify the external URL for your GitSwarm EE instance:
+
+   View /etc/gitswarm/gitswarm.rb, and verify that the following setting is
+   set to the URL that your GitSwarm EE users should use:
+
+     external_url "http://gitswarm.example.com"
+
+   Edit the setting if necessary.
+
+2. Set the timezone for your GitSwarm EE instance:
+
+   Edit /etc/gitswarm/gitswarm.rb, and edit the line:
+
+     #gitlab_rails['time_zone'] = 'UTC'
+
+   Replace UTC with an appropriate timezone, and uncomment the line.
+
+3. Configure and start GitSwarm EE.
+
+   $ sudo gitswarm-ctl reconfigure
+
+4. Browse to the hostname and login.
+
+   Username: root
+   Password: 5iveL!fe
+
+
+You are now all set to start using GitSwarm EE. Enjoy!
+
+END

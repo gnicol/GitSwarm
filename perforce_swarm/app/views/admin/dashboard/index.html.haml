@@ -32,9 +32,9 @@
         %span.light.pull-right
           = Milestone.count
       %p
-        Users who signed in during last 30 days
+        Active Users
         %span.light.pull-right
-          = User.where("current_sign_in_at > ?", 30.days.ago).count
+          = User.active.count
     .col-md-4
       %h4
         Features
@@ -55,6 +55,10 @@
         OmniAuth
         %span.light.pull-right
           = boolean_to_icon Gitlab.config.omniauth.enabled
+      %p
+        Reply by email
+        %span.light.pull-right
+          = boolean_to_icon Gitlab::IncomingEmail.enabled?
     .col-md-4
       %h4 Components
       %hr
@@ -92,7 +96,7 @@
           = link_to admin_namespaces_projects_path do
             %h1= Project.count
           %hr
-          = link_to 'New Project', new_project_path, class: "btn btn-new"
+          = link_to('New Project', new_project_path, class: "btn btn-new")
     .col-sm-4
       .light-well
         %h4 Users

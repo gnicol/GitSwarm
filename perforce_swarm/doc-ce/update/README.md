@@ -1,34 +1,33 @@
-# Updating GitSwarm to 2015.3
+# Updating GitSwarm to 2015.4
 
-1.  **Download the 2015.3 GitSwarm package and install it.**
+1.  **Download the 2015.4 GitSwarm package and install it.**
 
-    1.  **For Ubuntu 12.04:**
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.ubuntu12x86_64/perforce-gitswarm-2015.3.precise.amd64.deb
-sudo dpkg -i perforce-gitswarm-2015.3.precise.amd64.deb
-        ```
+    ```
+curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
+    ```
 
-    1.  **For Ubuntu 14.04:**
+    The script should add the Perforce package repository, and install the latest
+    version of GitSwarm. The upgrade will create a backup of your existing GitSwarm
+    data before fully installing.
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.ubuntu14x86_64/perforce-gitswarm-2015.3.trusty.amd64.deb
-sudo dpkg -i perforce-gitswarm-2015.3.trusty.amd64.deb
-        ```
+1.  **Check the application status.**
 
-    1.  **For CentOS/RHEL 6:**
+    Check if GitSwarm and its environment are configured correctly:
+    ```
+sudo gitswarm-rake gitswarm:check
+    ```
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.centos6x86_64/perforce-gitswarm-2015.3.el6.x86_64.rpm
-sudo rpm -U perforce-gitswarm-2015.3.el6.x86_64.rpm
-        ```
+# New configuration options
 
-    1.  **For CentOS/RHEL 7:**
+*  **Discovering new config options**
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r15.3/bin.centos7x86_64/perforce-gitswarm-2015.3.el7.x86_64.rpm
-sudo rpm -U perforce-gitswarm-2015.3.el7.x86_64.rpm
-        ```
+    GitSwarm doesn't update your `/etc/gitswarm/gitswarm.rb` for you, but we do include an updated example template:
+    `/opt/gitswarm/etc/gitswarm.rb.template`. You can see what sort of config options have been changed since last
+    release by running
+    ```
+sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
+    ```
 
 # For users upgrading FROM 2015.1
 

@@ -35,7 +35,7 @@ module Gitlab
       end
 
       def find_by_email
-        ::User.find_by(email: auth_hash.email)
+        ::User.find_by(email: auth_hash.email.downcase)
       end
 
       def update_user_attributes
@@ -70,6 +70,10 @@ module Gitlab
 
       def ldap_config
         Gitlab::LDAP::Config.new(auth_hash.provider)
+      end
+
+      def auth_hash=(auth_hash)
+        @auth_hash = Gitlab::LDAP::AuthHash.new(auth_hash)
       end
     end
   end

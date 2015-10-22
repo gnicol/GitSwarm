@@ -24,7 +24,7 @@
             .left
               .control-group.form-inline
                 Helix Git Fusion Server:
-                = select_tag(:git_fusion_entry, servers, class: 'form-control')
+                = select_tag(:git_fusion_entry, servers, class: 'select2 span2')
                 .hidden#original-git-fusion-settings{'data-auto-create' => params['git_fusion_auto_create'].inspect }
             .right
               To point Helix GitSwarm at a different Helix Git Fusion instance, have an admin

@@ -13,7 +13,6 @@ class EditFilePage < LoggedInPage
     elems << [:id, 'file_name'] # new file name field
     elems << [:id, 'editor'] # conten panel
     elems << [:id, 'commit_message'] #
-    elems << [:id, 'new_branch'] #
     elems << [:class, 'commit-btn'] # commit changes button
     elems << [:class, 'btn-cancel'] # cancel button
     elems
@@ -42,15 +41,10 @@ class EditFilePage < LoggedInPage
   end
 
   def commit_message=(message)
-    set('commit_message', message)
-  end
-
-  def branch
-    get('new_branch')
-  end
-
-  def branch=(branch)
-    set('new_branch', branch)
+    # For some unknown reason, there are 2 instances with this ID on the page. The first is not displayed
+    elem = @driver.find_elements(:id, 'commit_message').last
+    elem.click
+    elem.send_keys(message)
   end
 
   def commit_change

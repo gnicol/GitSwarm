@@ -1,7 +1,6 @@
 @project
 Feature: Mirror Existing Project
-
-  @automated 
+  @automated
   Scenario: Having Git Fusion disabled results in a disabled mirroring button, and a disabled/mis-configured tooltip.
     Given I sign in as a user
     And I own project "Shop"
@@ -63,3 +62,25 @@ Feature: Mirror Existing Project
     When I visit project "Shop" page
     Then I should see a Mirror in Helix button
     And I should see "not mirrored in helix" under the clone URL field
+
+  @automated @javascript
+  Scenario: If I have an un-mirrored project ready to mirror, with one Git Fusion server that supports auto-create, I can click the Mirror in Helix button and be taken to the configure_mirroring view.
+    Given I sign in as a user
+    And I own project "Shop"
+    And Git Fusion support is enabled with auto-create enabled servers
+    And I visit project "Shop" page
+    When Click the Mirror in Helix button
+    Then I should go to the Mirror in Helix page
+
+  @automated @javascript
+  Scenario: If I have an un-mirrored project ready to mirror, with multiple Git Fusion servers configured, but only one with auto-create, I can click the Mirror in Helix button and be taken to the configure_mirroring view and have the Git Fusion server with auto-create enabled be selected.
+    Given I sign in as a user
+    And I own project "Shop"
+    And Git Fusion support is enabled with auto-create enabled servers
+    And I visit project "Shop" page
+    When Click the Mirror in Helix button
+    Then I should go to the Mirror in Helix page
+
+#  @automated @javascript
+#  Scenario: If I have an un-mirrored project ready to mirror, click the Mirror in Helix button, then disable auto-create and attempt to mirror the project, I am taken back to the configure_mirroring page and an alert is shown with an error message.
+

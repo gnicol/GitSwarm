@@ -1,9 +1,9 @@
 require_relative '../shared/mirroring'
 
 class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
-  include SharedPaths
   include SharedAuthentication
   include SharedProject
+  include SharedPaths
   include SharedMirroring
 
   step 'I should see a disabled Mirror in Helix button' do
@@ -17,6 +17,10 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'I should not see a Mirror in Helix button' do
     page.should_not have_content('Mirror in Helix')
+  end
+
+  step 'Click the Mirror in Helix button' do
+    click_link('Mirror in Helix')
   end
 
   step 'I should see a no Git Fusion instances configured tooltip' do
@@ -70,5 +74,9 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'I should see "mirrored in helix" under the clone URL field' do
     page.should have_link('mirrored in helix')
+  end
+
+  step 'I should go to the Mirror in Helix page' do
+    expect(current_path).to eq(configure_mirroring_namespace_project_path(project.namespace, project))
   end
 end

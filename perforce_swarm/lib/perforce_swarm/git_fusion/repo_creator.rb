@@ -42,30 +42,36 @@ module PerforceSwarm
 
       # returns true/false whether there is already content in the depot path where we are expecting to store a project
       def depot_path_content?
-        depot_content?(depot_path + '/...')
+        perforce_path_exists?(depot_path)
       end
 
       # returns true/false whether there is already a p4gf_config file where we are expecting to store the current
       # project's config
       def p4gf_config_exists?
-        depot_content?(p4gf_config_path)
+        perforce_path_exists?(p4gf_config_path)
       end
 
       # returns true/false if there are any files at the specified depot path - note that the path can end in
       # /... to check a directory
-      def depot_content?(path)
-        # run an fstat on the depot path to ensure there are no files present
-        p4 = PerforceSwarm::P4::Connection.new(@config)
-        p4.with_temp_client do |_tmpdir|
-          files = p4.run('fstat', '-m1', path.gsub(%r{//}, '//' + p4.client + '/'))
-          return !files.empty?
+      def perforce_path_exists?(path, connection = nil)
+        unless connection
+          connection = PerforceSwarm::P4::Connection.new(@config)
         end
-      rescue P4Exception => e
-        return false if e.message.include?('- no such file')
-        # unexpected error, so re-raise
-        raise e
-      ensure
-        p4.disconnect if p4
+
+        # normalize path to not have a trailing space
+        path.gsub!(/[\/]+$/, '')
+        # check both the path as a file and path/... (as a directory)
+        [path, path + '/...'].each do |depot_path|
+          begin
+            connection.run('files', '-m1', depot_path)
+            # if we found something, the path exists for our purposes
+            return true
+          rescue P4Exception => e
+            # ignore messages due to non-existent files or depots
+            raise e unless e.message.include?('- no such file') || e.message.include?(' - must refer to client ')
+          end
+        end
+        false
       end
 
       def repo_name

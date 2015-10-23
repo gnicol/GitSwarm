@@ -15,7 +15,7 @@ describe 'BasicValidationTests', browser: true do
     it 'should have expected title' do
       login = LoginPage.new(@driver, CONFIG.get('gitswarm_url'))
       dashboard = login.login(CONFIG.get('gitswarm_username'), CONFIG.get('gitswarm_password'))
-      expect(@driver.title).to eq('Dashboard | GitSwarm')
+      expect(@driver.title).to eq('Projects | Dashboard | GitSwarm')
       dashboard.logout
     end
   end

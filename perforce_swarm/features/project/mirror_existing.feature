@@ -1,7 +1,7 @@
 @project
 Feature: Mirror Existing Project
 
-  @automated 
+  @automated
   Scenario: Having Git Fusion disabled results in a disabled mirroring button, and a disabled/mis-configured tooltip.
     Given I sign in as a user
     And I own project "Shop"

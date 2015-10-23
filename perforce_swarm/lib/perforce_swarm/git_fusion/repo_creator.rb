@@ -42,7 +42,7 @@ module PerforceSwarm
 
       # returns true if there are any files at the specified depot path, otherwise false
       def perforce_path_exists?(path, connection)
-        # normalize path to not have a trailing slash
+        # normalize path to not have a trailing slash or Perforce wildcard
         path.gsub!(/[\/]+(\.\.\.)?$/, '')
         # check both the path as a file and path/... (as a directory)
         [path + '/...', path].each do |depot_path|
@@ -64,7 +64,7 @@ module PerforceSwarm
 
       # returns the depot portion of the generated depot_path
       def project_depot
-        path_template[%r{\A//([^/]+)/}, 1]
+        PerforceSwarm::P4::Spec::Depot.id_from_path(path_template)
       end
 
       # returns the location of the p4gf_config file in Git Fusion's Perforce depot
@@ -107,17 +107,38 @@ eof
         end
       end
 
-      # attempt to submit our p4gf_config file for Git Fusion - fails if a repo of the same name already exists
-      def save
-        p4 = PerforceSwarm::P4::Connection.new(@config)
-        p4.login
-
+      # run pre-flight checks for:
+      #  * project_depot pattern is valid
+      #  * both //.git-fusion and the project depots exist
+      #  * Git Fusion repo ID is not already in use (no p4gf_config for the specified repo ID)
+      #  * Perforce has no content under the target project location
+      # if any of the above conditions are not met, an exception is thrown
+      def save_preflight(connection)
         if project_depot.include?('{namespace}') || project_depot.include?('{project-path}')
           fail 'Depot names cannot contain substitution variables ({namespace} or {project-path}).'
         end
 
         # ensure both //.git-fusion and project's target depots exist
-        ensure_depots_exist(p4)
+        ensure_depots_exist(connection)
+
+        # ensure there isn't already a Git Fusion repo with our ID or content under the target project location
+        if perforce_path_exists?(perforce_p4gf_config_path, connection)
+          fail "A Git Fusion repository already exists with the name (#{repo_name}). " \
+               'You can import the existing Git Fusion repository into a new project.'
+        end
+
+        if perforce_path_exists?(depot_path, connection)
+          fail "It appears that there is already content in Helix at #{depot_path}."
+        end
+      end
+
+      # attempt to submit our p4gf_config file for Git Fusion - fails if a repo of the same name already exists
+      def save
+        p4 = PerforceSwarm::P4::Connection.new(@config)
+        p4.login
+
+        # run our pre-flight checks, which raises an exception if we shouldn't continue with the save
+        save_preflight(p4)
 
         # generate our file and attempt to add it
         p4.with_temp_client do |tmpdir|

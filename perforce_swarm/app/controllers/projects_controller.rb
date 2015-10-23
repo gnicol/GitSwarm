@@ -31,7 +31,7 @@ module PerforceSwarm
       @project.update_column(:git_fusion_repo, "mirror://#{fusion_server}/#{repo_creator.repo_name}")
 
       # create mirror remote
-      PerforceSwarm::Repo.new(@project.repository.path_to_repo).mirror_url = repo_creator.repo_name
+      PerforceSwarm::Repo.new(@project.repository.path_to_repo).mirror_url = @project.git_fusion_repo
 
       # kick off and background initial push
       import_job = fork do

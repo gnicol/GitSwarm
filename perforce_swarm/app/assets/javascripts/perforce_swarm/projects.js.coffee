@@ -115,7 +115,7 @@ class @GitFusionProject
 class @GitFusionMirror extends @GitFusionProject
   constructor: (@opts) ->
     this.$el       = $('.git-fusion-mirroring')
-    @project_id    = @opts[0]
+    @project_id    = @opts
     @repo_contents = {}
     # Load content right away if we already have a server_id selected
     @load_content(this.$(@server_select_selector).val()) if this.$(@server_select_selector).val()

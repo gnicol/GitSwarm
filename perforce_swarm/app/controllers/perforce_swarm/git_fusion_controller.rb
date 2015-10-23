@@ -4,7 +4,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     populate_repos
 
     begin
-      @project        = Project.find(params['project_id'])
+      @project       = Project.find(params['project_id'])
       repo_creator   = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
       @path_template = repo_creator.namespace(project.namespace.name).project_path(project.path).depot_path + '/...'
 

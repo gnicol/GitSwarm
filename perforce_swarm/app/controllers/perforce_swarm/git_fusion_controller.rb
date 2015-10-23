@@ -8,8 +8,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
       fail 'This project is already mirrored in Helix.' if project.git_fusion_repo.present?
 
       # pre-flight checks against Git Fusion and Perforce
-      creator   = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server, project.namespace.name, project.path)
-      p4        = PerforceSwarm::P4::Connection.new(creator.config)
+      creator = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server, project.namespace.name, project.path)
+      p4      = PerforceSwarm::P4::Connection.new(creator.config)
       p4.login
       creator.save_preflight(p4)
 
@@ -21,8 +21,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { render partial: 'mirror_selector', layout: false }
-      format.json { render json: { html: view_to_html_string('perforce_swarm/git_fusion/_mirror_selector') } }
+      format.html { render partial: 'existing_project', layout: false }
+      format.json { render json: { html: view_to_html_string('perforce_swarm/git_fusion/_existing_project') } }
     end
   end
 

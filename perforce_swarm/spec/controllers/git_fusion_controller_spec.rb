@@ -12,10 +12,13 @@ describe PerforceSwarm::GitFusionController, type: :controller do
 
   # setup and teardown of temporary p4root directory
   before(:each) do
-    @p4root           = Dir.mktmpdir
-    @p4port           = "rsh:#{@p4d} -r #{@p4root} -i -q"
-    @connection       = PerforceSwarm::P4::Connection.new(configify(default_config).entry('default'), @p4root)
-    @connection.input = @connection.run('user', '-o', 'p4test').last
+    @p4root               = Dir.mktmpdir
+    @p4port               = "rsh:#{@p4d} -r #{@p4root} -i -q"
+    config_entry          = default_config.entry('default')
+    @connection           = PerforceSwarm::P4::Connection.new(config_entry, @p4root)
+    user_spec             = @connection.run('user', '-o', config_entry.perforce_user).last
+    user_spec['Password'] = config_entry.perforce_password
+    @connection.input     = user_spec
     @connection.run('user', '-i')
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return([])
   end
@@ -38,7 +41,7 @@ describe PerforceSwarm::GitFusionController, type: :controller do
       url:      'http://user@foo',
       password: 'bar',
       git_config_params: 'http.sslVerify=false',
-      perforce: { 'port' => @p4port, 'user' => 'p4test' }
+      perforce: { 'port' => @p4port, 'user' => 'p4test', 'password' => 'yoda' }
     }.stringify_keys
   end
 
@@ -93,6 +96,8 @@ describe PerforceSwarm::GitFusionController, type: :controller do
         'path_template' => '//depots/projects/{namespace}/{project-path}',
         'repo_name_template' => '{namespace}-{project-path}'
       }
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'depots')
+      PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
       get(:existing_project, project_id: project.id)
       expect(response).to be_success

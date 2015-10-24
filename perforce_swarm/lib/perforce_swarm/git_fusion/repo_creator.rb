@@ -69,7 +69,7 @@ module PerforceSwarm
 
       # returns the location of the p4gf_config file in Git Fusion's Perforce depot
       def perforce_p4gf_config_path
-        return "//.git-fusion/repos/#{repo_name}/p4gf_config" unless local_dir
+        "//.git-fusion/repos/#{repo_name}/p4gf_config"
       end
 
       # returns the path of the p4gf_config file to a given Perforce client root

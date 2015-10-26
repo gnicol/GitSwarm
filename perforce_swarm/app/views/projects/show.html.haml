@@ -60,7 +60,7 @@
     %li{data: {toggle: 'tooltip', html: 'true', title: mirroring_tooltip(@project, current_user)}}
       - mirrored = mirrored?(@project)
       = link_to '#' do
-        = (mirrored ? '' : 'not ') + 'mirrored in helix'
+        = (mirrored ? '' : 'Not ') + 'Mirrored in Helix'
         = icon('fw question-circle') unless mirrored
     -# gitswarm changes end
 

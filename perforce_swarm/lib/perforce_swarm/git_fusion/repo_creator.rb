@@ -47,7 +47,7 @@ module PerforceSwarm
         # check both the path as a file and path/... (as a directory)
         [path + '/...', path].each do |depot_path|
           begin
-            connection.run('files', '-m1', depot_path)
+            connection.run('files', '-e', '-m1', depot_path)
             # if we found something, the path exists for our purposes
             return true
           rescue P4Exception => e

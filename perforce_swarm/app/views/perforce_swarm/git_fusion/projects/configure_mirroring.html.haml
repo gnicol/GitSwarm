@@ -1,8 +1,7 @@
 - page_title    'Mirror in Helix'
 - header_title  'Mirror in Helix'
--# deal with config errors by re-using the tooltip code, and put controller-reported errors first
-- error        = @errors.first || git_fusion_server_error
-- error        = mirroring_tooltip(@project, current_user) unless error
+-# deal with config errors by re-using the tooltip code
+- error = git_fusion_server_error || mirroring_tooltip(@project, current_user).gsub(/<\s*br\s*\/\s*>/, '')
 - if current_user && can?(current_user, :download_code, @project)
   = render 'shared/no_ssh'
   = render 'shared/no_password'
@@ -24,6 +23,6 @@
       .control-label.mirroring-server-select
         Helix Git Fusion Server:
         = select_tag(:git_fusion_entry, git_fusion_servers(true), class: 'form-control')
-    .git-fusion-mirroring-data
+    .mirroring-data
   :javascript
     var mirror_config = new GitFusionMirror("#{@project.id}");

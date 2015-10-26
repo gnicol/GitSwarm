@@ -84,15 +84,15 @@
 }
 
 // mirror existing project
-.git-fusion-mirroring-data {
+.mirroring-data {
   margin-top: 10px;
 }
 
-.git-fusion-mirroring-data .form-actions {
+.mirroring-enable.form-actions {
   padding-left: 0px;
 }
 
-.mirroring-selection span.depot-path {
+.mirroring-depot-path span.depot-path {
   // although not dangerous, use this to get the red color for the displayed depot path
   color: $brand-danger;
 }

@@ -3,8 +3,8 @@
     Your project's branches will be mirrored to:
     %span.depot-path
       = @path_template
-    .form-actions
-      = button_to '#', class: 'btn' do
+    .form-actions.mirroring-enable
+      = button_to enable_mirroring_namespace_project_path(@project.namespace, @project), params: {fusion_server: @fusion_server}, method: 'post', class: 'btn btn-create' do
         Launch Mirroring
 - else
   .mirroring-errors

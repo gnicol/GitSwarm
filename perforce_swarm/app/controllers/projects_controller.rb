@@ -3,7 +3,6 @@ require Rails.root.join('app', 'controllers', 'projects_controller')
 module PerforceSwarm
   module ProjectsControllerExtension
     def configure_mirroring
-      @errors = []
       # if the project is already mirrored, redirect back to the project page with a flash message
       if @project.git_fusion_repo.present?
         redirect_to(
@@ -13,7 +12,6 @@ module PerforceSwarm
         return
       end
 
-      # users can only enable mirroring for an existing project at this point
       render 'perforce_swarm/git_fusion/projects/configure_mirroring'
     end
 

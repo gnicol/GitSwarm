@@ -53,11 +53,11 @@ class GitHelper
 
   # Adds everything under the git repo
   def add
-    Dir.chdir(@local_dir_path) { call_system(@git + ' add .') }
+    run_git_command('add', '.')
   end
 
   def commit
-    Dir.chdir(@local_dir_path) { call_system(@git +' commit -m auto_message') }
+    run_git_command('commit', '-m', 'auto_message')
   end
 
   def add_commit_push
@@ -67,23 +67,19 @@ class GitHelper
   end
 
   def pull
-    LOG.debug 'pulling from ' +@url
-    Dir.chdir(@local_dir_path) { call_system(@git + ' pull origin ' + @current_branch) }
+    run_git_command('pull', 'origin', @current_branch)
   end
 
   def push
-    LOG.debug 'Pushing to branch ' + @current_branch + ' at ' +@url
-    Dir.chdir(@local_dir_path) { call_system(@git + ' push origin ' + @current_branch) }
+    run_git_command('push', 'origin', @current_branch)
   end
 
   def branch(branchname)
-    LOG.debug 'branching to ' + branchname
-    Dir.chdir(@local_dir_path) { call_system(@git + ' branch ' + branchname) }
+    run_git_command('branch', branchname)
   end
 
   def checkout(branchname)
-    LOG.debug 'checking out ' + branchname
-    Dir.chdir(@local_dir_path) { call_system(@git + ' checkout ' + branchname) }
+    run_git_command('checkout', branchname)
     @current_branch = branchname
   end
 
@@ -98,6 +94,14 @@ class GitHelper
   end
 
   private
+
+  def run_git_command(*args)
+    command = [@git, *args].join(' ')
+    LOG.debug("Running #{command}")
+    Dir.chdir(@local_dir_path) do
+      call_system(command)
+    end
+  end
 
   # utility to call the system command and fail if it is not successful
   def call_system(command)

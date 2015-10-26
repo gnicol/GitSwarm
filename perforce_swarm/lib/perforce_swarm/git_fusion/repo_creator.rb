@@ -40,35 +40,19 @@ module PerforceSwarm
         render_template(path_template).chomp('/')
       end
 
-      # returns true/false whether there is already content in the depot path where we are expecting to store a project
-      def depot_path_content?
-        perforce_path_exists?(depot_path)
-      end
-
-      # returns true/false whether there is already a p4gf_config file where we are expecting to store the current
-      # project's config
-      def p4gf_config_exists?
-        perforce_path_exists?(p4gf_config_path)
-      end
-
-      # returns true/false if there are any files at the specified depot path - note that the path can end in
-      # /... to check a directory
-      def perforce_path_exists?(path, connection = nil)
-        unless connection
-          connection = PerforceSwarm::P4::Connection.new(@config)
-        end
-
-        # normalize path to not have a trailing space
-        path.gsub!(/[\/]+$/, '')
+      # returns true if there are any files at the specified depot path, otherwise false
+      def perforce_path_exists?(path, connection)
+        # normalize path to not have a trailing slash or Perforce wildcard
+        path.gsub!(/[\/]+(\.\.\.)?$/, '')
         # check both the path as a file and path/... (as a directory)
-        [path, path + '/...'].each do |depot_path|
+        [path + '/...', path].each do |depot_path|
           begin
             connection.run('files', '-m1', depot_path)
             # if we found something, the path exists for our purposes
             return true
           rescue P4Exception => e
             # ignore messages due to non-existent files or depots
-            raise e unless e.message.include?('- no such file') || e.message.include?(' - must refer to client ')
+            raise e unless e.message.include?('- no such file') || e.message.include?('- must refer to client')
           end
         end
         false
@@ -80,14 +64,17 @@ module PerforceSwarm
 
       # returns the depot portion of the generated depot_path
       def project_depot
-        path_template[%r{\A//([^/]+)/}, 1]
+        PerforceSwarm::P4::Spec::Depot.id_from_path(path_template)
       end
 
-      # returns the path to the p4gf_config file location - if a local_dir is given, it will return the
-      # local path, otherwise, it will return the Perforce depot path
-      def p4gf_config_path(local_dir = nil)
-        return "//.git-fusion/repos/#{repo_name}/p4gf_config" unless local_dir
-        File.join(local_dir, '.git-fusion', 'repos', repo_name, 'p4gf_config')
+      # returns the location of the p4gf_config file in Git Fusion's Perforce depot
+      def perforce_p4gf_config_path
+        "//.git-fusion/repos/#{repo_name}/p4gf_config"
+      end
+
+      # returns the path of the p4gf_config file to a given Perforce client root
+      def local_p4gf_config_path(client_root)
+        File.join(client_root, '.git-fusion', 'repos', repo_name, 'p4gf_config')
       end
 
       # generates the p4gf_config file that should be checked into Perforce under
@@ -112,15 +99,36 @@ eof
       end
 
       # ensure the depots exist - both the //.git-fusion one as well as the one the user wants to create their project
-      def ensure_depots_exist(connection = nil)
-        unless connection
-          connection = PerforceSwarm::P4::Connection.new(@config)
-          connection.login
-        end
-        depots   = [project_depot, '.git-fusion']
-        missing  = depots - PerforceSwarm::P4::Spec::Depot.exists?(connection, depots)
+      def ensure_depots_exist(connection)
+        depots  = [project_depot, '.git-fusion']
+        missing = depots - PerforceSwarm::P4::Spec::Depot.exists?(connection, depots)
         if missing.length > 0
           fail 'The following depot(s) are required and were found to be missing: ' + missing.join(', ')
+        end
+      end
+
+      # run pre-flight checks for:
+      #  * project_depot pattern is valid
+      #  * both //.git-fusion and the project depots exist
+      #  * Git Fusion repo ID is not already in use (no p4gf_config for the specified repo ID)
+      #  * Perforce has no content under the target project location
+      # if any of the above conditions are not met, an exception is thrown
+      def save_preflight(connection)
+        if project_depot.include?('{namespace}') || project_depot.include?('{project-path}')
+          fail 'Depot names cannot contain substitution variables ({namespace} or {project-path}).'
+        end
+
+        # ensure both //.git-fusion and project's target depots exist
+        ensure_depots_exist(connection)
+
+        # ensure there isn't already a Git Fusion repo with our ID or content under the target project location
+        if perforce_path_exists?(perforce_p4gf_config_path, connection)
+          fail "A Git Fusion repository already exists with the name (#{repo_name}). " \
+               'You can import the existing Git Fusion repository into a new project.'
+        end
+
+        if perforce_path_exists?(depot_path, connection)
+          fail "It appears that there is already content in Helix at #{depot_path}."
         end
       end
 
@@ -129,15 +137,12 @@ eof
         p4 = PerforceSwarm::P4::Connection.new(@config)
         p4.login
 
-        if project_depot.include?('{namespace}') || project_depot.include?('{project-path}')
-          fail 'Depot names cannot contain substitution variables ({namespace} or {project-path}).'
-        end
-
-        ensure_depots_exist(p4)
+        # run our pre-flight checks, which raises an exception if we shouldn't continue with the save
+        save_preflight(p4)
 
         # generate our file and attempt to add it
         p4.with_temp_client do |tmpdir|
-          file = p4gf_config_path(tmpdir)
+          file = local_p4gf_config_path(tmpdir)
           FileUtils.mkdir_p(File.dirname(file))
           File.write(file, p4gf_config)
           add_output = p4.run('add', file).shift

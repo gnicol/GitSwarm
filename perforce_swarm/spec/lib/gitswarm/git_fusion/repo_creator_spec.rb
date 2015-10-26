@@ -22,6 +22,9 @@ describe PerforceSwarm::GitFusion::RepoCreator do
         }
     )
     @connection = PerforceSwarm::P4::Connection.new(@base_config.entry('foo'), @p4root)
+    @connection.input = @connection.run('user', '-o', 'p4test').last
+    @connection.run('user', '-i')
+    @connection.login
     @auto_provision_config = @base_config.clone
     @auto_provision_config['foo']['auto_create'] = {
       'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
@@ -110,59 +113,21 @@ describe PerforceSwarm::GitFusion::RepoCreator do
     end
   end
 
-  describe :p4gf_config_exists? do
-    it 'raises an exception if we attempt to detect a p4gf_config file using variables that are not configured' do
-      config = @base_config.clone
-      config['foo']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
-                                       'repo_name_template' => DEFAULT_REPO_NAME_TEMPLATE }
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
-      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo')
-      expect { creator.p4gf_config_exists? }.to raise_error(EXPECTED_EXCEPTION), creator.inspect
-    end
-
-    it 'raises an exception if we attempt to detect a p4gf_config file using invalid variable values' do
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: @auto_provision_config)
-      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', '!namespace', 'valid-path')
-      expect { creator.p4gf_config_exists? }.to raise_error(EXPECTED_EXCEPTION)
-    end
-
-    it 'returns true if there is already a p4gf_config file for the project we are trying to create' do
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: @auto_provision_config)
-      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-project')
-      # create the required depot
-      PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
-
-      # add a file to the depot path where we'll be checking
-      @connection.with_temp_client do |tmpdir|
-        file = creator.p4gf_config_path(tmpdir)
-        FileUtils.mkdir_p(File.dirname(file))
-        File.write(file, 'This could be a valid p4gf_config file, but who cares.')
-        @connection.run('reconcile', file)
-        @connection.run('submit', '-d', 'Adding p4gf_config file.')
-      end
-
-      # perform the check
-      expect(creator.p4gf_config_exists?).to be_truthy
-    end
-
-    it 'returns false if there is no content at the generated depot path' do
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: @auto_provision_config)
-      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-project')
-      expect(creator.p4gf_config_exists?).to be_falsey
-    end
-  end
-
-  describe :depot_path_content? do
+  describe :perforce_path_exists? do
     it 'raises an exception if we attempt to see if there is content using variables that are not configured' do
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: @auto_provision_config)
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo')
-      expect { creator.depot_path_content? }.to raise_error(EXPECTED_EXCEPTION), creator.inspect
+      expect do
+        creator.perforce_path_exists?(creator.depot_path, @connection)
+      end.to raise_error(EXPECTED_EXCEPTION), creator.inspect
     end
 
     it 'raises an exception if we attempt to see if there is content using invalid variable values' do
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: @auto_provision_config)
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', '!namespace', 'valid-path')
-      expect { creator.depot_path_content? }.to raise_error(EXPECTED_EXCEPTION)
+      expect do
+        creator.perforce_path_exists?(creator.depot_path, @connection)
+      end.to raise_error(EXPECTED_EXCEPTION)
     end
 
     it 'returns true if there is content at the generated depot path' do
@@ -181,13 +146,13 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       end
 
       # perform the check
-      expect(creator.depot_path_content?).to be_truthy
+      expect(creator.perforce_path_exists?(creator.depot_path, @connection)).to be_truthy
     end
 
     it 'returns false if there is no content at the generated depot path' do
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: @auto_provision_config)
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-project')
-      expect(creator.depot_path_content?).to be_falsey
+      expect(creator.perforce_path_exists?(creator.depot_path, @connection)).to be_falsey
     end
   end
 
@@ -195,21 +160,21 @@ describe PerforceSwarm::GitFusion::RepoCreator do
     it 'raises an exception if the project and Git Fusion depots are both missing' do
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: @auto_provision_config)
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-project')
-      expect { creator.ensure_depots_exist }.to raise_error(RuntimeError)
+      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
     end
 
     it 'raises an exception if the project depot is present, but the Git Fusion depot is missing' do
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: @auto_provision_config)
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'gitswarm')
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-project')
-      expect { creator.ensure_depots_exist }.to raise_error(RuntimeError)
+      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
     end
 
     it 'raises an exception if the Git Fusion depot is present, but the project depot is missing' do
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: @auto_provision_config)
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-project')
-      expect { creator.ensure_depots_exist }.to raise_error(RuntimeError)
+      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
     end
 
     it 'returns true if both the project and Git Fusion depots are present' do
@@ -217,7 +182,7 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'gitswarm')
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'root', 'my-project')
-      expect { creator.ensure_depots_exist }.to_not raise_error(RuntimeError)
+      expect { creator.ensure_depots_exist(@connection) }.to_not raise_error(RuntimeError)
     end
   end
 

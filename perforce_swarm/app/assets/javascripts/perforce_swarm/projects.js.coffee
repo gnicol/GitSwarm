@@ -155,5 +155,5 @@ class @GitFusionMirror extends @GitFusionProject
     })
 
   set_content: (content) ->
-    this.$('.mirroring-data').replaceWith('<div class="mirroring-data">' + content + '</div>')
+    this.$('.git-fusion-mirroring-data').replaceWith('<div class="git-fusion-mirroring-data">' + content + '</div>')
     @update_ui()

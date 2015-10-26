@@ -28,6 +28,7 @@ class LOG
     File.delete(logfile) if File.exist?(logfile)
     @internal_log ||= Logger.new MultiIO.new(STDOUT, File.open(logfile, 'a'))
     @internal_log.info('Logging to ' + logfile)
+    @internal_log.level = Logger::DEBUG # set default log level to debug for test runs
   end
 
   def self.level(level)

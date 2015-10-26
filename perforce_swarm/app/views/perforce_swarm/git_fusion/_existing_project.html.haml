@@ -1,0 +1,15 @@
+- if @errors.empty?
+  .mirroring-depot-path
+    Your project's branches will be mirrored to:
+    %span.depot-path
+      = @path_template
+    .form-actions
+      = button_to '#', class: 'btn' do
+        Launch Mirroring
+- else
+  .mirroring-errors
+    %h4 Configuration Error:
+    = @errors.first
+    Please see
+    = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#known-issues'
+    for help.

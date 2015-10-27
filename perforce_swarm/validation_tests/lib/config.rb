@@ -3,11 +3,11 @@ class CONFIG
 
   # One time only
   unless @config
-    LOG.level(Logger::INFO)
     # Load Config
     LOG.info('Loading config...')
     @config = YAML.load_file('config.yml')
     LOG.info @config
+    LOG.level(@config['log_level']) if @config['log_level']
   end
 
   def self.get(property)

@@ -40,7 +40,7 @@ module PerforceSwarm
         render_template(path_template).chomp('/')
       end
 
-      # returns true if there are any files at the specified depot path, otherwise false
+      # returns true if there are any files (even deleted) at the specified depot path, otherwise false
       def perforce_path_exists?(path, connection)
         # normalize path to not have a trailing slash or Perforce wildcard
         path.gsub!(/[\/]+(\.\.\.)?$/, '')

@@ -27,27 +27,27 @@ module ProjectsHelper
     project.git_fusion_repo.present?
   end
 
-  def mirroring_tooltip(project, user, for_button = false)
+  def mirroring_errors(project, user)
     # Git Fusion integration is explicitly disabled
     tooltip = <<-EOM
       GitSwarm's Helix Git Fusion integration is disabled.<br />
       To enable Helix mirroring, please have an admin enable the Git Fusion integration.
     EOM
-    return tooltip unless git_fusion_enabled?
+    return tooltip.html_safe unless git_fusion_enabled?
 
     # no Git Fusion entries found in the config
     tooltip = <<-EOM
       GitSwarm's Helix Git Fusion integration is enabled, however no Git Fusion instances have been configured.<br />
       To enable Helix mirroring, please have an admin configure at least one Git Fusion instance.
     EOM
-    return tooltip unless git_fusion_instances?
+    return tooltip.html_safe unless git_fusion_instances?
 
     # include details if there is a configuration error with one or more Git Fusion servers
     tooltip = <<-EOM
       GitSwarm's Helix Git Fusion integration is enabled, however there is a configuration error:<br />
       #{ERB::Util.html_escape(git_fusion_server_error)}
     EOM
-    return tooltip if git_fusion_server_error
+    return tooltip.html_safe if git_fusion_server_error
 
     # this project is already mirrored
     return '' if mirrored?(project)
@@ -57,14 +57,21 @@ module ProjectsHelper
       None of the Helix Git Fusion instances GitSwarm knows about are configured for 'auto create'.<br />
       To enable Helix mirroring, please have an admin configure at least one Git Fusion instance for auto create.
     EOM
-    return tooltip unless mirroring_configured?
+    return tooltip.html_safe unless mirroring_configured?
 
     # user does not have adequate permissions to enable mirroring
     tooltip = <<-EOM
       GitSwarm is configured for Helix mirroring, but you lack permissions to enable it for this project.<br />
       To enable Helix mirroring, you must be a project 'master' or an 'admin'.
     EOM
-    return tooltip unless mirroring_permitted?(project, user)
+    return tooltip.html_safe unless mirroring_permitted?(project, user)
+
+    nil
+  end
+
+  def mirroring_tooltip(project, user, for_button = false)
+    errors = mirroring_errors(project, user)
+    return errors if errors
 
     # all good in the 'hood - tooltip is slightly different for the button vs the text below the clone URL
     return 'Click to get mirroring!' if for_button
@@ -117,15 +124,21 @@ module ProjectsHelper
     return e.message
   end
 
-  def git_fusion_servers
+  def git_fusion_servers(default_first_auto_create: false)
     return [] unless git_fusion_enabled?
 
-    options = []
-    servers = gitlab_shell_config.git_fusion.entries
+    options  = []
+    servers  = gitlab_shell_config.git_fusion.entries
+    selected = params['git_fusion_entry']
     servers.each do |id, config|
-      options.push([config[:url], id])
+      options.push(["#{id} (#{config[:url]})", id])
+      # skip setting our selected element if we've already got one, or
+      # if the current config entry isn't configured for auto-create, and
+      # we're looking for the first one that is
+      next if selected || (default_first_auto_create && !config.auto_create_configured?)
+      selected = id
     end
-    servers.empty? ? [] : options_for_select(options, params['git_fusion_entry'])
+    servers.empty? ? [] : options_for_select(options, selected)
   end
 
   def git_fusion_repos(repos)

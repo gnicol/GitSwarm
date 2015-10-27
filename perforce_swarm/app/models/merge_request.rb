@@ -28,4 +28,6 @@ end
 
 class MergeRequest < ActiveRecord::Base
   prepend PerforceSwarm::MergeRequest
+
+  attr_accessor :should_remove_source_branch
 end

@@ -1,21 +1,43 @@
 class PerforceSwarm::GitFusionController < ApplicationController
-  def new_project
-    @fusion_server      = params['fusion_server']
-    @errors             = []
-    @repos              = []
-    @project_depot      = ''
-    @depot_exists       = false
-    @auto_create_errors = []
-    @path_template      = ''
+  def existing_project
+    init_auto_create
+
     begin
-      @repos            = PerforceSwarm::GitFusionRepo.list(@fusion_server)
+      # get the desired project and throw if it is already mirrored
+      @project = Project.find(params['project_id'])
+      fail 'This project is already mirrored in Helix.' if @project.git_fusion_repo.present?
+
+      # pre-flight checks against Git Fusion and Perforce
+      creator = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server, @project.namespace.name, @project.path)
+      p4      = PerforceSwarm::P4::Connection.new(creator.config)
+      p4.login
+      creator.save_preflight(p4)
+
+      @path_template = creator.depot_path + '/...'
+    rescue => error
+      @errors << error.message
+    ensure
+      p4.disconnect if p4
+    end
+
+    respond_to do |format|
+      format.html { render partial: 'existing_project', layout: false }
+      format.json { render json: { html: view_to_html_string('perforce_swarm/git_fusion/_existing_project') } }
+    end
+  end
+
+  def new_project
+    init_auto_create
+
+    begin
+      @repos = PerforceSwarm::GitFusionRepo.list(@fusion_server)
     rescue => e
       @errors << e.message
     end
 
-    # attempt to connect to Perforce and ensure the desired project depot exists
-    # we do this in its own rescue block so we only grab errors relevant to auto_create
     begin
+      # attempt to connect to Perforce and ensure the desired project depot exists
+      # we do this in its own rescue block so we only grab errors relevant to auto_create
       creator        = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
       p4             = PerforceSwarm::P4::Connection.new(creator.config)
       p4.login
@@ -32,5 +54,17 @@ class PerforceSwarm::GitFusionController < ApplicationController
       format.html { render partial: 'new_project', layout: false }
       format.json { render json: { html: view_to_html_string('perforce_swarm/git_fusion/_new_project') } }
     end
+  end
+
+  protected
+
+  def init_auto_create
+    @fusion_server      = params['fusion_server']
+    @errors             = []
+    @repos              = []
+    @project_depot      = ''
+    @depot_exists       = false
+    @auto_create_errors = []
+    @path_template      = ''
   end
 end

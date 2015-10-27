@@ -2,61 +2,58 @@
 #
 # Table name: users
 #
-#  id                            :integer          not null, primary key
-#  email                         :string(255)      default(""), not null
-#  encrypted_password            :string(255)      default(""), not null
-#  reset_password_token          :string(255)
-#  reset_password_sent_at        :datetime
-#  remember_created_at           :datetime
-#  sign_in_count                 :integer          default(0)
-#  current_sign_in_at            :datetime
-#  last_sign_in_at               :datetime
-#  current_sign_in_ip            :string(255)
-#  last_sign_in_ip               :string(255)
-#  created_at                    :datetime
-#  updated_at                    :datetime
-#  name                          :string(255)
-#  admin                         :boolean          default(FALSE), not null
-#  projects_limit                :integer          default(10)
-#  skype                         :string(255)      default(""), not null
-#  linkedin                      :string(255)      default(""), not null
-#  twitter                       :string(255)      default(""), not null
-#  authentication_token          :string(255)
-#  theme_id                      :integer          default(1), not null
-#  bio                           :string(255)
-#  failed_attempts               :integer          default(0)
-#  locked_at                     :datetime
-#  username                      :string(255)
-#  can_create_group              :boolean          default(TRUE), not null
-#  can_create_team               :boolean          default(TRUE), not null
-#  state                         :string(255)
-#  color_scheme_id               :integer          default(1), not null
-#  notification_level            :integer          default(1), not null
-#  password_expires_at           :datetime
-#  created_by_id                 :integer
-#  last_credential_check_at      :datetime
-#  avatar                        :string(255)
-#  confirmation_token            :string(255)
-#  confirmed_at                  :datetime
-#  confirmation_sent_at          :datetime
-#  unconfirmed_email             :string(255)
-#  hide_no_ssh_key               :boolean          default(FALSE)
-#  website_url                   :string(255)      default(""), not null
-#  github_access_token           :string(255)
-#  gitlab_access_token           :string(255)
-#  notification_email            :string(255)
-#  hide_no_password              :boolean          default(FALSE)
-#  password_automatically_set    :boolean          default(FALSE)
-#  bitbucket_access_token        :string(255)
-#  bitbucket_access_token_secret :string(255)
-#  location                      :string(255)
-#  encrypted_otp_secret          :string(255)
-#  encrypted_otp_secret_iv       :string(255)
-#  encrypted_otp_secret_salt     :string(255)
-#  otp_required_for_login        :boolean          default(FALSE), not null
-#  otp_backup_codes              :text
-#  public_email                  :string(255)      default(""), not null
-#  dashboard                     :integer          default(0)
+#  id                         :integer          not null, primary key
+#  email                      :string(255)      default(""), not null
+#  encrypted_password         :string(255)      default(""), not null
+#  reset_password_token       :string(255)
+#  reset_password_sent_at     :datetime
+#  remember_created_at        :datetime
+#  sign_in_count              :integer          default(0)
+#  current_sign_in_at         :datetime
+#  last_sign_in_at            :datetime
+#  current_sign_in_ip         :string(255)
+#  last_sign_in_ip            :string(255)
+#  created_at                 :datetime
+#  updated_at                 :datetime
+#  name                       :string(255)
+#  admin                      :boolean          default(FALSE), not null
+#  projects_limit             :integer          default(10)
+#  skype                      :string(255)      default(""), not null
+#  linkedin                   :string(255)      default(""), not null
+#  twitter                    :string(255)      default(""), not null
+#  authentication_token       :string(255)
+#  theme_id                   :integer          default(1), not null
+#  bio                        :string(255)
+#  failed_attempts            :integer          default(0)
+#  locked_at                  :datetime
+#  username                   :string(255)
+#  can_create_group           :boolean          default(TRUE), not null
+#  can_create_team            :boolean          default(TRUE), not null
+#  state                      :string(255)
+#  color_scheme_id            :integer          default(1), not null
+#  notification_level         :integer          default(1), not null
+#  password_expires_at        :datetime
+#  created_by_id              :integer
+#  last_credential_check_at   :datetime
+#  avatar                     :string(255)
+#  confirmation_token         :string(255)
+#  confirmed_at               :datetime
+#  confirmation_sent_at       :datetime
+#  unconfirmed_email          :string(255)
+#  hide_no_ssh_key            :boolean          default(FALSE)
+#  website_url                :string(255)      default(""), not null
+#  notification_email         :string(255)
+#  hide_no_password           :boolean          default(FALSE)
+#  password_automatically_set :boolean          default(FALSE)
+#  location                   :string(255)
+#  encrypted_otp_secret       :string(255)
+#  encrypted_otp_secret_iv    :string(255)
+#  encrypted_otp_secret_salt  :string(255)
+#  otp_required_for_login     :boolean          default(FALSE), not null
+#  otp_backup_codes           :text
+#  public_email               :string(255)      default(""), not null
+#  dashboard                  :integer          default(0)
+#  project_view               :integer          default(0)
 #
 
 require 'spec_helper'
@@ -181,6 +178,19 @@ describe User do
     it { is_expected.to respond_to(:is_admin?) }
     it { is_expected.to respond_to(:name) }
     it { is_expected.to respond_to(:private_token) }
+  end
+
+  describe '#confirm' do
+    let(:user) { create(:user, confirmed_at: nil, unconfirmed_email: 'test@gitlab.com') }
+
+    it 'returns unconfirmed' do
+      expect(user.confirmed?).to be_falsey
+    end
+
+    it 'confirms a user' do
+      user.confirm
+      expect(user.confirmed?).to be_truthy
+    end
   end
 
   describe '#to_reference' do
@@ -442,6 +452,18 @@ describe User do
     end
   end
 
+  describe '.find_by_username!' do
+    it 'raises RecordNotFound' do
+      expect { described_class.find_by_username!('JohnDoe') }.
+        to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'is case-insensitive' do
+      user = create(:user, username: 'JohnDoe')
+      expect(described_class.find_by_username!('JOHNDOE')).to eq user
+    end
+  end
+
   describe 'all_ssh_keys' do
     it { is_expected.to have_many(:keys).dependent(:destroy) }
 
@@ -682,6 +704,35 @@ describe User do
       end
 
       it { expect(subject.can_be_removed?).to be_falsey }
+    end
+  end
+
+  describe "#recent_push" do
+    subject { create(:user) }
+    let!(:project1) { create(:project) }
+    let!(:project2) { create(:project, forked_from_project: project1) }
+    let!(:push_data) { Gitlab::PushDataBuilder.build_sample(project2, subject) }
+    let!(:push_event) { create(:event, action: Event::PUSHED, project: project2, target: project1, author: subject, data: push_data) }
+
+    before do
+      project1.team << [subject, :master]
+      project2.team << [subject, :master]
+    end
+
+    it "includes push event" do
+      expect(subject.recent_push).to eq(push_event)
+    end
+
+    it "excludes push event if branch has been deleted" do
+      allow_any_instance_of(Repository).to receive(:branch_names).and_return(['foo'])
+
+      expect(subject.recent_push).to eq(nil)
+    end
+
+    it "excludes push event if MR is opened for it" do
+      create(:merge_request, source_project: project2, target_project: project1, source_branch: project2.default_branch, target_branch: 'fix', author: subject)
+
+      expect(subject.recent_push).to eq(nil)
     end
   end
 end

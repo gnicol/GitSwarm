@@ -1,15 +1,24 @@
 .page-with-sidebar{ class: nav_sidebar_class }
   = render "layouts/broadcast"
-  .sidebar-wrapper
+  .sidebar-wrapper.nicescroll
+    .header-logo
+      = link_to root_path, class: 'home', title: 'Dashboard', id: 'js-shortcuts-home', data: {toggle: 'tooltip', placement: 'bottom'} do
+        = brand_header_logo
+        .gitlab-text-container
+          %h3 GitSwarm
+
     - if defined?(sidebar) && sidebar
       = render "layouts/nav/#{sidebar}"
     - elsif current_user
       = render 'layouts/nav/dashboard'
+    - else
+      = render 'layouts/nav/explore'
+
     .collapse-nav
       = render partial: 'layouts/collapse_button'
   .content-wrapper
-    .container-fluid
+    = render "layouts/flash"
+    %div{ class: container_class }
       .content
-        = render "layouts/flash"
         .clearfix
           = yield

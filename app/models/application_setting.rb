@@ -14,17 +14,20 @@
 #  default_branch_protection    :integer          default(2)
 #  twitter_sharing_enabled      :boolean          default(TRUE)
 #  restricted_visibility_levels :text
+#  version_check_enabled        :boolean          default(TRUE)
 #  max_attachment_size          :integer          default(10), not null
-#  session_expire_delay       :integer          default(10080), not null
 #  default_project_visibility   :integer
 #  default_snippet_visibility   :integer
 #  restricted_signup_domains    :text
-#  user_oauth_applications      :bool             default(TRUE)
+#  user_oauth_applications      :boolean          default(TRUE)
 #  after_sign_out_path          :string(255)
+#  session_expire_delay         :integer          default(10080), not null
+#  import_sources               :text
 #
 
 class ApplicationSetting < ActiveRecord::Base
   serialize :restricted_visibility_levels
+  serialize :import_sources
   serialize :restricted_signup_domains, Array
   attr_accessor :restricted_signup_domains_raw
 
@@ -51,6 +54,16 @@ class ApplicationSetting < ActiveRecord::Base
     end
   end
 
+  validates_each :import_sources do |record, attr, value|
+    unless value.nil?
+      value.each do |source|
+        unless Gitlab::ImportSources.options.has_value?(source)
+          record.errors.add(attr, "'#{source}' is not a import source")
+        end
+      end
+    end
+  end
+
   def self.current
     ApplicationSetting.last
   end
@@ -69,7 +82,9 @@ class ApplicationSetting < ActiveRecord::Base
       session_expire_delay: Settings.gitlab['session_expire_delay'],
       default_project_visibility: Settings.gitlab.default_projects_features['visibility_level'],
       default_snippet_visibility: Settings.gitlab.default_projects_features['visibility_level'],
-      restricted_signup_domains: Settings.gitlab['restricted_signup_domains']
+      restricted_signup_domains: Settings.gitlab['restricted_signup_domains'],
+      import_sources: ['github','bitbucket','gitlab','gitorious','google_code','fogbugz','git'],
+      ci_enabled: Settings.gitlab_ci['enabled']
     )
   end
 

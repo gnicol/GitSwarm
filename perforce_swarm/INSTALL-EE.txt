@@ -50,7 +50,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
     a. Add Perforce's packaging key to your APT keyring:
 
-        $ wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+        $ wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
 
     b. Add Perforce's repository to your apt configuration:
 
@@ -64,11 +64,11 @@ Note: If you install Postfix to send email, please select Internet Site
         $ sudo apt-get upgrade
         $ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server helix-git-fusion-base
 
-2. For Ubuntu 12.04:
+2. For Ubuntu 14.04:
 
     a. Add Perforce's packaging key to your APT keyring:
 
-        $ wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+        $ wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
 
     b. Add Perforce's repository to your apt configuration:
 
@@ -86,7 +86,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
     a. Add Perforce's packaging key to your RPM keyring:
 
-        $ sudo rpm --import http://package.perforce.com/perforce.pubkey
+        $ sudo rpm --import https://package.perforce.com/perforce.pubkey
 
     b. Add Perforce's yum repository to your configuration:
 
@@ -113,7 +113,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
     a. Add Perforce's packaging key to your RPM keyring:
 
-        $ sudo rpm --import http://package.perforce.com/perforce.pubkey
+        $ sudo rpm --import https://package.perforce.com/perforce.pubkey
 
     b. Add Perforce's yum repository to your configuration:
 

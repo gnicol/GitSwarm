@@ -48,6 +48,10 @@
       display: block;
     }
 
+    .project-home-desc {
+      font-size: 21px;
+    }
+
     .project-repo-buttons,
     .git-clone-holder {
       display: none;
@@ -75,6 +79,23 @@
 
   %ul.notes .note-role, .note-actions {
     display: none;
+  }
+
+  .center-top-menu {
+    height: 45px;
+
+    li a {
+      font-size: 14px;
+      padding: 19px 10px;
+    }
+  }
+
+  .projects-search-form {
+    margin: 0 -5px !important;
+
+    .btn {
+      display: none;
+    }
   }
 }
 

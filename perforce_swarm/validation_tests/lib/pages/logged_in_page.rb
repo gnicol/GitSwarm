@@ -1,4 +1,7 @@
 require_relative '../page'
+require_relative 'create_project_page'
+require_relative 'branches_page'
+require_relative 'project_page'
 
 class LoggedInPage < Page
   def initialize(driver)
@@ -25,5 +28,19 @@ class LoggedInPage < Page
     newuri = uri.scheme + '://' + uri.host + '/projects/new'
     goto newuri
     CreateProjectPage.new(@driver)
+  end
+
+  def goto_project_page(namespace, project_name)
+    uri = URI.parse @driver.current_url
+    newuri = uri.scheme + '://' + uri.host + '/' + namespace + '/' + project_name
+    goto newuri
+    ProjectPage.new(@driver)
+  end
+
+  def goto_branches_page(namespace, project_name)
+    uri = URI.parse @driver.current_url
+    newuri = uri.scheme + '://' + uri.host + '/' + namespace + '/' + project_name + '/branches'
+    goto newuri
+    BranchesPage.new(@driver)
   end
 end

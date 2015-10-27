@@ -16,3 +16,6 @@ p4_password : 5iveL!fe
 p4_gitswarm_depot_root : //gitswarm/projects/
 
 git_binary : git
+
+# Logging level.  DEBUG, INFO
+log_level : INFO

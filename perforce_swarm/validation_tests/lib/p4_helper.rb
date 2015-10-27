@@ -26,7 +26,8 @@ class P4Helper
     @p4.connect
 
     if @p4.port.start_with?('ssl')
-      @p4.run_trust('-y')
+      # force we may be trusting something we trusted before and the fingerprint has changed
+      @p4.at_exception_level(P4::RAISE_NONE) { @p4.run_trust('-f', '-y') }
       @p4.disconnect # if we needed to trust, we need to reconnect to get unicode info
       @p4.connect
     end
@@ -35,13 +36,14 @@ class P4Helper
     @p4.charset='utf8' if @p4.server_unicode?
 
     @p4.run_login
-
     spec = p4.fetch_client
     spec['Root'] = @local_dir
     spec['View'] = [@depot_path + ' //'+client_name+'/...']
     @p4.save_client(spec)
+    sync
+  end
 
-    # And sync it.
+  def sync
     LOG.debug 'Syncing from ' + @depot_path + ' into ' + @local_dir
     @p4.run_sync('-f', '-q') # -q to stop it throwing a warning if no files exist under the depot path
   end

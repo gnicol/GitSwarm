@@ -4,11 +4,11 @@ class PerforceSwarm::GitFusionController < ApplicationController
 
     begin
       # get the desired project and throw if it is already mirrored
-      project = Project.find(params['project_id'])
-      fail 'This project is already mirrored in Helix.' if project.git_fusion_repo.present?
+      @project = Project.find(params['project_id'])
+      fail 'This project is already mirrored in Helix.' if @project.git_fusion_repo.present?
 
       # pre-flight checks against Git Fusion and Perforce
-      creator = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server, project.namespace.name, project.path)
+      creator = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server, @project.namespace.name, @project.path)
       p4      = PerforceSwarm::P4::Connection.new(creator.config)
       p4.login
       creator.save_preflight(p4)

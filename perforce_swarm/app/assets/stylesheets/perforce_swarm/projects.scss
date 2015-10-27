@@ -82,3 +82,17 @@
 .git-fusion-import .option-descr {
   color: #555;
 }
+
+// mirror existing project
+.git-fusion-mirroring-data {
+  margin-top: 10px;
+}
+
+.mirroring-enable.form-actions {
+  padding-left: 0px;
+}
+
+.mirroring-depot-path span.depot-path {
+  // although not dangerous, use this to get the red color for the displayed depot path
+  color: $brand-danger;
+}

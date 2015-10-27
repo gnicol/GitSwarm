@@ -47,19 +47,19 @@ Feature: Mirror Existing Project
     And I should see an inadequate permissions tooltip
 
   @automated 
-  Scenario: Having Git Fusion enabled with mirroring configured and adequate permissions, but on an already-mirrored project results in the mirroring button not being displayed and "mirrored in helix" displayed below the clone URL field.
+  Scenario: Having Git Fusion enabled with mirroring configured and adequate permissions, but on an already-mirrored project results in the mirroring button not being displayed and "Mirrored in Helix displayed below the clone URL field.
     Given I sign in as a user
     And Git Fusion support is enabled with auto-create enabled servers
     And Helix mirroring is enabled for project "Shop"
     When I visit project "Shop" page
     Then I should not see a Mirror in Helix button
-    And I should see "mirrored in helix" under the clone URL field
+    And I should see "Mirrored in Helix" under the clone URL field
 
   @automated 
-  Scenario: Having Git Fusion enabled with mirroring configured and adequate permissions, on a non-mirrored project results in the mirroring button being displayed and "not mirrored in helix" displayed below the clone URL field.
+  Scenario: Having Git Fusion enabled with mirroring configured and adequate permissions, on a non-mirrored project results in the mirroring button being displayed and "Not Mirrored in Helix displayed below the clone URL field.
     Given I sign in as a user
     And Git Fusion support is enabled with auto-create enabled servers
     And Helix mirroring is not enabled for project "Shop"
     When I visit project "Shop" page
     Then I should see a Mirror in Helix button
-    And I should see "not mirrored in helix" under the clone URL field
+    And I should see "Not Mirrored in Helix" under the clone URL field

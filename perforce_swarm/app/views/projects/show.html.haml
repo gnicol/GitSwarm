@@ -57,7 +57,7 @@
           = link_to add_contribution_guide_path(@project) do
             Add Contribution guide
     -# gitswarm changes start
-    %li{data: {toggle: 'tooltip', html: 'true', title: mirroring_tooltip(@project, current_user)}}
+    %li.mirrored-status{data: {toggle: 'tooltip', html: 'true', title: mirroring_tooltip(@project, current_user)}}
       - mirrored = mirrored?(@project)
       = link_to '#' do
         = (mirrored ? '' : 'Not ') + 'Mirrored in Helix'

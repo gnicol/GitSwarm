@@ -1,5 +1,4 @@
-require_relative 'logged_in_page'
-require_relative 'project_page'
+require_relative '../page'
 
 class CreateProjectPage < LoggedInPage
   attr_reader :has_gf_servers

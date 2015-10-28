@@ -76,4 +76,38 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
       page.should_not have_link('Not Mirrored in Helix')
     end
   end
+
+  step 'I click the Mirror in Helix button' do
+    page.click_link('Mirror in Helix')
+  end
+
+  step 'I should be on the Mirror in Helix page for the "Shop" project' do
+    project = Project.find_by(name: 'Shop')
+    expect(page.current_path).to eq(configure_mirroring_namespace_project_path(project.namespace, project))
+  end
+
+  step 'The Git Fusion repo selected by default is the first one that has auto_create enabled' do
+    first_auto_create = nil
+    PerforceSwarm::GitlabConfig.new.git_fusion.entries.each do |id, entry|
+      next unless entry.auto_create_configured?
+      first_auto_create = id
+      break
+    end
+    expect(first_auto_create).to_not be_nil
+    expect(page.find('#git_fusion_entry').find('option[selected]').value).to eq(first_auto_create)
+  end
+
+  step 'I select a Git Fusion repo that does not support auto-create' do
+    page.within('.mirroring-server-select') do
+      select('no_auto_create2', from: 'git_fusion_entry')
+    end
+  end
+
+  step 'The Git Fusion depot path info is done loading' do
+    expect(page.find(:div, '.git-fusion-mirroring-data')).to_not have_selector('.fa-spinner.fa-spin')
+  end
+
+  step 'I should see an error message that says auto-create is not configured properly' do
+    expect(page.find(:div, '.mirroring-errors')).to have_content('Auto create is not configured properly.')
+  end
 end

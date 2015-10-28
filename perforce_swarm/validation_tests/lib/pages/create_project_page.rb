@@ -1,3 +1,6 @@
+# Adding in the require_relative 'logged_in_page' line to ensure that the autoloader does not fail
+# with the error "uninitialized constant LoggedInPage (NameError)"
+require_relative 'logged_in_page'
 require_relative '../page'
 
 class CreateProjectPage < LoggedInPage

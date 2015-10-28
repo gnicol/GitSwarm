@@ -1,5 +1,4 @@
-require_relative 'logged_in_page'
-require_relative 'project_page'
+require_relative '../page'
 
 class EditFilePage < LoggedInPage
   def initialize(driver)

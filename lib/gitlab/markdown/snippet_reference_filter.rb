@@ -1,3 +1,5 @@
+require 'gitlab/markdown'
+
 module Gitlab
   module Markdown
     # HTML filter that replaces snippet references with links. References to
@@ -47,10 +49,11 @@ module Gitlab
 
             title = escape_once("Snippet: #{snippet.title}")
             klass = reference_class(:snippet)
+            data  = data_attribute(project.id)
 
             url = url_for_snippet(snippet, project)
 
-            %(<a href="#{url}"
+            %(<a href="#{url}" #{data}
                  title="#{title}"
                  class="#{klass}">#{match}</a>)
           else
@@ -60,7 +63,7 @@ module Gitlab
       end
 
       def url_for_snippet(snippet, project)
-        h = Rails.application.routes.url_helpers
+        h = Gitlab::Application.routes.url_helpers
         h.namespace_project_snippet_url(project.namespace, project, snippet,
                                         only_path: context[:only_path])
       end

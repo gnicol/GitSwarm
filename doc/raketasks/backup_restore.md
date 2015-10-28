@@ -7,7 +7,7 @@
 A backup creates an archive file that contains the database, all repositories and all attachments.
 This archive will be saved in backup_path (see `config/gitlab.yml`).
 The filename will be `[TIMESTAMP]_gitlab_backup.tar`. This timestamp can be used to restore an specific backup.
-You can only restore a backup to exactly the same version of GitLab that you created it on, for example 7.2.1.
+You can only restore a backup to exactly the same version of GitLab that you created it on, for example 7.2.1. The best way to migrate your repositories from one server to another is through backup restore.
 
 You need to keep a separate copy of `/etc/gitlab/gitlab-secrets.json`
 (for omnibus packages) or `/home/git/gitlab/.secret` (for installations
@@ -148,6 +148,23 @@ with the name of your bucket:
 }
 ```
 
+## Backup archive permissions
+
+The backup archives created by GitLab (123456_gitlab_backup.tar) will have owner/group git:git and 0600 permissions by default.
+This is meant to avoid other system users reading GitLab's data.
+If you need the backup archives to have different permissions you can use the 'archive_permissions' setting.
+
+```
+# In /etc/gitlab/gitlab.rb, for omnibus packages
+gitlab_rails['backup_archive_permissions'] = 0644 # Makes the backup archives world-readable
+```
+
+```
+# In gitlab.yml, for installations from source:
+  backup:
+    archive_permissions: 0644 # Makes the backup archives world-readable
+```
+
 ## Storing configuration files
 
 Please be informed that a backup does not store your configuration
@@ -232,7 +249,7 @@ Deleting tmp directories...[DONE]
 We will assume that you have installed GitLab from an omnibus package and run
 `sudo gitlab-ctl reconfigure` at least once.
 
-First make sure your backup tar file is in `/var/opt/gitlab/backups`.
+First make sure your backup tar file is in `/var/opt/gitlab/backups` (or wherever `gitlab_rails['backup_path']` points to).
 
 ```shell
 sudo cp 1393513186_gitlab_backup.tar /var/opt/gitlab/backups/
@@ -352,4 +369,7 @@ For more information see similar questions on postgresql issue tracker[here](htt
 
 ## Note
 This documentation is for GitLab CE.
-We backup GitLab.com and make sure your data is secure, but you can't use these methods to export / backup your data yourself from GitLab.com.
+We backup GitLab.com and make sure your data is secure, but you can't use these methods
+to export / backup your data yourself from GitLab.com.
+
+Issues are stored in the database. They can't be stored in Git itself.

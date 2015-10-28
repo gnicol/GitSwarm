@@ -1,5 +1,8 @@
-.prepend-top-20.append-bottom-20
-  .pull-right
+- if params[:view] == 'parallel'
+  - fluid_layout true
+
+.gray-content-block.second-block
+  .inline-parallel-buttons
     .btn-group
       = inline_diff_btn
       = parallel_diff_btn

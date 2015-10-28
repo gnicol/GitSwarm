@@ -111,3 +111,49 @@ class @GitFusionProject
       dropdownAutoWidth: true
     })
     @update_ui()
+
+class @GitFusionMirror extends @GitFusionProject
+  constructor: (@opts) ->
+    this.$el       = $('.git-fusion-mirroring')
+    @project_id    = @opts
+    @repo_contents = {}
+    # Load content right away if we already have a server_id selected
+    @load_content(this.$(@server_select_selector).val()) if this.$(@server_select_selector).val()
+
+    # Wire up listener
+    this.$el.on 'change', @server_select_selector, (e) =>
+      server = $(e.currentTarget)
+      @load_content(server.val())
+
+  load_content: (server_id) ->
+    # Clear out pre-existing content right away
+    @set_content('')
+
+    # Set the new content if we already have it loaded
+    return @set_content(@repo_contents[server_id]) if @repo_contents[server_id]
+
+    # Fetch the server configuration if we don't already have it loaded
+    url = '/gitswarm/git_fusion/existing_project.json'
+    url = gon.relative_url_root + url if gon.relative_url_root?
+    $.ajax(url, {
+      type: 'GET',
+      dataType: 'json',
+      data: {fusion_server: server_id, project_id: @project_id}
+      success: (data) =>
+        # Store it so we don't fetch it again
+        @repo_contents[server_id] = data.html
+        # Only update the list if our server_id is still selected
+        if this.$(@server_select_selector).val() == server_id
+          @set_content(@repo_contents[server_id])
+
+      error: =>
+        if this.$(@server_select_selector).val() == server_id
+          @set_content('<div class="description slead"><h4>Error</h4>Refresh and try again</div>')
+      beforeSend: =>
+        # Add loading spinner
+        @set_content('<div class="loading"><p><i class="fa fa-spinner fa-spin"></i> Loading</p></div>')
+    })
+
+  set_content: (content) ->
+    this.$('.git-fusion-mirroring-data').replaceWith('<div class="git-fusion-mirroring-data">' + content + '</div>')
+    @update_ui()

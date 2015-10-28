@@ -1,3 +1,5 @@
+require 'gitlab/markdown'
+
 module Gitlab
   module Markdown
     # HTML filter that replaces user or group references with links.
@@ -49,7 +51,7 @@ module Gitlab
       private
 
       def urls
-        Rails.application.routes.url_helpers
+        Gitlab::Application.routes.url_helpers
       end
 
       def link_class
@@ -83,18 +85,20 @@ module Gitlab
         push_result(:user, *namespace.users)
 
         url = urls.group_url(group, only_path: context[:only_path])
+        data = data_attribute(namespace.id, :group)
 
         text = Group.reference_prefix + group
-        %(<a href="#{url}" class="#{link_class}">#{text}</a>)
+        %(<a href="#{url}" #{data} class="#{link_class}">#{text}</a>)
       end
 
       def link_to_user(user, namespace)
         push_result(:user, namespace.owner)
 
         url = urls.user_url(user, only_path: context[:only_path])
+        data = data_attribute(namespace.owner_id, :user)
 
         text = User.reference_prefix + user
-        %(<a href="#{url}" class="#{link_class}">#{text}</a>)
+        %(<a href="#{url}" #{data} class="#{link_class}">#{text}</a>)
       end
 
       def user_can_reference_group?(group)

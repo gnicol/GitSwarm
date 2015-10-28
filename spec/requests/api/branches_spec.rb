@@ -19,7 +19,8 @@ describe API::API, api: true  do
       get api("/projects/#{project.id}/repository/branches", user)
       expect(response.status).to eq(200)
       expect(json_response).to be_an Array
-      expect(json_response.first['name']).to eq(project.repository.branch_names.first)
+      branch_names = json_response.map { |x| x['name'] }
+      expect(branch_names).to match_array(project.repository.branch_names)
     end
   end
 

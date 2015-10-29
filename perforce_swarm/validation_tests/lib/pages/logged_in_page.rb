@@ -1,7 +1,4 @@
 require_relative '../page'
-require_relative 'create_project_page'
-require_relative 'branches_page'
-require_relative 'project_page'
 
 class LoggedInPage < Page
   def initialize(driver)

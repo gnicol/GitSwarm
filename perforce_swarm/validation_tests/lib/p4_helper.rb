@@ -9,6 +9,12 @@ class P4Helper
   attr_accessor :client_name
 
   def initialize(p4port, user, password, local_dir, depot_path)
+    # Pointing the p4 environment variables to tmp-clients directory
+    p4_home = File.join(__dir__, 'tmp-clients')
+    ENV['P4ENVIRO']  = File.join(p4_home, '.p4enviro')
+    ENV['P4TICKETS'] = File.join(p4_home, '.p4tickets')
+    ENV['P4TRUST']   = File.join(p4_home, '.p4trust')
+
     @user = user
     @password = password
     @local_dir = local_dir

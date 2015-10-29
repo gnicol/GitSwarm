@@ -1,6 +1,4 @@
 require_relative '../page'
-require_relative 'login_page'
-require_relative 'logged_in_page'
 
 class PasswordResetPage < LoggedInPage
   def initialize(driver)

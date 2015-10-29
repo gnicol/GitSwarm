@@ -10,13 +10,13 @@ class P4Helper
 
   def initialize(p4port, user, password, local_dir, depot_path)
     # Creating the p4-clients umbrella  directory under the validation_tests/lib directory
-    # This ensures that there isn't a huge proliferation of p4 client directories on an unknown 
+    # This ensures that there isn't a huge proliferation of p4 client directories on an unknown
     # location on the host machine, while allowing for multiple test runs to remain isolated
-    p4_clients=File.join(__dir__, 'p4-clients')
-    Dir.mkdir(p4_clients) if not File.exists?(p4_clients)   
-    p4_home = Dir.mktmpdir("P4-", p4_clients) 
-    
-    # Setting the environment variables to p4-client directory 
+    p4_clients = File.join(__dir__, 'p4-clients')
+    Dir.mkdir(p4_clients) unless File.exist?(p4_clients)
+    p4_home = Dir.mktmpdir('P4-', p4_clients)
+
+    # Setting the environment variables to p4-client directory
     ENV['P4ENVIRO']  = File.join(p4_home, '.p4enviro')
     ENV['P4TICKETS'] = File.join(p4_home, '.p4tickets')
     ENV['P4TRUST']   = File.join(p4_home, '.p4trust')

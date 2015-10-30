@@ -26,7 +26,7 @@ RSpec.configure do |config|
 end
 
 def tmp_client_dir
-  File.join(__dir__, 'tmp-clients')
+  File.join(__dir__, '..', 'tmp-clients')
 end
 
 def unique_string

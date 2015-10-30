@@ -13,10 +13,10 @@ describe 'New Mirrored Project', browser: true do
   let(:email) { 'root@mp-gs-ubuntu-12-153' }
   let(:project) { 'project-'+unique_string }
   let(:expected_gf_repo_name) { 'gitswarm-'+user+'-'+project }
-  let(:git_dir) { Dir.mktmpdir('Git-', File.join(__dir__, 'tmp-clients')) }
-  let(:p4_dir) {  Dir.mktmpdir('P4-', File.join(__dir__, 'tmp-clients')) }
+  let(:git_dir) { Dir.mktmpdir('Git-', tmp_client_dir) }
+  let(:p4_dir) {  Dir.mktmpdir('P4-', tmp_client_dir) }
   let(:another_project) { 'another_project-'+unique_string }
-  let(:another_git_dir) { Dir.mktmpdir('AnotherGit-', File.join(__dir__, 'tmp-clients')) }
+  let(:another_git_dir) { Dir.mktmpdir('AnotherGit-', tmp_client_dir) }
 
   before do
     create_user

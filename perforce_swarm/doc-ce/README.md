@@ -30,3 +30,7 @@
 - [System hooks](system_hooks/system_hooks.md) Notifications when users, projects and keys are changed.
 - [Update](update/README.md) Update guides to upgrade your installation.
 - [Welcome message](customization/welcome_message.md) Add a custom welcome message to the sign-in page.
+
+## Contributor documentation
+
+- [Development](development/contribution.md) Details on contributing back changes.

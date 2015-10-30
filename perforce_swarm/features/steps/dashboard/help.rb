@@ -7,8 +7,14 @@ class Spinach::Features::DashboardHelp < Spinach::FeatureSteps
   end
 
   step 'Header "Rebuild project satellites" should have correct ids and links' do
-    header_should_have_correct_id_and_link(
-      2, 'Check GitSwarm configuration', 'check-gitswarm-configuration', '.documentation'
-    )
+    if PerforceSwarm.ee?
+      header_should_have_correct_id_and_link(
+        2, 'Check GitSwarm EE configuration', 'check-gitswarm-ee-configuration', '.documentation'
+      )
+    else
+      header_should_have_correct_id_and_link(
+        2, 'Check GitSwarm configuration', 'check-gitswarm-configuration', '.documentation'
+      )
+    end
   end
 end

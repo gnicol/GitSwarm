@@ -8,6 +8,15 @@ require_relative '../lib/p4_helper'
 require_relative '../lib/browser'
 
 RSpec.configure do |config|
+  config.before(:suite) do
+    # Creating the tmp-clients umbrella  directory under the validation_tests/spec directory
+    # This ensures that there isn't a huge proliferation of  client directories on an unknown
+    # location on the host machine, while allowing for multiple test runs to remain isolated
+    cleanup_tmp_dirs
+    tmp_clients = File.join(__dir__, 'tmp-clients')
+    Dir.mkdir(tmp_clients) unless File.exist?(tmp_clients)
+  end
+
   config.before(:each, browser: true) do
     @driver = Browser.driver
   end
@@ -27,4 +36,8 @@ def create_file(directory, name = unique_string)
   new_file.write 'content'
   new_file.close
   path
+end
+
+def cleanup_tmp_dirs
+  FileUtils.rm_rf(File.join(__dir__, 'tmp-clients'))
 end

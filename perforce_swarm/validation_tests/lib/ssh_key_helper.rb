@@ -3,7 +3,7 @@ require 'sshkey'
 class SSHKeyHelper
   attr_reader :dir
   def initialize
-    @local_dir_path = Dir.mktmpdir
+    @local_dir_path = Dir.mktmpdir('SSH-', tmp_client_dir)
     LOG.debug @local_dir_path
     @keys = SSHKey.generate
 

@@ -1,12 +1,12 @@
                        Installation Instructions for
                               Helix GitSwarm
 
-                              Version 2015.3
+                              Version 2015.4
 
 Introduction
 
     This document describes the installation and initial configuration
-    process for Helix GitSwarm release 2015.3.
+    process for Helix GitSwarm release 2015.4.
 
     * Note, installing and configuring GitSwarm is a System Administrator
       function and requires root access.

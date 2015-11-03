@@ -3,9 +3,9 @@ require Rails.root.join('app', 'models', 'user')
 module PerforceSwarm
   module UserExtension
     def validate_and_change_in_p4d
-      # presently we only handle the 'root' user and only for auto-provisioned servers
-      # run only if were changing password
-      return true unless changed.include?('encrypted_password') && username == 'root'
+      # presently we only handle the 'root' admin user and only for auto-provisioned servers
+      # runs only if we're changing password
+      return true unless changed.include?('encrypted_password') && username == 'root' && admin
       sync_p4d_password(password)
     rescue P4Exception => ex
       # if a p4 error occurs; attempt to raise it to the user's attention and abort the save
@@ -18,11 +18,12 @@ module PerforceSwarm
     end
 
     def sync_p4d_password(password)
-      default_config = PerforceSwarm::GitlabConfig.new.git_fusion.entry('default')
-      return unless default_config['auto_provision']
+      git_fusion = PerforceSwarm::GitlabConfig.new.git_fusion
+      id         = git_fusion.auto_provisioned_instance_id
+      return unless git_fusion.enabled? && !id.nil?
 
       begin
-        connection = PerforceSwarm::P4::Connection.new(default_config)
+        connection = PerforceSwarm::P4::Connection.new(git_fusion.entry(id))
         connection.login
         connection.input(password)
         connection.run('passwd', 'root')

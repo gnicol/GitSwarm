@@ -1,14 +1,13 @@
-require 'gitlab/satellite/satellite'
-
 class Projects::MergeRequestsController < Projects::ApplicationController
   before_action :module_enabled
   before_action :merge_request, only: [
-    :edit, :update, :show, :diffs, :commits, :automerge, :automerge_check,
+    :edit, :update, :show, :diffs, :commits, :merge, :merge_check,
     :ci_status, :toggle_subscription
   ]
   before_action :closes_issues, only: [:edit, :update, :show, :diffs, :commits]
   before_action :validates_merge_request, only: [:show, :diffs, :commits]
   before_action :define_show_vars, only: [:show, :diffs, :commits]
+  before_action :ensure_ref_fetched, only: [:show, :commits, :diffs]
 
   # Allow read any merge_request
   before_action :authorize_read_merge_request!
@@ -137,7 +136,7 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     end
   end
 
-  def automerge_check
+  def merge_check
     if @merge_request.unchecked?
       @merge_request.check_if_can_be_merged
     end
@@ -147,11 +146,11 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     render partial: "projects/merge_requests/widget/show.html.haml", layout: false
   end
 
-  def automerge
+  def merge
     return access_denied! unless @merge_request.can_be_merged_by?(current_user)
 
-    if @merge_request.automergeable?
-      AutoMergeWorker.perform_async(@merge_request.id, current_user.id, params)
+    if @merge_request.mergeable?
+      MergeWorker.perform_async(@merge_request.id, current_user.id, params)
       @status = true
     else
       @status = false
@@ -278,5 +277,11 @@ class Projects::MergeRequestsController < Projects::ApplicationController
       :target_project_id, :target_branch, :milestone_id,
       :state_event, :description, :task_num, label_ids: []
     )
+  end
+
+  # Make sure merge requests created before 8.0
+  # have head file in refs/merge-requests/
+  def ensure_ref_fetched
+    @merge_request.ensure_ref_fetched
   end
 end

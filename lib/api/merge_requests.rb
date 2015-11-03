@@ -55,7 +55,7 @@ module API
           else merge_requests
           end
 
-        merge_requests.reorder(issuable_order_by => issuable_sort)
+        merge_requests = merge_requests.reorder(issuable_order_by => issuable_sort)
         present paginate(merge_requests), with: Entities::MergeRequest
       end
 
@@ -198,7 +198,11 @@ module API
 
           if merge_request.open? && !merge_request.work_in_progress?
             if merge_request.can_be_merged?
-              merge_request.automerge!(current_user, params[:merge_commit_message] || merge_request.merge_commit_message)
+              commit_message = params[:merge_commit_message] || merge_request.merge_commit_message
+
+              ::MergeRequests::MergeService.new(merge_request.target_project, current_user).
+                execute(merge_request, commit_message)
+
               present merge_request, with: Entities::MergeRequest
             else
               render_api_error!('Branch cannot be merged', 405)
@@ -229,7 +233,7 @@ module API
 
         authorize! :read_merge_request, merge_request
 
-        present paginate(merge_request.notes), with: Entities::MRNote
+        present paginate(merge_request.notes.fresh), with: Entities::MRNote
       end
 
       # Post comment to merge request

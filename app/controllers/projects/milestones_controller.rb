@@ -64,9 +64,9 @@ class Projects::MilestonesController < Projects::ApplicationController
   end
 
   def destroy
-    return access_denied! unless can?(current_user, :admin_milestone, @milestone)
+    return access_denied! unless can?(current_user, :admin_milestone, @project)
 
-    @milestone.destroy
+    Milestones::DestroyService.new(project, current_user).execute(milestone)
 
     respond_to do |format|
       format.html { redirect_to namespace_project_milestones_path }

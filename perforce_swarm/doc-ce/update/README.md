@@ -1,6 +1,6 @@
-# Updating GitSwarm to 2015.3
+# Updating GitSwarm to 2015.4
 
-1.  **Download the 2015.3 GitSwarm package and install it.**
+1.  **Download the 2015.4 GitSwarm package and install it.**
 
 
     ```
@@ -19,12 +19,6 @@ sudo gitswarm-rake gitswarm:check
     ```
 
 # New configuration options
-
-*  **Allow new repo creation in Helix Git Fusion Servers**
-
-    You can configure where in the Helix Versioning Engine (P4D) you want your created GitSwarm repositories to be
-    mirrored to. See the
-    [Convention-based Repository Configuration instructions](../workflow/importing/import_from_gitfusion.md).
 
 *  **Discovering new config options**
 

@@ -18,7 +18,7 @@
         1.  Add Perforce's packaging key to your APT keyring
 
             ```
-wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
             ```
 
         1.  Add Perforce's repository to your apt configuration
@@ -41,7 +41,7 @@ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server
         1.  Add Perforce's packaging key to your APT keyring
 
             ```
-wget -q http://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
             ```
 
         1.  Add Perforce's repository to your apt configuration
@@ -64,7 +64,7 @@ sudo apt-get install curl openssh-server ca-certificates postfix perforce-server
         1. Add Perforce's packaging key to your RPM keyring
 
             ```
-sudo rpm --import http://package.perforce.com/perforce.pubkey
+sudo rpm --import https://package.perforce.com/perforce.pubkey
             ```
 
         1. Add Perforce's yum repository to your configuration
@@ -95,7 +95,7 @@ sudo lokkit -s http -s ssh
         1. Add Perforce's packaging key to your RPM keyring
 
             ```
-sudo rpm --import http://package.perforce.com/perforce.pubkey
+sudo rpm --import https://package.perforce.com/perforce.pubkey
             ```
 
         1. Add Perforce's yum repository to your configuration
@@ -129,29 +129,29 @@ sudo systemctl reload firewalld
     1.  **For Ubuntu 12.04:**
 
         ```
-curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.3.precise.amd64.deb
-sudo dpkg -i perforce-gitswarm-ee-2015.3.precise.amd64.deb
+curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.precise.amd64.deb
+sudo dpkg -i perforce-gitswarm-ee-2015.4.precise.amd64.deb
         ```
 
     1.  **For Ubuntu 14.04:**
 
         ```
-curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.3.trusty.amd64.deb
-sudo dpkg -i perforce-gitswarm-ee-2015.3.trusty.amd64.deb
+curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.trusty.amd64.deb
+sudo dpkg -i perforce-gitswarm-ee-2015.4.trusty.amd64.deb
         ```
 
     1.  **For CentOS/RHEL 6:**
 
         ```
-curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.3.el6.x86_64.rpm
-sudo yum install perforce-gitswarm-ee-2015.3.el6.x86_64.rpm
+curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.el6.x86_64.rpm
+sudo yum install perforce-gitswarm-ee-2015.4.el6.x86_64.rpm
         ```
 
     1.  **For CentOS/RHEL 7:**
 
         ```
-curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.3.el7.x86_64.rpm
-sudo yum install perforce-gitswarm-ee-2015.3.el7.x86_64.rpm
+curl -O http://preview.perforce.com/gitswarm/perforce-gitswarm-ee-2015.4.el7.x86_64.rpm
+sudo yum install perforce-gitswarm-ee-2015.4.el7.x86_64.rpm
         ```
 
 1.  **Verify the external URL for your GitSwarm EE instance:**

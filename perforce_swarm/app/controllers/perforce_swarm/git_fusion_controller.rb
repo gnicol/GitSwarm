@@ -7,6 +7,13 @@ class PerforceSwarm::GitFusionController < ApplicationController
       @project = Project.find(params['project_id'])
       fail 'This project is already mirrored in Helix.' if @project.git_fusion_repo.present?
 
+      # first verify we can talk to git-fusion successfully, add error out with details if we cannot
+      begin
+        PerforceSwarm::GitFusion.run(@fusion_server, 'info')
+      rescue => error
+        raise 'There was an error communicating with Helix Git Fusion: ' + error.message
+      end
+
       # pre-flight checks against Git Fusion and Perforce
       creator = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server, @project.namespace.name, @project.path)
       p4      = PerforceSwarm::P4::Connection.new(creator.config)

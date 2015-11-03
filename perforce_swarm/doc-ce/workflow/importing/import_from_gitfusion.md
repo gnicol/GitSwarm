@@ -236,6 +236,7 @@ use the convention-based repository feature. GitSwarm does
 ### Importing a Git Fusion Repository
 
 1.  Sign in to your GitSwarm instance and go to your dashboard.
+
 1.  Click "New Project".
 
 1.  Click the "Helix Git Fusion Server" drop-down menu to select an available
@@ -253,6 +254,38 @@ use the convention-based repository feature. GitSwarm does
     While the import is underway, a progress screen is displayed:
 
     ![Import in progress](gitfusion_importer/import_in_progress.png)
+
+### Enabling Mirroring on an Existing GitSwarm Project
+
+#### Requirements
+
+* You must have at least one Git Fusion entry configured for convention-based mirroring. See [this section](#) for
+  details.
+
+* Your GitSwarm user account must either be an admin account, or you must have master-level permissions for the project
+  on which you are attempting to enable mirroring.
+
+* The project cannot already be mirrored in Git Fusion.
+
+* There must not be any content in Helix where the to-be mirrored project's will be stored. GitSwarm will check for this
+  before mirroring the project.
+
+* There must not be a Git Fusion configuration file (p4gf_config) for the current namespace/project path combination.
+  GitSwarm will check for this before mirroring the project.
+
+1.  Sign in to your GitSwarm instance as an admin or with master rights to the project for which you want to enable
+    mirroring.
+
+1.  From the Dashboard, click "Your Projects" or "Explore Projects" and then click on the project you wish to mirror.
+
+1.  Click the "Mirror in Helix" button on the project details page. If the button is greyed out, mousing over it
+    will give you a hint as to what is wrong and how to fix it.
+
+1.  On the "Mirror in Helix" page, you will need to select the Git Fusion server under which you would like to mirror
+    your project. All configured Git Fusion servers are selectable, but only servers that support convention-based
+    mirroring will show the "Launch Mirroring" button.
+
+    If you have selected a server for which there is a problem (e.g. 
 
 ### Known Issues
 

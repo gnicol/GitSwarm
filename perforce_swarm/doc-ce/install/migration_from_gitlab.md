@@ -15,16 +15,22 @@ supported offering from one vendor, as well as leveraging Perforce Helix as the 
     requirement; the migration process **will not work** unless your GitLab and GitSwarm instances match one of the
     the version combinations below:
 
-    |Gitlab-CE/EE|GitSwarm|
+    |Gitlab-CE|GitSwarm CE|
     |---|---|
     |8.0.5|15.4|
 
-    Note: GitLab to GitSwarm migration is not supported on GitSwarm versions less than 15.4.
+    |Gitlab-EE|GitSwarm EE|
+    |---|---|
+    |8.0.5|15.4|
+
+    **Important Notes:**
+    * GitLab to GitSwarm migration is not supported on GitSwarm versions less than 15.4.
+    * GitLab-CE to GitSwarm EE is not supported, even across matching versions.
 
 1.  **An existing GitLab install**
 
     If the GitLab instance you're looking to migrate from is not on the above list, you will need to follow
-    [these instructions](/help/update/README.md) to up/downgrade as necessary to a supported version.
+    [these instructions](/help/update/README.md) to upgrade as necessary to a supported version.
 
 1.  **A new, up-to-date GitSwarm install**
 
@@ -49,7 +55,7 @@ supported offering from one vendor, as well as leveraging Perforce Helix as the 
     GitLab instance from which you are migrating.
 
     After the backup process is complete, it will report the name of the backup file created:
-        ```
+
         ...
         done
         Dumping uploads ...
@@ -59,7 +65,6 @@ supported offering from one vendor, as well as leveraging Perforce Helix as the 
         Creating backup archive: 1446498774_gitlab_backup.tar ... done
         Uploading backup archive to remote storage  ... skipped
         ...
-        ```
 
     It is important to note the name of the backup file in the above output, as well as the timestamp (numeric)
     portion of the file. In the above case, the file is called ```1446498774_gitlab_backup.tar``` and the
@@ -70,13 +75,14 @@ supported offering from one vendor, as well as leveraging Perforce Helix as the 
 1. **Copy the backup archive to the destination GitSwarm instance**
 
     The backup process above will result in the creation of a .tar file, which contains a backup of your workflow
-    (users, projects, merge requests) as well as the actual Git repositories. You will need to copy the file created
-    above to the GitSwarm instance you are restoring to, and place the file under ```/var/opt/gitswarm/backups/```.
+    (users, projects, merge requests) as well as the corresponding Git repositories. You will need to copy the file
+    created above to the GitSwarm instance you are restoring to, and place the file
+    under ```/var/opt/gitswarm/backups/```.
 
     The backup file will be owned by the ```git``` user, so you will either need to perform the copy as ```git```,
     or change the file permissions so the file can be read. For example, with the file above:
 
-    ```chmod a+r /var/opt/gitlab/backups/1446498774_gitlab_backup.tar```
+        chmod a+r /var/opt/gitlab/backups/1446498774_gitlab_backup.tar
 
 1. **Restore the backup archive against the destination GitSwarm instance**
 

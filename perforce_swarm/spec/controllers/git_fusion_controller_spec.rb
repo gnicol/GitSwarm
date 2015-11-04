@@ -67,6 +67,7 @@ describe PerforceSwarm::GitFusionController, type: :controller do
 
     it 'gives an appropriate error when Git Fusion is not configured for auto-create' do
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
+      allow(PerforceSwarm::GitFusion).to receive(:run).and_return('')
       get(:existing_project, project_id: project.id)
       expect(response).to be_success
       expect(response.body).to include('Auto create is not configured properly.')
@@ -76,6 +77,7 @@ describe PerforceSwarm::GitFusionController, type: :controller do
       config = default_config.clone
       config['default']['auto_create'] = { 'path_template' => 'yoda' }
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+      allow(PerforceSwarm::GitFusion).to receive(:run).and_return('')
       get(:existing_project, project_id: project.id)
       expect(response).to be_success
       expect(response.body).to include('Auto create is not configured properly.')
@@ -85,6 +87,7 @@ describe PerforceSwarm::GitFusionController, type: :controller do
       config = default_config.clone
       config['default']['auto_create'] = { 'path_template' => 'yoda' }
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+      allow(PerforceSwarm::GitFusion).to receive(:run).and_return('')
       get(:existing_project, project_id: 1000)
       expect(response).to be_success
       expect(response.body).to include("Couldn't find Project with 'id'=1000")
@@ -99,6 +102,7 @@ describe PerforceSwarm::GitFusionController, type: :controller do
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'depots')
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+      allow(PerforceSwarm::GitFusion).to receive(:run).and_return('')
       get(:existing_project, project_id: project.id)
       expect(response).to be_success
       expect(response.body).to include("//depots/projects/#{project.namespace.name}/#{project.path}/...")

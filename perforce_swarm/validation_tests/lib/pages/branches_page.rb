@@ -41,12 +41,12 @@ class BranchesPage < Page
 
     LOG.log('clicking create button')
     @driver.find_element(:class, 'btn-create').click
-    wait_for(:class, 'accept_merge_request', 60)
+    wait_for(:class, 'accept_merge_request', 90)
     LOG.log('opting to delete source branch') if delete_source
     @driver.find_element(id: 'should_remove_source_branch').click if delete_source
     LOG.log('Accepting merge request on '+branch)
     @driver.find_element(:class, 'accept_merge_request').click
-    wait_for(:class, 'issue-box-merged', 60)
+    wait_for(:class, 'issue-box-merged', 90)
     goto(url)
   end
 end

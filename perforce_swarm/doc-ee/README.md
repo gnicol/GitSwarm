@@ -18,6 +18,7 @@
 
 ## Administrator documentation
 
+- [Migration from GitLab](install/migration_from_gitlab.md) How to migrate your existing GitLab workflow and repositories to GitSwarm.
 - [Audit Events](administration/audit_events.md) Check how user access changed in projects and groups.
 - [Changing the appearance of the login page](customization/branded_login_page.md) Make the login page branded
   for your GitSwarm instance.

@@ -1,7 +1,6 @@
 # Installation
 
-1.  **Check if your server meets the [hardware
-    requirements](requirements.md).**
+1.  **Check if your server meets the [requirements](requirements.md).**
 
 1.  **Install and configure the necessary dependencies.**
 

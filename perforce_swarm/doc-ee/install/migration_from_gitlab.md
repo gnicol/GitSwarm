@@ -14,12 +14,14 @@ supported offering from one vendor, as well as leveraging Perforce Helix as the 
     requirement; the migration process **will not work** unless your GitLab and GitSwarm instances match one of the
     the version combinations below:
 
-    |Gitlab-CE|GitSwarm CE|
+    |Gitlab-EE|GitSwarm EE|
     |---|---|
     |8.0.5|15.4|
 
     **Important Notes:**
     * GitLab to GitSwarm migration is not supported on GitSwarm versions less than 15.4.
+    * Migrating from GitLab-CE to GitSwarm EE can be accomplished by migrating from GitLab-CE to GitSwarm CE, then
+      upgrading to GitSwarm-EE.
     * Migration is supported across differing operating systems (e.g. migration from GitLab runnin on CentOS6 to
       GitSwarm running on Ubuntu 14).
 

@@ -1,10 +1,6 @@
 require 'spec_helper'
 
-require_relative '../lib/pages/login_page'
-require_relative '../lib/pages/create_project_page'
-require_relative '../lib/pages/logged_in_page'
-require_relative '../lib/pages/project_page'
-require_relative '../lib/pages/edit_file_page'
+require_relative '../lib/page'
 
 describe 'New Mirrored Project', browser: true do
   let(:user) { 'user-'+unique_string }
@@ -14,15 +10,11 @@ describe 'New Mirrored Project', browser: true do
   let(:project) { 'project-'+unique_string }
   let(:expected_gf_repo_name) { 'gitswarm-'+user+'-'+project }
   let(:git_dir) { Dir.mktmpdir('Git-', tmp_client_dir) }
-  let(:p4_dir) {  Dir.mktmpdir('P4-', tmp_client_dir) }
+  let(:p4_dir) { Dir.mktmpdir('P4-', tmp_client_dir) }
   let(:another_project) { 'another_project-'+unique_string }
   let(:another_git_dir) { Dir.mktmpdir('AnotherGit-', tmp_client_dir) }
 
   before do
-    create_user
-    create_new_project
-    clone_project(project, git_dir)
-
     LOG.debug 'p4 dir = ' + p4_dir
     LOG.debug 'user is ' + user + ' : ' + password
     p4_depot_path = CONFIG.get('p4_gitswarm_depot_root') + user + '/' + project + '/master/...'
@@ -31,6 +23,9 @@ describe 'New Mirrored Project', browser: true do
 
   context 'when I push in a file to the gitswarm repo' do
     before do
+      create_user
+      create_new_project
+      clone_project(project, git_dir)
       @git_filename = 'git-file-'+unique_string
       create_file(git_dir, @git_filename)
       LOG.debug 'Creating file in git : ' + @git_filename
@@ -47,6 +42,9 @@ describe 'New Mirrored Project', browser: true do
 
   context 'when I add a file to the Perforce project' do
     before do
+      create_user
+      create_new_project
+      clone_project(project, git_dir)
       @p4.connect_and_sync
       @p4_filename = 'p4-file-'+unique_string
       add_path = create_file(p4_dir, @p4_filename)
@@ -63,6 +61,10 @@ describe 'New Mirrored Project', browser: true do
   end
 
   context 'when a repo was created in GitFusion' do
+    before do
+      create_user
+      create_new_project
+    end
     it 'is visible in the list of available repos' do
       cp = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(user, password).goto_create_project_page
       available_repos = cp.repo_names
@@ -72,6 +74,9 @@ describe 'New Mirrored Project', browser: true do
 
   context 'when an existing repo with content is mirrored in a new project' do
     before do
+      create_user
+      create_new_project
+      clone_project(project, git_dir)
       @git_filename = 'git-file-'+unique_string
       create_file(git_dir, @git_filename)
       LOG.debug 'Creating file in git : ' + @git_filename
@@ -104,6 +109,8 @@ describe 'New Mirrored Project', browser: true do
     filename = 'Readme.md'
     unique_content = unique_string
     before do
+      create_user
+      create_new_project
       proj_page = LoginPage.new(@driver,
                                 CONFIG.get('gitswarm_url')).login(user, password).goto_project_page(user, project)
       edit_page = proj_page.add_readme
@@ -132,6 +139,9 @@ describe 'New Mirrored Project', browser: true do
     new_branch = unique_string
     new_file = new_branch+'-file'
     before do
+      create_user
+      create_new_project
+      clone_project(project, git_dir)
       LOG.log('Add a file to master branch so it exists')
       create_file(git_dir, 'master-file')
       @git.add_commit_push
@@ -162,6 +172,41 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
+  context 'when I mirror a existing non-mirrored project with content' do
+    before do
+      git_filename = 'git-file-'+unique_string
+      @p4_file_from_git = p4_dir + '/' + git_filename
+
+      create_user
+      create_new_project(false)
+      clone_project(project, git_dir)
+      create_file(git_dir, git_filename)
+      LOG.debug 'Creating file in git : ' + git_filename
+      @git.add_commit_push
+      sleep(2) # some time to let the file get into perforce
+
+      @p4.connect_and_sync
+      LOG.log('File added to git exists in Perforce before we mirror? = ' + File.exist?(@p4_file_from_git).to_s)
+      expect(File.exist?(@p4_file_from_git)).to be false
+
+      pp = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(user, password).goto_project_page(user, project)
+      LOG.log('Project is mirrored? ' + pp.mirrored_in_helix?.to_s)
+      expect(pp.mirrored_in_helix?).to be false
+      config_mirroring = pp.click_mirror_in_helix
+      pp = config_mirroring.mirror_project_and_wait
+      LOG.debug('Project is mirrored? ' + pp.mirrored_in_helix?.to_s)
+      expect(pp.mirrored_in_helix?).to be true
+    end
+
+    it 'should be mirrored into perforce' do
+      # TODO: change this from a flat wait into some retry logic.  The initial push is async by design.
+      sleep(10) # some time to let the initial push get into perforce
+      @p4.sync
+      LOG.log('File added to git exists in Perforce after we mirror? = ' + File.exist?(@p4_file_from_git).to_s)
+      expect(File.exist?(@p4_file_from_git)).to be true
+    end
+  end
+
   def create_user
     GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
                           CONFIG.get('gitswarm_username'),
@@ -169,10 +214,11 @@ describe 'New Mirrored Project', browser: true do
     ).create_user(user, password, uemail, nil)
   end
 
-  def create_new_project
+  def create_new_project(mirrored = true, public_project = false)
     cp = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(user, password).goto_create_project_page
     cp.project_name(project)
-    cp.select_mirrored_auto
+    cp.select_mirrored_auto if mirrored
+    cp.select_public if public_project
     cp.create_project_and_wait_for_clone
     cp.logout
   end

@@ -1,7 +1,6 @@
 # Installation
 
-1.  **Check if your server meets the [hardware
-    requirements](requirements.md).**
+1.  **Check if your server meets the [requirements](requirements.md).**
 
 1.  **Install and configure the necessary dependencies.**
 
@@ -52,7 +51,7 @@ sudo systemctl reload firewalld
 1.  **Add the Perforce package server and install GitSwarm.**
 
     ```
-curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
+curl -s https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
     ```
 
 1.  **Verify the external URL for your GitSwarm instance:**

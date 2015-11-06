@@ -11,6 +11,7 @@ namespace :gitswarm do
 
     output_dir = ARGV[0]
     fail 'You must specify an output directory' unless output_dir
+    output_dir = output_dir.gsub(/\/$/, '')
 
     PerforceSwarm::Help.render do |content, file|
       output_file = File.join(output_dir, file)
@@ -30,6 +31,7 @@ namespace :gitswarm do
 
     output_dir = ARGV[0]
     fail 'You must specify an output directory' unless output_dir
+    output_dir = output_dir.gsub(/\/$/, '')
 
     fail 'It does not appear pandoc is installed; kindly install it.' unless `pandoc -v` && $CHILD_STATUS.success?
 

@@ -9,7 +9,7 @@ class NewMergeRequestPage < Page
 
   def elements_for_validation
     elems = super
-    elems << [:css, 'form.merge-request-form'] if changes? # new merge request form
+    elems << [:css, 'form.merge-request-form'] # new merge request form
     elems << [:css, 'form.merge-request-form .btn-create'] if changes? # create branch button
     elems
   end

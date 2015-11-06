@@ -28,6 +28,7 @@ class ConfigureMirroringPage < LoggedInPage
 
   def wait_for_page_to_load
     sleep(1) # this seems needed to let the servers_ext check pass
+    wait_for(:class, 'git-fusion-mirroring')
     wait_for(:class, 'btn-create') if servers_exist?
   end
 end

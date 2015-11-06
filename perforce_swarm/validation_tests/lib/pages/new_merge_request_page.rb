@@ -9,7 +9,8 @@ class NewMergeRequestPage < Page
 
   def elements_for_validation
     elems = super
-    elems << [:class, 'btn-create'] if changes? # create branch button
+    elems << [:css, 'form.merge-request-form'] if changes? # new merge request form
+    elems << [:css, 'form.merge-request-form .btn-create'] if changes? # create branch button
     elems
   end
 
@@ -20,7 +21,7 @@ class NewMergeRequestPage < Page
   def create_merge_request
     fail('There are no changes to merge') unless changes?
     LOG.debug('clicking create button')
-    @driver.find_element(:class, 'btn-create').click
+    @driver.find_element(:css, 'form.merge-request-form .btn-create').click
     MergeRequestPage.new(@driver)
   end
 end

@@ -199,11 +199,12 @@ describe 'New Mirrored Project', browser: true do
     end
 
     it 'should be mirrored into perforce' do
-      # TODO: change this from a flat wait into some retry logic.  The initial push is async by design.
-      sleep(10) # some time to let the initial push get into perforce
-      @p4.sync
-      LOG.log('File added to git exists in Perforce after we mirror? = ' + File.exist?(@p4_file_from_git).to_s)
-      expect(File.exist?(@p4_file_from_git)).to be true
+      p4_file_exists = run_block_with_retry(12, 5) do
+        @p4.sync
+        File.exist?(@p4_file_from_git)
+      end
+      LOG.log('File added to git exists in Perforce after we mirror? = ' + p4_file_exists.to_s)
+      expect(p4_file_exists).to be true
     end
   end
 

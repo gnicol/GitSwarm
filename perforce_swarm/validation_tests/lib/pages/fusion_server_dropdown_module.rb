@@ -18,6 +18,7 @@ module FusionServerDropdownModule
   private
 
   def servers_exist?
+    wait_for(:id, 'git_fusion_entry')
     @driver.find_elements(:id, 'git_fusion_entry').length > 0
   end
 

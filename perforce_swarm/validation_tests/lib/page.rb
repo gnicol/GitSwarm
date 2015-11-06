@@ -58,5 +58,4 @@ class Page
   end
 end
 
-require_relative 'pages/logged_in_page'
 Dir[File.join(__dir__, 'pages/*.rb')].each { |file| require file }

@@ -28,6 +28,16 @@ class ProjectPage < Page
     EditFilePage.new(@driver)
   end
 
+  def mirrored_in_helix?
+    !page_has_element(:link_text, 'MIRROR IN HELIX') | page_has_element(:link_text, 'Mirrored in Helix')
+  end
+
+  def click_mirror_in_helix
+    fail 'project already mirrored' if mirrored_in_helix?
+    @driver.find_element(:link_text, 'MIRROR IN HELIX').click
+    ConfigureMirroringPage.new(@driver)
+  end
+
   private
 
   def wait_for_clone

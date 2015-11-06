@@ -19,6 +19,7 @@ GitSwarm project.
 
 * Helix Git Fusion 2015.2, or newer.
 * Helix GitSwarm 2015.3, or newer.
+* Helix Versioning Engine (P4D) version 2015.1/1171507, or newer.
 
 ### Recommendations
 
@@ -146,8 +147,9 @@ sudo cat ~git/.ssh/id_rsa.pub
     SSH](http://www.perforce.com/perforce/r15.1/manuals/git-fusion/appendix.ssh.html).
 
     Note: When installing the public key on the Git Fusion service,
-    a system user needs to exist (we recommend `gitswarm`), and the
-    public key needs to be installed in Git Fusion/p4d for that user.
+    a standard user with read/write access to the `//.git-fusion` depot needs to
+    exist (we recommend `gitswarm`). The public key needs to be installed in
+    Git Fusion/P4D for that user.
 
 #### Convention-based Repository Configuration
 
@@ -195,7 +197,7 @@ Note: The `my_entry` key is used to assign config values to a particular
 git-fusion instance. You can include more configured servers under other
 keys.
 
-#### Auto-create Configuration
+##### Auto-Create Configuration
 GitSwarm generates a Git Fusion configuration and unique depot path
 for each new project that has convention-based mirroring enabled. It
 constructs these by substituting the GitSwarm project's namespace and
@@ -214,6 +216,22 @@ Note: The depot specified in the `path_template` ('gitswarm'
 in the above example) must exist *prior* to attempting to
 use the convention-based repository feature. GitSwarm does
 *not* create this depot for you.
+
+#### Sample Configuration
+
+The following is a sample configuration for GitSwarm, including Helix Versioning
+Engine integration, and auto-create settings:
+
+```
+gitswarm['git-fusion']['enabled']                                       = true
+gitswarm['git-fusion']['my_entry']['url']                               = 'git@gitfusion.host'
+gitswarm['git-fusion']['my_entry']['user']                              = '<perforce-user-id>'
+gitswarm['git-fusion']['my_entry']['password']                          = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['my_entry']['perforce']['port']                  = 'ssl:my-fusion:1666'
+gitswarm['git-fusion']['my_entry']['auto_create']['path_template']      = '//gitswarm/projects/{namespace}/{project-path}'
+gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitswarm-{namespace}-{project-path}'
+
+```
 
 ### New GitSwarm Project with Convention-based Mirroring
 

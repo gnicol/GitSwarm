@@ -98,6 +98,15 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I select a Git Fusion repo that does not support auto-create' do
+    allow(PerforceSwarm::GitFusion).to receive(:run).and_return('')
+    page.within('.mirroring-server-select') do
+      select('no_auto_create2', from: 'git_fusion_entry')
+    end
+  end
+
+  step 'I select a Git Fusion repo with an resolvable hostname' do
+    # note that by NOT stubbing PerforceSwarm::GitFusion.run, the error comes
+    # from the code that checks our Perforce connection
     page.within('.mirroring-server-select') do
       select('no_auto_create2', from: 'git_fusion_entry')
     end
@@ -109,5 +118,11 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'I should see an error message that says auto-create is not configured properly' do
     expect(page.find(:div, '.mirroring-errors')).to have_content('Auto create is not configured properly.')
+  end
+
+  step 'I should see an error message that says there was an error communicating with Helix Git Fusion' do
+    expect(page.find(:div, '.mirroring-errors')).to(
+        have_content('There was an error communicating with Helix Git Fusion: ')
+    )
   end
 end

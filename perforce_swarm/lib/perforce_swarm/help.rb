@@ -48,7 +48,7 @@ module PerforceSwarm
       content.gsub!(/our website/i, "GitLab's website")
 
       # redirect external help links to our site
-      content.gsub!('http://doc.gitlab.com/ce/', 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ce/')
+      content.gsub!('http://doc.gitlab.com/ce/', 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm/')
       content.gsub!('http://doc.gitlab.com/ee/', 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/')
 
       # fix example links value

@@ -30,6 +30,6 @@ class MergeRequestPage < Page
     LOG.debug('Accepting merge request')
     wait_for(:class, 'accept_merge_request', 90)
     @driver.find_element(:class, 'accept_merge_request').click
-    wait_for(:class, 'issue-box-merged', 90)
+    wait_for(:class, 'issue-box-merged', 120)
   end
 end

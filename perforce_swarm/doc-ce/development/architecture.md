@@ -51,7 +51,7 @@ practices that the office is run by.
 ## System Layout
 
 When referring to `~git` in the pictures it means the home directory of the
-git user which is typically `/home/git`.
+git user which is typically `/var/opt/gitswarm`.
 
 GitSwarm is primarily installed within the `/opt/gitswarm` directory
 as the `root` user. Working data, including repositories, databases, nginx

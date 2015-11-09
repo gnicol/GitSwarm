@@ -50,20 +50,15 @@ practices that the office is run by.
 
 ## System Layout
 
-When referring to ~git in the pictures it means the home directory of the
+When referring to `~git` in the pictures it means the home directory of the
 git user which is typically `/home/git`.
 
-GitSwarm is primarily installed within the `/home/git` user home directory
-as `git` user. Within the home directory is where the gitlabhq server
-software resides as well as the repositories (though the repository
-location is configurable).
+GitSwarm is primarily installed within the `/opt/gitswarm` directory
+as the `root` user. Working data, including repositories, databases, nginx
+configuration, etc. exist in `/var/opt/gitswarm`. For example, the bare repositories are located in `/var/opt/gitswarm/repositories`.
 
-The bare repositories are located in `/home/git/repositories`. GitSwarm is
-a Ruby on Rails application, so the particulars of the inner workings can
-be learned by studying how a Ruby on Rails application works.
-
-To serve repositories over SSH there's an add-on application called
-gitlab-shell which is installed in `/home/git/gitlab-shell`.
+GitSwarm is a Ruby on Rails application, so the particulars of the inner
+workings can be learned by studying how a Ruby on Rails application works.
 
 ### Components
 
@@ -73,36 +68,29 @@ A typical install of GitSwarm is on GNU/Linux. It uses Nginx as a web front
 end to proxypass the Unicorn web server. By default, communication between
 Unicorn and the front end is via a Unix domain socket, but forwarding
 requests via TCP is also supported. The web front end accesses
-`/home/git/gitswarm/public`, bypassing the Unicorn server, to serve static
-pages, uploads (e.g. avatar images or attachments), and precompiled
-assets. GitSwarm serves web pages and a [GitSwarm API](../api/README.md)
-using the Unicorn web server. It uses Sidekiq as a job queue which, in
-turn, uses Redis as a non-persistent database backend for job information,
-meta data, and incoming jobs.
+`/opt/gitswarm/embedded/services/gitlab-rails/public`, bypassing the
+Unicorn server, to serve static pages, uploads (e.g. avatar images or
+attachments), and precompiled assets. GitSwarm serves web pages and a
+[GitSwarm API](../api/README.md) using the Unicorn web server. It uses
+Sidekiq as a job queue which, in turn, uses Redis as a non-persistent
+database backend for job information, meta data, and incoming jobs.
 
 GitSwarm uses PostgreSQL for persistent database information (e.g. users,
-permissions, issues, other meta data). GitSwarm stores the bare git
-repositories it serves in `/home/git/repositories` by default. It also
-keeps default branch and hook information with the bare repository.
-`/home/git/gitlab-satellites` keeps checked out repositories when
-performing actions such as a merge request, editing files in the web
-interface, etc.
+permissions, issues, other meta data).
 
-The satellite repository is used by the web interface for editing
-repositories and the wiki which is also a git repository. When serving
-repositories over HTTP/HTTPS, GitSwarm utilizes the GitSwarm API to resolve
-authorization and access as well as serving git objects.
+When serving repositories over HTTP/HTTPS, GitSwarm utilizes the GitSwarm
+API to resolve authorization and access as well as serving git objects.
 
 The add-on component gitlab-shell serves repositories over SSH. It manages
-the SSH keys within `/home/git/.ssh/authorized_keys` which should not be
-manually edited. gitlab-shell accesses the bare repositories directly to
-serve git objects and communicates with Redis to submit jobs to Sidekiq for
-GitSwarm to process. gitlab-shell queries the GitSwarm API to determine
-authorization and access.
+the SSH keys within `/var/opt/gitswarm/.ssh/authorized_keys` which should
+not be manually edited. gitlab-shell accesses the bare repositories
+directly to serve git objects and communicates with Redis to submit jobs to
+Sidekiq for GitSwarm to process. gitlab-shell queries the GitSwarm API to
+determine authorization and access.
 
 ### Installation Folder Summary
 
-To summarize, here's the [directory structure of the `git` user home directory](../install/structure.md).
+To summarize, here's the [GitSwarm directory structure](../install/structure.md).
 
 ### Processes
 

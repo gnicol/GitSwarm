@@ -53,9 +53,10 @@ practices that the office is run by.
 When referring to `~git` in the pictures it means the home directory of the
 git user which is typically `/var/opt/gitswarm`.
 
-GitSwarm is primarily installed within the `/opt/gitswarm` directory
-as the `root` user. Working data, including repositories, databases, nginx
-configuration, etc. exist in `/var/opt/gitswarm`. For example, the bare repositories are located in `/var/opt/gitswarm/repositories`.
+GitSwarm is primarily installed within the `/opt/gitswarm` directory as the
+`root` user. Working data, including repositories, databases, nginx
+configuration, etc. exist in `/var/opt/gitswarm`. For example, the bare
+repositories are located in `/var/opt/gitswarm/git-data/repositories`.
 
 GitSwarm is a Ruby on Rails application, so the particulars of the inner
 workings can be learned by studying how a Ruby on Rails application works.

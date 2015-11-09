@@ -5,7 +5,7 @@ GitSwarm:
 
 1.  **Check if your server meets the [requirements](requirements.md).**
 
-1.  **Ensure that your system is up-to-date.**
+1.  Optional: **Ensure that your system is up-to-date.**
 
     We advise installing GitSwarm on a fully up-to-date operating system:
 
@@ -141,13 +141,6 @@ To uninstall GitSwarm, follow the [uninstall steps](uninstall.md).
 
 Note: For additional troubleshooting and configuration options, please see the
 [Omnibus GitLab readme](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md).
-
-*   **Install on CentOS 6 didn't seem to work, but no error output was given**
-
-    On older versions of CentOS 6, the rpm and yum packages didn't pass each other all of the output messages, so you
-    might not have seen any error messages during install. You can run `sudo yum update` or `sudo yum install yum rpm`
-    to get the latest of these packages. After that, you can run `sudo yum reinstall perforce-gitswarm` to try and find
-    the problem.
 
 *   **error: "X" is an unknown key on CentOS 6**
 

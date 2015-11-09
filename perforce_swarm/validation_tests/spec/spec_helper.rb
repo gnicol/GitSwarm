@@ -44,3 +44,14 @@ end
 def cleanup_tmp_dirs
   FileUtils.rm_rf(tmp_client_dir)
 end
+
+def run_block_with_retry(retries, seconds_between = 1, &block)
+  result = false
+  iteration = 0
+  while !result && iteration < retries
+    result = yield block if block_given?
+    iteration += 1
+    sleep seconds_between
+  end
+  result
+end

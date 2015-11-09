@@ -5,6 +5,24 @@ GitSwarm:
 
 1.  **Check if your server meets the [requirements](requirements.md).**
 
+1.  **Adjust default firewall rules.**
+
+    By default, the CentOS firewall rules block HTTP and SSH access.
+
+    1.  **For CentOS 6:**
+
+        ```
+sudo lokkit -s http -s ssh
+        ```
+
+    1.  **For CentOS 7:**
+
+        ```
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=ssh
+sudo systemctl reload firewalld
+        ```
+
 1.  Optional: **Ensure that your system is up-to-date.**
 
     We advise installing GitSwarm on a fully up-to-date operating system:
@@ -16,24 +34,11 @@ sudo apt-get update
 sudo apt-get upgrade
         ```
 
-    1.  **For CentOS 6:**
+    1.  **For CentOS 6 and 7:**
 
         ```
 sudo yum update
-sudo lokkit -s http -s ssh
         ```
-        Note: The commands above also open HTTP and SSH access in the
-        system firewall.
-
-    1.  **For CentOS 7:**
-
-        ```
-sudo yum update
-sudo firewall-cmd --permanent --add-service=http
-sudo systemctl reload firewalld
-        ```
-        Note: The commands above also open HTTP access in the system
-        firewall.
 
 1.  **Install a mail server and curl.**
 

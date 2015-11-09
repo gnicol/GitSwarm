@@ -1,58 +1,82 @@
 # Installation
 
+Use the following steps to prepare your system for installation of
+GitSwarm:
+
 1.  **Check if your server meets the [requirements](requirements.md).**
 
-1.  **Install and configure the necessary dependencies.**
+1.  **Ensure that your system is up-to-date.**
 
-    Note: If you install Postfix to send email, please select
-    `Internet Site` during setup. Instead of using Postfix, you can also
-    use Sendmail or configure a custom SMTP server. Do not use Exim to send
-    email from GitSwarm.
-
-    We advise installing GitSwarm on a fully up-to-date operating system. We've
-    included the system specific upgrade commands below.
+    We advise installing GitSwarm on a fully up-to-date operating system:
 
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install curl openssh-server ca-certificates postfix
         ```
 
-    1.  **For CentOS/RHEL 6:**
+    1.  **For CentOS 6:**
 
         ```
 sudo yum update
-sudo yum install curl openssh-server postfix cronie
-sudo service postfix start
-sudo chkconfig postfix on
 sudo lokkit -s http -s ssh
         ```
         Note: The commands above also open HTTP and SSH access in the
         system firewall.
 
-    1.  **For CentOS/RHEL 7:**
+    1.  **For CentOS 7:**
 
         ```
 sudo yum update
-sudo yum install curl openssh-server
-sudo systemctl enable sshd
-sudo systemctl start sshd
-sudo yum install postfix
-sudo systemctl enable postfix
-sudo systemctl start postfix
 sudo firewall-cmd --permanent --add-service=http
 sudo systemctl reload firewalld
         ```
-        Note: The commands above also open HTTP and SSH access in the
-        system firewall.
+        Note: The commands above also open HTTP access in the system
+        firewall.
 
-1.  **Add the Perforce package server and install GitSwarm.**
+1.  **Install a mail server and curl.**
 
-    ```
+    GitSwarm requires a local mail server to facilitate delivery of
+    notifications via email, and `curl` is used in the [Quick
+    install](#quick-install).
+
+    Note: If you install Postfix, select `Internet Site` during setup. Do
+    not use Exim to send email from GitSwarm.
+
+    Then install your selected mail server. For example:
+
+    1.  **For Ubuntu (12.04 and 14.04):**
+
+        ```
+sudo apt-get postfix curl
+        ```
+
+    1.  **For CentOS 6:**
+
+        ```
+sudo yum install postfix curl
+sudo service postfix start
+sudo chkconfig postfix on
+        ```
+
+    1.  **For CentOS 7:**
+
+        ```
+sudo yum install postfix curl
+sudo systemctl enable postfix
+sudo systemctl start postfix
+        ```
+
+## Quick install
+
+```
 curl -s https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
-    ```
+```
+
+Perform the [post-installation](#post-installation) steps.
+
+## Post-installation
 
 1.  **Verify the external URL for your GitSwarm instance:**
 
@@ -78,8 +102,9 @@ external_url "http://gitswarm.example.com"
 
 1.  **Configure GitSwarm.**
 
-    If you have made changes to `/etc/gitswarm/gitswarm.rb`, then you will want to run `reconfigure` for them to take
-    effect.
+    If you have made changes to `/etc/gitswarm/gitswarm.rb`, then you will
+    want to run `reconfigure` for them to take effect.
+
     ```
 sudo gitswarm-ctl reconfigure
     ```

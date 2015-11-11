@@ -23,7 +23,9 @@ Introduction
 Documentation
 
     GitSwarm Release 2015.4 documentation is included in the distribution and
-    can be accessed from within GitSwarm from the "?" menu on the top toolbar
+    can be accessed from within GitSwarm from the "?" menu on the top toolbar.
+    The latest GitSwarm Release documentation can be found online at:
+    https://www.perforce.com/perforce/doc.current/manuals/gitswarm/
 
 Supported Client Browsers
 
@@ -61,6 +63,227 @@ Known Issues
       Red Hat Enterprise Linux 7.
 
 ---------------------------------------------------------------------------
+
+Major new functionality in 2015.4
+
+    #d1e79253, #a6b4510f (PGL-1236)
+       Mirror existing GitSwarm project into Helix
+
+    #e0d6ed64 (PGL-1201)
+       Support restoring GitLab 8.0 backups into GitSwarm 2015.4
+
+    GitLab 8.0
+        - Add "replace" and "upload" functionalities to allow user replace existing file and upload new file into current repository
+        - Remove satellites
+        - Ability to fetch merge requests from refs/merge-requests/:id
+        - Added Drone CI integration (Kirill Zaitsev)
+        - Allow developers to retry builds
+        - Add support for Crowd
+        - Global Labels that are available to all projects
+        - Add FogBugz project import (Jared Szechy)
+
+    GitLab 7.14
+        - Add support for destroying project milestones (Stan Hu)
+        - Allow custom backup archive permissions
+        - Send notification to all participants when MR is merged.
+        - Add support for CI skipped status
+        - Fetch code from forks to refs/merge-requests/:id/head when merge request created
+        - Add "Check out branch" button to the MR page.
+
+Minor new functionality in 2015.4
+
+    #33aae928 (PGL-1270)
+        Cleanse removes the p4dctl config file
+
+    #3d53a333 (PGL-1241)
+        Update GitSwarm logo and favicon
+
+    #1651e961, #2e87e04a (PGL-1235, PGL-1234)
+        Add Mirror in Helix button to project details
+
+    #1d9d67b5, #798e27d7 (PGL-1067)
+        Renamed the misleading "default" git fusion config block to "local"
+
+    GitLab 8.0
+        - Clarify confirmation text on user deletion
+        - Make commit graphs responsive to window width changes (Stan Hu)
+        - Remove git refs used internally by GitLab from network graph (Stan Hu)
+        - Use standard Markdown font in Markdown preview instead of fixed-width font (Stan Hu)
+        - Add option to use StartTLS with Reply by email IMAP server.
+        - Improve CI migration procedure and documentation
+        - Gracefully handle errors in syntax highlighting by leaving the block unformatted (Stan Hu)
+        - Sort issues by creation date in Bitbucket importer (Stan Hu)
+        - Remove user OAuth tokens from the database and request new tokens each session (Stan Hu)
+        - Restrict users API endpoints to use integer IDs (Stan Hu)
+        - Better performance for web editor (switched from satellites to rugged)
+        - Faster merge
+        - Allow displaying of archived projects in the admin interface (Artem Sidorenko)
+        - Allow configuration of import sources for new projects (Artem Sidorenko)
+        - Create cross-reference for closing references on commits pushed to non-default branches (Maël Valais)
+        - Ability to search milestones
+        - Move dashboard activity to separate page (for your projects and starred projects)
+        - Improve performance of git blame
+        - Limit content width to 1200px for most of pages to improve readability on big screens
+        - Bring more UI consistency in way how projects, snippets and groups lists are rendered
+        - Make all profiles and group public
+        - Retrieving oauth token with LDAP credentials
+        - Load Application settings from running database unless env var USE_DB=false
+        - Hide advanced project options for non-admin users
+        - Refactored service API and added automatically service docs generator (Kirill Zaitsev)
+        - Added web_url key project hook_attrs (Kirill Zaitsev)
+        - Add ability to get user information by ID of an SSH key via the API
+        - Project notification level can be set on the project page itself
+        - Added service API endpoint to retrieve service parameters (Petheő Bence)
+        - Sort users autocomplete lists by user (Allister Antosik)
+        - Webhook for issue now contains repository field (Jungkook Park)
+        - Add ability to add custom text to the help page (Jeroen van Baarsen)
+        - Add pg_schema to backup config
+        - Removed API calls from CE to CI
+
+    GitLab 7.14
+        - Improve abuse reports management from admin area
+        - Only include base URL in OmniAuth full_host parameter (Stan Hu)
+        - Ability to enable SSL verification for Webhooks
+        - Allow configuration of LDAP attributes GitLab will use for the new user account.
+        - Update default robots.txt rules to disallow crawling of irrelevant pages (Ben Bodenmiller)
+        - Upgrade gitlab_git to 7.2.14 to ignore CRLFs in .gitmodules (Stan Hu)
+        - Provide more feedback what went wrong if HipChat service failed test (Stan Hu)
+        - Bump Haml to 4.0.7 to speed up textarea rendering (Stan Hu)
+        - Show incompatible projects in Bitbucket import status (Stan Hu)
+        - Always add current user to autocomplete controller to support filter by "Me" (Stan Hu)
+        - Add "Confirm user" button in user admin page (Stan Hu)
+        - Add support for Unicode filenames in relative links (Hiroyuki Sato)
+        - Return comments in created order in merge request API (Stan Hu)
+        - Disable internal issue tracker controller if external tracker is used (Stan Hu)
+        - Expire Rails cache entries after two weeks to prevent endless Redis growth
+        - Add project star and fork count, group avatar URL and user/group web URL attributes to API
+        - Show who last edited a comment if it wasn't the original author
+        - Add ability to manage user email addresses via the API.
+        - Show buttons to add license, changelog and contribution guide if they're missing.
+        - Tweak project page buttons.
+        - Mention group and project name in creation, update and deletion notices (Achilleas Pipinellis)
+        - Update gravatar link on profile page to link to configured gravatar host (Ben Bodenmiller)
+        - Remove comments and email addresses when publicly exposing ssh keys (Zeger-Jan van de Weg)
+        - Improve MR merge widget text and UI consistency.
+        - Improve text in MR "How To Merge" modal.
+        - Cache all events
+        - Order commits by date when comparing branches
+        - Include branch/tag name in archive file and directory name
+        - Add dropzone upload progress
+        - Add a label for merged branches on branches page (Florent Baldino)
+        - Detect .mkd and .mkdn files as markdown (Ben Boeckel)
+        - Set max-width for README, issue and merge request description for easier read on big screens
+        - Update Flowdock integration to support new Flowdock API (Boyan Tabakov)
+        - Remove author from files view (Sven Strickroth)
+
+Bugs fixed in 2015.4
+
+    #2f267684 (PGL-1286)
+        Helix Git Fusion Server dropdown blows out page with long URLs
+
+    #d6df3abc (PGL-1229)
+        Prevent installing GitSwarm overtop of GitLab
+
+    #04944d0d (PGL-1213)
+        Fixes WRITE_LOCK_SOCKET is not a valid socket error when group or
+        project name is long
+
+    #440103c3 (PGL-1182)
+        Set LANG before connecting to git fusion to reduce chance of errors when
+        communicating with Helix Git Fusion
+
+    #6967d6ba (PGL-1122)
+        Only update the p4d root user when GitSwarm's root user password changes
+        if GitSwarm's root user is still and admin.
+
+    #17386be8 (PGL-1073)
+        Improve error message when there is a problem reading gitswarm.rb
+
+    #3a25f71b, #9bc23c5d (PGL-1058)
+        Reinstalling gitswarm after an uninstall results in a fatal error during reconfigure
+
+    #02b39207 (PGL-1051)
+        Make sure the P4 client name is not initially set as the hostname
+
+    #4cc7824c, #a3e13281, #cde228c3 (PGL-1044)
+        Fixed issue where too many piled up mirror processes caused a failover
+        of the gitswarm server
+
+    GitLab 8.0
+        - Correct lookup-by-email for LDAP logins
+        - Fix loading spinner sometimes not being hidden on Merge Request tab switches
+        - Fix Message-ID header to be RFC 2111-compliant to prevent e-mails being dropped (Stan Hu)
+        - Fix referrals for :back and relative URL installs
+        - Fix anchors to comments in diffs
+        - Remove CI token from build traces
+        - Fix "Assign All" button on Runner admin page
+        - Fix URL shown in Slack notifications
+        - Fix bug where projects would appear to be stuck in the forked import state (Stan Hu)
+        - Fix Error 500 in creating merge requests with > 1000 diffs (Stan Hu)
+        - Fix default avatar not rendering in network graph (Stan Hu)
+        - Skip check_initd_configured_correctly on omnibus installs
+        - Prevent double-prefixing of help page paths
+        - Fix top margin for sign-in button on public pages
+        - Fix LDAP attribute mapping
+        - Fix Reply by email for non-UTF-8 messages.
+        - Fix Markdown links not showing up in dashboard activity feed (Stan Hu)
+        - Remove milestones from merge requests when milestones are deleted (Stan Hu)
+        - Fix HTML link that was improperly escaped in new user e-mail (Stan Hu)
+        - Fix broken sort in merge request API (Stan Hu)
+        - Bump rouge to 1.10.1 to remove warning noise and fix other syntax highlighting bugs (Stan Hu)
+        - Fix URL construction for merge requests, issues, notes, and commits for relative URL config (Stan Hu)
+        - Fix emoji URLs in Markdown when relative_url_root is used (Stan Hu)
+        - Omit filename in Content-Disposition header in raw file download to avoid RFC 6266 encoding issues (Stan HU)
+        - Fix broken Wiki Page History (Stan Hu)
+        - Import forked repositories asynchronously to prevent large repositories from timing out (Stan Hu)
+        - Prevent anchors from being hidden by header (Stan Hu)
+        - Fix bug where only the first 15 Bitbucket issues would be imported (Stan Hu)
+        - Prevent too many redirects upon login when home page URL is set to external_url (Stan Hu)
+        - Improve dropdown positioning on the project home page (Hannes Rosenögger)
+        - Upgrade browser gem to 1.0.0 to avoid warning in IE11 compatibilty mode (Stan Hu)
+        - Only show recent push event if the branch still exists or a recent merge request has not been created (Stan Hu)
+        - Search for comments should be case insensetive
+        - Gracefully handle SMTP user input errors (e.g. incorrect email addresses) to prevent Sidekiq retries (Stan Hu)
+        - Fix 500 error when submit project snippet without body
+        - Improve search page usability
+        - Fixed login failure when extern_uid changes (Joel Koglin)
+        - Don't notify users without access to the project when they are (accidentally) mentioned in a note
+        - Fail builds if no .gitlab-ci.yml is found
+        - Fix bug which IE cannot show image at markdown when the image is raw file of gitlab
+        - Fix highlighting of deleted lines in diffs.
+
+    GitLab 7.14
+        - Fix "Reload with full diff" URL button in compare branch view (Stan Hu)
+        - Fix Error 500 in API when accessing a group that has an avatar (Stan Hu)
+        - Upgrade gitlab_git to 7.2.15 to fix `git blame` errors with ISO-encoded files (Stan Hu)
+        - Fix bug where non-project members of the target project could set labels on new merge requests.
+        - Fix redirection after sign in when using auto_sign_in_with_provider
+        - Clear cache to prevent listing deleted branches after MR removes source branch (Stan Hu)
+        - Fix bug where backslashes in inline diffs could be dropped (Stan Hu)
+        - Disable turbolinks when linking to Bitbucket import status (Stan Hu)
+        - Fix broken code import and display error messages if something went wrong with creating project (Stan Hu)
+        - Fix corrupted binary files when using API files endpoint (Stan Hu)
+        - Fix coloring of diffs on MR Discussion-tab (Gert Goet)
+        - Fix "Network" and "Graphs" pages for branches with encoded slashes (Stan Hu)
+        - Fix errors deleting and creating branches with encoded slashes (Stan Hu)
+        - Fix multi-line syntax highlighting (Stan Hu)
+        - Fix network graph when branch name has single quotes (Stan Hu)
+        - Upgrade gitlab_git to version 7.2.6 to fix Error 500 when creating network graphs (Stan Hu)
+        - Fix URL used for refreshing notes if relative_url is present (Bartłomiej Święcki)
+        - Fix commit data retrieval when branch name has single quotes (Stan Hu)
+        - Check that project was actually created rather than just validated in import:repos task (Stan Hu)
+        - Fix full screen mode for snippet comments (Daniel Gerhardt)
+        - Fix 404 error in files view after deleting the last file in a repository (Stan Hu)
+        - Fix the "Reload with full diff" URL button (Stan Hu)
+        - Fix label read access for unauthenticated users (Daniel Gerhardt)
+        - Fix access to disabled features for unauthenticated users (Daniel Gerhardt)
+        - Fix OAuth provider bug where GitLab would not go return to the redirect_uri after sign-in (Stan Hu)
+        - Fix file upload dialog for comment editing (Daniel Gerhardt)
+        - Set OmniAuth full_host parameter to ensure redirect URIs are correct (Stan Hu)
+        - Disabled autocapitalize and autocorrect on login field (Daryl Chan)
+        - Fix bug causing error when the target branch of a symbolic ref was deleted
+        - Fix: User search feature in admin area does not respect filters
+        - Fix infinite loop when SAML was incorrectly configured.
 
 Major new functionality in 2015.3
 

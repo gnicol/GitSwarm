@@ -421,6 +421,7 @@ Credits
     Jan Van Uytven, Elizabeth Hale, Porus Patell, Tony Kim, Ewan Edwards,
     Sean Ardley, Russ Tremain, Murtaza Amiji, Jason Novecosky, Michael Davies,
     Janet Taylor, Darrell Robins, Scott Wellard, Patrycja Tomiak, Samuel Penn,
-    David Birch, and Martin Phillips.
+    David Birch, Martin Phillips, Chris Lesemann, Doris Wong, Brad Martin, and
+    Colin Grant.
 
 END

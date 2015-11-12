@@ -132,31 +132,40 @@ To uninstall GitSwarm, follow the [uninstall steps](uninstall.md).
 
 *   **Set up the connection to your Helix Server:**
 
-    GitSwarm will automatically provision a Helix Server and connect Helix Git Fusion for you when you initially
-    install the GitSwarm packages. ([Learn more about the provisioned server](auto_provision.md))
+    GitSwarm automatically provisions a Helix Server and connects Helix Git
+    Fusion for you when you initially install the GitSwarm packages.
+    [Learn more about the provisioned server](auto_provision.md).
 
-    In production, you will likely already have your own Helix Server already setup and will want to configure
-    GitSwarm to talk to it in order to enable [project mirroring](../workflow/importing/import_from_gitfusion.md).
+    In production, you will likely already have your own Helix Server
+    already setup and will want to configure GitSwarm to talk to it in
+    order to enable [project
+    mirroring](../workflow/importing/import_from_gitfusion.md).
 
 *   **Set up other ways of signing in:**
 
-    Check out how to setup [LDAP](../integration/ldap.md) or [OmniAuth](../integration/omniauth.md)
+    Check out how to setup [LDAP](../integration/ldap.md) or
+    [OmniAuth](../integration/omniauth.md)
 
 ### Troubleshooting
 
-Note: For additional troubleshooting and configuration options, please see the
-[Omnibus GitLab readme](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md).
+Note: For additional troubleshooting and configuration options, please see
+the [Omnibus GitLab
+readme](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md).
 
 *   **error: "X" is an unknown key on CentOS 6**
 
-    This error occurs during install of CentOS 6, often in a shared VM environment where some of the keys in
-    `/etc/sysctl.conf` don't actually apply. The error usually looks something like this:
+    This error occurs during install of CentOS 6, often in a shared VM
+    environment where some of the keys in `/etc/sysctl.conf` don't actually
+    apply. The error usually looks something like this:
+
     ```
 STDERR: error: "net.bridge.bridge-nf-call-ip6tables" is an unknown key
 error: "net.bridge.bridge-nf-call-iptables" is an unknown key
 error: "net.bridge.bridge-nf-call-arptables" is an unknown key
     ```
 
-    These errors are ignorable, you just need to run `sudo gitswarm-ctl reconfigure`, and our script shouldn't
-    have to modify that file again and will continue. If you want to future-proof upgrades from failing on the same
-    lines, you can modify your `/etc/sysctl.conf` and comment out the keys that were listed as unknown.
+    These errors are ignorable, you just need to run `sudo gitswarm-ctl
+    reconfigure`, and our script shouldn't have to modify that file again
+    and will continue. If you want to future-proof upgrades from failing on
+    the same lines, you can modify your `/etc/sysctl.conf` and comment out
+    the keys that were listed as unknown.

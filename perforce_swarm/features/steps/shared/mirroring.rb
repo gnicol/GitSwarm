@@ -49,6 +49,22 @@ module SharedMirroring
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
   end
 
+  step 'Git Fusion support is enabled with one auto-create enabled server, but with multiple servers' do
+    config = default_config.dup
+    config['no_auto_create2'] = { id:  'no_auto_create2',
+                                  url: 'http://user@whatever2',
+                                  password: 'foo2'
+                               }.stringify_keys
+    config['default']['auto_create'] = { 'path_template' => '//gitswarm/{namespace}/{project-path}',
+                                         'repo_name_template' => '{namespace}-{project-path}'
+                                     }
+    config['no_auto_create'] = { id:  'no_auto_create',
+                                 url: 'http://user@whatever',
+                                 password: 'foo'
+                              }.stringify_keys
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+  end
+
   step 'Git Fusion returns a list containing repos' do
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')

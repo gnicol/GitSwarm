@@ -11,12 +11,17 @@ module PerforceSwarm
       Dir["#{Rails.root}/perforce_swarm/lib/**/*.rb"].each { |file| require file }
 
       # Autoload classes from shell when needed
-      shell_path = File.expand_path(Gitlab.config.gitlab_shell.path)
+      shell_path  = File.expand_path(Gitlab.config.gitlab_shell.path)
+
+      # we can't autoload the shell version of PerforceSwarm::GitFusion since
+      # the same namespace is defined in Gitlab, so we explicitly require it.
+      fusion_path = File.join(shell_path, 'perforce_swarm', 'git_fusion.rb')
+      require fusion_path if File.exist?(fusion_path)
+
       PerforceSwarm.autoload :Mirror,                 File.join(shell_path, 'perforce_swarm', 'mirror')
       PerforceSwarm.autoload :Repo,                   File.join(shell_path, 'perforce_swarm', 'repo')
       PerforceSwarm.autoload :GitFusionRepo,          File.join(shell_path, 'perforce_swarm', 'git_fusion_repo')
       PerforceSwarm.autoload :GitlabConfig,           File.join(shell_path, 'perforce_swarm', 'config')
-      PerforceSwarm.autoload :GitFusion,              File.join(shell_path, 'perforce_swarm', 'git_fusion')
       PerforceSwarm.autoload :MirrorLockSocketServer, File.join(shell_path, 'perforce_swarm', 'mirror_lock_socket')
       PerforceSwarm::GitFusion.autoload :Config,      File.join(shell_path, 'perforce_swarm', 'config')
       PerforceSwarm::P4.autoload :Connection,         File.join(shell_path, 'perforce_swarm', 'p4', 'connection')

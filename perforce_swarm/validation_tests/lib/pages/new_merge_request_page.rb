@@ -3,8 +3,13 @@ require_relative '../page'
 class NewMergeRequestPage < Page
   def initialize(driver)
     super(driver)
-    sleep(1) # this page needs a moment to load properly
+    wait_for_page_to_load
     verify
+  end
+
+  def wait_for_page_to_load
+    sleep(1)
+    wait_for(:css, 'form.merge-request-form')
   end
 
   def elements_for_validation

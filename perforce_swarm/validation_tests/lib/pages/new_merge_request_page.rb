@@ -3,13 +3,18 @@ require_relative '../page'
 class NewMergeRequestPage < Page
   def initialize(driver)
     super(driver)
-    sleep(1) # this page needs a moment to load properly
+    wait_for_page_to_load
     verify
+  end
+
+  def wait_for_page_to_load
+    sleep(1)
+    wait_for(:css, 'form.merge-request-form')
   end
 
   def elements_for_validation
     elems = super
-    elems << [:css, 'form.merge-request-form'] if changes? # new merge request form
+    elems << [:css, 'form.merge-request-form'] # new merge request form
     elems << [:css, 'form.merge-request-form .btn-create'] if changes? # create branch button
     elems
   end

@@ -6,7 +6,6 @@ require_relative 'fusion_server_dropdown_module'
 
 class CreateProjectPage < LoggedInPage
   include FusionServerDropdownModule
-  attr_reader :has_gf_servers
 
   def initialize(driver)
     super(driver)
@@ -18,7 +17,7 @@ class CreateProjectPage < LoggedInPage
     elems = super
     elems << [:id, 'project_path'] # project name
     elems << [:name, 'commit'] # create project button
-    if @has_gf_servers
+    if servers_exist?
       elems << [:id, 'git_fusion_auto_create_nil'] # Not mirrored
       elems << [:id, 'git_fusion_auto_create_true'] # auto-create mirrored
       elems << [:id, 'git_fusion_auto_create_false'] # mirror existing

@@ -3,7 +3,13 @@ require_relative '../page'
 class MergeRequestPage < Page
   def initialize(driver)
     super(driver)
+    wait_for_page_to_load
     verify
+  end
+
+  def wait_for_page_to_load
+    sleep(1)
+    wait_for(:class, 'merge-request-details')
   end
 
   def elements_for_validation
@@ -24,6 +30,11 @@ class MergeRequestPage < Page
     LOG.debug('Accepting merge request')
     wait_for(:class, 'accept_merge_request', 90)
     @driver.find_element(:class, 'accept_merge_request').click
-    wait_for(:class, 'issue-box-merged', 90)
+    # Ensure that are are merging
+    wait_for_text(:class, 'mr-widget-body', 'Merge in progress')
+    # Wait until we are no longer merging anymore
+    wait_for_no_text(:class, 'mr-widget-body', 'Merge in progress', 180)
+    # Once the page reloads we should see the issue box merged
+    wait_for(:class, 'issue-box-merged')
   end
 end

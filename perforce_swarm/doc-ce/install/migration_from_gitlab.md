@@ -17,7 +17,7 @@ master for all assets.
     not work** unless your GitLab and GitSwarm instances match one of the
     version combinations below:
 
-    |Gitlab-CE|GitSwarm CE|
+    |Gitlab CE|GitSwarm CE|
     |---|---|
     |8.0.5|15.4|
 
@@ -40,19 +40,21 @@ master for all assets.
     list, you will need to follow [these instructions](/help/update/README.md)
     to upgrade as necessary to a supported version.
 
-    Migrating to an existing GitSwarm (one that has existing users, projects and
-    repositories) will result in this data being overwritten and/or destroyed
-    during the migration. It is high recommended that you only migrate to a
-    new GitSwarm instance to avoid this issue.
+    Migrating GitLab to an existing GitSwarm (one that has existing users,
+    projects and repositories) will result in this data being overwritten and/or
+    destroyed during the migration. It is highly recommended that you only
+    migrate to a fresh/clean GitSwarm instance to avoid this issue.
 
-    If the GitLab install from which you are migrating has attachments, you must
-    use the same hostname for your new GitSwarm install.
+    If the GitLab install from which you are migrating has attachments, you will
+    either need to use the same hostname for your GitSwarm install, or once
+    migration is complete, you will need to change the GitSwarm instance's
+    hostname to match the original GitLab instance's hostname.
 
 1.  **Recommended Approach**
 
     The recommended approach is to upgrade your GitLab and GitSwarm instances to
     the most up-to-date combination (GitLab 8.0.5 and GitSwarm 15.4). Upgrading
-    to GitSwarm 15.4 is an absolute requirement for GitSwarm, since this feature
+    to GitSwarm 15.4 is an absolute requirement for GitSwarm, since migration
     is not supported in earlier versions.
 
     It is also recommended that the same hostname be used for both the GitLab
@@ -104,6 +106,10 @@ master for all assets.
 
 1. **Restore the backup archive against the destination GitSwarm instance**
 
+    Before performing the restore, please review the
+    [following note](#additional-help), since a workaround regarding attachments
+    may apply to your migration.
+
     Follow [these instructions](/help/raketasks/backup_restore.md#omnibus-installations)
     for restoring the backup on your GitSwarm instance, ensuring that you use
     the correct `TIMESTAMP` value that you made note of in step 1 of the
@@ -118,12 +124,14 @@ master for all assets.
 
 ## Additional Help
 
-1. **After performing the restore, none of my attachments work.**
+1. **Attachments can only be migrated if the hostname of the GitSwarm instance
+     matches the originating GitLab instance.**
 
-This is a known issue; the workaround is to ensure that the GitSwarm instance
-to which you are restoring has the same hostname as the GitLab instance from
-which you took the backup. You will also need to update the `external_url`
-entry in `/etc/gitswarm/gitswarm.rb` before performing the restore.
+    This is a known issue; the workaround is to ensure that the GitSwarm
+    instance to which you are restoring has the same hostname as the GitLab
+    instance from which you took the backup. You will also need to update the
+    `external_url` entry in `/etc/gitswarm/gitswarm.rb` before performing the
+    restore.
 
 1. **After performing the restore, running the recommended check results in the
      following file permissions errors:**
@@ -165,6 +173,6 @@ entry in `/etc/gitswarm/gitswarm.rb` before performing the restore.
     psql:/var/opt/gitlab/backups/db/database.sql:2931: WARNING:  no privileges could be revoked for "public" (two occurences)
     psql:/var/opt/gitlab/backups/db/database.sql:2933: WARNING:  no privileges were granted for "public" (two occurences)
     `
-    Please see [/help/raketasks/backup_restore.md#restoring-database-backup-using-omnibus-packages-outputs-warnings](this document)
+    Please see [this document](/help/raketasks/backup_restore.md#restoring-database-backup-using-omnibus-packages-outputs-warnings)
 
 

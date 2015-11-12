@@ -56,13 +56,13 @@ class GitHelper
     run_git_command('add', '.')
   end
 
-  def commit
-    run_git_command('commit', '-m', 'auto_message')
+  def commit(message = 'auto_message')
+    run_git_command('commit', '-m', '"'+message+'"')
   end
 
-  def add_commit_push
+  def add_commit_push(message = 'auto_message')
     add
-    commit
+    commit(message)
     push
   end
 

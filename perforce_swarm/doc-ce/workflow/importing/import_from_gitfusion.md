@@ -348,36 +348,36 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 
 * **GitSwarm's Helix Git Fusion integration is disabled.**
 
-  Getting this error message means that Git Fusion integration is currently
-  disabled for your GitSwarm instance. You will need to get an admin to
-  [enable it](#configuration) for the Git Fusion servers against which you wish
-  to enable mirroring.
+    Getting this error message means that Git Fusion integration is currently
+    disabled for your GitSwarm instance. You will need to get an admin to
+    [enable it](#configuration) for the Git Fusion servers against which you
+    wish to enable mirroring.
 
 * **GitSwarm's Helix Git Fusion integration is enabled, however no Git
   Fusion instances have been configured.**
 
-  In order to mirror an existing GitSwarm project, you must not only have Git
-  Fusion enabled, but you must have at least one Git Fusion server instance
-  configured. Please see [this section](#configuration) for instructions on
-  configuring a Git Fusion instance.
+    In order to mirror an existing GitSwarm project, you must not only have Git
+    Fusion enabled, but you must have at least one Git Fusion server instance
+    configured. Please see [this section](#configuration) for instructions on
+    configuring a Git Fusion instance.
 
 * **None of the Helix Git Fusion instances GitSwarm knows about are configured
   for 'auto create'.**
 
-  When mirroring an existing GitSwarm project in Git Fusion, GitSwarm must be
-  configured to be able to create a Git Fusion repository definition. To do
-  this, GitSwarm relies on the ```auto_create``` section of the Git Fusion
-  configuration. Please see
-  [this section](#auto-create-configuration) for instructions on configuring
-  auto create.
+    When mirroring an existing GitSwarm project in Git Fusion, GitSwarm must be
+    configured to be able to create a Git Fusion repository definition. To do
+    this, GitSwarm relies on the ```auto_create``` section of the Git Fusion
+    configuration. Please see
+    [this section](#auto-create-configuration) for instructions on configuring
+    auto create.
 
 * **GitSwarm is configured for Helix mirroring, but you lack permissions to
   enable it for this project.**
 
-  Enabling mirroring on an existing GitSwarm project requires permissions to
-  edit that project. This means your GitSwarm user account either needs to
-  be an administrator account, or at least master-level permissions for the
-  project on which you wish to enable mirroring.
+    Enabling mirroring on an existing GitSwarm project requires permissions to
+    edit that project. This means your GitSwarm user account either needs to
+    be an administrator account, or at least master-level permissions for the
+    project on which you wish to enable mirroring.
 
 ### Known Issues
 

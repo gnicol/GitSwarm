@@ -9,15 +9,15 @@ The archive filename is constructed as `$TIMESTAMP_gitswarm_backup.tar`,
 where `$TIMESTAMP` is the Unix time in seconds when the backup archive is
 created. This timestamp can be used to restore a specific backup.
 
-You can only restore a backup to exactly the same version of GitSwarm (or
-the corresponding version of GitLab; see
+You can only restore a backup to exactly the same version of GitSwarm EE
+(or the corresponding version of GitLab EE; see
 [below](#restore-a-previously-created-backup) for details) that
 it was created on, for example 2015.4. The best way to migrate your
 repositories from one server to another is through backup/restore.
 
 **Note:**
 You need to keep a separate copy of the `/etc/gitswarm` directory, as this
-contains the operational configuration for GitSwarm, and encryption keys
+contains the operational configuration for GitSwarm EE, and encryption keys
 for the database (for users who have two-factor authentication enabled).
 See the [steps for configuration backup](#storing-configuration-files).
 
@@ -80,10 +80,10 @@ Deleting old backups... [SKIPPING]
 
 ### Backup archive permissions
 
-The backup archives created by GitSwarm (123456_gitswarm_backup.tar) have
-owner/group `git:git` and `0600` permissions by default. This is meant to
-avoid other system users reading GitSwarm's data. If you need the backup
-archives to have different permissions you can use the
+The backup archives created by GitSwarm EE (123456_gitswarm_backup.tar)
+have owner/group `git:git` and `0600` permissions by default. This is meant
+to avoid other system users reading GitSwarm EE's data. If you need the
+backup archives to have different permissions you can use the
 `archive_permissions` setting.
 
 ```
@@ -94,13 +94,13 @@ gitlab_rails['backup_archive_permissions'] = 0644
 
 ### Backup the configuration
 
-Please be aware that the backup task does not backup your GitSwarm
+Please be aware that the backup task does not backup your GitSwarm EE
 configuration. One reason for this is that your database contains encrypted
 information for two-factor authentication. Storing encrypted information
 along with its key in the same place defeats the purpose of using
 encryption in the first place!
 
-All of the configuration for GitSwarm is stored in `/etc/gitswarm`. To
+All of the configuration for GitSwarm EE is stored in `/etc/gitswarm`. To
 backup your configuration:
 
 ```
@@ -127,11 +127,11 @@ to avoid man-in-the-middle attack warnings if you have to perform a full
 machine restore.
 
 **Important:**
-**Do not store your GitSwarm application backups in the same place as your
-configuration backup.** The configuration backup can contain database
+**Do not store your GitSwarm EE application backups in the same place as
+your configuration backup.** The configuration backup can contain database
 encryption keys to protect sensitive data in the SQL database:
 
-* GitSwarm two-factor authentication (2FA) user secrets ('QR codes')
+* GitSwarm EE two-factor authentication (2FA) user secrets ('QR codes')
 * GitLab CI 'secure variables'
 
 If you keep your configuration backup in a different place from your
@@ -141,7 +141,7 @@ lost/leaked/stolen.
 
 ### Configure cron to make daily backups
 
-To schedule a cron job that backs up your repositories and GitSwarm
+To schedule a cron job that backs up your repositories and GitSwarm EE
 metadata, use the root user:
 
 ```
@@ -165,28 +165,28 @@ gitlab_rails['backup_keep_time'] = 604800
 ```
 
 **Note:**
-This cron job does not [backup your GitSwarm
-configuration](#backup-the configuration) or [SSH host
+This cron job does not [backup your GitSwarm EE
+configuration](#backup-gitswarms-configuration) or [SSH host
 keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
 
 ## Restore a previously created backup
 
 **Important:**
-You can only restore a backup to exactly the same version of GitSwarm (or
-the corresponding version of GitLab) that it was created on, for example
-2015.4. Here is a list of the GitSwarm releases and their corresponding
-GitLab releases:
+You can only restore a backup to exactly the same version of GitSwarm EE
+(or the corresponding version of GitLab) that it was created on, for
+example 2015.4. Here is a list of the GitSwarm EE releases and their
+corresponding GitLab releases:
 
-| **GitSwarm** | **GitLab CE** |
-| ------------ | ------------- |
-| 2015.2       | 7.12          |
-| 2015.3       | 7.14          |
-| 2015.4       | 8.0           |
+| **GitSwarm EE** | **GitLab CE** |
+| --------------- | ------------- |
+| 2015.2          | 7.12          |
+| 2015.3          | 7.14          |
+| 2015.4          | 8.0           |
 
 ### Prerequisites
 
-You need to have a working GitSwarm installation before you can perform a
-restore. This is mainly because the system user performing the restore
+You need to have a working GitSwarm  EEinstallation before you can perform
+a restore. This is mainly because the system user performing the restore
 actions ('git') is usually not allowed to create or delete the SQL database
 it needs to import data into ('gitlabhq_production'). All existing data
 will be either erased (SQL) or moved to a separate directory (repositories,
@@ -199,8 +199,8 @@ configuration from `/etc/gitswarm`. Note that you need to run
 
 ### Restoration procedure
 
-We assume that you have installed GitSwarm and have run `sudo gitswarm-ctl
-reconfigure` at least once.
+We assume that you have installed GitSwarm EE and have run `sudo
+gitswarm-ctl reconfigure` at least once.
 
 1.  **Make sure your that backup `.tar` file is in the correct location.**
 
@@ -215,7 +215,7 @@ sudo cp 1393513186_gitswarm_backup.tar /var/opt/gitswarm/backups/
 
     You need to specify the timestamp of the backup you are restoring.
 
-    1.  **Stop GitSwarm processes:**
+    1.  **Stop GitSwarm EE processes:**
 
         ```
 sudo gitswarm-ctl stop unicorn
@@ -225,11 +225,11 @@ sudo gitswarm-ctl stop sidekiq
     1.  **Run the restoration task:**
 
         ```
-# This command overwrites the contents of your GitSwarm database!
+# This command overwrites the contents of your GitSwarm EE database!
 sudo gitswarm-rake gitswarm:backup:restore BACKUP=1393513186
         ```
 
-    1.  **Restart GitSwarm processes:**
+    1.  **Restart GitSwarm EE processes:**
 
         ```
 sudo gitswarm-ctl start
@@ -241,15 +241,15 @@ sudo gitswarm-ctl start
 sudo gitswarm-rake gitswarm:check SANITIZE=true
         ```
 
-If there is a GitSwarm version mismatch between your backup tar file and
-the installed version of GitSwarm, the restore command aborts with an
+If there is a GitSwarm EE version mismatch between your backup tar file and
+the installed version of GitSwarm EE, the restore command aborts with an
 error.
 
 ## Alternative backup strategies
 
-If your GitSwarm server contains a lot of git repository data, you may find
-the GitSwarm backup script to be too slow. In this case you can consider
-using filesystem snapshots as part of your backup strategy.
+If your GitSwarm EE server contains a lot of git repository data, you may
+find the GitSwarm EE backup script to be too slow. In this case you can
+consider using filesystem snapshots as part of your backup strategy.
 
 Example: Amazon EBS
 
@@ -260,7 +260,7 @@ Example: Amazon EBS
 
 Example: LVM snapshots + rsync
 
-> A GitSwarm server with an LVM logical volume mounted at
+> A GitSwarm EE server with an LVM logical volume mounted at
 > `/var/opt/gitswarm`. Replicating the `/var/opt/gitswarm` directory using
 > rsync would not be reliable because too many files could change while
 > rsync is running. Instead of rsync-ing `/var/opt/gitswarm`, we create a
@@ -269,10 +269,10 @@ Example: LVM snapshots + rsync
 > will create a consistent replica on the remote server. The replica
 > includes all repositories, uploads and Postgres data.
 
-If you are running GitSwarm on a virtualized server, you can possibly also
-create VM snapshots of the entire GitSwarm server. It is not uncommon
-however for a VM snapshot to require you to power down the server, so this
-approach is probably of limited practical use.
+If you are running GitSwarm EE on a virtualized server, you can possibly
+also create VM snapshots of the entire GitSwarm EE server. It is not
+uncommon however for a VM snapshot to require you to power down the server,
+so this approach is probably of limited practical use.
 
 ## Troubleshooting
 

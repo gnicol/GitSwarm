@@ -260,11 +260,11 @@ use the convention-based repository feature. GitSwarm does
   `non-mirrored` projects. This ability should be added in a future GitSwarm
   release.
 
-* Git Fusion, when installed on CentOS 7 or RHEL 7, does not support
+* Git Fusion, when installed on CentOS 7, does not support
   HTTP(S) authentication. This issue prevents pushing new work to a
   Git Fusion repo, including any updates in GitSwarm that would be
   mirrored to Git Fusion. Instead, use SSH connections when Git Fusion
-  is hosted on CentOS/RHEL 7.
+  is hosted on CentOS 7.
 
 * GitSwarm project names can only contain letters, numbers, underscores,
   periods, and dashes, and must begin with a letter, number,

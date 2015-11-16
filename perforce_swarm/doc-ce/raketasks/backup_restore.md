@@ -19,7 +19,7 @@ repositories from one server to another is through backup/restore.
 You need to keep a separate copy of the `/etc/gitswarm` directory, as this
 contains the operational configuration for GitSwarm, and encryption keys
 for the database (for users who have two-factor authentication enabled).
-See the [steps for configuration backup](#storing-configuration-files).
+See the [steps for configuration backup](#backup-the-configuration).
 
 **Note:**
 You need to backup the associated `p4d` instance separately, if you have
@@ -41,8 +41,8 @@ a secure offsite location as a disaster prevention measure.
 sudo gitswarm-rake gitswarm:backup:create
 ```
 
-Also you can choose what should be backed up by adding the environment
-variable `SKIP`. Available options: `db`, `uploads` (attachments),
+You can choose what should be backed up by adding the environment
+variable `SKIP`. Available options: `db`, `uploads` (attachments), and
 `repositories`. Use a comma to specify several options at the same time.
 
 ```
@@ -73,15 +73,15 @@ Dumping database tables:
 - Dumping table wikis... [DONE]
 Dumping repositories:
 - Dumping repository abcd... [DONE]
-Creating backup archive: $TIMESTAMP_gitswarm_backup.tar [DONE]
+Creating backup archive: 123456_gitswarm_backup.tar [DONE]
 Deleting tmp directories...[DONE]
 Deleting old backups... [SKIPPING]
 ```
 
 ### Backup archive permissions
 
-The backup archives created by GitSwarm (123456_gitswarm_backup.tar) have
-owner/group `git:git` and `0600` permissions by default. This is meant to
+The backup archives created by GitSwarm (`123456_gitswarm_backup.tar` above)
+have owner/group `git:git` and `0600` permissions by default. This is meant to
 avoid other system users reading GitSwarm's data. If you need the backup
 archives to have different permissions you can use the
 `archive_permissions` setting.
@@ -166,7 +166,7 @@ gitlab_rails['backup_keep_time'] = 604800
 
 **Note:**
 This cron job does not [backup your GitSwarm
-configuration](#backup-the configuration) or [SSH host
+configuration](#backup-the-configuration) or [SSH host
 keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
 
 ## Restore a previously created backup
@@ -179,9 +179,7 @@ GitLab releases:
 
 | **GitSwarm** | **GitLab CE** |
 | ------------ | ------------- |
-| 2015.2       | 7.12          |
-| 2015.3       | 7.14          |
-| 2015.4       | 8.0           |
+| 2015.4       | 8.0.5           |
 
 ### Prerequisites
 
@@ -199,8 +197,8 @@ configuration from `/etc/gitswarm`. Note that you need to run
 
 ### Restoration procedure
 
-We assume that you have installed GitSwarm and have run `sudo gitswarm-ctl
-reconfigure` at least once.
+We assume that you have installed GitSwarm and have run
+`sudo gitswarm-ctl reconfigure` at least once.
 
 1.  **Make sure your that backup `.tar` file is in the correct location.**
 

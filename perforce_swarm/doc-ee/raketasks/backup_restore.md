@@ -19,7 +19,7 @@ repositories from one server to another is through backup/restore.
 You need to keep a separate copy of the `/etc/gitswarm` directory, as this
 contains the operational configuration for GitSwarm EE, and encryption keys
 for the database (for users who have two-factor authentication enabled).
-See the [steps for configuration backup](#storing-configuration-files).
+See the [steps for configuration backup](#backup-the-configuration).
 
 **Note:**
 You need to backup the associated `p4d` instance separately, if you have
@@ -41,8 +41,8 @@ a secure offsite location as a disaster prevention measure.
 sudo gitswarm-rake gitswarm:backup:create
 ```
 
-Also you can choose what should be backed up by adding the environment
-variable `SKIP`. Available options: `db`, `uploads` (attachments),
+You can choose what should be backed up by adding the environment
+variable `SKIP`. Available options: `db`, `uploads` (attachments), and
 `repositories`. Use a comma to specify several options at the same time.
 
 ```
@@ -73,7 +73,7 @@ Dumping database tables:
 - Dumping table wikis... [DONE]
 Dumping repositories:
 - Dumping repository abcd... [DONE]
-Creating backup archive: $TIMESTAMP_gitswarm_backup.tar [DONE]
+Creating backup archive: 123456_gitswarm_backup.tar [DONE]
 Deleting tmp directories...[DONE]
 Deleting old backups... [SKIPPING]
 ```
@@ -166,26 +166,24 @@ gitlab_rails['backup_keep_time'] = 604800
 
 **Note:**
 This cron job does not [backup your GitSwarm EE
-configuration](#backup-gitswarms-configuration) or [SSH host
+configuration](#backup-the-configuration) or [SSH host
 keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
 
 ## Restore a previously created backup
 
 **Important:**
 You can only restore a backup to exactly the same version of GitSwarm EE
-(or the corresponding version of GitLab) that it was created on, for
+(or the corresponding version of GitLab EE) that it was created on, for
 example 2015.4. Here is a list of the GitSwarm EE releases and their
 corresponding GitLab releases:
 
-| **GitSwarm EE** | **GitLab CE** |
+| **GitSwarm EE** | **GitLab EE** |
 | --------------- | ------------- |
-| 2015.2          | 7.12          |
-| 2015.3          | 7.14          |
-| 2015.4          | 8.0           |
+| 2015.4          | 8.0.5           |
 
 ### Prerequisites
 
-You need to have a working GitSwarm  EEinstallation before you can perform
+You need to have a working GitSwarm EE installation before you can perform
 a restore. This is mainly because the system user performing the restore
 actions ('git') is usually not allowed to create or delete the SQL database
 it needs to import data into ('gitlabhq_production'). All existing data

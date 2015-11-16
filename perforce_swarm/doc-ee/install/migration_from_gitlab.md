@@ -27,7 +27,9 @@ Perforce Helix as the master for all assets.
     * Migration is supported across differing operating systems (e.g. migration
       from GitLab EE running on CentOS 6 to GitSwarm EE running on Ubuntu 14).
     * Migrating from GitLab CE to GitSwarm EE can be accomplished by migrating
-      from GitLab CE to GitSwarm, then upgrading to GitSwarm EE.
+      from GitLab CE to GitSwarm, then upgrading to GitSwarm EE. See
+      [these instructions](/help/update/ce-to-ee.md) for upgrading to GitSwarm
+      EE.
 
 1.  **An existing GitLab EE install**
 
@@ -138,7 +140,7 @@ Perforce Helix as the master for all assets.
 
 1. **After performing the restore, running the recommended check results in the
      following file permissions errors:**
-    `
+    ```
     Repo base access is drwxrws---? ... no
       Try fixing it:
       sudo chmod -R ug+rwX,o-rwx /var/opt/gitswarm/git-data/repositories
@@ -148,8 +150,8 @@ Perforce Helix as the master for all assets.
       doc/install/installation.md in section "GitLab Shell"
       Please fix the error above and rerun the checks.
     hooks directories in repos are links: ...
-    `
-    `
+    ```
+    ```
     Tmp directory writable? ... yes
     Uploads directory setup correctly? ... no
       Try fixing it:
@@ -160,22 +162,22 @@ Perforce Helix as the master for all assets.
     Init script exists? ... skipped (omnibus-gitlab has no init script)
     Init script up-to-date? ... skipped (omnibus-gitlab has no init script)
     projects have namespace: ...
-    `
+    ```
     These problems can be corrected by running the following commands:
-    `
+    ```
     sudo chmod -R ug+rwX,o-rwx /var/opt/gitswarm/git-data/repositories
     sudo chmod -R ug-s /var/opt/gitswarm/git-data/repositories
     find /var/opt/gitswarm/git-data/repositories -type d -print0 | sudo xargs -0 chmod g+s
     sudo chmod 0750 /var/opt/gitswarm/gitlab-rails/uploads
-    `
+    ```
 
 1.  **When performing a restore, the following database error may be seen:**
 
-    `
+    ```
     psql:/var/opt/gitlab/backups/db/database.sql:22: ERROR:  must be owner of extension plpgsql
     psql:/var/opt/gitlab/backups/db/database.sql:2931: WARNING:  no privileges could be revoked for "public" (two occurences)
     psql:/var/opt/gitlab/backups/db/database.sql:2933: WARNING:  no privileges were granted for "public" (two occurences)
-    `
+    ```
     Please see [this document](/help/raketasks/backup_restore.md#restoring-database-backup-using-omnibus-packages-outputs-warnings)
 
 

@@ -128,11 +128,11 @@ master for all assets.
 1. **Attachments can only be migrated if the hostname of the GitSwarm instance
      matches the originating GitLab instance.**
 
-    This is a known issue; the workaround is to ensure that the GitSwarm
-    instance to which you are restoring has the same hostname as the GitLab
-    instance from which you took the backup. You will also need to update the
-    `external_url` entry in `/etc/gitswarm/gitswarm.rb` before performing the
-    restore.
+     This is a known issue; the workaround is to ensure that the GitSwarm
+     instance to which you are restoring has the same fully-qualified domain name
+     (FQDN) as the GitLab instance from which you took the backup. You will
+     also need to update the `external_url` entry in `/etc/gitswarm/gitswarm.rb`
+     before performing the restore.
 
 1. **After performing the restore, running the recommended check results in the
      following file permissions errors:**

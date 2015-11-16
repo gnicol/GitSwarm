@@ -23,7 +23,7 @@ Perforce Helix as the master for all assets.
 
     **Important Notes:**
     * GitLab EE to GitSwarm EE migration is not supported on GitSwarm EE
-      versions less than 15.4 (GitLab 8.0.5).
+      versions less than 15.4 (GitLab EE 8.0.5).
     * Migration is supported across differing operating systems (e.g. migration
       from GitLab EE running on CentOS 6 to GitSwarm EE running on Ubuntu 14).
     * Migrating from GitLab CE to GitSwarm EE can be accomplished by migrating
@@ -131,10 +131,10 @@ Perforce Helix as the master for all assets.
      instance matches the originating GitLab EE instance.**
 
     This is a known issue; the workaround is to ensure that the GitSwarm EE
-    instance to which you are restoring has the same hostname as the GitLab EE
-    instance from which you took the backup. You will also need to update the
-    `external_url` entry in `/etc/gitswarm/gitswarm.rb` before performing the
-    restore.
+    instance to which you are restoring has the same fully-qualified domain name
+    (FQDN) as the GitLab EE instance from which you took the backup. You will
+    also need to update the `external_url` entry in `/etc/gitswarm/gitswarm.rb`
+    before performing the restore.
 
 1. **After performing the restore, running the recommended check results in the
      following file permissions errors:**

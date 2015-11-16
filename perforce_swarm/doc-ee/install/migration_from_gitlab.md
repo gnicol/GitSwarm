@@ -55,7 +55,7 @@ Perforce Helix as the master for all assets.
 
     The recommended approach is to upgrade your GitLab EE and GitSwarm EE
     instances to the most up-to-date combination (GitLab EE 8.0.5 and
-    GitSwarm EE 15.4). Upgrading to GitSwarm EE 15.4 (and GitLab 8.0.5) is an
+    GitSwarm EE 15.4). Upgrading to GitSwarm EE 15.4 (and GitLab EE 8.0.5) is an
     absolute requirement for GitSwarm EE, since migration is not supported in
     earlier versions. See [these instructions](/help/update/README.md) for how
     to upgrade.

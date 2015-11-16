@@ -23,17 +23,17 @@ Perforce Helix as the master for all assets.
 
     **Important Notes:**
     * GitLab EE to GitSwarm EE migration is not supported on GitSwarm EE
-      versions less than 15.4.
+      versions less than 15.4 (GitLab 8.0.5).
     * Migration is supported across differing operating systems (e.g. migration
-      from GitLab EE running on CentOS6 to GitSwarm EE running on Ubuntu 14).
+      from GitLab EE running on CentOS 6 to GitSwarm EE running on Ubuntu 14).
     * Migrating from GitLab CE to GitSwarm EE can be accomplished by migrating
-      from GitLab CE to GitSwarm CE, then upgrading to GitSwarm EE.
+      from GitLab CE to GitSwarm, then upgrading to GitSwarm EE.
 
 1.  **An existing GitLab EE install**
 
     If the GitLab EE instance you're looking to migrate from is not on the above
     list, you will need to follow [these instructions](/help/update/README.md)
-    to upgrade as necessary to a supported version.
+    to upgrade as necessary to a supported version (>= 8.0.5).
 
 1.  **A new, up-to-date GitSwarm EE install**
 
@@ -55,8 +55,10 @@ Perforce Helix as the master for all assets.
 
     The recommended approach is to upgrade your GitLab EE and GitSwarm EE
     instances to the most up-to-date combination (GitLab EE 8.0.5 and
-    GitSwarm EE 15.4). Upgrading to GitSwarm EE 15.4 is an absolute requirement
-    for GitSwarm EE, since migration is not supported in earlier versions.
+    GitSwarm EE 15.4). Upgrading to GitSwarm EE 15.4 (and GitLab 8.0.5) is an
+    absolute requirement for GitSwarm EE, since migration is not supported in
+    earlier versions. See [these instructions](/help/update/README.md) for how
+    to upgrade.
 
     It is also recommended that the same hostname be used for both the GitLab EE
     and GitSwarm EE instances, since this will ensure that attachments on

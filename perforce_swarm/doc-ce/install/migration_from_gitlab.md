@@ -17,22 +17,22 @@ master for all assets.
     not work** unless your GitLab and GitSwarm instances match one of the
     version combinations below:
 
-    |Gitlab CE|GitSwarm CE|
+    |Gitlab CE|GitSwarm|
     |---|---|
     |8.0.5|15.4|
 
     **Important Notes:**
     * GitLab to GitSwarm migration is not supported on GitSwarm versions less
-      than 15.4.
+      than 15.4 (GitLab 8.0.5).
     * Migration is supported across differing operating systems (e.g. migration
-      from GitLab running on CentOS6 to GitSwarm running on Ubuntu 14).
+      from GitLab running on CentOS 6 to GitSwarm running on Ubuntu 14).
 
 1.  **An existing GitLab install**
 
     If the GitLab instance you're looking to migrate from is not on the above
     list, you will need to follow
     [these instructions](/help/update/README.md) to upgrade as necessary to a
-    supported version.
+    supported version (>= 8.0.5).
 
 1.  **A new, up-to-date GitSwarm install**
 
@@ -54,8 +54,9 @@ master for all assets.
 
     The recommended approach is to upgrade your GitLab and GitSwarm instances to
     the most up-to-date combination (GitLab 8.0.5 and GitSwarm 15.4). Upgrading
-    to GitSwarm 15.4 is an absolute requirement for GitSwarm, since migration
-    is not supported in earlier versions.
+    to GitSwarm 15.4 (and GitLab 8.0.5) is an absolute requirement for GitSwarm,
+    since migration is not supported in earlier versions. See
+    [these instructions](/help/update/README.md) for how to upgrade.
 
     It is also recommended that the same hostname be used for both the GitLab
     and GitSwarm instances, since this will ensure that attachments on

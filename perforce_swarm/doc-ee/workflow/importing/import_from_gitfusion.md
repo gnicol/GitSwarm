@@ -2,7 +2,7 @@
 
 Helix Git Fusion is a Git remote repository service that uses the Helix
 Versioning Engine (P4D) as its back end. Users interact with Git Fusion as
-they would with any other Git remote repository.
+they would with any other remote Git repository.
 
 It takes just a few steps to import your existing Git Fusion projects into
 GitSwarm EE. Additionally, for brand new projects; GitSwarm EE can automatically

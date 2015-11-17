@@ -48,7 +48,7 @@ sudo gitswarm-ctl uninstall
 sudo apt-get purge helix-gitswarm
         ```
 
-    1.  **For CentOS/RHEL:**
+    1.  **For CentOS:**
 
         ```
 sudo yum remove helix-gitswarm
@@ -62,7 +62,7 @@ sudo yum remove helix-gitswarm
 sudo apt-get autoremove
         ```
 
-    1.  **For CentOS/RHEL:**
+    1.  **For CentOS:**
 
         ```
 sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base

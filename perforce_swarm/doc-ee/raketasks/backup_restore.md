@@ -22,11 +22,23 @@ for the database (for users who have two-factor authentication enabled).
 See the [steps for configuration backup](#backup-the-configuration).
 
 **Note:**
-You need to backup the associated `p4d` instance separately, if you have
-enabled mirroring for any of your projects. See the [Backup and
+If you have enabled mirroring for any of your projects, you will need to backup
+any associated `p4d` instances separately, *after* you have performed the
+GitSwarm EE backup. See the [Backup and
 Recovery](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.backup.html)
 chapter in the [_Helix Versioning Engine Administrator Guide:
 Fundamentals_](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
+
+**Note:**
+If you are using the `:auto_provisioned` Git Fusion instance (which we do not
+recommend for production systems), the following environment variable changes
+may be helpful when performing a backup:
+
+    ```
+    export P4ROOT=/var/opt/gitswarm/perforce/data p4d
+    export P4USER=root
+    export PATH=$PATH:/opt/perforce/sbin
+    ```
 
 If you are interested in GitLab CI backup please follow to the [CI backup
 documentation](https://gitlab.com/gitlab-org/gitlab-ci/blob/master/doc/raketasks/backup_restore.md)\*
@@ -172,14 +184,15 @@ keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-an
 ## Restore a previously created backup
 
 **Important:**
-You can only restore a backup to exactly the same version of GitSwarm EE
-(or the corresponding version of GitLab EE) that it was created on, for
-example 2015.4. Here is a list of the GitSwarm EE releases and their
-corresponding GitLab releases:
+You can only restore a backup to GitSwarm EE if the backup was created on the
+same version of GitSwarm EE, or the corresponding version of GitLab EE.
+For example, a backup taken on GitLab 8.0.5 can be restored to a 2015.4 GitSwarm
+EE install. Here is a list of the GitSwarm EE releases and their corresponding
+GitLab EE releases:
 
-| **GitSwarm EE** | **GitLab EE** |
-| --------------- | ------------- |
-| 2015.4          | 8.0.5           |
+| **GitLab EE**   | **GitSwarm EE** |
+| --------------- | -------------   |
+| 8.0.5           | 2015.4          |
 
 ### Prerequisites
 
@@ -189,6 +202,9 @@ actions ('git') is usually not allowed to create or delete the SQL database
 it needs to import data into ('gitlabhq_production'). All existing data
 will be either erased (SQL) or moved to a separate directory (repositories,
 uploads).
+
+If you are also restoring Helix Versioning Engine (P4D) backups, it is better
+to restore P4D before restoring GitSwarm EE.
 
 If some or all of your GitLab users are using two-factor authentication
 (2FA) then you must also make sure to restore the backup of the
@@ -233,7 +249,7 @@ sudo gitswarm-rake gitswarm:backup:restore BACKUP=1393513186
 sudo gitswarm-ctl start
         ```
 
-    1.  **Check GitSwarm:**
+    1.  **Check GitSwarm EE:**
 
         ```
 sudo gitswarm-rake gitswarm:check SANITIZE=true

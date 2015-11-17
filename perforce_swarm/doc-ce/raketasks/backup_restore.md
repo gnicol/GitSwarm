@@ -202,12 +202,13 @@ it needs to import data into ('gitlabhq_production'). All existing data
 will be either erased (SQL) or moved to a separate directory (repositories,
 uploads).
 
+If you are also restoring Helix Versioning Engine (P4D) backups, it is better
+to restore P4D before restoring GitSwarm.
+
 If some or all of your GitLab users are using two-factor authentication
 (2FA) then you must also make sure to restore the backup of the
 configuration from `/etc/gitswarm`. Note that you need to run
 `gitswarm-ctl reconfigure` after changing anything in `/etc/gitswarm`.
-
-
 
 ### Restoration procedure
 

@@ -4,8 +4,11 @@
 
 *  **Restoring backups**
 
-   GitSwarm can only restore backups made on the same versions. This means a
-   backup of GitSwarm 2015.3 can only be restored to an instance running 2015.3.
+   GitSwarm can only restore backups made on the same version. Hence, a backup
+   of GitSwarm 2015.3 can only be restored to an instance running 2015.3, and
+   not on 2015.4 or higher versions. Although, upgrading gitswarm should not
+   result in data corruption, we recommend taking backups of your existing
+   version before you run an upgrade.
 
 *  **Stopping GitSwarm**
 
@@ -45,6 +48,26 @@ sudo gitswarm-rake gitswarm:check
     options have been changed since last release by running
     ```
 sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
+    ```
+
+# Upgrading from GitSwarm to GitSwarm EE
+
+Before upgrading from GitSwarm to GitSwarm EE, please ensure you have read and
+understand the [pre-update considerations](#pre-update-considerations).
+
+1.  **For Ubuntu (12.04 and 14.04):**
+    ```
+sudo apt-get remove helix-gitswarm
+sudo apt-get install helix-gitswarm-ee
+sudo gitswarm-ctl reconfigure
+    ```
+
+1.  **For CentOS (6 and 7):**
+    ```
+sudo yum remove helix-gitswarm
+sudo yum clean all #clear the repo caches
+sudo yum install helix-gitswarm-ee
+sudo gitswarm-ctl reconfigure
     ```
 
 # For users upgrading FROM 2015.3

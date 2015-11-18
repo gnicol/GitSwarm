@@ -69,11 +69,14 @@ Known Issues
 
 Major new functionality in 2015.4
 
+    #61b5fcee (PGL-1364)
+       Install GitSwarm EE via bootstrap shell script
+
     #d1e79253, #a6b4510f (PGL-1236)
-       Mirror existing GitSwarm project into Helix
+       Mirror existing GitSwarm EE project into Helix
 
     #e0d6ed64 (PGL-1201)
-       Support restoring GitLab 8.0 backups into GitSwarm 2015.4
+       Support restoring GitLab EE 8.0 backups into GitSwarm 2015.4 EE
 
     GitLab 8.0
         - Add fast-forward merge option in project settings

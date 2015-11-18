@@ -34,6 +34,42 @@ module PerforceSwarm
         connection.disconnect if connection
       end
     end
+
+    # Projects user has access to
+    def authorized_projects
+      return @authorized_projects if @authorized_projects
+
+      gitab_auth_projects = super
+
+      # Grab mirrored projects from list
+      fusion_repos = gitab_auth_projects.pluck(:git_fusion_repo).compact
+
+      # Determine unique gf servers
+      gf_servers = fusion_repos.map { |repo| repo.sub(%r{^mirror://}, '').split('/', 2)[0] }
+      gf_servers.uniq!
+
+      # Run @list against each server
+      gf_repos = []
+      gf_servers.each do |server|
+        begin
+          PerforceSwarm::GitFusionRepo.list(server, username).each_key do |repo_name|
+            gf_repos << "mirror://#{server}/#{repo_name}"
+          end
+        rescue PerforceSwarm::GitFusion::RunError => e
+          # Continue to work if git-fusion is down, but log errors
+          gf_repos += fusion_repos.select { |repo| repo.sub(%r{^mirror://}, '').split('/', 2)[0] == server }
+          Gitlab::AppLogger.error(e.message)
+        end
+      end
+
+      # Determine which repos you don't have access to
+      no_access = fusion_repos - gf_repos
+
+      # Remove projects with those repos from your auth projects
+      project_ids = gitab_auth_projects.reject { |project| no_access.include?(project.git_fusion_repo) }.map(&:id)
+
+      @authorized_projects = Project.where(id: project_ids)
+    end
   end
 end
 

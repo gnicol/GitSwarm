@@ -30,15 +30,13 @@ chapter in the [_Helix Versioning Engine Administrator Guide:
 Fundamentals_](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
 
 **Note:**
-If you are using the `:auto_provisioned` Git Fusion instance (which we do not
-recommend for production systems), the following environment variable changes
-may be helpful when performing a backup:
+If you are using the `:auto_provisioned` Helix server instance (which we do not
+recommend for production systems), the following information may be helpful:
 
-```
-export P4ROOT=/var/opt/gitswarm/perforce/data p4d
-export P4USER=root
-export PATH=$PATH:/opt/perforce/sbin
-```
+    * P4ROOT is /var/opt/gitswarm/perforce/data
+    * the `root` user can log in to the auto_provisioned Helix server with the
+      GitSwarm `root` user's password
+    * the `p4d` binary is located in `/opt/perforce/sbin`
 
 If you are interested in GitLab CI backup please follow to the [CI backup
 documentation](https://gitlab.com/gitlab-org/gitlab-ci/blob/master/doc/raketasks/backup_restore.md)\*

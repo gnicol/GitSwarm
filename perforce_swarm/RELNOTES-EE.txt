@@ -69,9 +69,6 @@ Known Issues
 
 Major new functionality in 2015.4
 
-    #61b5fcee (PGL-1364)
-       Install GitSwarm EE via bootstrap shell script
-
     #d1e79253, #a6b4510f (PGL-1236)
        Mirror existing GitSwarm EE project into Helix
 
@@ -101,6 +98,9 @@ Major new functionality in 2015.4
         - Support Kerberos ticket-based authentication for Git HTTP access
 
 Minor new functionality in 2015.4
+
+    #fc65efd2 (PGL-1364)
+       Install GitSwarm EE via bootstrap shell script
 
     #33aae928 (PGL-1270)
         Cleanse removes the p4dctl config file

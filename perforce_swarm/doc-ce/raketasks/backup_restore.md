@@ -33,10 +33,10 @@ Fundamentals_](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index
 If you are using the `:auto_provisioned` Helix server instance (which we do not
 recommend for production systems), the following information may be helpful:
 
-    * P4ROOT is /var/opt/gitswarm/perforce/data
-    * the `root` user can log in to the auto_provisioned Helix server with the
-      GitSwarm `root` user's password
-    * the `p4d` binary is located in `/opt/perforce/sbin`
+* The auto provisioned Helix Server's 'P4ROOT' is `/var/opt/gitswarm/perforce/data`
+* The 'root' user can log in to the auto_provisioned Helix server with the
+  GitSwarm EE 'root' user's password
+* The auto provisioned Helix Server's 'p4d' binary is located under '/opt/perforce/sbin'
 
 If you are interested in GitLab CI backup please follow to the [CI backup
 documentation](https://gitlab.com/gitlab-org/gitlab-ci/blob/master/doc/raketasks/backup_restore.md)\*

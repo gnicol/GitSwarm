@@ -1,52 +1,30 @@
-## Import from Helix Git Fusion into GitSwarm
+## Import from Helix Git Fusion into GitSwarm EE
 
 Helix Git Fusion is a Git remote repository service that uses the Helix
 Versioning Engine (P4D) as its back end. Users interact with Git Fusion as
 they would with any other remote Git repository.
 
 It takes just a few steps to import your existing Git Fusion projects into
-GitSwarm. Additionally, for brand new projects; GitSwarm can automatically
+GitSwarm EE. Additionally, for brand new projects; GitSwarm EE can automatically
 configure a new Git Fusion repository and use it to mirror your work into
 the Helix Versioning Engine (P4D).
 
-Once imported, GitSwarm keeps the Git Fusion project up to date using
-bi-directional mirroring; any changes pushed to a GitSwarm project are
+Once imported, GitSwarm EE keeps the Git Fusion project up to date using
+bi-directional mirroring; any changes pushed to a GitSwarm EE project are
 mirrored to Git Fusion, and changes within the Git Fusion project (even if
 initiated within the Helix Versioning Engine) are mirrored into the
-GitSwarm project.
-
-Mirroring your repositories to a Helix Versioning Engine through Git Fusion
-makes it easy to use either Git or Helix applications to work on 
-the same set of files. Helix provides simplified interfaces which are 
-easier for some team members to learn and use than Git.
-
-With Helix's exclusive file locking support, teams working with unmergable 
-digital assets can collaborate without overwriting each other's work. Git 
-Fusion respects these locks and prevents Git pushes from overwriting locked files. 
-
-Additionally, mirroring through Git Fusion allows “narrow cloning,” where you 
-create small Git repositories that are subsets of the much larger Helix 
-Versioning Engine monorepo. Git repositories perform best when the repository 
-is at most 1 GB in size, whereas a Helix Versioning Engine can store petabytes 
-of data.
-
-You can create multiple Git repositories from overlapping sets of files stored 
-in a Helix Versioning Engine. Commits from one Git repo are recreated in other 
-repositories that share those files. Continuous integration systems can run 
-directly against the Helix Versioning Engine to catch dependencies across Git 
-repositories, while allowing developers to work with smaller, high-performing 
-repositories.
+GitSwarm EE project.
 
 ### Requirements
 
 * Helix Git Fusion 2015.2, or newer.
-* Helix GitSwarm 2015.3, or newer.
+* Helix GitSwarm EE 2015.3, or newer.
 * Helix Versioning Engine (P4D) version 2015.1/1171507, or newer.
 
 ### Recommendations
 
-* Install GitSwarm and Git Fusion on separate machines to improve
-  performance and scalability. GitSwarm 2015.3+ installs with a local
+* Install GitSwarm EE and Git Fusion on separate machines to improve
+  performance and scalability. GitSwarm EE 2015.3+ installs with a local
   Helix Versioning Engine and a local Git Fusion server, all pre-configured
   to allow you to easily try out the system. In production, we recommend
   disabling the local Git Fusion, and using an external one. [Check out the
@@ -58,12 +36,12 @@ repositories.
 
 ### Configuration
 
-Before you can import from Git Fusion, GitSwarm needs some configuration
+Before you can import from Git Fusion, GitSwarm EE needs some configuration
 that describes where the Git Fusions service(s) exist.
 
 #### Global Configuration
 
-GitSwarm supports a special server entry called `global`, which contains
+GitSwarm EE supports a special server entry called `global`, which contains
 overrides for usernames, passwords, git configuration parameters, and
 convention-based repository settings.
 
@@ -151,7 +129,7 @@ gitswarm['git-fusion']['my_entry']['password']          = '<password for "gitswa
 sudo gitswarm-ctl reconfigure
     ```
 
-To permit GitSwarm to connect to Git Fusion via SSH, follow these steps:
+To permit GitSwarm EE to connect to Git Fusion via SSH, follow these steps:
 
 1.  **Get a copy of the `git` user's public SSH key**
 
@@ -175,13 +153,13 @@ sudo cat ~git/.ssh/id_rsa.pub
 
 #### Convention-based Repository Configuration
 
-In order for GitSwarm to automatically create new Git Fusion
-repositories when adding projects, GitSwarm needs to connect
+In order for GitSwarm EE to automatically create new Git Fusion
+repositories when adding projects, GitSwarm EE needs to connect
 to the Helix Versioning Engine (P4D) directly. GitSwam also
 needs to be configure with a path where it can place the repositories
 files.
 
-At a minimum, GitSwarm needs to be configured with a user id and
+At a minimum, GitSwarm EE needs to be configured with a user id and
 password for the connection. When using HTTP(S) this information
 will already be present. When using SSH, you may need to add the
 settings:
@@ -204,7 +182,7 @@ specify the appropriate value manually by setting:
 gitswarm['git-fusion']['my_entry']['perforce']['port']  = 'ssl:my-fusion:1666'
 ```
 
-Note: GitSwarm will use the following priority for determining user/password
+Note: GitSwarm EE will use the following priority for determining user/password
 to connect to Perforce:
 1. Entry-specific user/password keys
 1. User/password specified on the Git Fusion server `url`
@@ -220,9 +198,9 @@ git-fusion instance. You can include more configured servers under other
 keys.
 
 ##### Auto-Create Configuration
-GitSwarm generates a Git Fusion configuration and unique depot path
+GitSwarm EE generates a Git Fusion configuration and unique depot path
 for each new project that has convention-based mirroring enabled. It
-constructs these by substituting the GitSwarm project's namespace and
+constructs these by substituting the GitSwarm EE project's namespace and
 project path into a template that is specified in the configuration.
 
 ```ruby
@@ -231,12 +209,12 @@ project path into a template that is specified in the configuration.
 ```
 
 Note: `{namespace}` and `{project-path}` are substituted for the
-GitSwarm project's namespace and project path (name) when the
+GitSwarm EE project's namespace and project path (name) when the
 project is created.
 
 Note: The depot specified in the `path_template` ('gitswarm'
 in the above example) must exist *prior* to attempting to
-use the convention-based repository feature. GitSwarm does
+use the convention-based repository feature. GitSwarm EE does
 *not* create this depot for you.
 
 #### Sample Configuration
@@ -255,16 +233,16 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 
 ```
 
-### New GitSwarm Project with Convention-based Mirroring
+### New GitSwarm EE Project with Convention-based Mirroring
 
-1.  Sign in to your GitSwarm instance and go to your dashboard.
+1.  Sign in to your GitSwarm EE instance and go to your dashboard.
 
 1.  Click "New Project".
 
 1.  Click the "Git Fusion Server" drop-down menu to select an available
     Git Fusion Server that your project will be mirrored to.
 
-1.  Click the 'Create a Helix GitSwarm project to mirror'
+1.  Click the 'Create a Helix GitSwarm EE project to mirror'
 
     ![Select repository to import](gitfusion_importer/choose_auto_create.png)
 
@@ -278,7 +256,7 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 
 ### Importing a Git Fusion Repository
 
-1.  Sign in to your GitSwarm instance and go to your dashboard.
+1.  Sign in to your GitSwarm EE instance and go to your dashboard.
 
 1.  Click "New Project".
 
@@ -299,7 +277,7 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 
     ![Import in progress](gitfusion_importer/import_in_progress.png)
 
-### Enabling Mirroring on an Existing GitSwarm Project
+### Enabling Mirroring on an Existing GitSwarm EE Project
 
 #### Requirements
 
@@ -307,23 +285,23 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
   mirroring.
   See [this section](#convention-based-repository-configuration) for details.
 
-* Your GitSwarm user account must either be an admin account, or you must have
-  at least master-level permissions for the project on which you are attempting
-  to enable mirroring.
+* Your GitSwarm EE user account must either be an admin account, or you must
+  have at least master-level permissions for the project on which you are
+  attempting to enable mirroring.
 
 * The project cannot already be mirrored in Git Fusion.
 
 * There must not be any content in Helix where the to-be mirrored project's
-  files are to be stored. GitSwarm checks for this before attempting to mirror
-  the project.
+  files are to be stored. GitSwarm EE checks for this before attempting to
+  mirror the project.
 
 * There must not be a Git Fusion configuration file (```p4gf_config```) for the
-  current namespace/project path combination. GitSwarm checks for this
+  current namespace/project path combination. GitSwarm EE checks for this
   before attempting to mirror the project.
 
-#### How to Enable Mirroring on an Existing GitSwarm Project
+#### How to Enable Mirroring on an Existing GitSwarm EE Project
 
-1.  **Sign in to your GitSwarm instance**
+1.  **Sign in to your GitSwarm EE instance**
 
     You must be an admin, or have at least master rights to the project for
     which you want to enable mirroring.
@@ -348,7 +326,7 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 
     If you have selected a server for which there is a problem (e.g. that
     particular server does not have auto-create enabled, or has an incorrect
-    username/password), GitSwarm reports that this is the case, describes
+    username/password), GitSwarm EE reports that this is the case, describes
     what the problem is, and suggests how to fix it. For example:
 
     ![Mirror in Helix Issue](gitfusion_importer/mirror_in_helix_misconfigured.png)
@@ -356,72 +334,72 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 1.  **Clicking the "Launch Mirroring" button**
 
     This starts the mirroring process. Assuming there are no configuration
-    errors, GitSwarm attempts to:
+    errors, GitSwarm EE attempts to:
       * Create an associated repository in Git Fusion
-      * Mark the GitSwarm project as mirrored in Git Fusion
-      * Perform an initial push (backgrounded) of the GitSwarm project to Git
+      * Mark the GitSwarm EE project as mirrored in Git Fusion
+      * Perform an initial push (backgrounded) of the GitSwarm EE project to Git
         Fusion
 
-    If any errors occur during the above process, GitSwarm takes you back to the
-    Mirror in Helix page, and report the error. See below for potential error
-    messages, what they mean and how to fix them.
+    If any errors occur during the above process, GitSwarm EE takes you back to
+    the Mirror in Helix page, and report the error. See below for potential
+    error messages, what they mean and how to fix them.
 
 #### Error Messages
 
 * **GitSwarm's Helix Git Fusion integration is disabled.**
 
     Getting this error message means that Git Fusion integration is currently
-    disabled for your GitSwarm instance. You will need to get an admin to
+    disabled for your GitSwarm EE instance. You will need to get an admin to
     [enable it](#configuration) for the Git Fusion servers against which you
     wish to enable mirroring.
 
 * **GitSwarm's Helix Git Fusion integration is enabled, however no Git
   Fusion instances have been configured.**
 
-    In order to mirror an existing GitSwarm project, you must not only have Git
-    Fusion enabled, but you must have at least one Git Fusion server instance
-    configured. Please see [this section](#configuration) for instructions on
-    configuring a Git Fusion instance.
+    In order to mirror an existing GitSwarm EE project, you must not only have
+    Git Fusion enabled, but you must have at least one Git Fusion server
+    instance configured. Please see [this section](#configuration) for
+    instructions on configuring a Git Fusion instance.
 
-* **None of the Helix Git Fusion instances GitSwarm knows about are configured
-  for 'auto create'.**
+* **None of the Helix Git Fusion instances GitSwarm EE knows about are
+    configured for 'auto create'.**
 
-    When mirroring an existing GitSwarm project in Git Fusion, GitSwarm must be
-    configured to be able to create a Git Fusion repository definition. To do
-    this, GitSwarm relies on the ```auto_create``` section of the Git Fusion
-    configuration. Please see
+    When mirroring an existing GitSwarm EE project in Git Fusion, GitSwarm EE
+    must be configured to be able to create a Git Fusion repository definition.
+    To do this, GitSwarm EE relies on the ```auto_create``` section of the Git
+    Fusion configuration. Please see
     [this section](#auto-create-configuration) for instructions on configuring
     auto create.
 
-* **GitSwarm is configured for Helix mirroring, but you lack permissions to
+* **GitSwarm EE is configured for Helix mirroring, but you lack permissions to
   enable it for this project.**
 
-    Enabling mirroring on an existing GitSwarm project requires permissions to
-    edit that project. This means your GitSwarm user account either needs to
-    be an administrator account, or at least master-level permissions for the
+    Enabling mirroring on an existing GitSwarm EE project requires permissions
+    to edit that project. This means your GitSwarm EE user account either needs
+    to be an administrator account, or at least master-level permissions for the
     project on which you wish to enable mirroring.
 
 ### Known Issues
 
-* Git Fusion, when installed on CentOS 7, does not support
+* Git Fusion, when installed on CentOS 7 or RHEL 7, does not support
   HTTP(S) authentication. This issue prevents pushing new work to a
-  Git Fusion repo, including any updates in GitSwarm that would be
+  Git Fusion repo, including any updates in GitSwarm EE that would be
   mirrored to Git Fusion. Instead, use SSH connections when Git Fusion
-  is hosted on CentOS 7.
+  is hosted on CentOS/RHEL 7.
 
-* GitSwarm project names can only contain letters, numbers, underscores,
+* GitSwarm EE project names can only contain letters, numbers, underscores,
   periods, and dashes, and must begin with a letter, number,
   or underscore.
 
       Since depot paths in the Helix Versioning Engine (P4D) can contain
       Unicode and other special characters, we recommend depot paths for
-      projects you intend on importing into GitSwarm via Git Fusion adhere to
+      projects you intend on importing into GitSwarm EE via Git Fusion adhere to
       the naming convention described above.
 
       If you are using multi-byte characters in any of your Git Fusion
       repository names, you should use an SSH connection to Git Fusion.
 
-* If a new project is created and GitSwarm is used to automatically mirror
+* If a new project is created and GitSwarm EE is used to automatically mirror
   it (via convention-based mirroring), updating the project's namespace
   and/or project name will *not* change the location under Helix
   Versioning Engine (P4D). In order to move the project's files to a
@@ -467,10 +445,11 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 
    1. Save the file
 
-   1. Refresh the `Create Project` page in GitSwarm.  The error should be resolved.
+   1. Refresh the `Create Project` page in GitSwarm EE.  The error should be
+      resolved.
 
 ### Problems?
 
 If you encounter problems with importing projects from Git Fusion, or with
-mirroring between GitSwarm and Git Fusion, please contact
+mirroring between GitSwarm EE and Git Fusion, please contact
 Perforce support <support@perforce.com> for assistance.

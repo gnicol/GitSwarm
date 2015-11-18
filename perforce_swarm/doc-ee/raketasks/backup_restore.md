@@ -23,7 +23,7 @@ See the [steps for configuration backup](#backup-the-configuration).
 
 **Note:**
 If you have enabled mirroring for any of your projects, you will need to backup
-any associated `p4d` instances separately, *after* you have performed the
+any associated Helix server instances separately, *after* you have performed the
 GitSwarm EE backup. See the [Backup and
 Recovery](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.backup.html)
 chapter in the [_Helix Versioning Engine Administrator Guide:
@@ -34,11 +34,11 @@ If you are using the `:auto_provisioned` Git Fusion instance (which we do not
 recommend for production systems), the following environment variable changes
 may be helpful when performing a backup:
 
-    ```
-    export P4ROOT=/var/opt/gitswarm/perforce/data p4d
-    export P4USER=root
-    export PATH=$PATH:/opt/perforce/sbin
-    ```
+```
+export P4ROOT=/var/opt/gitswarm/perforce/data p4d
+export P4USER=root
+export PATH=$PATH:/opt/perforce/sbin
+```
 
 If you are interested in GitLab CI backup please follow to the [CI backup
 documentation](https://gitlab.com/gitlab-org/gitlab-ci/blob/master/doc/raketasks/backup_restore.md)\*
@@ -204,7 +204,7 @@ will be either erased (SQL) or moved to a separate directory (repositories,
 uploads).
 
 If you are also restoring Helix Versioning Engine (P4D) backups, it is better
-to restore P4D before restoring GitSwarm EE.
+to restore Helix Versioning Engine before restoring GitSwarm EE.
 
 If some or all of your GitLab users are using two-factor authentication
 (2FA) then you must also make sure to restore the backup of the

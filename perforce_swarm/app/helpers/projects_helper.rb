@@ -15,7 +15,7 @@ module ProjectsHelper
     project_link = simple_sanitize(project.name)
     project_link = link_to(project_link, project_path(project)) if name
 
-    full_title = namespace_link + ' / ' + project_link
+    full_title  = namespace_link + ' / ' + project_link
     full_title += ' &middot; '.html_safe + simple_sanitize(name) if name
 
     content_tag :span do

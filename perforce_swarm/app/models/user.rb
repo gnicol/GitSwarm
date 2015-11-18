@@ -19,11 +19,10 @@ module PerforceSwarm
 
     def sync_p4d_password(password)
       git_fusion = PerforceSwarm::GitlabConfig.new.git_fusion
-      id         = git_fusion.auto_provisioned_instance_id
-      return unless git_fusion.enabled? && !id.nil?
+      return unless git_fusion.enabled?
 
       begin
-        connection = PerforceSwarm::P4::Connection.new(git_fusion.entry(id))
+        connection = PerforceSwarm::P4::Connection.new(git_fusion.auto_provisioned_entry)
         connection.login
         connection.input(password)
         connection.run('passwd', 'root')

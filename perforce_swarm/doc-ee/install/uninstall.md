@@ -2,38 +2,17 @@
 
 To uninstall GitSwarm EE, follow these steps:
 
-1.  **If you are using the auto-provisioned Helix Git Fusion service, stop
-    the Helix Server (if it is running).**
+1. Optional: **Remove GitSwarm EE data.**
 
-    Check the status:
-    ```
-sudo p4dctl status gitswarm
-    ```
-
-    If running, shut it down and backup the configuration:
-    ```
-sudo p4dctl stop gitswarm
-sudo mv /etc/perforce/p4dctl.conf.d/gitswarm.conf ~/gitswarm.conf.backup
-sudo cp -a /etc/gitswarm ~/etc.gitswarm-ee.backup
-    ```
-
-1.  **Stop GitSwarm EE**
-
-    ```
-sudo gitswarm-ctl stop
-    ```
-
-1.  Optional: **Remove GitSwarm EE data.**
-
-    If you instead want to **completely remove** all GitSwarm EE data, run:
+    If you want to **completely remove** all GitSwarm EE data, run:
 
     ```
 sudo gitswarm-ctl cleanse
     ```
 
-    `Warning: this permanently removes all GitSwarm EE-related data!`
+    > **Warning: this permanently removes all GitSwarm EE-related data.**
 
-1.  **Uninstall GitSwarm EE's supervisory processes.**
+1. **Uninstall GitSwarm EE's supervisory processes.**
 
     ```
 sudo gitswarm-ctl uninstall
@@ -41,47 +20,58 @@ sudo gitswarm-ctl uninstall
 
 1.  **Uninstall the GitSwarm EE package.**
 
-    1.  **For Ubuntu:**
+    1.  **For uninstalling pre-15.4 versions:**
 
-        ```
-sudo dpkg --purge helix-gitswarm-ee
-        ```
+        1.  **For Ubuntu:**
 
-    1.  **For CentOS:**
+            ```
+sudo apt-get purge perforce-gitswarm-ee
+            ```
 
-        ```
-sudo rpm -e helix-gitswarm-ee
-        ```
+        1.  **For CentOS:**
 
-1.  **Optional:**, Remove dependencies
+            ```
+sudo yum remove perforce-gitswarm-ee
+            ```
 
-    1.  **For Ubuntu:**
+    1.  **For uninstalling >=15.4 versions:**
 
-        ```
-sudo dpkg --remove perforce-cli-base perforce-server-base helix-git-fusion-base
-        ```
+        1.  **For Ubuntu:**
 
-    1.  **For CentOS:**
+            ```
+sudo apt-get purge helix-gitswarm-ee
+            ```
 
-        ```
-sudo rpm -e perforce-cli-base perforce-server-base helix-git-fusion-base
-        ```
+        1.  **For CentOS:**
 
-## Notes on Reinstalling
+            ```
+sudo yum remove helix-gitswarm-ee
+            ```
 
-If you are planning to reinstall GitSwarm EE on the same machine, using the
-same data, as long as you did not `cleanse` the data, you can restore the
-default Helix server by running the following steps:
+1.  Optional: **Remove dependencies.**
 
-```
-sudo cp -a ~/etc.gitswarm-ee.backup /etc/gitswarm
-sudo mv ~/gitswarm.conf.backup /etc/perforce/p4dctl.conf.d/gitswarm.conf
-sudo p4dctl start gitswarm
-```
+    1. **For uninstalling pre-15.4 versions:**
 
-And then following the normal [installation steps](README.md) for your OS
-distribution.
+         1. **For Ubuntu:**
 
-**Note:** Otherwise, if you need to restore your data on a fresh install of
-GitSwarm EE, you will need to [restore from a
-backup](../raketasks/backup_restore.md).
+            ```
+sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base
+            ```
+         1. **For CentOS:**
+
+            ```
+sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base
+            ```
+    1.  **For uninstalling >=15.4 versions:**
+
+         1.  **For Ubuntu:**
+
+            ```
+sudo yum remove helix-cli-base helix-p4d-base helix-git-fusion-base
+            ```
+
+         1.  **For CentOS:**
+
+            ```
+sudo yum remove helix-cli-base helix-p4d-base helix-git-fusion-base
+            ```

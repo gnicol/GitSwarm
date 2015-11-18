@@ -19,30 +19,34 @@ sudo gitswarm-ctl uninstall
     ```
 
 1.  **Uninstall the GitSwarm package.**
-  1.  **For uninstalling pre-15.4 versions:**
-      1.  **For Ubuntu:**
 
-        ```
+    1.  **For uninstalling pre-15.4 versions:**
+
+        1.  **For Ubuntu:**
+
+            ```
 sudo apt-get purge perforce-gitswarm
-        ```
+            ```
 
-      1.  **For CentOS:**
+        1.  **For CentOS:**
 
-        ```
+            ```
 sudo yum remove perforce-gitswarm
-        ```
-  1.  **For uninstalling >=15.4 versions:**
-      1.  **For Ubuntu:**
+            ```
 
-        ```
+    1.  **For uninstalling >=15.4 versions:**
+
+        1.  **For Ubuntu:**
+
+            ```
 sudo apt-get purge helix-gitswarm
-        ```
+            ```
 
-      1.  **For CentOS:**
+        1.  **For CentOS:**
 
-        ```
+            ```
 sudo yum remove helix-gitswarm
-        ```
+            ```
 
 1.  Optional: **Remove dependencies.**
 
@@ -53,13 +57,11 @@ sudo yum remove helix-gitswarm
             ```
 sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base
             ```
-
          1. **For CentOS:**
 
             ```
 sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base
             ```
-
     1.  **For uninstalling >=15.4 versions:**
 
          1.  **For Ubuntu:**
@@ -67,7 +69,7 @@ sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base
             ```
 sudo yum remove helix-cli-base helix-p4d-base helix-git-fusion-base
             ```
-
+            
          1.  **For CentOS:**
 
             ```

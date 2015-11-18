@@ -28,7 +28,7 @@ Perforce Helix as the master for all assets.
       from GitLab EE running on CentOS 6 to GitSwarm EE running on Ubuntu 14).
     * Migrating from GitLab CE to GitSwarm EE can be accomplished by migrating
       from GitLab CE to GitSwarm, then upgrading to GitSwarm EE. See
-      [these instructions](/help/update/ce-to-ee.md) for upgrading to GitSwarm
+      [these instructions](/help/update/README.md) for upgrading to GitSwarm
       EE.
 
 1.  **An existing GitLab EE install**

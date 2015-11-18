@@ -1,50 +1,49 @@
-# Manual installation steps
+# Manual installation steps (package manager)
 
 1.  **Follow the [pre-installation steps](README.md) first.**
 
-1.  **Add Perforce's packaging key to a local keyring.**
+1.  **Add Perforce's repository to your package configuration.**
 
+    See [this document](https://www.perforce.com/perforce-packages) for
+    instructions on adding Perforce's packaging key to your keyring, as well
+    as adding the Perforce package repository to your package configuration.
+
+1.  **Install the GitSwarm package and necessary dependencies via the OS
+    package manager.**
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```
-wget -q https://package.perforce.com/perforce.pubkey -O - | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install helix-gitswarm
+        ```
+    1.  **For CentOS 6:**
+
+        ```
+sudo yum update
+sudo yum install helix-gitswarm
+        ```
+    1.  **For CentOS 7:**
+
+        ```
+sudo yum update
+sudo yum install helix-gitswarm
+sudo systemctl enable sshd
+sudo systemctl start sshd
         ```
 
-    1.  **For CentOS (6 and 7):**
+1.  **Complete the post-installation steps.**
 
-        ```
-sudo rpm --import https://package.perforce.com/perforce.pubkey
-        ```
+    [Post-installation](README.md#post-installation) steps.
+
+# Manual installation steps (offline install, without package manager)
+
+1.  **Follow the [pre-installation steps](README.md) first.**
 
 1.  **Add Perforce's repository to your package configuration.**
 
-    1.  **For Ubuntu (12.04 and 14.04):**
-
-        Create a file called `/etc/apt/sources.list.d/perforce.sources.list`
-        with the following line:
-
-        ```
-deb http://package.perforce.com/apt/ubuntu {distro} release
-        ```
-
-        Where `{distro}` is replaced with either `precise` (for 12.04), or
-        `trusty` (for 14.04).
-
-    1.  **For CentOS (6 and 7):**
-
-        Create a file called `/etc/yum.repos.d/perforce.repo` with the
-        following content:
-
-        ```
-[perforce]
-name=Perforce
-baseurl=http://package.perforce.com/yum/rhel/{version}/x86_64
-enabled=1
-gpgcheck=1
-        ```
-
-        Where `{version}` is either `6` or `7` (matching the CentOS version
-        in use).
+    See [this document](https://www.perforce.com/perforce-packages) for
+    instructions on adding Perforce's packaging key to your keyring, as well
+    as adding the Perforce package repository to your package configuration.
 
 1.  **Install and configure the necessary dependencies.**
 

@@ -15,6 +15,28 @@ mirrored to Git Fusion, and changes within the Git Fusion project (even if
 initiated within the Helix Versioning Engine) are mirrored into the
 GitSwarm project.
 
+Mirroring your repositories to a Helix Versioning Engine through Git Fusion
+makes it easy to use either Git or Helix applications to work on 
+the same set of files. Helix provides simplified interfaces which are 
+easier for some team members to learn and use than Git.
+
+With Helix's exclusive file locking support, teams working with unmergable 
+digital assets can collaborate without overwriting each other's work. Git 
+Fusion respects these locks and prevents Git pushes from overwriting locked files. 
+
+Additionally, mirroring through Git Fusion allows “narrow cloning,” where you 
+create small Git repositories that are subsets of the much larger Helix 
+Versioning Engine monorepo. Git repositories perform best when the repository 
+is at most 1 GB in size, whereas a Helix Versioning Engine can store petabytes 
+of data.
+
+You can create multiple Git repositories from overlapping sets of files stored 
+in a Helix Versioning Engine. Commits from one Git repo are recreated in other 
+repositories that share those files. Continuous integration systems can run 
+directly against the Helix Versioning Engine to catch dependencies across Git 
+repositories, while allowing developers to work with smaller, high-performing 
+repositories.
+
 ### Requirements
 
 * Helix Git Fusion 2015.2, or newer.
@@ -260,11 +282,11 @@ use the convention-based repository feature. GitSwarm does
   `non-mirrored` projects. This ability should be added in a future GitSwarm
   release.
 
-* Git Fusion, when installed on CentOS 7 or RHEL 7, does not support
+* Git Fusion, when installed on CentOS 7, does not support
   HTTP(S) authentication. This issue prevents pushing new work to a
   Git Fusion repo, including any updates in GitSwarm that would be
   mirrored to Git Fusion. Instead, use SSH connections when Git Fusion
-  is hosted on CentOS/RHEL 7.
+  is hosted on CentOS 7.
 
 * GitSwarm project names can only contain letters, numbers, underscores,
   periods, and dashes, and must begin with a letter, number,

@@ -34,7 +34,7 @@ Perforce Helix as the master for all assets.
 1.  **An existing GitLab EE install**
 
     If the GitLab EE instance you're looking to migrate from is not on the above
-    list, you will need to follow [these instructions](/help/update/README.md)
+    list, you will need to follow [these instructions](https://about.gitlab.com/update/)
     to upgrade as necessary to a supported version (>= 8.0.5).
 
 1.  **A new, up-to-date GitSwarm EE install**

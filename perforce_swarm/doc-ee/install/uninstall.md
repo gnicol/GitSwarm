@@ -47,7 +47,7 @@ sudo gitswarm-ctl uninstall
 sudo dpkg --purge helix-gitswarm-ee
         ```
 
-    1.  **For CentOS/RHEL:**
+    1.  **For CentOS:**
 
         ```
 sudo rpm -e helix-gitswarm-ee
@@ -61,7 +61,7 @@ sudo rpm -e helix-gitswarm-ee
 sudo dpkg --remove perforce-cli-base perforce-server-base helix-git-fusion-base
         ```
 
-    1.  **For CentOS/RHEL:**
+    1.  **For CentOS:**
 
         ```
 sudo rpm -e perforce-cli-base perforce-server-base helix-git-fusion-base

@@ -54,7 +54,7 @@ sudo yum update
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```
-sudo apt-get postfix curl
+sudo apt-get install postfix curl
         ```
 
     1.  **For CentOS 6:**

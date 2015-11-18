@@ -35,13 +35,11 @@ Gems that have native extensions.
 
 The necessary hard drive space largely depends on the size of the repos you
 want to store in GitSwarm but as a *rule of thumb* you should have at least
-twice as much free space as all your repos combined take up. You need twice
-the storage because [GitSwarm satellites](structure.md) contain an extra
-copy of each repo.
+twice as much free space as all your repos combined take up.
 
-Note that if you are mirroring projects to Helix Server using the
-[locally provisioned](auto_provision.md) Helix Git Fusion Server, you will want
-at least four times as much free space as all your repos combined.
+Note that if you are mirroring projects to Helix Server using the [locally
+provisioned](auto_provision.md) Helix Git Fusion Server, you will want at
+least four times as much free space as all your repos combined.
 
 If you want to be flexible about growing your hard drive space in the
 future consider mounting it using LVM so you can add more hard drives when

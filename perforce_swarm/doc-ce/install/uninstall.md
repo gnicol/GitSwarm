@@ -4,9 +4,6 @@ To uninstall GitSwarm, follow these steps:
 
 1. Optional: **Remove GitSwarm data.**
 
-    Please see [this note](#notes-on-reinstalling) before removing GitSwarm data
-    from your server.
-
     If you want to **completely remove** all GitSwarm data, run:
 
     ```
@@ -29,7 +26,7 @@ sudo gitswarm-ctl uninstall
 sudo apt-get purge perforce-gitswarm
         ```
 
-      1.  **For CentOS/RHEL:**
+      1.  **For CentOS:**
 
         ```
 sudo yum remove perforce-gitswarm
@@ -41,7 +38,7 @@ sudo yum remove perforce-gitswarm
 sudo apt-get purge helix-gitswarm
         ```
 
-      1.  **For CentOS/RHEL:**
+      1.  **For CentOS:**
 
         ```
 sudo yum remove helix-gitswarm

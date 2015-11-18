@@ -4,9 +4,6 @@ To uninstall GitSwarm EE, follow these steps:
 
 1. Optional: **Remove GitSwarm EE data.**
 
-    Please see [this note](#notes-on-reinstalling) before removing GitSwarm EE
-    data from your server.
-
     If you want to **completely remove** all GitSwarm EE data, run:
 
     ```
@@ -28,7 +25,7 @@ sudo gitswarm-ctl uninstall
 sudo apt-get purge helix-gitswarm-ee
         ```
 
-    1.  **For CentOS/RHEL:**
+    1.  **For CentOS:**
 
         ```
 sudo yum remove helix-gitswarm-ee

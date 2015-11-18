@@ -13,22 +13,20 @@
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```
-sudo apt-get update
 sudo apt-get install helix-gitswarm
         ```
     1.  **For CentOS 6:**
 
         ```
-sudo yum update
 sudo yum install helix-gitswarm
         ```
     1.  **For CentOS 7:**
 
         ```
-sudo yum update
-sudo yum install helix-gitswarm
+sudo yum install openssh-server
 sudo systemctl enable sshd
 sudo systemctl start sshd
+sudo yum install helix-gitswarm
         ```
 
 1.  **Complete the post-installation steps.**
@@ -50,21 +48,18 @@ sudo systemctl start sshd
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```
-sudo apt-get update
 sudo apt-get install openssh-server ca-certificates helix-p4d helix-git-fusion-base
         ```
 
     1.  **For CentOS 6:**
 
         ```
-sudo yum update
 sudo yum install openssh-server
         ```
 
     1.  **For CentOS 7:**
 
         ```
-sudo yum update
 sudo yum install openssh-server
 sudo systemctl enable sshd
 sudo systemctl start sshd

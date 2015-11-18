@@ -127,6 +127,14 @@ Perforce Helix as the master for all assets.
     [mirroring for your existing projects](/help/workflow/importing/import_from_gitfusion.md),
     to gain the full benefit of using GitSwarm EE.
 
+    As a final step, if you are using the same FQDN (fully-qualified domain
+    name) for both your GitLab EE and GitSwarm EE instances, you should ensure
+    that the server SSH keys are the same on both servers. The instructions for
+    doing this
+    [can be found here](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
+    This is necessary, since users who had previously connected to your GitLab
+    instance will already have a server fingerprint stored.
+
 ## Additional Help
 
 1. **Attachments can only be migrated if the hostname of the GitSwarm EE

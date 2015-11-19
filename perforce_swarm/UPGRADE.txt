@@ -99,3 +99,5 @@ Post-upgrade steps
 
     Before you can import projects from Git Fusion, you need to manually
     create the gitswarm user within GitSwarm.
+
+END

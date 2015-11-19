@@ -51,3 +51,5 @@ New configuration options
     release by running:
 
     $ sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
+
+END

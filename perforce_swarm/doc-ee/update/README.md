@@ -2,13 +2,11 @@
 
 ## Pre-update considerations
 
-*  **Restoring backups**
-
-   GitSwarm EE can only restore backups made on the same version. Hence, a
-   backup of GitSwarm EE 2015.3 can only be restored to an instance
-   running 2015.3, and not on 2015.4 or higher versions. Although, upgrading
-   GitSwarm EE should not result in data corruption, we recommend taking backups
-   of your existing version before you run an upgrade.
+GitSwarm EE can only restore backups made on the same version. Hence, a
+backup of GitSwarm EE 2015.3 can only be restored to an instance
+running 2015.3, and not on 2015.4 or higher versions. Although, upgrading
+GitSwarm EE should not result in data corruption, we recommend taking backups
+of your existing version before you run an upgrade.
 
 ## Performing the update to 2015.4
 

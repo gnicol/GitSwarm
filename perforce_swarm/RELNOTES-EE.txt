@@ -26,7 +26,7 @@ Introduction
 Documentation
 
     GitSwarm EE Release 2015.4 documentation is included in the distribution
-    and can be accessed from within GitSwarm from the "?" menu on the top
+    and can be accessed from within GitSwarm EE from the "?" menu on the top
     toolbar. The latest GitSwarm EE Release documentation can be found online
     at: https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/
 
@@ -57,10 +57,10 @@ Upgrading
 
 Known Issues
 
-    * Importing large repos into GitSwarm can take long enough that a
+    * Importing large repos into GitSwarm EE can take long enough that a
       timeout is reached, causing the import to fail. The workaround is
       to manually prepare a local repository, and push that repo into
-      GitSwarm.
+      GitSwarm EE.
 
     * Git Fusion HTTP(S) authentication is not supported on CentOS 7 or
       Red Hat Enterprise Linux 7.
@@ -73,7 +73,7 @@ Major new functionality in 2015.4
        Mirror existing GitSwarm EE project into Helix
 
     #e0d6ed64 (PGL-1201)
-       Support restoring GitLab EE 8.0 backups into GitSwarm 2015.4 EE
+       Support restoring GitLab EE 8.0 backups into GitSwarm EE 2015.4
 
     GitLab 8.0
         - Add fast-forward merge option in project settings
@@ -106,7 +106,7 @@ Minor new functionality in 2015.4
         Cleanse removes the p4dctl config file
 
     #3d53a333 (PGL-1241)
-        Update GitSwarm logo and favicon
+        Update GitSwarm EE logo and favicon
 
     #1651e961, #2e87e04a (PGL-1235, PGL-1234)
         Add Mirror in Helix button to project details
@@ -194,7 +194,7 @@ Bugs fixed in 2015.4
         Helix Git Fusion Server dropdown blows out page with long URLs
 
     #d6df3abc (PGL-1229)
-        Prevent installing GitSwarm overtop of GitLab
+        Prevent installing GitSwarm EE overtop of GitLab
 
     #04944d0d (PGL-1213)
         Fixes WRITE_LOCK_SOCKET is not a valid socket error when group or
@@ -205,8 +205,8 @@ Bugs fixed in 2015.4
         communicating with Helix Git Fusion
 
     #6967d6ba (PGL-1122)
-        Only update the p4d root user when GitSwarm's root user password changes
-        if GitSwarm's root user is still and admin.
+        Only update the p4d root user when GitSwarm EE's root user password changes
+        if GitSwarm EE's root user is still and admin.
 
     #17386be8 (PGL-1073)
         Improve error message when there is a problem reading gitswarm.rb

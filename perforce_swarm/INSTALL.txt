@@ -52,7 +52,7 @@ Note: If you install Postfix to send email, please select Internet Site
    $ sudo apt-get upgrade
    $ sudo apt-get install curl openssh-server ca-certificates postfix
 
-2. For CentOS/RHEL 6:
+2. For CentOS 6:
 
    $ sudo yum update
    $ sudo yum install curl openssh-server postfix cronie
@@ -63,7 +63,7 @@ Note: If you install Postfix to send email, please select Internet Site
    Note: The commands above also open HTTP and SSH access in the system
          firewall.
 
-3. For CentOS/RHEL 7:
+3. For CentOS 7:
 
    $ sudo yum update
    $ sudo yum install curl openssh-server
@@ -80,7 +80,7 @@ Note: If you install Postfix to send email, please select Internet Site
 
 
 ------------------------------------------------------------------------
-Add the Perforce package server and install GitSwarm
+Quick install
 ------------------------------------------------------------------------
 
 1. For all supported platforms:
@@ -90,7 +90,7 @@ Add the Perforce package server and install GitSwarm
 
 
 ------------------------------------------------------------------------
-Basic Configuration
+Post-installation
 ------------------------------------------------------------------------
 
 1. Verify the external URL for your GitSwarm instance:
@@ -110,7 +110,10 @@ Basic Configuration
 
    Replace UTC with an appropriate timezone, and uncomment the line.
 
-3. Configure and start GitSwarm.
+3. Configure GitSwarm.
+
+   If you have made changes to /etc/gitswarm/gitswarm.rb, then you will
+   want to run reconfigure for them to take effect.
 
    $ sudo gitswarm-ctl reconfigure
 
@@ -119,7 +122,29 @@ Basic Configuration
    Username: root
    Password: 5iveL!fe
 
+------------------------------------------------------------------------
+Troubleshooting
+------------------------------------------------------------------------
 
-You are now all set to start using GitSwarm. Enjoy!
+For additional troubleshooting and configuration options, please see
+the Omnibus GitLab readme at
+https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md
+
+error: "X" is an unknown key on CentOS 6
+
+    This error occurs during install of CentOS 6, often in a shared VM
+    environment where some of the keys in `/etc/sysctl.conf` don't actually
+    apply. The error usually looks something like this:
+
+
+    STDERR: error: "net.bridge.bridge-nf-call-ip6tables" is an unknown key
+    error: "net.bridge.bridge-nf-call-iptables" is an unknown key
+    error: "net.bridge.bridge-nf-call-arptables" is an unknown key
+
+    These errors are ignorable, you just need to run 'sudo gitswarm-ctl
+    reconfigure', and our script shouldn't have to modify that file again
+    and will continue. If you want to future-proof upgrades from failing on
+    the same lines, you can modify your '/etc/sysctl.conf' and comment out
+    the keys that were listed as unknown.
 
 END

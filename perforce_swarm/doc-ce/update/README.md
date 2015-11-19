@@ -66,6 +66,13 @@ sudo yum install helix-gitswarm-ee
 sudo gitswarm-ctl reconfigure
     ```
 
+1.  **Check the application status.**
+
+    Check if GitSwarm EE and its environment are configured correctly:
+    ```
+sudo gitswarm-rake gitswarm:check
+    ```
+
 # For users upgrading FROM 2015.1
 
 ## Post-upgrade steps

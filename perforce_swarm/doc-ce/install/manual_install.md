@@ -43,12 +43,6 @@ sudo yum install helix-gitswarm
 sudo apt-get install openssh-server ca-certificates helix-p4d helix-git-fusion-base
         ```
 
-    1.  **For CentOS (6 and 7):**
-
-        ```
-sudo yum install openssh-server
-        ```
-
 1.  **Download the GitSwarm package and install everything.**
 
     1.  **For Ubuntu 12.04:**

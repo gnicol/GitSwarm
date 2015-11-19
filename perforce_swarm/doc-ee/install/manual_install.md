@@ -15,17 +15,9 @@
         ```
 sudo apt-get install helix-gitswarm-ee
         ```
-    1.  **For CentOS 6:**
+    1.  **For CentOS (6 and 7):**
 
         ```
-sudo yum install helix-gitswarm-ee
-        ```
-    1.  **For CentOS 7:**
-
-        ```
-sudo yum install openssh-server
-sudo systemctl enable sshd
-sudo systemctl start sshd
 sudo yum install helix-gitswarm-ee
         ```
 

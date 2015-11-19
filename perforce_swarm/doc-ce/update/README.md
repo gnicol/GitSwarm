@@ -6,18 +6,9 @@
 
    GitSwarm can only restore backups made on the same version. Hence, a backup
    of GitSwarm 2015.3 can only be restored to an instance running 2015.3, and
-   not on 2015.4 or higher versions. Although, upgrading gitswarm should not
+   not on 2015.4 or higher versions. Although, upgrading GitSwarm should not
    result in data corruption, we recommend taking backups of your existing
    version before you run an upgrade.
-
-*  **Stopping GitSwarm**
-
-   To ensure that GitSwarm's operations are stopped while the update takes
-   place, you should manually stop GitSwarm before updating:
-
-   ```
-sudo gitswarm-ctl stop
-   ```
 
 ## Performing the update to 2015.4
 
@@ -55,6 +46,12 @@ sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
 Before upgrading from GitSwarm to GitSwarm EE, please ensure you have read and
 understand the [pre-update considerations](#pre-update-considerations).
 
+1.  **Add Perforce's repository to your package configuration.**
+
+See [this document](https://www.perforce.com/perforce-packages) for
+instructions on adding Perforce's packaging key to your keyring, as well
+as adding the Perforce package repository to your package configuration.
+
 1.  **For Ubuntu (12.04 and 14.04):**
     ```
 sudo apt-get remove helix-gitswarm
@@ -69,14 +66,6 @@ sudo yum clean all #clear the repo caches
 sudo yum install helix-gitswarm-ee
 sudo gitswarm-ctl reconfigure
     ```
-
-# For users upgrading FROM 2015.3
-
-If you are upgrading from GitSwarm 2015.3 to 2015.4, and want to upgrade to the
-latest version of the Helix Versioning Engine, you will need to perform
-the following step:
-
-    sudo apt-get remove perforce-gitswarm
 
 # For users upgrading FROM 2015.1
 

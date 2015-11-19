@@ -1,11 +1,26 @@
 # Updating GitSwarm EE to 2015.4
 
+## Pre-update considerations
+
+*  **Restoring backups**
+
+   GitSwarm EE can only restore backups made on the same version. Hence, a
+   backup of GitSwarm EE 2015.3 can only be restored to an instance
+   running 2015.3, and not on 2015.4 or higher versions. Although, upgrading
+   GitSwarm EE should not result in data corruption, we recommend taking backups
+   of your existing version before you run an upgrade.
+
+## Performing the update to 2015.4
+
 1.  **Download the 2015.4 GitSwarm EE package and install it.**
 
-    Following the [installation steps](../install/README.md) for 2015.4 will
-    upgrade your previous version to 2015.4. It includes adding the Perforce
-    package repository to your package manager, and installing the new
-    dependencies.
+    ```
+curl https://package.perforce.com/bootstrap/gitswarm-ee.sh | sudo sh -
+    ```
+
+    The script should add the Perforce package repository, and install the
+    latest version of GitSwarm EE. The upgrade will create a backup of your
+    existing GitSwarm EE data before fully installing.
 
 1.  **Check the application status.**
 

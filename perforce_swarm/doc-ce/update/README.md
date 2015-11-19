@@ -50,21 +50,24 @@ understand the [pre-update considerations](#pre-update-considerations).
     instructions on adding Perforce's packaging key to your keyring, as well
     as adding the Perforce package repository to your package configuration.
 
-1.  **For Ubuntu (12.04 and 14.04):**
-    ```
+1.  **Upgrade to GitSwarm EE**
+    1.  **For Ubuntu (12.04 and 14.04):**
+
+        ```
 sudo apt-get remove helix-gitswarm
 sudo apt-get clean
 sudo apt-get install helix-gitswarm-ee
 sudo gitswarm-ctl reconfigure
-    ```
+        ```
 
-1.  **For CentOS (6 and 7):**
-    ```
+    1.  **For CentOS (6 and 7):**
+    
+        ```
 sudo yum remove helix-gitswarm
 sudo yum clean all
 sudo yum install helix-gitswarm-ee
 sudo gitswarm-ctl reconfigure
-    ```
+        ```
 
 1.  **Check the application status.**
 

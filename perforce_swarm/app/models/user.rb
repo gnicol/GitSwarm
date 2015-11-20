@@ -35,6 +35,21 @@ module PerforceSwarm
       end
     end
 
+    def git_fusion_repo_access(server)
+      key = "git_fusion_repo_access:user_#{id}_server_#{server}"
+      Rails.cache.fetch(key) do
+        server_repos = []
+        begin
+          PerforceSwarm::GitFusionRepo.list(server, username).each_key do |repo_name|
+            server_repos << "mirror://#{server}/#{repo_name}"
+          end
+        rescue PerforceSwarm::GitFusion::RunError => e
+          Gitlab::AppLogger.error(e.message)
+        end
+        server_repos
+      end
+    end
+
     # Projects user has access to
     def authorized_projects
       return @authorized_projects if @authorized_projects
@@ -51,15 +66,7 @@ module PerforceSwarm
       # Run @list against each server
       gf_repos = []
       gf_servers.each do |server|
-        begin
-          PerforceSwarm::GitFusionRepo.list(server, username).each_key do |repo_name|
-            gf_repos << "mirror://#{server}/#{repo_name}"
-          end
-        rescue PerforceSwarm::GitFusion::RunError => e
-          # Continue to work if git-fusion is down, but log errors
-          gf_repos += fusion_repos.select { |repo| repo.sub(%r{^mirror://}, '').split('/', 2)[0] == server }
-          Gitlab::AppLogger.error(e.message)
-        end
+        gf_repos += git_fusion_repo_access(server)
       end
 
       # Determine which repos you don't have access to

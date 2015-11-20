@@ -63,14 +63,14 @@ sudo dpkg -i helix-gitswarm-2015.4.trusty.amd64.deb
 
         ```
 curl -O ftp://ftp.perforce.com/perforce/r15.4/bin.centos6x86_64/helix-gitswarm-2015.4.el6.x86_64.rpm
-sudo yum install perforce-gitswarm-2015.4.el6.x86_64.rpm
+sudo yum install helix-gitswarm-2015.4.el6.x86_64.rpm
         ```
 
     1.  **For CentOS 7:**
 
         ```
 curl -O ftp://ftp.perforce.com/perforce/r15.4/bin.centos7x86_64/helix-gitswarm-2015.4.el7.x86_64.rpm
-sudo yum install perforce-gitswarm-2015.4.el7.x86_64.rpm
+sudo yum install helix-gitswarm-2015.4.el7.x86_64.rpm
         ```
 
 1.  **Complete the post-installation steps.**

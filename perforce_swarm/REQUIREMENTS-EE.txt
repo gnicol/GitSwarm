@@ -1,11 +1,11 @@
                          Hardware Requirements for
-                              Helix GitSwarm
+                     Helix GitSwarm Enterprise Edition
 
                               Version 2015.4
 
 Introduction
 
-    This document describes the hardware requirements for Helix GitSwarm
+    This document describes the hardware requirements for Helix GitSwarm EE
     release 2015.4.
 
 Supported Operating System Platforms
@@ -22,14 +22,14 @@ Unsupported Unix distributions
 
 Non-Unix operating systems such as Windows
 
-GitSwarm is developed for Unix operating systems. GitSwarm does *not* run
+GitSwarm EE is developed for Unix operating systems. GitSwarm EE does *not* run
 on Windows and we have no plans of supporting it in the near future.
-Please consider using a virtual machine to run GitSwarm.
+Please consider using a virtual machine to run GitSwarm EE.
 
 Ruby versions
 
-GitSwarm requires Ruby (MRI) 2.1 You will have to use the standard MRI
-implementation of Ruby. We love JRuby and Rubinius but GitSwarm needs several
+GitSwarm EE requires Ruby (MRI) 2.1 You will have to use the standard MRI
+implementation of Ruby. We love JRuby and Rubinius but GitSwarm EE needs several
 Gems that have native extensions.
 
 Supported Git Fusion Releases
@@ -56,13 +56,13 @@ Storage
     network (SAN) or on an Amazon Web Services (AWS) Elastic Block Store
     (EBS) volume.
 
-    If you have enough RAM and a recent CPU, the speed of GitSwarm is mainly
+    If you have enough RAM and a recent CPU, the speed of GitSwarm EE is mainly
     limited by hard drive seek times. Having a fast drive (7,200 RPM and up)
-    or a solid state drive (SSD) will improve the responsiveness of GitSwarm.
+    or a solid state drive (SSD) will improve the responsiveness of GitSwarm EE.
 
 CPU
 
-    For production use, it is recommended GitSwarm be run on a dedicated server.
+    For production use, it is recommended GitSwarm EE be run on a dedicated server.
     The Helix Server and Helix Git Fusion products should ideally be installed
     on their own independent machines. In that configuration:
 
@@ -75,17 +75,17 @@ CPU
     * 32 cores supports up to 20,000 users
     * 64 cores supports up to 40,000 users
 
-    By default, GitSwarm will attempt to automatically provision an instance
+    By default, GitSwarm EE will attempt to automatically provision an instance
     of Helix Server and Helix Git Fusion all on the local system. When running
     all components on the same machine, we suggest a minimum of 4 cores.
 
 Memory
 
     You need at least 2GB of addressable memory (RAM + swap) to install and
-    use GitSwarm! With less memory, GitSwarm will give strange errors during
+    use GitSwarm EE! With less memory, GitSwarm EE will give strange errors during
     the reconfigure run and 500 errors during usage.
 
-    For production use, it is recommended GitSwarm be run on a dedicated server.
+    For production use, it is recommended GitSwarm EE be run on a dedicated server.
     The Helix Server and Helix Git Fusion products should ideally be installed
     on their own independent machines. In that configuration:
 

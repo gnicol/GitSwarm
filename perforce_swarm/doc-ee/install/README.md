@@ -1,5 +1,7 @@
 # Installation
 
+## Pre-installation steps
+
 Use the following steps to prepare your system for installation of
 GitSwarm EE:
 
@@ -79,6 +81,14 @@ sudo systemctl start postfix
 ```
 curl -s https://package.perforce.com/bootstrap/gitswarm-ee.sh | sudo sh -
 ```
+
+Perform the [post-installation](#post-installation) steps.
+
+## Manual install
+
+If you prefer to manually perform, or review, the steps undertaken by the
+bootstrap script above, see the [Manual installation
+steps](manual_install.md).
 
 Perform the [post-installation](#post-installation) steps.
 

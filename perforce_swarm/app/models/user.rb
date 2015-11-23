@@ -35,19 +35,28 @@ module PerforceSwarm
       end
     end
 
+    def git_fusion_repo_access_key(server)
+      "git_fusion_repo_access:#{username}-server-#{server}"
+    end
+
     def git_fusion_repo_access(server)
-      key = "git_fusion_repo_access:#{username}-#{current_sign_in_at.to_i}-server_#{server}"
-      Rails.cache.fetch(key) do
-        server_repos = []
+      Rails.cache.fetch(git_fusion_repo_access_key(server)) do
+        access = Hash.new
+        access[:cached_at]    = Time.new
+        access[:server_repos] = []
         begin
           PerforceSwarm::GitFusionRepo.list(server, username).each_key do |repo_name|
-            server_repos << "mirror://#{server}/#{repo_name}"
+            access[:server_repos] << "mirror://#{server}/#{repo_name}"
           end
         rescue PerforceSwarm::GitFusion::RunError => e
           Gitlab::AppLogger.error(e.message)
         end
-        server_repos
+        access
       end
+    end
+
+    def clear_git_fusion_repo_access_cache
+      Rails.cache.delete_matched("git_fusion_repo_access:#{username}-server-*")
     end
 
     # Projects user has access to
@@ -62,7 +71,7 @@ module PerforceSwarm
 
       # Get the list of readable repos against each server
       gf_repos = []
-      gf_servers.each { |server| gf_repos += git_fusion_repo_access(server) }
+      gf_servers.each { |server| gf_repos += git_fusion_repo_access(server)[:server_repos] }
 
       # Determine which repos you don't have access to
       no_access = fusion_repos - gf_repos

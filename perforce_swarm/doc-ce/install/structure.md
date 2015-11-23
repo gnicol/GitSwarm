@@ -15,9 +15,6 @@ Within `/var/opt/gitswarm`, the following directories exist:
 
 * `.ssh` - contains OpenSSH settings. Specifically the `authorized_keys`
   file managed by gitlab-shell.
-* `gitlab-satellites` - checked out repositories for merge requests and
-  file editing from web UI. This can be treated as a temporary files
-  directory.
 * `gitlab-shell` - Core add-on component of GitSwarm. Maintains SSH cloning
   and other functionality.
 * `repositories` - bare repositories for all projects organized by

@@ -1,21 +1,32 @@
                            Upgrading Instructions for
                                  Helix GitSwarm
 
-                                 Version 2015.3
+                                 Version 2015.4
 
 Introduction
 
     This document describes the upgrade process for upgrading to Helix
-    GitSwarm release 2015.3
+    GitSwarm release 2015.4
 
     * Note, installing and configuring GitSwarm is a System Administrator
       function and requires root access.
 
 ------------------------------------------------------------------------
-Updating GitSwarm to 2015.3
+Pre-update Considerations
 ------------------------------------------------------------------------
 
-1. Download the 2015.3 GitSwarm package and install it.
+GitSwarm can only restore backups made on the same version. Hence, a backup of
+GitSwarm 2015.3 can only be restored to an instance running 2015.3, and not on
+2015.4 or higher versions. Although, upgrading GitSwarm should not result in
+data corruption, we recommend taking backups of your existing version before
+you run an upgrade.
+
+
+------------------------------------------------------------------------
+Updating GitSwarm to 2015.4
+------------------------------------------------------------------------
+
+1. Download the 2015.4 GitSwarm package and install it.
 
     $ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
 
@@ -33,11 +44,6 @@ Updating GitSwarm to 2015.3
 New configuration options
 ------------------------------------------------------------------------
 
-* Allow new repo creation in Helix Git Fusion Servers
-
-    You can configure where in the Helix Versioning Engine (P4D) you want your created GitSwarm repositories to be
-    mirrored to.
-
 * Discovering new config options
 
     GitSwarm doesn't update your /etc/gitswarm/gitswarm.rb for you, but we do include an updated example template:
@@ -46,12 +52,52 @@ New configuration options
 
     $ sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
 
+
+------------------------------------------------------------------------
+Upgrading from GitSwarm to GitSwarm EE
+------------------------------------------------------------------------
+
+Before upgrading from GitSwarm to GitSwarm EE, please ensure you have read
+and understand the pre-update considerations above.
+
+1. Add Perforce's repository to your package configuration.
+
+See this document: https://www.perforce.com/perforce-packages for instructions
+on adding Perforce's packaging key to your keyring, as well as adding the
+Perforce package repository to your package configuration.
+
+2. Upgrade to GitSwarm EE
+
+   1. For Ubuntu (12.04 and 14.04):
+
+   $ sudo apt-get remove helix-gitswarm
+   $ sudo apt-get clean
+   $ sudo apt-get install helix-gitswarm-ee
+   $ sudo gitswarm-ctl reconfigure
+
+   2. For CentOS (6 and 7):
+
+   $ sudo yum remove helix-gitswarm
+   $ sudo yum clean all
+   $ sudo yum install helix-gitswarm-ee
+   $ sudo gitswarm-ctl reconfigure
+
+3. Check the application status.
+
+Check if GitSwarm EE and its environment are configured correctly:
+
+   $ sudo gitswarm-rake gitswarm:check
+
+
+------------------------------------------------------------------------
 For users upgrading FROM 2015.1
 ------------------------------------------------------------------------
+
 Post-upgrade steps
-------------------------------------------------------------------------
 
 1. Create gitswarm user:
 
     Before you can import projects from Git Fusion, you need to manually
     create the gitswarm user within GitSwarm.
+
+END

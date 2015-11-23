@@ -36,7 +36,7 @@ module PerforceSwarm
     end
 
     def git_fusion_repo_access(server)
-      key = "git_fusion_repo_access:user_#{id}_server_#{server}"
+      key = "git_fusion_repo_access:#{username}-server_#{server}"
       Rails.cache.fetch(key) do
         server_repos = []
         begin
@@ -56,18 +56,13 @@ module PerforceSwarm
 
       gitab_auth_projects = super
 
-      # Grab mirrored projects from list
+      # Grab mirrored projects from list and determine unique gf servers
       fusion_repos = gitab_auth_projects.pluck(:git_fusion_repo).compact
+      gf_servers   = fusion_repos.map { |repo| repo.sub(%r{^mirror://}, '').split('/', 2)[0] }.uniq
 
-      # Determine unique gf servers
-      gf_servers = fusion_repos.map { |repo| repo.sub(%r{^mirror://}, '').split('/', 2)[0] }
-      gf_servers.uniq!
-
-      # Run @list against each server
+      # Get the list of readable repos against each server
       gf_repos = []
-      gf_servers.each do |server|
-        gf_repos += git_fusion_repo_access(server)
-      end
+      gf_servers.each { |server| gf_repos += git_fusion_repo_access(server) }
 
       # Determine which repos you don't have access to
       no_access = fusion_repos - gf_repos
@@ -75,6 +70,7 @@ module PerforceSwarm
       # Remove projects with those repos from your auth projects
       project_ids = gitab_auth_projects.reject { |project| no_access.include?(project.git_fusion_repo) }.map(&:id)
 
+      # Callers are expecting an ActiveRecord result, so do another query for the authorized_projects
       @authorized_projects = Project.where(id: project_ids)
     end
   end

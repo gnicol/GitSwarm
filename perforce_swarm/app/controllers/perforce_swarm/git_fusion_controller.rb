@@ -37,7 +37,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     init_auto_create
 
     begin
-      @repos = PerforceSwarm::GitFusionRepo.list(@fusion_server)
+      @repos = PerforceSwarm::GitFusionRepo.list(@fusion_server, current_user.username)
     rescue => e
       @errors << e.message
     end

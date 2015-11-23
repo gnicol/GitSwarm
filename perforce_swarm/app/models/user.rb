@@ -36,7 +36,7 @@ module PerforceSwarm
     end
 
     def git_fusion_repo_access(server)
-      key = "git_fusion_repo_access:#{username}-server_#{server}"
+      key = "git_fusion_repo_access:#{username}-#{current_sign_in_at.to_i}-server_#{server}"
       Rails.cache.fetch(key) do
         server_repos = []
         begin

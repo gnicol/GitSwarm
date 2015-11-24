@@ -65,7 +65,12 @@ Spinach.hooks.before_run do
   include FactoryGirl::Syntax::Methods
 end
 
-Spinach.hooks.after_run do
+Spinach.hooks.before_scenario do
+  RSpec::Mocks.setup
+end
+
+Spinach.hooks.after_scenario do
+  RSpec::Mocks.verify
   RSpec::Mocks.teardown
 end
 

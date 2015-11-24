@@ -6,7 +6,10 @@ module PerforceSwarm
       return not_auth_abilities(user, subject) if user.nil?
       return [] unless user.is_a?(User)
       return [] if user.blocked?
-      return [] if subject.class.name == 'Project' && !user.authorized_projects.include?(subject)
+      # Return no abilities if the subject is a mirrored project and the user doesn't have access to it
+      return [] if subject.class.name == 'Project' &&
+                   subject.git_fusion_repo &&
+                   !user.authorized_projects.include?(subject)
       super
     end
   end

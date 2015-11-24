@@ -1,12 +1,12 @@
                        Installation Instructions for
                               Helix GitSwarm
 
-                              Version 2015.4
+                              Version 2016.1
 
 Introduction
 
     This document describes the installation and initial configuration
-    process for Helix GitSwarm release 2015.4.
+    process for Helix GitSwarm release 2016.1.
 
     * Note, installing and configuring GitSwarm is a System Administrator
       function and requires root access.
@@ -144,23 +144,23 @@ Perforce package repository to your package configuration.
 
     For Ubuntu 12.04:
 
-    $ curl -O ftp://ftp.perforce.com/perforce/r15.4/bin.ubuntu12x86_64/helix-gitswarm-2015.4.precise.amd64.deb
-    $ sudo dpkg -i helix-gitswarm-2015.4.precise.amd64.deb
+    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu12x86_64/helix-gitswarm-2016.1.precise.amd64.deb
+    $ sudo dpkg -i helix-gitswarm-2016.1.precise.amd64.deb
 
     For Ubuntu 14.04:
 
-    $ curl -O ftp://ftp.perforce.com/perforce/r15.4/bin.ubuntu14x86_64/helix-gitswarm-2015.4.trusty.amd64.deb
-    $ sudo dpkg -i helix-gitswarm-2015.4.trusty.amd64.deb
+    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu14x86_64/helix-gitswarm-2016.1.trusty.amd64.deb
+    $ sudo dpkg -i helix-gitswarm-2016.1.trusty.amd64.deb
 
     For CentOS 6:
 
-    $ curl -O ftp://ftp.perforce.com/perforce/r15.4/bin.centos6x86_64/helix-gitswarm-2015.4.el6.x86_64.rpm
-    $ sudo yum install helix-gitswarm-2015.4.el6.x86_64.rpm
+    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos6x86_64/helix-gitswarm-2016.1.el6.x86_64.rpm
+    $ sudo yum install helix-gitswarm-2016.1.el6.x86_64.rpm
 
     For CentOS 7:
 
-    $ curl -O ftp://ftp.perforce.com/perforce/r15.4/bin.centos7x86_64/helix-gitswarm-2015.4.el7.x86_64.rpm
-    $ sudo yum install helix-gitswarm-2015.4.el7.x86_64.rpm
+    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos7x86_64/helix-gitswarm-2016.1.el7.x86_64.rpm
+    $ sudo yum install helix-gitswarm-2016.1.el7.x86_64.rpm
 
 4. Complete the post-installation steps below.
 

@@ -65,6 +65,10 @@ Spinach.hooks.before_run do
   include FactoryGirl::Syntax::Methods
 end
 
+Spinach.hooks.after_run do
+  RSpec::Mocks.teardown
+end
+
 def wait_for_ajax
   Timeout.timeout(Capybara.default_wait_time) do
     loop do

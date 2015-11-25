@@ -64,32 +64,41 @@ module PerforceSwarm
       return @authorized_projects if @authorized_projects
 
       gitab_auth_projects = super
+      gitlab_shell_config = PerforceSwarm::GitlabConfig.new
 
       # Grab mirrored projects from list and determine unique gf servers and
       # repos that we want to enforce read permissions on
-      enforce_read_repos = []
-      gf_servers         = gitab_auth_projects.pluck(:git_fusion_repo).compact.map do |repo|
+      enforce_read_repos   = []
+      enforce_read_servers = []
+      gitab_auth_projects.pluck(:git_fusion_repo).compact.each do |repo|
         server = repo.sub(%r{^mirror://}, '').split('/', 2)[0]
+
         # Grab the server config for this repo
         begin
-          server_config = PerforceSwarm::GitlabConfig.new.git_fusion.entry(server)
-          enforce_read_repos << repo if server_config.enforce_permissions?
-          server
+          server_config = gitlab_shell_config.git_fusion.entry(server)
         rescue
-          # Ignore fusion servers that are no longer in the config
-          nil
+          server_config = nil
         end
-      end.compact.uniq
+
+        # enforce read permissions if the git-fusion server no longer exists
+        # in the config, or if it exists and has the enforce_permissions
+        # config flag set to true
+        if !server_config || server_config.enforce_permissions?
+          enforce_read_servers << server
+          enforce_read_repos << repo
+        end
+      end
+      enforce_read_servers.uniq!
 
       # Get the list of readable repos against each server
-      gf_repos = []
-      gf_servers.each { |server| gf_repos += git_fusion_repo_access(server)[:server_repos] }
+      readable_repos = []
+      enforce_read_servers.each { |server| readable_repos += git_fusion_repo_access(server)[:server_repos] }
 
       # Determine which repos you don't have access to
-      no_access = enforce_read_repos - gf_repos
+      no_access_repos = enforce_read_repos - readable_repos
 
       # Remove projects with those repos from your auth projects
-      project_ids = gitab_auth_projects.reject { |project| no_access.include?(project.git_fusion_repo) }.map(&:id)
+      project_ids = gitab_auth_projects.reject { |project| no_access_repos.include?(project.git_fusion_repo) }.map(&:id)
 
       # Callers are expecting an ActiveRecord result, so do another query for the authorized_projects
       @authorized_projects = Project.where(id: project_ids)

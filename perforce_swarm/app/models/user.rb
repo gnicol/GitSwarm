@@ -35,12 +35,12 @@ module PerforceSwarm
       end
     end
 
-    def git_fusion_repo_access_key(server)
+    def git_fusion_repo_cache_key(server)
       "git_fusion_repo_access:#{username}-server-#{server}"
     end
 
     def git_fusion_repo_access(server)
-      Rails.cache.fetch(git_fusion_repo_access_key(server)) do
+      Rails.cache.fetch(git_fusion_repo_cache_key(server)) do
         access = Hash.new
         access[:cached_at]    = Time.new
         access[:server_repos] = []
@@ -55,7 +55,7 @@ module PerforceSwarm
       end
     end
 
-    def clear_git_fusion_repo_access_cache
+    def clear_git_fusion_repo_cache
       Rails.cache.delete_matched("git_fusion_repo_access:#{username}-server-*")
     end
 

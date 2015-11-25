@@ -65,16 +65,28 @@ module PerforceSwarm
 
       gitab_auth_projects = super
 
-      # Grab mirrored projects from list and determine unique gf servers
-      fusion_repos = gitab_auth_projects.pluck(:git_fusion_repo).compact
-      gf_servers   = fusion_repos.map { |repo| repo.sub(%r{^mirror://}, '').split('/', 2)[0] }.uniq
+      # Grab mirrored projects from list and determine unique gf servers and
+      # repos that we want to enforce read permissions on
+      enforce_read_repos = []
+      gf_servers         = gitab_auth_projects.pluck(:git_fusion_repo).compact.map do |repo|
+        server = repo.sub(%r{^mirror://}, '').split('/', 2)[0]
+        # Grab the server config for this repo
+        begin
+          server_config = PerforceSwarm::GitlabConfig.new.git_fusion.entry(server)
+          enforce_read_repos << repo if server_config.enforce_permissions?
+          server
+        rescue
+          # Ignore fusion servers that are no longer in the config
+          nil
+        end
+      end.compact.uniq
 
       # Get the list of readable repos against each server
       gf_repos = []
       gf_servers.each { |server| gf_repos += git_fusion_repo_access(server)[:server_repos] }
 
       # Determine which repos you don't have access to
-      no_access = fusion_repos - gf_repos
+      no_access = enforce_read_repos - gf_repos
 
       # Remove projects with those repos from your auth projects
       project_ids = gitab_auth_projects.reject { |project| no_access.include?(project.git_fusion_repo) }.map(&:id)

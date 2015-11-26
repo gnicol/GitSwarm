@@ -3,7 +3,6 @@ module PerforceSwarm
     class RepoAccessCache
       attr_reader :user, :server
 
-      # Target can be a server id or a repo in form 'mirror://server_id/repo_name'
       def initialize(user, server)
         @user   = user
         @server = server

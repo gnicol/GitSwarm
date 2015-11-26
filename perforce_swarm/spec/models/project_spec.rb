@@ -19,7 +19,9 @@ describe Project do
      '',
      'mirror://foo/bar',
      'mirror://foo/bar/baz',
-     'mirror://foo-fizzle/mc-dizzle'
+     'mirror://foo-fizzle/mc-dizzle',
+     'mirror://foo-fizzle/mc-dizzle/fizzle',
+     'mirror://foo-fizzle/mc-dizzle/my/bizzle'
     ].each do |url|
       it { should allow_value(url).for(:git_fusion_repo) }
     end

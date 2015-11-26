@@ -1,6 +1,6 @@
 module PerforceSwarm
   module GitFusion
-    class RepoAccessCache
+    class RepoAccess
       attr_reader :user, :server, :server_config
 
       def initialize(user, server)
@@ -78,7 +78,7 @@ module PerforceSwarm
         end
       end
 
-      def self.repo_access?(user, project)
+      def self.access?(user, project)
         !filter_by_p4_access(user, [project]).empty?
       end
 

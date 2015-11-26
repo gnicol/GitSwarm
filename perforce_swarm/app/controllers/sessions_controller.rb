@@ -4,7 +4,7 @@ module PerforceSwarm
   module SessionsControllerExtension
     def create
       super
-      GitFusion::RepoAccessCache.clear_cache(current_user.username) if current_user
+      GitFusion::RepoAccess.clear_cache(current_user.username) if current_user
     end
   end
 end

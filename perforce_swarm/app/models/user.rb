@@ -38,42 +38,8 @@ module PerforceSwarm
     def authorized_projects
       return @authorized_projects if @authorized_projects
 
-      gitab_auth_projects = super
-      gitlab_shell_config = PerforceSwarm::GitlabConfig.new
-
-      # Grab mirrored projects from list and determine unique gf servers and
-      # repos that we want to enforce read permissions on
-      enforce_read_repos   = []
-      enforce_read_servers = []
-      gitab_auth_projects.pluck(:git_fusion_repo).compact.each do |repo|
-        server = GitFusion::RepoAccessCache.server_id_from_repo(repo)
-
-        # Grab the server config for this repo
-        begin
-          server_config = gitlab_shell_config.git_fusion.entry(server)
-        rescue
-          server_config = nil
-        end
-
-        # enforce read permissions if the git-fusion server no longer exists
-        # in the config, or if it exists and has the enforce_permissions
-        # config flag set to true
-        if !server_config || server_config.enforce_permissions?
-          enforce_read_servers << server
-          enforce_read_repos << repo
-        end
-      end
-      enforce_read_servers.uniq!
-
-      # Get the list of readable repos against each server
-      readable_repos = []
-      enforce_read_servers.each { |server| readable_repos += GitFusion::RepoAccessCache.new(self, server).repos }
-
-      # Determine which repos you don't have access to
-      no_access_repos = enforce_read_repos - readable_repos
-
-      # Remove projects with those repos from your auth projects
-      project_ids = gitab_auth_projects.reject { |project| no_access_repos.include?(project.git_fusion_repo) }.map(&:id)
+      # Our ActiveRecord relation ends up being turned into an array, so we grab just the ids
+      project_ids = GitFusion::RepoAccessCache.filter_by_p4_access(self, super).map(&:id)
 
       # Callers are expecting an ActiveRecord result, so do another query for the authorized_projects
       @authorized_projects = Project.where(id: project_ids)

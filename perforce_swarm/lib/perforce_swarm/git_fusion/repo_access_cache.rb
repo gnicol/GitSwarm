@@ -1,7 +1,7 @@
 module PerforceSwarm
   module GitFusion
     class RepoAccessCache
-      attr_reader :user, :server
+      attr_reader :user, :server, :server_config
 
       def initialize(user, server)
         @user   = user
@@ -36,8 +36,50 @@ module PerforceSwarm
         Rails.cache.delete_matched("git_fusion_repo_access:#{username}-server-*")
       end
 
-      def self.repo_access?(user, repo)
-        new(user, server_id_from_repo(repo)).repos.include?(repo)
+      # User is a User object, projects is an iterable of objects with git_fusion_repo accessors
+      def self.filter_by_p4_access(user, projects = [])
+        repos = projects.map(&:git_fusion_repo).compact
+        gitlab_shell_config = PerforceSwarm::GitlabConfig.new
+
+        # Grab mirrored projects from list and determine unique gf servers and
+        # repos that we want to enforce read permissions on
+        enforced_repos   = []
+        enforced_servers = []
+        repos.each do |repo|
+          server = server_id_from_repo(repo)
+
+          # Grab the server config for this repo
+          begin
+            server_config = gitlab_shell_config.git_fusion.entry(server)
+          rescue
+            server_config = nil
+          end
+
+          # enforce read permissions if the git-fusion server no longer exists
+          # in the config, or if it exists and has the enforce_permissions
+          # config flag set to true
+          if !server_config || server_config.enforce_permissions?
+            enforced_servers << server
+            enforced_repos   << repo
+          end
+        end
+        enforced_servers.uniq!
+        enforced_repos.uniq!
+
+        # Get the list of readable repos against each server
+        readable_repos = []
+        enforced_servers.each { |server| readable_repos += new(user, server).repos }
+
+        # Determine the list of blocked repos and filter the projects accordingly
+        no_access = enforced_repos - readable_repos
+
+        projects.select do |project|
+          !project.git_fusion_repo || !no_access.include?(project.git_fusion_repo)
+        end
+      end
+
+      def self.repo_access?(user, project)
+        !filter_by_p4_access(user, [project]).empty?
       end
 
       def self.server_id_from_repo(repo)

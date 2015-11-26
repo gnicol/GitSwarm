@@ -26,11 +26,17 @@
           = icon('download fw')
           Download
     -# gitswarm changes start
-    - if !mirrored?(@project) && current_user
+    - if current_user
       %span.has_tooltip.mirror-button-wrapper{data: {title: mirroring_tooltip(@project, current_user, true), html: 'true'}}
+      - if !mirrored?(@project)
         = link_to configure_mirroring_namespace_project_path(@project.namespace, @project), class: "btn #{'disabled' unless mirroring_permitted?(@project, current_user) && mirroring_configured?}" do
           = icon 'helix-icon-white'
           Mirror in Helix
+      - else
+        = link_to '#', class: "btn #{'disabled' unless mirroring_permitted?(@project, current_user) && mirroring_configured?}" do
+          = icon 'helix-icon-white'
+          Disable Helix Mirroring
+
     -# gitswarm changes end
 
     = render 'projects/buttons/notifications'

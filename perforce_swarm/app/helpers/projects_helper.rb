@@ -153,4 +153,31 @@ module ProjectsHelper
   def gitlab_shell_config
     @gitlab_shell_config ||= PerforceSwarm::GitlabConfig.new
   end
+
+  def helix_mirroring_button(project, user)
+    # wrapper for tooltip
+    haml_tag(:span,
+             data:  { title: mirroring_tooltip(project, user, true), html: 'true' },
+             class: 'has_tooltip mirror-button-wrapper') do
+      # parameters for an enable button
+      can_mirror = mirroring_permitted?(@project, current_user) && mirroring_configured?
+      href       = configure_mirroring_namespace_project_path(project.namespace, project)
+      anchor     = 'Mirror in Helix'
+      attributes = { class: 'btn btn-save' + (can_mirror ? '' : ' disabled') }
+      # parameters for a disable button
+      if mirrored?(project)
+        attributes[:data] = { confirm: 'Are you sure you want to disable Helix Mirroring?' }
+        href              = '#'
+        anchor            = 'Disable Helix Mirroring'
+      end
+
+      # add the button at the appropriate haml indent level
+      haml_concat(
+          link_to(href, attributes) do
+            haml_concat(icon('helix-icon-white'))
+            haml_concat(anchor)
+          end
+      )
+    end
+  end
 end

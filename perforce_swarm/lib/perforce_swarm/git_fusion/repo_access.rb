@@ -32,8 +32,8 @@ module PerforceSwarm
         cache_content[:repos] || []
       end
 
-      def self.clear_cache(username)
-        Rails.cache.delete_matched("git_fusion_repo_access:#{username}-server-*")
+      def self.clear_cache(username: '*', server: '*')
+        Rails.cache.delete_matched("git_fusion_repo_access:#{username}-server-#{server}")
       end
 
       # User is a User object, projects is an iterable of objects with git_fusion_repo accessors

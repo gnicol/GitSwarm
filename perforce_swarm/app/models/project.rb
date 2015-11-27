@@ -18,6 +18,7 @@ module PerforceSwarm
         begin
           creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace.name, path)
           creator.save
+          PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: git_fusion_entry)
 
           # GitFusion Repo has been created, flag this project for import
           # We choose to always import from GitFusion because there may have

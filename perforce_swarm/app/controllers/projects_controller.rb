@@ -25,6 +25,7 @@ module PerforceSwarm
       fail 'No Git Fusion server specified.' unless fusion_server
       repo_creator  = PerforceSwarm::GitFusion::RepoCreator.new(fusion_server, @project.namespace.name, @project.path)
       repo_creator.save
+      PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: fusion_server)
 
       # modify the project to include the mirror URL
       @project.update_column(:git_fusion_repo, "mirror://#{fusion_server}/#{repo_creator.repo_name}")

@@ -38,14 +38,15 @@ module PerforceSwarm
 
       # User is a User object, projects is an iterable of objects with git_fusion_repo accessors
       def self.filter_by_p4_access(user, projects = [])
-        repos = projects.map(&:git_fusion_repo).compact
+        # Find fusion_repos from private projects to filter by access
+        fusion_repos        = projects.map { |project| !project.private? ? nil : project.git_fusion_repo }.compact
         gitlab_shell_config = PerforceSwarm::GitlabConfig.new
 
         # Grab mirrored projects from list and determine unique gf servers and
         # repos that we want to enforce read permissions on
         enforced_repos   = []
         enforced_servers = []
-        repos.each do |repo|
+        fusion_repos.each do |repo|
           server = server_id_from_repo(repo)
 
           # Grab the server config for this repo
@@ -73,8 +74,9 @@ module PerforceSwarm
         # Determine the list of blocked repos and filter the projects accordingly
         no_access = enforced_repos - readable_repos
 
+        # Allow access if project is not mirrored, or not marked private, or is not in the no_access list
         projects.select do |project|
-          !project.git_fusion_repo || !no_access.include?(project.git_fusion_repo)
+          !project.git_fusion_repo || !project.private? || !no_access.include?(project.git_fusion_repo)
         end
       end
 

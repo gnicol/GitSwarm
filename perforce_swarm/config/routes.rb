@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       member do
         get :configure_mirroring
         post :enable_mirroring
+        post :disable_git_fusion_mirroring
       end
     end
   end

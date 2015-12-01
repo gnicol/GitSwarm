@@ -7,8 +7,12 @@ module PerforceSwarm
       super
     end
 
-    def git_fusion_import?
-      git_fusion_repo.present?
+    def git_fusion_mirrored?
+      git_fusion_repo.present? && git_fusion_mirrored
+    end
+
+    def disable_git_fusion_mirroring
+      update_column(:git_fusion_mirrored, false)
     end
 
     def create_repository
@@ -44,7 +48,8 @@ class Project < ActiveRecord::Base
             allow_nil: true,
             format: { with: %r{\Amirror://([^/]+)/([^/]+(/[^/]+)*)\z},
                       message: 'must be a valid Git Fusion repo to enable mirroring.' },
-            if: ->(project) { project.git_fusion_import? }
+            if: ->(project) { project.git_fusion_repo.present? }
+  validates :git_fusion_mirrored, inclusion: { in: [true, false] }
   prepend PerforceSwarm::ProjectExtension
 
   attr_accessor :git_fusion_auto_create
@@ -54,6 +59,7 @@ class Project < ActiveRecord::Base
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.
   # @todo If rspec ever fixed prepend handling; move this to ProjectExtension. Or fix rspec ourselves!
   alias_method :add_import_job_super, :add_import_job
+  alias_method :git_fusion_import?, :git_fusion_mirrored?
   def add_import_job
     # no git fusion repo, so carry on with normal import behaviour
     return add_import_job_super unless git_fusion_import?

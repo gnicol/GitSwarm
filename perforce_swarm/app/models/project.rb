@@ -12,7 +12,7 @@ module PerforceSwarm
     end
 
     def disable_git_fusion_mirroring
-      update_column(:git_fusion_mirrored, false)
+      update_attribute(:git_fusion_mirrored, false)
     end
 
     def create_repository

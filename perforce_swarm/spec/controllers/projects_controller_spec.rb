@@ -3,12 +3,6 @@ require('spec_helper')
 describe ProjectsController, type: :controller do
   render_views
   let(:project) { create(:project) }
-  let(:mirrored_project) do
-    create(:empty_project,
-           path: 'somewhere',
-           git_fusion_repo: 'mirror://foo/bar',
-           git_fusion_mirrored: true)
-  end
   let(:user) { create(:user) }
 
   # ensure we can even run the tests by looking for p4d executable
@@ -26,7 +20,7 @@ describe ProjectsController, type: :controller do
     user_spec['Password'] = config_entry.perforce_password
     @connection.input     = user_spec
     @connection.run('user', '-i')
-    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return([])
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return({})
   end
 
   after(:each) do
@@ -54,24 +48,34 @@ describe ProjectsController, type: :controller do
   before do
     sign_in(user)
     project.team << [user, :master]
+    controller.instance_variable_set(:@project, project)
   end
 
   describe 'POST disable_git_fusion_mirroring' do
     it 'does nothing to the mirroring status if the project is not mirrored' do
+      expected_redirect = '/' + [project.namespace.to_param,
+                                 project.to_param].join('/')
       expect(project.git_fusion_mirrored?).to be false
       post(:disable_git_fusion_mirroring,
-           namespace_id: project.namespace.to_param,
-           id: project.to_param)
+           namespace_id: project.namespace.name,
+           id: project)
+      expect(response).to redirect_to(expected_redirect)
       expect(project.git_fusion_mirrored?).to be false
     end
 
     it 'disables mirroring on an already-mirrored project' do
-      expect(mirrored_project.git_fusion_mirrored?).to be true
+      expected_redirect = '/' + [project.namespace.to_param,
+                                 project.to_param].join('/')
+      project.git_fusion_repo     = 'mirror://default/bar'
+      project.git_fusion_mirrored =  true
+      expect(project.git_fusion_mirrored?).to be true
+
+      # disable mirroring through our controller
       post(:disable_git_fusion_mirroring,
-           namespace_id: mirrored_project.namespace.to_param,
-           id: mirrored_project.to_param)
-      puts response.body.inspect
-      expect(mirrored_project.git_fusion_mirrored?).to be false
+           namespace_id: project.namespace.name,
+           id: project)
+      expect(response).to redirect_to(expected_redirect)
+      expect(project.git_fusion_mirrored?).to be false
     end
   end
 end

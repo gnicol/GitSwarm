@@ -51,10 +51,9 @@ module PerforceSwarm
     def disable_git_fusion_mirroring
       fail 'No project specified.' unless @project
 
-      # disable mirroring in GitSwarm
+      # disable mirroring in GitSwarm, remove the mirror remote, and redirect to project details page
       @project.disable_git_fusion_mirroring
-
-      # TODO: remove the mirror remote
+      PerforceSwarm::Repo.new(@project.repository.path_to_repo).mirror_url = nil
       redirect_to(project_path(@project), notice: 'Mirroring successfully disabled!')
     rescue => e
       redirect_to(project_path(@project), alert: e.message)

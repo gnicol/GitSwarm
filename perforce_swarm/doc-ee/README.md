@@ -18,13 +18,14 @@
 
 ## Administrator documentation
 
+- [Migration from GitLab](install/migration_from_gitlab.md) How to migrate your existing GitLab workflow and repositories to GitSwarm.
 - [Audit Events](administration/audit_events.md) Check how user access changed in projects and groups.
 - [Changing the appearance of the login page](customization/branded_login_page.md) Make the login page branded
   for your GitSwarm instance.
 - [Custom git hooks](hooks/custom_hooks.md) Custom git hooks (on the filesystem) for when web hooks aren't enough.
-- [Email](tools/email.md) Email GitLab users from GitLab
+- [Email](tools/email.md) Email GitSwarm users from GitSwarm.
 - [Git Hooks](git_hooks/git_hooks.md) Advanced push rules for your project.
-- [Help message](customization/help_message.md) Set information about administrators of your GitLab instance.
+- [Help message](customization/help_message.md) Set information about administrators of your GitSwarm instance.
 - [Install](install/README.md) Requirements, directory structures and installation from source.
 - [Integration](integration/README.md) How to integrate with systems such as JIRA, Redmine, LDAP and Twitter.
 - [Issue closing](customization/issue_closing.md) Customize how to close an issue from commit messages.
@@ -36,3 +37,7 @@
 - [System hooks](system_hooks/system_hooks.md) Notifications when users, projects and keys are changed.
 - [Update](update/README.md) Update guides to upgrade your installation.
 - [Welcome message](customization/welcome_message.md) Add a custom welcome message to the sign-in page.
+
+## Contributor documentation
+
+- [Development](development/contribution.md) Details on contributing back changes.

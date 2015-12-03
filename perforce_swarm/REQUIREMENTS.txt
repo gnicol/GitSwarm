@@ -1,17 +1,36 @@
                          Hardware Requirements for
                               Helix GitSwarm
 
-                              Version 2015.3
+                              Version 2016.1
 
 Introduction
 
     This document describes the hardware requirements for Helix GitSwarm
-    release 2015.3.
+    release 2016.1.
 
 Supported Operating System Platforms
 
     * Ubuntu 12.04 or 14.04
     * CentOS 6.7 or 7
+
+Unsupported Unix distributions
+    * OS X
+    * Arch Linux
+    * Fedora
+    * Gentoo
+    * FreeBSD
+
+Non-Unix operating systems such as Windows
+
+GitSwarm is developed for Unix operating systems. GitSwarm does *not* run
+on Windows and we have no plans of supporting it in the near future.
+Please consider using a virtual machine to run GitSwarm.
+
+Ruby versions
+
+GitSwarm requires Ruby (MRI) 2.1 You will have to use the standard MRI
+implementation of Ruby. We love JRuby and Rubinius but GitSwarm needs several
+Gems that have native extensions.
 
 Supported Git Fusion Releases
 
@@ -21,9 +40,7 @@ Storage
 
     The necessary hard drive space largely depends on the size of the repos
     you want to store in GitSwarm. As a rule of thumb you should have at
-    least twice as much free space as all your repos combined take up. You
-    need twice the storage because GitSwarm satellites contain an extra copy
-    of each repo.
+    least twice as much free space as all your repos combined take up.
 
     Note that if you are mirroring projects to Helix Server using the locally
     provisioned Helix Git Fusion Server, you will want at least four times as
@@ -62,10 +79,6 @@ CPU
     of Helix Server and Helix Git Fusion all on the local system. When running
     all components on the same machine, we suggest a minimum of 4 cores.
 
-    Note: A minimum of 3 unicorn workers is required for concurrent usage of
-          the system. Generally we recommend having unicorn workers set as
-          CPU cores + 1 = unicorn workers.
-
 Memory
 
     You need at least 2GB of addressable memory (RAM + swap) to install and
@@ -87,14 +100,64 @@ Memory
     * 64GB RAM supports up to 16,000 users
     * 128GB RAM supports up to 32,000 users
 
-    By default, GitSwarm will attempt to automatically provision an instance
-    of Helix Server and Helix Git Fusion all on the local system. When running
-    all components on the same machine, we suggest a minimum of 4GB of RAM and
-    4GB of swap.
-
     Note: The 25 workers of Sidekiq will show up as separate processes in
           your process overview (such as top or htop) but they share the same
           RAM allocation since Sidekiq is a multithreaded application.
 
-END
+Unicorn Workers
 
+It is possible to increase the amount of unicorn workers and this will
+usually help to reduce the response time of the applications and
+increase the ability to handle parallel requests.
+
+For most instances we recommend using: CPU cores + 1 = unicorn workers. So
+for a machine with 2 cores, 3 unicorn workers is ideal.
+
+A *minimum* of *3* unicorn workers is required for concurrent use of the system.
+
+For all machines that have 1GB and up we recommend a minimum of three
+unicorn workers. If you have a 512MB machine with a magnetic (non-SSD) swap
+drive we recommend to configure only one Unicorn worker to prevent
+excessive swapping. With one Unicorn worker only git over ssh access will
+work because the git over HTTP access requires two running workers (one
+worker to receive the user request and one worker for the authorization
+check). If you have a 512MB machine with a SSD drive you can use two
+Unicorn workers, this will allow HTTP access although it will be slow due
+to swapping.
+
+If you need to adjust the Unicorn timeout or the number of workers you can
+use the following settings in /etc/gitswarm/gitswarm.rb:
+
+unicorn['worker_processes'] = 3
+unicorn['worker_timeout'] = 60
+
+Run sudo gitswarm-ctl reconfigure for the change to take effect.
+
+Database
+
+If you want to run the database separately, the *recommended* database size
+is *1 MB per user*.
+
+Redis and Sidekiq
+
+Redis stores all user sessions and the background task queue. The storage
+requirements for Redis are minimal, about 25kB per user. Sidekiq processes
+the background jobs with a multithreaded process. This process starts with
+the entire Rails stack (200MB+) but it can grow over time due to memory
+leaks. On a very active server (10,000 active users) the Sidekiq process
+can use 1GB+ of memory.
+
+Supported web browsers
+
+    * Chrome (Latest stable version)
+    * Firefox (Latest released version and latest ESR version)
+    * Safari 7+ (known problem: required fields in html5 do not work)
+    * Opera (Latest released version)
+    * IE 10+
+
+Common UI problems with IE
+
+If you experience UI issues with Internet Explorer, please make sure that
+you have the Compatibility View mode disabled.
+
+END

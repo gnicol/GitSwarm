@@ -19,7 +19,6 @@ class Spinach::Features::EventFilters < Spinach::FeatureSteps
   end
 
   step 'I should see comment event' do
-    # i.event-note-icon is looking for the speech bubble icon in the activity feed
-    find('i.event-note-icon').visible?
+    page.find('.content_list').assert_text('Excellent merge')
   end
 end

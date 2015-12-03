@@ -18,6 +18,7 @@
 
 ## Administrator documentation
 
+- [Migration from GitLab](install/migration_from_gitlab.md) How to migrate your existing GitLab workflow and repositories to GitSwarm.
 - [Custom git hooks](hooks/custom_hooks.md) Custom git hooks (on the filesystem) for when web hooks aren't enough.
 - [Install](install/README.md) Requirements, directory structures and installation from source.
 - [Integration](integration/README.md) How to integrate with systems such as JIRA, Redmine, LDAP and Twitter.
@@ -30,3 +31,7 @@
 - [System hooks](system_hooks/system_hooks.md) Notifications when users, projects and keys are changed.
 - [Update](update/README.md) Update guides to upgrade your installation.
 - [Welcome message](customization/welcome_message.md) Add a custom welcome message to the sign-in page.
+
+## Contributor documentation
+
+- [Development](development/contribution.md) Details on contributing back changes.

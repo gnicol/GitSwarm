@@ -1,3 +1,5 @@
+require 'gitlab/markdown'
+
 module Gitlab
   module Markdown
     # HTML filter that replaces commit references with links.
@@ -47,10 +49,11 @@ module Gitlab
 
             title = escape_once(commit.link_title)
             klass = reference_class(:commit)
+            data  = data_attribute(project.id)
 
             project_ref += '@' if project_ref
 
-            %(<a href="#{url}"
+            %(<a href="#{url}" #{data}
                  title="#{title}"
                  class="#{klass}">#{project_ref}#{commit.short_id}</a>)
           else
@@ -66,7 +69,7 @@ module Gitlab
       end
 
       def url_for_commit(project, commit)
-        h = Rails.application.routes.url_helpers
+        h = Gitlab::Application.routes.url_helpers
         h.namespace_project_commit_url(project.namespace, project, commit,
                                         only_path: context[:only_path])
       end

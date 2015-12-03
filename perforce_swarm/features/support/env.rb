@@ -44,6 +44,13 @@ Spinach.hooks.after_scenario do
   DatabaseCleaner.clean
 end
 
+unless ENV['CI'] || ENV['CI_SERVER']
+  require 'capybara-screenshot/spinach'
+
+  # Keep only the screenshots generated from the last failing test suite
+  Capybara::Screenshot.prune_strategy = :keep_last_run
+end
+
 Spinach.hooks.before_run do
   include RSpec::Mocks::ExampleMethods
   RSpec::Mocks.setup
@@ -56,6 +63,15 @@ Spinach.hooks.before_run do
   end
 
   include FactoryGirl::Syntax::Methods
+end
+
+Spinach.hooks.before_scenario do
+  RSpec::Mocks.setup
+end
+
+Spinach.hooks.after_scenario do
+  RSpec::Mocks.verify
+  RSpec::Mocks.teardown
 end
 
 def wait_for_ajax

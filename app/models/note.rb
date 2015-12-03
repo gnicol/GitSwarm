@@ -15,6 +15,7 @@
 #  noteable_id   :integer
 #  system        :boolean          default(FALSE), not null
 #  st_diff       :text
+#  updated_by_id :integer
 #
 
 require 'carrierwave/orm/activerecord'
@@ -33,6 +34,7 @@ class Note < ActiveRecord::Base
   belongs_to :project
   belongs_to :noteable, polymorphic: true
   belongs_to :author, class_name: "User"
+  belongs_to :updated_by, class_name: "User"
 
   delegate :name, to: :project, prefix: true
   delegate :name, :email, to: :author, prefix: true
@@ -89,7 +91,7 @@ class Note < ActiveRecord::Base
     end
 
     def search(query)
-      where("note like :query", query: "%#{query}%")
+      where("LOWER(note) like :query", query: "%#{query.downcase}%")
     end
   end
 
@@ -357,6 +359,10 @@ class Note < ActiveRecord::Base
 
   def set_references
     create_new_cross_references!(project, author)
+  end
+
+  def system?
+    read_attribute(:system)
   end
 
   def editable?

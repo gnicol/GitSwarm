@@ -1,12 +1,12 @@
                        Installation Instructions for
                               Helix GitSwarm
 
-                              Version 2015.3
+                              Version 2016.1
 
 Introduction
 
     This document describes the installation and initial configuration
-    process for Helix GitSwarm release 2015.3.
+    process for Helix GitSwarm release 2016.1.
 
     * Note, installing and configuring GitSwarm is a System Administrator
       function and requires root access.
@@ -30,12 +30,15 @@ Overview
     To get the GitSwarm web application installed and configured, this
     document will cover these main areas:
 
-    * Install Dependencies
-    * GitSwarm Installation
-    * Basic Configuration
+    * Pre-installation Steps
+    * Quick Install
+    * Manual Install (package manager)
+    * Manual Install (offline install, no package manager)
+    * Post-installation
+    * Troubleshooting
 
 ------------------------------------------------------------------------
-Install Dependencies
+Pre-installation Steps
 ------------------------------------------------------------------------
 
 Note: If you install Postfix to send email, please select Internet Site
@@ -46,51 +49,124 @@ Note: If you install Postfix to send email, please select Internet Site
       We advise installing GitSwarm on a fully up-to-date operating system. We've
       included the system specific upgrade commands below.
 
+      By default, the CentOS firewall rules block HTTP and SSH access.
+
+1. For CentOS 6:
+
+   $ sudo lokkit -s http -s ssh
+   $ sudo yum update # optional
+
+2. For CentOS 7:
+
+   $ sudo firewall-cmd --permanent --add-service=http
+   $ sudo firewall-cmd --permanent --add-service=ssh
+   $ sudo systemctl reload firewalld
+   $ sudo yum update # optional
+
+3. For Ubuntu (12.04 and 14.04):
+
+   $ sudo apt-get update  # optional
+   $ sudo apt-get upgrade # optional
+
+GitSwarm requires a local mail server to facilitate delivery of notifications
+via email, and curl is used in the Quick install.
+
+Install your selected mail server. For example:
+
 1. For Ubuntu (12.04 and 14.04):
 
-   $ sudo apt-get update
-   $ sudo apt-get upgrade
-   $ sudo apt-get install curl openssh-server ca-certificates postfix
+   $ sudo apt-get install postfix curl
 
-2. For CentOS/RHEL 6:
+2. For CentOS 6:
 
-   $ sudo yum update
-   $ sudo yum install curl openssh-server postfix cronie
+   $ sudo yum install postfix curl
    $ sudo service postfix start
    $ sudo chkconfig postfix on
-   $ sudo lokkit -s http -s ssh
 
-   Note: The commands above also open HTTP and SSH access in the system
-         firewall.
+3. For CentOS 7:
 
-3. For CentOS/RHEL 7:
-
-   $ sudo yum update
-   $ sudo yum install curl openssh-server
-   $ sudo systemctl enable sshd
-   $ sudo systemctl start sshd
-   $ sudo yum install postfix
+   $ sudo yum install postfix curl
    $ sudo systemctl enable postfix
    $ sudo systemctl start postfix
-   $ sudo firewall-cmd --permanent --add-service=http
-   $ sudo systemctl reload firewalld
-
-   Note: The commands above also open HTTP and SSH access in the system
-         firewall.
 
 
 ------------------------------------------------------------------------
-Add the Perforce package server and install GitSwarm
+Quick Install
 ------------------------------------------------------------------------
 
 1. For all supported platforms:
 
    $ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
 
+2. Complete the post-installation steps below.
 
 
 ------------------------------------------------------------------------
-Basic Configuration
+Manual Install (package manager)
+------------------------------------------------------------------------
+
+1. Add Perforce's repository to your package configuration.
+
+See this document: https://www.perforce.com/perforce-packages for instructions
+on adding Perforce's packaging key to your keyring, as well as adding the
+Perforce package repository to your package configuration.
+
+2. Install the GitSwarm package and necessary dependencies via the OS package manager.
+
+    For Ubuntu (12.04 and 14.04):
+
+        $ sudo apt-get install helix-gitswarm
+
+    For CentOS (6 and 7):
+
+        $ sudo yum install helix-gitswarm
+
+3. Complete the post-installation steps below.
+
+
+------------------------------------------------------------------------
+Manual Install (offline install, no package manager)
+------------------------------------------------------------------------
+
+1. Add Perforce's repository to your package configuration.
+
+See this document: https://www.perforce.com/perforce-packages for instructions
+on adding Perforce's packaging key to your keyring, as well as adding the
+Perforce package repository to your package configuration.
+
+2. Install and configure the necessary dependencies.
+
+    For Ubuntu (12.04 and 14.04):
+
+    $ sudo apt-get install openssh-server ca-certificates perforce-server helix-git-fusion-base
+
+3. Download the GitSwarm package and install everything.
+
+    For Ubuntu 12.04:
+
+    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu12x86_64/helix-gitswarm-2016.1.precise.amd64.deb
+    $ sudo dpkg -i helix-gitswarm-2016.1.precise.amd64.deb
+
+    For Ubuntu 14.04:
+
+    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu14x86_64/helix-gitswarm-2016.1.trusty.amd64.deb
+    $ sudo dpkg -i helix-gitswarm-2016.1.trusty.amd64.deb
+
+    For CentOS 6:
+
+    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos6x86_64/helix-gitswarm-2016.1.el6.x86_64.rpm
+    $ sudo yum install helix-gitswarm-2016.1.el6.x86_64.rpm
+
+    For CentOS 7:
+
+    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos7x86_64/helix-gitswarm-2016.1.el7.x86_64.rpm
+    $ sudo yum install helix-gitswarm-2016.1.el7.x86_64.rpm
+
+4. Complete the post-installation steps below.
+
+
+------------------------------------------------------------------------
+Post-installation
 ------------------------------------------------------------------------
 
 1. Verify the external URL for your GitSwarm instance:
@@ -110,7 +186,10 @@ Basic Configuration
 
    Replace UTC with an appropriate timezone, and uncomment the line.
 
-3. Configure and start GitSwarm.
+3. Configure GitSwarm.
+
+   If you have made changes to /etc/gitswarm/gitswarm.rb, then you will
+   want to run reconfigure for them to take effect.
 
    $ sudo gitswarm-ctl reconfigure
 
@@ -119,7 +198,29 @@ Basic Configuration
    Username: root
    Password: 5iveL!fe
 
+------------------------------------------------------------------------
+Troubleshooting
+------------------------------------------------------------------------
 
-You are now all set to start using GitSwarm. Enjoy!
+For additional troubleshooting and configuration options, please see
+the Omnibus GitLab readme at
+https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md
+
+error: "X" is an unknown key on CentOS 6
+
+    This error occurs during install of CentOS 6, often in a shared VM
+    environment where some of the keys in `/etc/sysctl.conf` don't actually
+    apply. The error usually looks something like this:
+
+
+    STDERR: error: "net.bridge.bridge-nf-call-ip6tables" is an unknown key
+    error: "net.bridge.bridge-nf-call-iptables" is an unknown key
+    error: "net.bridge.bridge-nf-call-arptables" is an unknown key
+
+    These errors are ignorable, you just need to run 'sudo gitswarm-ctl
+    reconfigure', and our script shouldn't have to modify that file again
+    and will continue. If you want to future-proof upgrades from failing on
+    the same lines, you can modify your '/etc/sysctl.conf' and comment out
+    the keys that were listed as unknown.
 
 END

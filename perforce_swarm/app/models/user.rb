@@ -3,9 +3,9 @@ require Rails.root.join('app', 'models', 'user')
 module PerforceSwarm
   module UserExtension
     def validate_and_change_in_p4d
-      # presently we only handle the 'root' user and only for auto-provisioned servers
-      # run only if were changing password
-      return true unless changed.include?('encrypted_password') && username == 'root'
+      # presently we only handle the 'root' admin user and only for auto-provisioned servers
+      # runs only if we're changing password
+      return true unless changed.include?('encrypted_password') && username == 'root' && admin
       sync_p4d_password(password)
     rescue P4Exception => ex
       # if a p4 error occurs; attempt to raise it to the user's attention and abort the save
@@ -18,11 +18,11 @@ module PerforceSwarm
     end
 
     def sync_p4d_password(password)
-      default_config = PerforceSwarm::GitlabConfig.new.git_fusion.entry('default')
-      return unless default_config['auto_provision']
+      git_fusion = PerforceSwarm::GitlabConfig.new.git_fusion
+      return unless git_fusion.enabled?
 
       begin
-        connection = PerforceSwarm::P4::Connection.new(default_config)
+        connection = PerforceSwarm::P4::Connection.new(git_fusion.auto_provisioned_entry)
         connection.login
         connection.input(password)
         connection.run('passwd', 'root')
@@ -32,6 +32,17 @@ module PerforceSwarm
       ensure
         connection.disconnect if connection
       end
+    end
+
+    # Projects user has access to
+    def authorized_projects
+      return @authorized_projects if @authorized_projects
+
+      # Our ActiveRecord relation ends up being turned into an array, so we grab just the ids
+      project_ids = GitFusion::RepoAccess.filter_by_p4_access(self, super).map(&:id)
+
+      # Callers are expecting an ActiveRecord result, so do another query for the authorized_projects
+      @authorized_projects = Project.where(id: project_ids)
     end
   end
 end

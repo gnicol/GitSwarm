@@ -1,40 +1,48 @@
-                             Release Notes for
-                      Helix GitSwarm Enterprise Edition
+                           Upgrading Instructions for
+                        Helix GitSwarm Enterprise Edition
 
-                               Version 2015.3
+                                 Version 2016.1
 
 Introduction
 
-This document describes the upgrade process for upgrading to Helix
-GitSwarm Enterprise Edition release 2015.3
+    This document describes the upgrade process for upgrading to Helix
+    GitSwarm EE release 2016.1
 
-* Note, installing and configuring GitSwarm is a System Administrator
-function and requires root access.
+    * Note, installing and configuring GitSwarm EE is a System Administrator
+      function and requires root access.
 
 ------------------------------------------------------------------------
-Updating GitSwarm EE to 2015.3
+Pre-update Considerations
 ------------------------------------------------------------------------
 
-1. Download the 2015.3 GitSwarm EE package and install it.
+GitSwarm EE can only restore backups made on the same version. Hence, a backup of
+GitSwarm EE 2015.4 can only be restored to an instance running 2015.4, and not on
+2016.1 or higher versions. Although, upgrading GitSwarm EE should not result in
+data corruption, we recommend taking backups of your existing version before
+you run an upgrade.
 
-    Please see the separate "install" file, a peer to this file, for instructions on installing version 2015.3.
-    The install instructions for 2015.3 will upgrade your previous version to 2015.3. It includes adding the
-    Perforce package repository to your package manager, and installing the new dependencies.
+
+------------------------------------------------------------------------
+Updating GitSwarm EE to 2016.1
+------------------------------------------------------------------------
+
+1. Download the 2016.1 GitSwarm EE package and install it.
+
+    $ curl https://package.perforce.com/bootstrap/gitswarm-ee.sh | sudo sh -
+
+    The script should add the Perforce package repository, and install the latest
+    version of GitSwarm EE. The upgrade will create a backup of your existing
+    GitSwarm EE data before fully installing.
 
 2. Check the application status.
 
-    Check if GitSwarm EE and its environment are configured correctly:
+    Check if GitSwarm EEand its environment are configured correctly:
 
     $ sudo gitswarm-rake gitswarm:check
 
 ------------------------------------------------------------------------
 New configuration options
 ------------------------------------------------------------------------
-
-* Allow new repo creation in Helix Git Fusion Servers
-
-    You can configure where in the Helix Versioning Engine (P4D) you want your created GitSwarm EE repositories to be
-    mirrored to.
 
 * Discovering new config options
 
@@ -43,3 +51,5 @@ New configuration options
     release by running:
 
     $ sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
+
+END

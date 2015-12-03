@@ -2,7 +2,7 @@
 
 Helix Git Fusion is a Git remote repository service that uses the Helix
 Versioning Engine (P4D) as its back end. Users interact with Git Fusion as
-they would with any other Git remote repository.
+they would with any other remote Git repository.
 
 It takes just a few steps to import your existing Git Fusion projects into
 GitSwarm. Additionally, for brand new projects; GitSwarm can automatically
@@ -15,19 +15,42 @@ mirrored to Git Fusion, and changes within the Git Fusion project (even if
 initiated within the Helix Versioning Engine) are mirrored into the
 GitSwarm project.
 
+Mirroring your repositories to a Helix Versioning Engine through Git Fusion
+makes it easy to use either Git or Helix applications to work on 
+the same set of files. Helix provides simplified interfaces which are 
+easier for some team members to learn and use than Git.
+
+With Helix's exclusive file locking support, teams working with unmergable 
+digital assets can collaborate without overwriting each other's work. Git 
+Fusion respects these locks and prevents Git pushes from overwriting locked files. 
+
+Additionally, mirroring through Git Fusion allows “narrow cloning,” where you 
+create small Git repositories that are subsets of the much larger Helix 
+Versioning Engine monorepo. Git repositories perform best when the repository 
+is at most 1 GB in size, whereas a Helix Versioning Engine can store petabytes 
+of data.
+
+You can create multiple Git repositories from overlapping sets of files stored 
+in a Helix Versioning Engine. Commits from one Git repo are recreated in other 
+repositories that share those files. Continuous integration systems can run 
+directly against the Helix Versioning Engine to catch dependencies across Git 
+repositories, while allowing developers to work with smaller, high-performing 
+repositories.
+
 ### Requirements
 
 * Helix Git Fusion 2015.2, or newer.
 * Helix GitSwarm 2015.3, or newer.
+* Helix Versioning Engine (P4D) version 2015.1/1171507, or newer.
 
 ### Recommendations
 
 * Install GitSwarm and Git Fusion on separate machines to improve
   performance and scalability. GitSwarm 2015.3+ installs with a local
   Helix Versioning Engine and a local Git Fusion server, all pre-configured
-  to allow you to easily try out the system. In production, we recommend disabling
-  the local Git Fusion, and using an external one. [Check out the docs on the
-  auto-provisioned Git Fusion](../../install/auto_provision.md))
+  to allow you to easily try out the system. In production, we recommend
+  disabling the local Git Fusion, and using an external one. [Check out the
+  docs on the auto-provisioned Git Fusion](../../install/auto_provision.md))
 
 * Use SSH or HTTPS connections to secure the mirroring connections.
   SSH connections are faster and more secure. We recommend against using
@@ -47,15 +70,15 @@ convention-based repository settings.
 ```ruby
 gitswarm['git-fusion']['global']['user']      = 'global-user'
 gitswarm['git-fusion']['global']['password']  = '<password for "global-user" user>'
-gitswarm['git-fusion']['default']['url']      = 'http://gitswarm@gitfusion.host/'
-gitswarm['git-fusion']['default']['password'] = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['local']['url']      = 'http://gitswarm@gitfusion.host/'
+gitswarm['git-fusion']['local']['password'] = '<password for "gitswarm" user>'
 gitswarm['git-fusion']['development']['url']  = 'http://dev-gitfusion.host/'
 gitswarm['git-fusion']['production']['url']   = 'http://prod-gitfusion.host/'
 ```
 
-In the above example, the user `global-user` will be used to log in to the `development`
-and `production` Git Fusion servers. The user for the `default` Git Fusion server
-will remain as `gitswarm`.
+In the above example, the user `global-user` will be used to log in to the
+`development` and `production` Git Fusion servers. The user for the `local` Git
+Fusion server will remain as `gitswarm`.
 
 Note: Only `user`, `password`, `git_config_params`, `perforce['user']`,
 `perforce['password']` and `auto_create` settings can have global defaults.
@@ -79,8 +102,8 @@ gitswarm['git-fusion']['my_entry']['url']      = 'http://gitswarm@gitfusion.host
 gitswarm['git-fusion']['my_entry']['password'] = '<password for "gitswarm" user>'
     ```
 
-    Note: The user (e.g. `gitswarm`) needs to exist in the Helix Versioning Engine
-    that the Git Fusion service uses, and must have permission to access
+    Note: The user (e.g. `gitswarm`) needs to exist in the Helix Versioning
+    Engine that the Git Fusion service uses, and must have permission to access
     the repositories you wish to import from.
 
     Note: `my_entry` is an example key that is used to configure the connection
@@ -88,8 +111,8 @@ gitswarm['git-fusion']['my_entry']['password'] = '<password for "gitswarm" user>
     to other Git Fusion servers under other uniquely-named keys.
 
     ```ruby
-gitswarm['git-fusion']['default']['url']        = 'http://gitswarm@gitfusion.host/'
-gitswarm['git-fusion']['default']['password']   = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['local']['url']        = 'http://gitswarm@gitfusion.host/'
+gitswarm['git-fusion']['local']['password']   = '<password for "gitswarm" user>'
 gitswarm['git-fusion']['other']['url']          = 'http://other-user@other-gitfusin.host/'
 gitswarm['git-fusion']['other']['password']     = '<password for "other-user" user>'
     ```
@@ -103,7 +126,8 @@ gitswarm['git-fusion']['other']['password']     = '<password for "other-user" us
 gitswarm['git-fusion']['my_entry']['git_config_params'] = 'http.sslVerify=false'
     ```
 
-    Note: the key 'my_entry' can be replaced with a unique value of your choosing.
+    Note: the key 'my_entry' can be replaced with a unique value of your
+    choosing.
 
 1.  **Make the configuration change active:**
 
@@ -145,8 +169,9 @@ sudo cat ~git/.ssh/id_rsa.pub
     SSH](http://www.perforce.com/perforce/r15.1/manuals/git-fusion/appendix.ssh.html).
 
     Note: When installing the public key on the Git Fusion service,
-    a system user needs to exist (we recommend `gitswarm`), and the
-    public key needs to be installed in Git Fusion/p4d for that user.
+    a standard user with read/write access to the `//.git-fusion` depot needs to
+    exist (we recommend `gitswarm`). The public key needs to be installed in
+    Git Fusion/P4D for that user.
 
 #### Convention-based Repository Configuration
 
@@ -194,6 +219,7 @@ Note: The `my_entry` key is used to assign config values to a particular
 git-fusion instance. You can include more configured servers under other
 keys.
 
+##### Auto-Create Configuration
 GitSwarm generates a Git Fusion configuration and unique depot path
 for each new project that has convention-based mirroring enabled. It
 constructs these by substituting the GitSwarm project's namespace and
@@ -213,9 +239,26 @@ in the above example) must exist *prior* to attempting to
 use the convention-based repository feature. GitSwarm does
 *not* create this depot for you.
 
+#### Sample Configuration
+
+The following is a sample configuration for GitSwarm, including Helix Versioning
+Engine integration, and auto-create settings:
+
+```
+gitswarm['git-fusion']['enabled']                                       = true
+gitswarm['git-fusion']['my_entry']['url']                               = 'git@gitfusion.host'
+gitswarm['git-fusion']['my_entry']['user']                              = '<perforce-user-id>'
+gitswarm['git-fusion']['my_entry']['password']                          = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['my_entry']['perforce']['port']                  = 'ssl:my-fusion:1666'
+gitswarm['git-fusion']['my_entry']['auto_create']['path_template']      = '//gitswarm/projects/{namespace}/{project-path}'
+gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitswarm-{namespace}-{project-path}'
+
+```
+
 ### New GitSwarm Project with Convention-based Mirroring
 
 1.  Sign in to your GitSwarm instance and go to your dashboard.
+
 1.  Click "New Project".
 
 1.  Click the "Git Fusion Server" drop-down menu to select an available
@@ -236,13 +279,15 @@ use the convention-based repository feature. GitSwarm does
 ### Importing a Git Fusion Repository
 
 1.  Sign in to your GitSwarm instance and go to your dashboard.
+
 1.  Click "New Project".
 
 1.  Click the "Helix Git Fusion Server" drop-down menu to select an available
     Git Fusion Server to import from.
 
-1.  Click the "Repository" drop-down menu under the "Mirror an existing repository"
-    option and select an available Git Fusion repository to import.
+1.  Click the "Repository" drop-down menu under the "Mirror an
+    existing repository" option and select an available Git Fusion repository to
+    import.
 
     ![Select repository to import](gitfusion_importer/choose_repo.png)
 
@@ -254,17 +299,115 @@ use the convention-based repository feature. GitSwarm does
 
     ![Import in progress](gitfusion_importer/import_in_progress.png)
 
+### Enabling Mirroring on an Existing GitSwarm Project
+
+#### Requirements
+
+* You must have at least one Git Fusion entry configured for convention-based
+  mirroring.
+  See [this section](#convention-based-repository-configuration) for details.
+
+* Your GitSwarm user account must either be an admin account, or you must have
+  at least master-level permissions for the project on which you are attempting
+  to enable mirroring.
+
+* The project cannot already be mirrored in Git Fusion.
+
+* There must not be any content in Helix where the to-be mirrored project's
+  files are to be stored. GitSwarm checks for this before attempting to mirror
+  the project.
+
+* There must not be a Git Fusion configuration file (```p4gf_config```) for the
+  current namespace/project path combination. GitSwarm checks for this
+  before attempting to mirror the project.
+
+#### How to Enable Mirroring on an Existing GitSwarm Project
+
+1.  **Sign in to your GitSwarm instance**
+
+    You must be an admin, or have at least master rights to the project for
+    which you want to enable mirroring.
+
+1.  **From the Dashboard, click "Your Projects" or "Explore Projects"**
+
+1.  **Click on the project you wish to mirror**
+
+1.  **Click the "Mirror in Helix" button on the project details page**
+
+    If the button is greyed out, mousing over it gives a hint as to what is
+    wrong and how to fix it.
+
+    ![Mirror in Helix button](gitfusion_importer/mirror_in_helix_button.png)
+
+1.  **Select the Git Fusion server to which you wish to mirror your project**
+
+    All configured Git Fusion servers are selectable, but only servers that
+    support convention-based mirroring enable the "Launch Mirroring" button.
+
+    ![Mirror in Helix](gitfusion_importer/mirror_in_helix.png)
+
+    If you have selected a server for which there is a problem (e.g. that
+    particular server does not have auto-create enabled, or has an incorrect
+    username/password), GitSwarm reports that this is the case, describes
+    what the problem is, and suggests how to fix it. For example:
+
+    ![Mirror in Helix Issue](gitfusion_importer/mirror_in_helix_misconfigured.png)
+
+1.  **Clicking the "Launch Mirroring" button**
+
+    This starts the mirroring process. Assuming there are no configuration
+    errors, GitSwarm attempts to:
+      * Create an associated repository in Git Fusion
+      * Mark the GitSwarm project as mirrored in Git Fusion
+      * Perform an initial push (backgrounded) of the GitSwarm project to Git
+        Fusion
+
+    If any errors occur during the above process, GitSwarm takes you back to the
+    Mirror in Helix page, and report the error. See below for potential error
+    messages, what they mean and how to fix them.
+
+#### Error Messages
+
+* **GitSwarm's Helix Git Fusion integration is disabled.**
+
+    Getting this error message means that Git Fusion integration is currently
+    disabled for your GitSwarm instance. You will need to get an admin to
+    [enable it](#configuration) for the Git Fusion servers against which you
+    wish to enable mirroring.
+
+* **GitSwarm's Helix Git Fusion integration is enabled, however no Git
+  Fusion instances have been configured.**
+
+    In order to mirror an existing GitSwarm project, you must not only have Git
+    Fusion enabled, but you must have at least one Git Fusion server instance
+    configured. Please see [this section](#configuration) for instructions on
+    configuring a Git Fusion instance.
+
+* **None of the Helix Git Fusion instances GitSwarm knows about are configured
+  for 'auto create'.**
+
+    When mirroring an existing GitSwarm project in Git Fusion, GitSwarm must be
+    configured to be able to create a Git Fusion repository definition. To do
+    this, GitSwarm relies on the ```auto_create``` section of the Git Fusion
+    configuration. Please see
+    [this section](#auto-create-configuration) for instructions on configuring
+    auto create.
+
+* **GitSwarm is configured for Helix mirroring, but you lack permissions to
+  enable it for this project.**
+
+    Enabling mirroring on an existing GitSwarm project requires permissions to
+    edit that project. This means your GitSwarm user account either needs to
+    be an administrator account, or at least master-level permissions for the
+    project on which you wish to enable mirroring.
+
 ### Known Issues
 
-* Currently you cannot add mirroring to GitSwarm projects that are created as
-  `non-mirrored` projects. This ability should be added in a future GitSwarm
-  release.
-
-* Git Fusion, when installed on CentOS 7 or RHEL 7, does not support
+* Git Fusion, when installed on CentOS 7, does not support
   HTTP(S) authentication. This issue prevents pushing new work to a
   Git Fusion repo, including any updates in GitSwarm that would be
   mirrored to Git Fusion. Instead, use SSH connections when Git Fusion
-  is hosted on CentOS/RHEL 7.
+  is hosted on CentOS 7.
 
 * GitSwarm project names can only contain letters, numbers, underscores,
   periods, and dashes, and must begin with a letter, number,

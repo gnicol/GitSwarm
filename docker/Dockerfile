@@ -25,12 +25,17 @@ RUN mkdir -p /opt/gitlab/sv/sshd/supervise \
     && ln -s /opt/gitlab/sv/sshd /opt/gitlab/service \
     && mkdir -p /var/run/sshd
 
+# Disabling use DNS in ssh since it tends to slow connecting
+RUN echo "UseDNS no" >> /etc/ssh/sshd_config
+
 # Prepare default configuration
 RUN ( \
   echo "" && \
   echo "# Docker options" && \
   echo "# Prevent Postgres from trying to allocate 25% of total memory" && \
-  echo "postgresql['shared_buffers'] = '1MB'" ) >> /etc/gitlab/gitlab.rb
+  echo "postgresql['shared_buffers'] = '1MB'" ) >> /etc/gitlab/gitlab.rb && \
+  mkdir -p /assets/ && \
+  cp /etc/gitlab/gitlab.rb /assets/gitlab.rb
 
 # Expose web & ssh
 EXPOSE 443 80 22

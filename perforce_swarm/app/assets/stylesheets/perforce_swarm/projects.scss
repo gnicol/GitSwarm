@@ -58,6 +58,7 @@
 
 .git-fusion-import .select2-container {
   width: auto !important;
+  max-width: 100% !important;
 }
 
 .git-fusion-import .git-fusion-radios {
@@ -80,4 +81,22 @@
 
 .git-fusion-import .option-descr {
   color: #555;
+}
+
+// mirror existing project
+span.mirror-button-wrapper {
+  display: inline-block;
+}
+
+.git-fusion-mirroring-data {
+  margin-top: 10px;
+}
+
+.mirroring-enable.form-actions {
+  padding-left: 0px;
+}
+
+.mirroring-depot-path span.depot-path {
+  // although not dangerous, use this to get the red color for the displayed depot path
+  color: $brand-danger;
 }

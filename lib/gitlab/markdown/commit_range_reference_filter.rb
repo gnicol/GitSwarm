@@ -1,3 +1,5 @@
+require 'gitlab/markdown'
+
 module Gitlab
   module Markdown
     # HTML filter that replaces commit range references with links.
@@ -57,10 +59,11 @@ module Gitlab
 
             title = range.reference_title
             klass = reference_class(:commit_range)
+            data  = data_attribute(project.id)
 
             project_ref += '@' if project_ref
 
-            %(<a href="#{url}"
+            %(<a href="#{url}" #{data}
                  title="#{title}"
                  class="#{klass}">#{project_ref}#{range}</a>)
           else
@@ -70,7 +73,7 @@ module Gitlab
       end
 
       def url_for_commit_range(project, range)
-        h = Rails.application.routes.url_helpers
+        h = Gitlab::Application.routes.url_helpers
         h.namespace_project_compare_url(project.namespace, project,
                                         range.to_param.merge(only_path: context[:only_path]))
       end

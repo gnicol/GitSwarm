@@ -10,7 +10,6 @@ class @Notes
 
   constructor: (notes_url, note_ids, last_fetched_at, view) ->
     @notes_url = notes_url
-    @notes_url = gon.relative_url_root + @notes_url if gon.relative_url_root?
     @note_ids = note_ids
     @last_fetched_at = last_fetched_at
     @view = view
@@ -123,7 +122,9 @@ class @Notes
     # or skip if rendered
     if @isNewNote(note)
       @note_ids.push(note.id)
-      $('ul.main-notes-list').append(note.html)
+      $('ul.main-notes-list').
+        append(note.html).
+        syntaxHighlight()
       @initTaskList()
 
   ###
@@ -298,7 +299,7 @@ class @Notes
     note.find(".note-header").hide()
     base_form = note.find(".note-edit-form")
     form = base_form.clone().insertAfter(base_form)
-    form.addClass('current-note-edit-form')
+    form.addClass('current-note-edit-form gfm-form')
     form.find('.div-dropzone').remove()
 
     # Show the attachment delete link

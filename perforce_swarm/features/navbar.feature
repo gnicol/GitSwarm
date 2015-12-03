@@ -57,7 +57,7 @@ Feature: NavBar
     Given I visit the public projects area
     When I click on the Swarm icon
     Then I should see the Dashboard page with no projects
-    And the title of the dropdown should be "Dashboard"
+    And the title of the dropdown should be "Projects"
 
   @javascript @automated @PGL-123
   Scenario: Click on a project on the Dashboard dropdown and verify that user is taken to the project page
@@ -76,7 +76,8 @@ Feature: NavBar
 
   @javascript @automated @PGL-123
   Scenario: Click on "View All Projects" on Dashboard dropdown and verify that user is taken to "Public Projects" page
-    Given I click on the Recent Projects dropdown
+    Given I own project "Forum"
+    And I click on the Recent Projects dropdown
     And I click on "View All Projects" link
     Then I should see the "All Projects" page
     And the title of the dropdown should be "Explore"
@@ -201,7 +202,8 @@ Feature: NavBar
 
   @javascript @automated @PGL-123
   Scenario: Click on "View All Projects" on Search dropdown and verify that user is taken to "Public Projects" page
-    Given I visit dashboard search page
+    Given I own project "Forum"
+    And I visit dashboard search page
     And I click on the Recent Projects dropdown
     When I click on "View All Projects" link
     Then I should see the "All Projects" page
@@ -235,7 +237,8 @@ Feature: NavBar
 
   @javascript @automated @PGL-123
   Scenario: Click on "View All Projects" on Admin dropdown and verify that admin is taken to "Public Projects" page
-    Given I logout
+    Given I own project "PerforceProject"
+    And I logout
     Then I should see the login page
     When I sign in as an admin
     And I visit admin page

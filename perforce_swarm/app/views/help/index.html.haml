@@ -30,7 +30,7 @@
         - override_doc_dir = PerforceSwarm.ee? ? 'doc-ee' : 'doc-ce'
         - readme_text = File.read(Rails.root.join("perforce_swarm", override_doc_dir, "README.md"))
         - text = readme_text.dup
-        - readme_text.scan(/\]\(([^)]+)\)/) { |match| text.gsub!(match.first, "/help/#{match.first}") }
+        - readme_text.scan(/\]\(([^(]+)\)/) { |match| text.gsub!(match.first, "help/#{match.first}") }
         = markdown text
 
   .col-md-4

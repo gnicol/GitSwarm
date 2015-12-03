@@ -31,13 +31,19 @@ describe 'New Mirrored Project', browser: true do
       create_file(git_dir, @git_filename)
       LOG.debug 'Creating file in git : ' + @git_filename
       @git.add_commit_push(commit_message)
-      sleep(2) # some time to let the file get into perforce
     end
 
     it 'gets pushed into Perforce with the commit message and email' do
       @p4.connect_and_sync
       p4_file_from_git = p4_dir + '/' + @git_filename
-      expect(File.exist?(p4_file_from_git)).to be true
+      # Verify file exists in P4
+      p4_file_exists = run_block_with_retry(12, 5) do
+        @p4.sync
+        File.exist?(p4_file_from_git)
+      end
+      LOG.log('File added to git exists in Perforce after we mirror? = ' + p4_file_exists.to_s)
+      expect(p4_file_exists).to be true
+
       output = @p4.last_commit_message(p4_file_from_git)
       LOG.debug('Changelist in perforce is : '+output.to_s)
       changelist_description = output.fetch('desc')
@@ -214,7 +220,7 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
-  def create_user
+ def create_user
     GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
                           CONFIG.get('gitswarm_username'),
                           CONFIG.get('gitswarm_password')

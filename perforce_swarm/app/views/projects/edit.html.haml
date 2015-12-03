@@ -15,12 +15,13 @@
                 Project name
               .col-sm-10
                 = f.text_field :name, placeholder: "Example Project", class: "form-control", id: "project_name_edit"
-
+            -# gitswarm changes start
             .form-group.project_name_holder
               = f.label :name, class: 'control-label' do
                 Helix Git Fusion Mirroring
               .col-sm-10
                 - helix_mirroring_button(@project, current_user)
+            -# gitswarm changes end
 
             .form-group
               = f.label :description, class: 'control-label' do

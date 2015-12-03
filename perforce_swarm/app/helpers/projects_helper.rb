@@ -23,10 +23,6 @@ module ProjectsHelper
     end
   end
 
-  def mirrored?(project)
-    project.git_fusion_repo.present?
-  end
-
   def mirroring_errors(project, user)
     # Git Fusion integration is explicitly disabled
     tooltip = <<-EOM
@@ -50,7 +46,7 @@ module ProjectsHelper
     return tooltip.html_safe if git_fusion_server_error
 
     # this project is already mirrored
-    return '' if mirrored?(project)
+    return '' if project.git_fusion_mirrored?
 
     # no Git Fusion config entries have auto create enabled, or it is mis-configured
     tooltip = <<-EOM

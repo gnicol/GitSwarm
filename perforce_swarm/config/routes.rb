@@ -3,13 +3,15 @@ Rails.application.routes.draw do
     get 'user/recent_projects' => 'application#load_user_projects'
   end
 
-  project_routes = [:configure_mirroring, :enable_mirroring, :disable_git_fusion_mirroring]
+  project_routes = [:configure_git_fusion_mirroring,
+                    :enable_git_fusion_mirroring,
+                    :disable_git_fusion_mirroring]
   resources :namespaces, path: '/', constraints: { id: /[a-zA-Z.0-9_\-]+/ }, only: [] do
     resources(:projects, constraints: { id: /[a-zA-Z.0-9_\-]+(?<!\.atom)/ }, only:
                            project_routes, path: '/') do
       member do
-        get :configure_mirroring
-        post :enable_mirroring
+        get :configure_git_fusion_mirroring
+        post :enable_git_fusion_mirroring
         post :disable_git_fusion_mirroring
       end
     end

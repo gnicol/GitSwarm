@@ -2,7 +2,7 @@ require Rails.root.join('app', 'controllers', 'projects_controller')
 
 module PerforceSwarm
   module ProjectsControllerExtension
-    def configure_mirroring
+    def configure_git_fusion_mirroring
       # if the project is already mirrored, redirect back to the project page with a flash message
       if @project.git_fusion_mirrored?
         redirect_to(
@@ -16,7 +16,7 @@ module PerforceSwarm
     end
 
     # actually performs the task of mirroring on the specified project and repo server
-    def enable_mirroring
+    def enable_git_fusion_mirroring
       fail 'No project specified.' unless @project
       fail 'Project is already mirrored in Helix.' if @project.git_fusion_mirrored?
 
@@ -40,9 +40,9 @@ module PerforceSwarm
         exec Shellwords.shelljoin([mirror_script, 'push', @project.path_with_namespace + '.git'])
       end
       Process.detach(push_job)
-      redirect_to(project_path(@project), notice: 'Mirroring successful!')
+      redirect_to(project_path(@project), notice: 'Helix mirroring successful!')
     rescue => e
-      # any errors occurring in the above are shown on the configure_mirroring page, but if we've
+      # any errors occurring in the above are shown on the configure mirroring page, but if we've
       # gotten as far as mirroring, this will cause a double redirect, so we hit the project details page instead
       redirect_location = @project && @project.git_fusion_mirrored? ? project_path(@project) : :back
       redirect_to(redirect_location, alert: e.message)
@@ -51,10 +51,9 @@ module PerforceSwarm
     def disable_git_fusion_mirroring
       fail 'No project specified.' unless @project
 
-      # disable mirroring in GitSwarm, remove the mirror remote, and redirect to project details page
-      @project.disable_git_fusion_mirroring
-      PerforceSwarm::Repo.new(@project.repository.path_to_repo).mirror_url = nil
-      redirect_to(project_path(@project), notice: 'Mirroring successfully disabled!')
+      # disable mirroring in GitSwarm, and redirect to project details page
+      @project.disable_git_fusion_mirroring!
+      redirect_to(project_path(@project), notice: 'Helix mirroring successfully disabled!')
     rescue => e
       redirect_to(project_path(@project), alert: e.message)
     end

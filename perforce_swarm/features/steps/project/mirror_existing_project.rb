@@ -83,7 +83,7 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'I should be on the Mirror in Helix page for the "Shop" project' do
     project = Project.find_by(name: 'Shop')
-    expect(page.current_path).to eq(configure_mirroring_namespace_project_path(project.namespace, project))
+    expect(page.current_path).to eq(configure_git_fusion_mirroring_namespace_project_path(project.namespace, project))
   end
 
   step 'The Git Fusion repo selected by default is the first one that has auto_create enabled' do

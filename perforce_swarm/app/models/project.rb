@@ -11,8 +11,10 @@ module PerforceSwarm
       git_fusion_repo.present? && git_fusion_mirrored
     end
 
-    def disable_git_fusion_mirroring
+    def disable_git_fusion_mirroring!
       update_attribute(:git_fusion_mirrored, false)
+      # remove the mirror remote, which will turn off mirroring in gitlab-shell
+      PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = nil
     end
 
     def create_repository

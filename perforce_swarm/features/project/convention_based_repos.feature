@@ -100,3 +100,4 @@ Feature: Convention Based Repos
     And I select the default Git Fusion server
     Then I should see a populated Git Fusion server dropdown
     And I should see a clickable convention-based mirroring radio button
+    And I should see the correct P4D depot path for convention-based mirroring

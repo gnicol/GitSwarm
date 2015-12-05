@@ -1,28 +1,14 @@
+require_relative '../shared/mirroring'
+
 class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   include SharedPaths
   include SharedAuthentication
-
-  def configify(config_hash)
-    PerforceSwarm::GitFusion::Config.new(config_hash)
-  end
-
-  def default_config
-    entry = default_entry
-    entry['id'] = nil
-    configify('enabled' => true, 'default' => entry)
-  end
-
-  def default_entry
-    { id:      'default',
-      url: 'http://user@foo',
-      password: 'bar',
-      git_config_params: 'http.sslVerify=false'
-    }.stringify_keys
-  end
+  include SharedProject
+  include SharedMirroring
 
   step 'I select the default Git Fusion server' do
-    default_server = find_by_id('git_fusion_entry').find('option[value="default"]').text
-    select default_server, 'from' => 'git_fusion_entry'
+    default_server = find_by_id('git_fusion_entry').find('option[value="local"]').text
+    select(default_server, from: 'git_fusion_entry')
   end
 
   step 'Git Fusion returns a list containing repos without convention-based mirroring' do
@@ -84,7 +70,7 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
 
   step 'The Git Fusion config block has a malformed URL' do
     PerforceSwarm::GitlabConfig.any_instance.stub(
-        git_fusion: configify('enabled' => true, 'default' => { 'url' => 'invalid' })
+        git_fusion: configify('enabled' => true, 'local' => { 'url' => 'invalid' })
     )
   end
 
@@ -98,31 +84,57 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   end
 
   step 'Git Fusion is enabled but is otherwise not configured' do
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify('enabled' => true, 'default' => {}))
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify('enabled' => true, 'local' => {}))
   end
 
   step 'Git Fusion returns a list containing repos' do
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
-    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
+    config = default_config.dup
+    config['no_auto_create2']      = { id:  'no_auto_create2',
+                                       url: 'http://user@whatever2',
+                                       password: 'foo2'
+                                     }.stringify_keys
+    config['local']['auto_create'] = { 'path_template' => '//gitswarm/projects/{namespace}/{project-path}',
+                                       'repo_name_template' => '{namespace}-{project-path}'
+                                     }
+    config['local']['perforce']    = { 'port' => 'ssl:whatever:1666' }
+    config['no_auto_create']       = { id:  'no_auto_create',
+                                       url: 'http://user@whatever',
+                                       password: 'foo'
+                                     }.stringify_keys
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+    PerforceSwarm::P4::Connection.any_instance.stub(login: true)
+    allow(PerforceSwarm::P4::Spec::Depot).to receive(:exists?).and_return(true)
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('local' => '')
   end
+
   step 'I should see a Git Fusion is disabled message' do
-    page.should have_content 'This Helix GitSwarm instance is not pointing to any Helix Git Fusion servers.'
+    expect(page).to(
+        have_content('This Helix GitSwarm instance is not pointing to any Helix Git Fusion servers.')
+    )
   end
 
   step 'I should see a Git Fusion Configuration Error' do
-    page.should have_content 'Configuration Error:'
+    expect(page).to(
+        have_content('Configuration Error:')
+    )
   end
 
   step 'I should see a Git Fusion Communication Error' do
-    page.should have_content 'There was an error communicating with Helix Git Fusion:'
+    expect(page).to(
+        have_content('There was an error communicating with Helix Git Fusion:')
+    )
   end
 
   step 'I should see a message saying Git Fusion has no repos available for import' do
-    page.should have_content 'Although Helix Git Fusion is configured, there are no repositories available for import.'
+    expect(page).to(
+        have_content('Although Helix Git Fusion is configured, there are no repositories available for import.')
+    )
   end
 
   step 'I should see a populated Git Fusion server dropdown' do
-    page.should have_select('git_fusion_entry', with_options: [default_entry['url']])
+    expect(page).to(
+        have_select('git_fusion_entry', with_options: [default_entry['url']])
+    )
   end
 
   step 'I choose to import an existing repo' do
@@ -130,10 +142,21 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   end
 
   step 'I should see a populated Git Fusion repo dropdown' do
-    page.should have_select('git_fusion_repo_name', with_options: %w(RepoA RepoB))
+    expect(page).to(
+        have_select('git_fusion_repo_name', with_options: %w(RepoA RepoB))
+    )
   end
 
   step 'I should not see a Git Fusion repo dropdown' do
-    page.should_not have_selector 'select#git_fusion_repo_name'
+    expect(page).to(
+        have_no_selector('select#git_fusion_repo_name')
+    )
+  end
+
+  step 'I should see the correct P4D depot path for convention-based mirroring' do
+    expect(page).to(have_selector('code.auto-create-path'))
+    expect(page.find(:code, '.auto-create-path')).to(
+        have_content('//gitswarm/projects/{namespace}/{project-path}/...')
+    )
   end
 end

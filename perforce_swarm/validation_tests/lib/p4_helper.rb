@@ -11,9 +11,9 @@ class P4Helper
   def initialize(p4port, user, password, local_dir, depot_path)
     # Pointing the p4 environment variables to tmp-clients directory
     p4_home = tmp_client_dir
-    ENV['P4ENVIRO']  = File.join(p4_home, '.p4enviro')
+    ENV['P4ENVIRO'] = File.join(p4_home, '.p4enviro')
     ENV['P4TICKETS'] = File.join(p4_home, '.p4tickets')
-    ENV['P4TRUST']   = File.join(p4_home, '.p4trust')
+    ENV['P4TRUST'] = File.join(p4_home, '.p4trust')
 
     @user = user
     @password = password
@@ -26,7 +26,7 @@ class P4Helper
     @client_name = Time.new.strftime('%y%m%d-%H%M%S%L')
   end
 
-  def connect_and_sync
+  def connect
     LOG.debug 'Connecting to ' + @p4.port
     @p4.client = @client_name
     @p4.connect
@@ -41,11 +41,16 @@ class P4Helper
     LOG.debug 'unicode = ' + @p4.server_unicode?.inspect
     @p4.charset='utf8' if @p4.server_unicode?
 
+    LOG.debug 'Logging in p4 user ' + @p4.user
     @p4.run_login
-    spec = p4.fetch_client
+    spec = @p4.fetch_client
     spec['Root'] = @local_dir
     spec['View'] = [@depot_path + ' //'+client_name+'/...']
     @p4.save_client(spec)
+  end
+
+  def connect_and_sync
+    connect
     sync
   end
 
@@ -75,9 +80,73 @@ class P4Helper
 
   def disconnect
     LOG.debug 'Disconnecting from p4d'
-    @p4.run_client('-d', client_name)
-    @p4.run_logout
+    if @p4 && @p4.connected?
+      @p4.run_client('-d', client_name)
+      @p4.run_logout
+      @p4.disconnect
+    end
     @p4.run_trust('-d') if @p4.port.start_with?('ssl')
-    @p4.disconnect
+  end
+
+  def create_user(username, password, email)
+    LOG.debug("Creating user #{username}")
+    spec = @p4.fetch_user(username)
+    spec['Email'] = email
+    @p4.input = spec
+    @p4.run_user('-i', '-f')
+
+    @p4.input = password
+    @p4.run_passwd(username)
+  end
+
+  def delete_user(username)
+    LOG.debug("Deleting user #{username}")
+    @p4.run_user('-d', '-f', username)
+  end
+
+  def add_read_protects(user, depot_path)
+    add_protection('read', user, depot_path)
+  end
+
+  def add_write_protects(user, depot_path)
+    add_protection('write', user, depot_path)
+  end
+
+  def remove_protects(user)
+    spec = @p4.fetch_protect
+    # LOG.debug('Existing protects are:')
+    # LOG.debug(spec.inspect)
+    spec['Protections'].delete_if { |line| line.split[2]==user }
+    # LOG.debug('Protects are now:')
+    # LOG.debug(spec.inspect)
+    @p4.save_protect(spec)
+  end
+
+  # To get the current state of protects that can be later set
+  def protects
+    spec = @p4.fetch_protect
+    LOG.debug('Existing protects are:')
+    LOG.debug(spec.inspect)
+    spec
+  end
+
+  # To set the entire state of protects
+  def protects=(spec)
+    LOG.debug('Protects are now:')
+    LOG.debug(spec.inspect)
+    @p4.save_protect(spec)
+  end
+
+  private
+
+  def add_protection(level, user, depot_path)
+    LOG.debug("Adding #{level} protects for #{user} to #{depot_path}")
+    spec = @p4.fetch_protect
+    # LOG.debug('Existing protects are:')
+    # LOG.debug(spec.inspect)
+    spec['Protections'].unshift("#{level} user #{user} * #{depot_path}")
+    # LOG.debug('Protects are now:')
+    # LOG.debug(spec.inspect)
+    @p4.save_protect(spec)
   end
 end

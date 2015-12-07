@@ -1,8 +1,9 @@
 require_relative '../page'
 
 class LoggedInPage < Page
-  def initialize(driver)
+  def initialize(driver, url = nil)
     super(driver)
+    goto(url) if url
     # deliberately doesn't verify - leave that for sub-classes to call
   end
 

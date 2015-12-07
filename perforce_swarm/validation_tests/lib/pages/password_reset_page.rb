@@ -2,8 +2,9 @@ require_relative 'logged_in_page'
 require_relative '../page'
 
 class PasswordResetPage < LoggedInPage
-  def initialize(driver)
+  def initialize(driver, url = nil)
     super(driver)
+    goto(url) if url
     verify
   end
 

@@ -36,16 +36,16 @@ class LoginPage < Page
     LoggedInPage.new(@driver)
   end
 
-  def click_login_expecting_password_reset
+  def click_login_expecting_password_reset(user, password, url = nil)
     # click login, then return a page for the password reset page
-    click_login
-    PasswordResetPage.new(@driver)
+    login(user, password)
+    PasswordResetPage.new(@driver, url)
   end
 
-  def click_login_expecting_dashboard
+  def click_login_expecting_dashboard(user, password, url = nil)
     # click login, then return a page for the dashboard
-    click_login
-    LoggedInPage.new(@driver)
+    login(user, password)
+    LoggedInPage.new(@driver, url)
   end
 
   private

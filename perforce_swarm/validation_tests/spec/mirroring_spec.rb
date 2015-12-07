@@ -220,7 +220,7 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
- def create_user
+  def create_user
     GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
                           CONFIG.get('gitswarm_username'),
                           CONFIG.get('gitswarm_password')

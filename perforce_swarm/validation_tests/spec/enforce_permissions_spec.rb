@@ -63,8 +63,8 @@ describe 'EnforcePermissionsTests', browser: false do
     LOG.log('Setting up users and protections')
     @p4_admin.remove_protects('*')
     @p4_admin.create_user(@low_user, @default_password, @low_user_email)
-    [ {:name=>@standard_user_a, :email=>@standard_user_a_email},
-      {:name=>@standard_user_b, :email=>@standard_user_b_email} ].each do | usr |
+    [{ name: @standard_user_a, email: @standard_user_a_email },
+     { name: @standard_user_b, email: @standard_user_b_email }].each do | usr |
       # create user
       @p4_admin.create_user(usr[:name], @default_password, usr[:email])
       # read_all_write_all
@@ -74,7 +74,7 @@ describe 'EnforcePermissionsTests', browser: false do
       @p4_admin.add_write_protects(usr[:name], @depot_root+"/#{@run_id}/"+@read_all_write_partial+public_dir+'/...')
       # read_all_write_none
       @p4_admin.add_read_protects(usr[:name], @depot_root+"/#{@run_id}/"+@read_all_write_none+'/...')
-      #read_partial
+      # read_partial
       @p4_admin.add_read_protects(usr[:name], @depot_root+"/#{@run_id}/"+@read_partial+public_dir+'/...')
     end
   end

@@ -11,6 +11,7 @@ class CreateProjectPage < LoggedInPage
     super(driver)
     @repo_selector = 's2id_git_fusion_repo_name'
     @server_selector = 's2id_git_fusion_entry'
+    @namespace_selector = 's2id_project_namespace_id'
     wait_for_gf_options_to_load
     verify
   end
@@ -33,6 +34,18 @@ class CreateProjectPage < LoggedInPage
     field = @driver.find_element(:id, 'project_path')
     field.clear
     field.send_keys(name)
+  end
+
+  def namespace(namespace)
+    select2_select(@namespace_selector, namespace)
+  end
+
+  def namespaces
+    select2_options(@namespace_selector)
+  end
+
+  def selected_namespace
+    select2_selected(@namespace_selector)
   end
 
   def create_project_and_wait_for_clone

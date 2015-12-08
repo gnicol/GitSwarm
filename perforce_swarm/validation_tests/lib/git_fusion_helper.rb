@@ -7,6 +7,7 @@ class GitFusionHelper
     @p4port = p4port
   end
 
+  # depot_path should not include trailing /...
   def make_new_gf_repo(gf_repo_name, depot_path)
     LOG.log("Making new gf repo #{gf_repo_name} at #{@p4port}")
     local_workspace =  Dir.mktmpdir

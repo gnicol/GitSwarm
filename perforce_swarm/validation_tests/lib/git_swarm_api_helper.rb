@@ -46,12 +46,19 @@ class GitSwarmAPIHelper
                     path: group
   end
 
-  def add_user_to_group(user, group)
+  # Access levels are as follows
+  # GUEST     = 10
+  # REPORTER  = 20
+  # DEVELOPER = 30
+  # MASTER    = 40
+  # OWNER     = 50
+  # Default access level is MASTER
+  def add_user_to_group(user, group, access_level = '40')
     LOG.debug 'Adding user ' + user + ' to group ' + group
     RestClient.post @base_url+'groups/'+get_group_id(group)+'/members',
                     private_token: @admin_token,
                     user_id: get_user_id(user),
-                    access_level: '40'
+                    access_level: access_level
   end
 
   def create_project(project, user_or_group)

@@ -82,10 +82,10 @@ class P4Helper
     LOG.debug 'Disconnecting from p4d'
     if @p4 && @p4.connected?
       @p4.run_client('-d', client_name)
+      @p4.run_trust('-d') if @p4.port.start_with?('ssl')
       @p4.run_logout
       @p4.disconnect
     end
-    @p4.run_trust('-d') if @p4.port.start_with?('ssl')
   end
 
   def create_user(username, password, email)

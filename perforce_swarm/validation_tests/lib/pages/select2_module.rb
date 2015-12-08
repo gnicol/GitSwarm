@@ -15,13 +15,14 @@ module Select2Module
     text_values
   end
 
-  # Selects the provided option from a dropdown.  If option not present, raises error
+  # Selects the provided option from a dropdown (checked with 'starts_with?' for server names)
+  # If option not present, raises error
   # The id is a string like 's2id_git_fusion_entry'
   def select2_select(select2_id, option)
     @driver.find_element(:id, select2_id).find_element(:class, 'select2-choice').click
     elements = @driver.find_elements(:class, 'select2-result-selectable')
     elements.each do |x|
-      next unless x.text==option
+      next unless x.text.start_with?(option)
       x.click
       return
     end

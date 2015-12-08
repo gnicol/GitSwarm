@@ -19,3 +19,7 @@ git_binary : git
 
 # Logging level.  DEBUG, INFO
 log_level : INFO
+
+# For enforce permissions tests
+# secure_git_fusion            : secure-local
+# secure_git_fusion_depot_root : //depot/

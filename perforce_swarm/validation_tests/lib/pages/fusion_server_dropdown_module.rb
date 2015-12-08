@@ -1,7 +1,7 @@
 module FusionServerDropdownModule
   def server_names
     check_servers_exist
-    get_text_options_from_server_selector
+    text_options_from_server_selector
   end
 
   def select_server(server)
@@ -28,7 +28,7 @@ module FusionServerDropdownModule
   #
   # takes a 'dropdown' type element and extracts the options from it
   #
-  def get_text_options_from_server_selector
+  def text_options_from_server_selector
     server_selector.click
     container = @driver.find_elements(:class, 'select2-drop-active')[1]
     elements = container.find_elements(:class, 'select2-result-selectable')

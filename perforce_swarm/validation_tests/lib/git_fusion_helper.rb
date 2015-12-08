@@ -31,21 +31,20 @@ class GitFusionHelper
 
   def gf_config_contents(depot_path)
     # This could be enhanced in future if we need to change some settings in the config
-    [
-        '[@repo]',
-        'description = Repo created by GitSwarm test automation',
-        'enable-git-submodules = yes',
-        'enable-git-merge-commits = yes',
-        'enable-git-branch-creation = yes',
-        "depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}",
-        'depot-branch-creation-enable = all',
-        'change-owner = author',
-        'ignore-author-permissions = no',
-        'read-permission-check = yes',
-        '[master]',
-        "view = #{depot_path}/master/... ...",
-        'git-branch-name = master',
-        ''
+    ['[@repo]',
+     'description = Repo created by GitSwarm test automation',
+     'enable-git-submodules = yes',
+     'enable-git-merge-commits = yes',
+     'enable-git-branch-creation = yes',
+     "depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}",
+     'depot-branch-creation-enable = all',
+     'change-owner = author',
+     'ignore-author-permissions = no',
+     'read-permission-check = yes',
+     '[master]',
+     "view = #{depot_path}/master/... ...",
+     'git-branch-name = master',
+     ''
     ].join("\n")
   end
 end

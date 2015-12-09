@@ -36,7 +36,7 @@ class LoginPage < Page
     LoggedInPage.new(@driver)
   end
 
-  def click_login_expecting_password_reset(user, password, url = nil)
+  def click_login_with_password_reset(user, password, url = nil)
     # click login, then return a page for the password reset page
     login(user, password)
     PasswordResetPage.new(@driver, url)

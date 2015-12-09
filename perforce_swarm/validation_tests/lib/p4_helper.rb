@@ -89,7 +89,7 @@ class P4Helper
   end
 
   def create_user(username, password, email)
-    LOG.debug("Creating user #{username}")
+    LOG.debug("Creating p4 user #{username}")
     spec = @p4.fetch_user(username)
     spec['Email'] = email
     @p4.input = spec
@@ -99,9 +99,19 @@ class P4Helper
     @p4.run_passwd(username)
   end
 
+  def user_exists?(username)
+    @p4.at_exception_level(P4::RAISE_NONE) do
+      result = @p4.run_users(username)
+      return result.length>0
+    end
+    false
+  end
+
   def delete_user(username)
-    LOG.debug("Deleting user #{username}")
-    @p4.run_user('-d', '-f', username)
+    if user_exists?(username)
+      LOG.debug("Deleting p4 user #{username}")
+      @p4.run_user('-d', '-f', username)
+    end
   end
 
   def add_read_protects(user, depot_path)

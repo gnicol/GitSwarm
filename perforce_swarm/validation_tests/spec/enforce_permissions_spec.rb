@@ -7,6 +7,18 @@ describe 'EnforcePermissionsTests', browser: false do
   # before(:all) does the setup just once before the entire group
   # https://www.relishapp.com/rspec/rspec-core/v/2-2/docs/hooks/before-and-after-hooks
   before(:all) do
+    # local variables to control whether setup /teardown is performed.
+    # Allows us to do a single setup and reuse it for test development to save time
+    # You must change @run_id to a static variable if you skip setup
+    @setup = true
+    @teardown = true
+    @run_id = unique_string
+
+    LOG.log('Skipping setup due to setting') unless @setup
+    LOG.log("run_id for this run is #{@run_id}")
+    @default_password = 'Passw0rd'
+    @groupname = @run_id
+
     # These two config properties are required for these tests - fail immediately unless they are configured
     @secure_git_fusion = 'secure_git_fusion'
     @secure_git_fusion_depot_root = 'secure_git_fusion_depot_root'
@@ -16,9 +28,6 @@ describe 'EnforcePermissionsTests', browser: false do
     end
 
     @p4_admin_dir = Dir.mktmpdir
-    @run_id = unique_string
-    LOG.log("run_id for this run is #{@run_id}")
-    @default_password = 'Passw0rd'
 
     LOG.log 'p4 admin dir = ' + @p4_admin_dir
 
@@ -66,89 +75,104 @@ describe 'EnforcePermissionsTests', browser: false do
     LOG.log('Creating repo structure in p4')
     private_dir = '/master/private'
     public_dir = '/master/public'
-    @projects.each do |dir|
-      file = create_file("#{@p4_admin_dir}/#{@run_id}/#{dir}#{private_dir}", 'file.txt')
-      @p4_admin.add(file)
-      file = create_file("#{@p4_admin_dir}/#{@run_id}/#{dir}#{public_dir}", 'file.txt')
-      @p4_admin.add(file)
-    end
-    @p4_admin.submit
 
-    LOG.log('Creating Git Fusion repos')
+    if @setup
+      @projects.each do |dir|
+        file = create_file("#{@p4_admin_dir}/#{@run_id}/#{dir}#{private_dir}", 'file.txt')
+        @p4_admin.add(file)
+        file = create_file("#{@p4_admin_dir}/#{@run_id}/#{dir}#{public_dir}", 'file.txt')
+        @p4_admin.add(file)
+      end
+      @p4_admin.submit
+    end
+
+    LOG.log('Creating Git Fusion repos') if @setup
     @repo_names = [] # run-id specific repo names
     @projects.each do | proj |
       repo = "#{@run_id}_#{proj}"
       @repo_names << repo
-      @git_fusion_helper.make_new_gf_repo(repo, "#{@depot_root}#{@run_id}/#{proj}")
+      LOG.debug(repo)
+      @git_fusion_helper.make_new_gf_repo(repo, "#{@depot_root}#{@run_id}/#{proj}") if @setup
     end
 
     LOG.log('Setting up P4 users and protections')
-    @p4_admin.remove_protects('*')
-    @p4_admin.create_user(@low_user, @default_password, @low_user_email)
-    [{ name: @standard_user_a, email: @standard_user_a_email },
-     { name: @standard_user_b, email: @standard_user_b_email }].each do | usr |
-      # create user
-      @p4_admin.create_user(usr[:name], @default_password, usr[:email])
-      # read_all_write_all
-      @p4_admin.add_write_protects(usr[:name], "#{@depot_root}#{@run_id}/#{@read_all_write_all}/...")
-      # read_all_write_partial
-      @p4_admin.add_read_protects(usr[:name],  "#{@depot_root}#{@run_id}/#{@read_all_write_partial}/...")
-      @p4_admin.add_write_protects(usr[:name], "#{@depot_root}#{@run_id}/#{@read_all_write_partial}#{public_dir}/...")
-      # read_all_write_none
-      @p4_admin.add_read_protects(usr[:name],  "#{@depot_root}#{@run_id}/#{@read_all_write_none}/...")
-      # read_partial
-      @p4_admin.add_read_protects(usr[:name],  "#{@depot_root}#{@run_id}/#{@read_partial}#{public_dir}/...")
-    end
+    if @setup
+      @p4_admin.remove_protects('*')
 
-    LOG.log('Creating GitSwarm users, and group')
-    @groupname = @run_id
-    @gs_api.create_group(@groupname)
-    @gs_api.create_user(@standard_user_a, @default_password, @standard_user_a_email)
-    @gs_api.create_user(@standard_user_b, @default_password, @standard_user_b_email)
-    @gs_api.create_user(@low_user, @default_password, @low_user_email)
-    @gs_api.create_user(@gs_only_user, @default_password, @gs_only_user_email)
-    @gs_api.add_user_to_group(@standard_user_a, @groupname)
-    # Note - @standard_user_b is not in the group
-    @gs_api.add_user_to_group(@low_user, @groupname)
-    @gs_api.add_user_to_group(@gs_only_user, @groupname)
+      @p4_admin.create_user(@low_user, @default_password, @low_user_email)
+      [{ name: @standard_user_a, email: @standard_user_a_email },
+       { name: @standard_user_b, email: @standard_user_b_email }].each do | usr |
+        # create user
+        @p4_admin.create_user(usr[:name], @default_password, usr[:email])
+        # read_all_write_all
+        @p4_admin.add_write_protects(usr[:name], "#{@depot_root}#{@run_id}/#{@read_all_write_all}/...")
+        # read_all_write_partial
+        @p4_admin.add_read_protects(usr[:name],  "#{@depot_root}#{@run_id}/#{@read_all_write_partial}/...")
+        @p4_admin.add_write_protects(usr[:name], "#{@depot_root}#{@run_id}/#{@read_all_write_partial}#{public_dir}/...")
+        # read_all_write_none
+        @p4_admin.add_read_protects(usr[:name],  "#{@depot_root}#{@run_id}/#{@read_all_write_none}/...")
+        # read_partial
+        @p4_admin.add_read_protects(usr[:name],  "#{@depot_root}#{@run_id}/#{@read_partial}#{public_dir}/...")
+      end
 
-    LOG.log('Creating GitSwarm projects')
-    @driver = Browser.driver
-    logged_in_page = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(CONFIG.get('gitswarm_username'),
-                                                                              CONFIG.get('gitswarm_password'))
-    @repo_names.each do | repo_name |
-      cp = logged_in_page.goto_create_project_page
-      cp.project_name(repo_name)
-      cp.namespace(@groupname)
-      cp.select_server(CONFIG.get('secure_git_fusion'))
-      cp.select_repo(repo_name)
-      cp.select_private
-      cp.create_project_and_wait_for_clone
+      LOG.log('Creating GitSwarm users, and group')
+      @gs_api.create_group(@groupname)
+      @gs_api.create_user(@standard_user_a, @default_password, @standard_user_a_email)
+      @gs_api.create_user(@standard_user_b, @default_password, @standard_user_b_email)
+      @gs_api.create_user(@low_user, @default_password, @low_user_email)
+      @gs_api.create_user(@gs_only_user, @default_password, @gs_only_user_email)
+      @gs_api.add_user_to_group(@standard_user_a, @groupname)
+      # Note - @standard_user_b is not in the group
+      @gs_api.add_user_to_group(@low_user, @groupname)
+      @gs_api.add_user_to_group(@gs_only_user, @groupname)
+
+      LOG.log('Creating GitSwarm projects')
+      @driver = Browser.driver
+      logged_in_page = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(CONFIG.get('gitswarm_username'),
+                                                                                CONFIG.get('gitswarm_password'))
+      @repo_names.each do | repo_name |
+        cp = logged_in_page.goto_create_project_page
+        cp.project_name(repo_name)
+        cp.namespace(@groupname)
+        cp.select_server(CONFIG.get('secure_git_fusion'))
+        cp.select_repo(repo_name)
+        cp.select_private
+        cp.create_project_and_wait_for_clone
+      end
+      logged_in_page.logout
+      Browser.reset!
     end
-    logged_in_page.logout
-    Browser.reset!
   end
 
   # after(:all) does the teardown just once after the entire group
   after(:all) do
     LOG.log('Removing tmp dirs')
     FileUtils.rm_r(@p4_admin_dir)
-    LOG.log('Deleting created users')
-    @p4_admin.delete_user(@standard_user_a)
-    @p4_admin.delete_user(@standard_user_b)
-    @p4_admin.delete_user(@low_user)
-    @p4_admin.protects=(@initial_protects)
 
-    @p4_admin.disconnect
+    LOG.log('Skipping teardown due to setting') unless @teardown
+    if @teardown
+      begin
+        LOG.log('Deleting created users')
+        @p4_admin.delete_user(@standard_user_a)
+        @p4_admin.delete_user(@standard_user_b)
+        @p4_admin.delete_user(@low_user)
+        @p4_admin.protects=(@initial_protects)
 
-    @repo_names.each do | repo_name |
-      @gs_api.delete_project(repo_name)
+        @p4_admin.disconnect
+
+        @repo_names.each do | repo_name |
+          @gs_api.delete_project(repo_name)
+        end
+        @gs_api.delete_user(@standard_user_a)
+        @gs_api.delete_user(@standard_user_b)
+        @gs_api.delete_user(@low_user)
+        @gs_api.delete_user(@gs_only_user)
+        @gs_api.delete_group(@groupname)
+      rescue => e
+        LOG.log('Exception raised in after block : '+e.message)
+        LOG.log(e.backtrace.join('\n'))
+      end
     end
-    @gs_api.delete_user(@standard_user_a)
-    @gs_api.delete_user(@standard_user_b)
-    @gs_api.delete_user(@low_user)
-    @gs_api.delete_user(@gs_only_user)
-    @gs_api.delete_group(@groupname)
   end
 
   describe 'test' do

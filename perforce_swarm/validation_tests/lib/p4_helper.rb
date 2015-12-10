@@ -72,6 +72,10 @@ class P4Helper
     @p4.run_submit('-d', 'auto description')
   end
 
+  def connected?
+    @p4 && @p4.connected?
+  end
+
   def last_commit_message(file)
     LOG.debug 'Getting last commit message for file ' + file
     output = @p4.run_changes('-l', '-m', '1', file)
@@ -79,13 +83,12 @@ class P4Helper
   end
 
   def disconnect
+    return unless connected?
     LOG.debug 'Disconnecting from p4d'
-    if @p4 && @p4.connected?
-      @p4.run_client('-d', client_name)
-      @p4.run_trust('-d') if @p4.port.start_with?('ssl')
-      @p4.run_logout
-      @p4.disconnect
-    end
+    @p4.run_client('-d', client_name)
+    @p4.run_trust('-d') if @p4.port.start_with?('ssl')
+    @p4.run_logout
+    @p4.disconnect
   end
 
   def create_user(username, password, email)
@@ -108,10 +111,9 @@ class P4Helper
   end
 
   def delete_user(username)
-    if user_exists?(username)
-      LOG.debug("Deleting p4 user #{username}")
-      @p4.run_user('-d', '-f', username)
-    end
+    return unless user_exists?(username)
+    LOG.debug("Deleting p4 user #{username}")
+    @p4.run_user('-d', '-f', username)
   end
 
   def add_read_protects(user, depot_path)
@@ -124,11 +126,7 @@ class P4Helper
 
   def remove_protects(user)
     spec = @p4.fetch_protect
-    # LOG.debug('Existing protects are:')
-    # LOG.debug(spec.inspect)
     spec['Protections'].delete_if { |line| line.split[2]==user }
-    # LOG.debug('Protects are now:')
-    # LOG.debug(spec.inspect)
     @p4.save_protect(spec)
   end
 
@@ -152,11 +150,7 @@ class P4Helper
   def add_protection(level, user, depot_path)
     LOG.debug("Adding #{level} protects for #{user} to #{depot_path}")
     spec = @p4.fetch_protect
-    # LOG.debug('Existing protects are:')
-    # LOG.debug(spec.inspect)
     spec['Protections'].unshift("#{level} user #{user} * #{depot_path}")
-    # LOG.debug('Protects are now:')
-    # LOG.debug(spec.inspect)
     @p4.save_protect(spec)
   end
 end

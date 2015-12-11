@@ -49,22 +49,32 @@ describe 'EnforcePermissionsTests', browser: true do
     @read_all_write_none         = @run_id + '_read_all_write_none'
     @read_partial                = @run_id + '_read_partial'
     @read_none                   = @run_id + '_read_none'
-    @projects = [@read_all_write_all,
-                 @read_all_write_partial,
-                 @read_all_write_none,
-                 @read_partial,
-                 @read_none]
+    @projects                    = [@read_all_write_all,
+                                    @read_all_write_partial,
+                                    @read_all_write_none,
+                                    @read_partial,
+                                    @read_none]
+    @projects.each do | project |
+      LOG.log("Project for test run : #{project}")
+    end
 
     @user_gs_access_p4_access    = @run_id + '_gs_access_p4_access'   # in both p4 and gs and has access in both places
     @user_gs_noaccess_p4_access  = @run_id + '_gs_noaccess_p4_access' # in both p4 and gs and has access in p4 only
     @user_gs_access_p4_noaccess  = @run_id + '_gs_access_p4_noaccess' # in both p4 and gs and has access in gs only
     @user_gs_access_p4_notexist  = @run_id + '_gs_access_p4_notexist' # only in gs
+    @users                       = [@user_gs_access_p4_access,
+                                    @user_gs_noaccess_p4_access,
+                                    @user_gs_access_p4_noaccess,
+                                    @user_gs_access_p4_notexist]
+    @users.each do | user |
+      LOG.log("User for test run    : #{user}")
+    end
 
-    @email_domain                = '@test.com'
-    @standard_user_a_email       = @user_gs_access_p4_access + @email_domain
-    @standard_user_b_email       = @user_gs_noaccess_p4_access  + @email_domain
-    @low_user_email              = @user_gs_access_p4_noaccess + @email_domain
-    @gs_only_user_email          = @user_gs_access_p4_notexist + @email_domain
+    @email_domain                     = '@test.com'
+    @user_email_gs_access_p4_access   = @user_gs_access_p4_access + @email_domain
+    @user_email_gs_noaccess_p4_access = @user_gs_noaccess_p4_access  + @email_domain
+    @user_email_gs_access_p4_noaccess = @user_gs_access_p4_noaccess + @email_domain
+    @user_email_gs_access_p4_notexist = @user_gs_access_p4_notexist + @email_domain
 
     @p4_admin.connect
     # save the initial protects to reset to after
@@ -93,9 +103,9 @@ describe 'EnforcePermissionsTests', browser: true do
       LOG.log('Setting up P4 users and protections')
       @p4_admin.remove_protects('*')
 
-      @p4_admin.create_user(@user_gs_access_p4_noaccess, @default_password, @low_user_email)
-      [{ name: @user_gs_access_p4_access, email: @standard_user_a_email },
-       { name: @user_gs_noaccess_p4_access, email: @standard_user_b_email }].each do | usr |
+      @p4_admin.create_user(@user_gs_access_p4_noaccess, @default_password, @user_email_gs_access_p4_noaccess)
+      [{ name: @user_gs_access_p4_access, email: @user_email_gs_access_p4_access },
+       { name: @user_gs_noaccess_p4_access, email: @user_email_gs_noaccess_p4_access }].each do | usr |
         # create user
         @p4_admin.create_user(usr[:name], @default_password, usr[:email])
         # read_all_write_all
@@ -111,10 +121,10 @@ describe 'EnforcePermissionsTests', browser: true do
 
       LOG.log('Creating GitSwarm users, and group')
       @gs_api.create_group(@groupname)
-      @gs_api.create_user(@user_gs_access_p4_access, @default_password, @standard_user_a_email)
-      @gs_api.create_user(@user_gs_noaccess_p4_access, @default_password, @standard_user_b_email)
-      @gs_api.create_user(@user_gs_access_p4_noaccess, @default_password, @low_user_email)
-      @gs_api.create_user(@user_gs_access_p4_notexist, @default_password, @gs_only_user_email)
+      @gs_api.create_user(@user_gs_access_p4_access, @default_password, @user_email_gs_access_p4_access)
+      @gs_api.create_user(@user_gs_noaccess_p4_access, @default_password, @user_email_gs_noaccess_p4_access)
+      @gs_api.create_user(@user_gs_access_p4_noaccess, @default_password, @user_email_gs_access_p4_noaccess)
+      @gs_api.create_user(@user_gs_access_p4_notexist, @default_password, @user_email_gs_access_p4_notexist)
       @gs_api.add_user_to_group(@user_gs_access_p4_access, @groupname)
       # Note - @standard_user_b is not in the group
       @gs_api.add_user_to_group(@user_gs_access_p4_noaccess, @groupname)
@@ -171,8 +181,20 @@ describe 'EnforcePermissionsTests', browser: true do
     end
   end
 
-  describe 'Read permissions for a standard user' do
-    it 'should only allow seeing repos with full read permission' do
+  describe 'A user with full read permissions in perforce' do
+    it 'should be allowed to see all GF repos when creating gs projects' do
+      available_repos = list_available_repos_for_user(CONFIG.get(CONFIG::GS_USER), CONFIG.get(CONFIG::GS_PASSWORD))
+      LOG.log(available_repos.inspect)
+      expect(available_repos).to include(@read_all_write_all)
+      expect(available_repos).to include(@read_all_write_partial)
+      expect(available_repos).to include(@read_all_write_none)
+      expect(available_repos).to include(@read_partial)
+      expect(available_repos).to include(@read_none)
+    end
+  end
+
+  describe 'A user with limited read permissions in perforce' do
+    it 'should be allowed to see only GF repos with full read permission when creating gs projects' do
       available_repos = list_available_repos_for_user(@user_gs_access_p4_access)
       LOG.log(available_repos.inspect)
       expect(available_repos).to include(@read_all_write_all)
@@ -183,10 +205,34 @@ describe 'EnforcePermissionsTests', browser: true do
     end
   end
 
+  describe 'A user with no read permissions in perforce' do
+    it 'should not be allowed to see any GF repos when creating gs projects' do
+      available_repos = list_available_repos_for_user(@user_gs_access_p4_noaccess)
+      LOG.log(available_repos.inspect)
+      expect(available_repos).to_not include(@read_all_write_all)
+      expect(available_repos).to_not include(@read_all_write_partial)
+      expect(available_repos).to_not include(@read_all_write_none)
+      expect(available_repos).to_not include(@read_partial)
+      expect(available_repos).to_not include(@read_none)
+    end
+  end
+
+  describe 'A user not in perforce' do
+    it 'should not be allowed to see any GF repos when creating gs projects' do
+      available_repos = list_available_repos_for_user(@user_gs_access_p4_notexist)
+      LOG.log(available_repos.inspect)
+      expect(available_repos).to_not include(@read_all_write_all)
+      expect(available_repos).to_not include(@read_all_write_partial)
+      expect(available_repos).to_not include(@read_all_write_none)
+      expect(available_repos).to_not include(@read_partial)
+      expect(available_repos).to_not include(@read_none)
+    end
+  end
+
   private
 
-  def list_available_repos_for_user(user)
-    cp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user, @default_password).goto_create_project_page
+  def list_available_repos_for_user(user, password = @default_password)
+    cp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user, password).goto_create_project_page
     cp.select_server(CONFIG.get(CONFIG::SECURE_GF))
     cp.repo_names
   end

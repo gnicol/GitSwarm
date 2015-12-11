@@ -3,34 +3,40 @@ require 'spec_helper'
 require_relative '../lib/page'
 
 describe 'New Mirrored Project', browser: true do
-  let(:user) { 'user-'+unique_string }
-  let(:password) { 'Passw0rd' }
-  let(:uemail) { 'p4cloudtest+'+user+'@gmail.com' }
-  let(:email) { user+'@gitswarm.test.com' }
-  let(:project) { 'project-'+unique_string }
+  let(:run_id)                { unique_string }
+  let(:user)                  { 'user-' + run_id }
+  let(:password)              { 'Passw0rd' }
+  let(:uemail)                { 'p4cloudtest+'+user+'@gmail.com' }
+  let(:email)                 { 'root@mp-gs-ubuntu-12-153' }
+  let(:project)               { 'project-'+run_id }
   let(:expected_gf_repo_name) { 'gitswarm-'+user+'-'+project }
-  let(:git_dir) { Dir.mktmpdir('Git-', tmp_client_dir) }
-  let(:p4_dir) { Dir.mktmpdir('P4-', tmp_client_dir) }
-  let(:another_project) { 'another_project-'+unique_string }
-  let(:another_git_dir) { Dir.mktmpdir('AnotherGit-', tmp_client_dir) }
+  let(:git_dir)               { Dir.mktmpdir('Git-', tmp_client_dir) }
+  let(:p4_dir)                { Dir.mktmpdir('P4-', tmp_client_dir) }
 
   before do
     LOG.debug 'p4 dir = ' + p4_dir
     LOG.debug 'user is ' + user + ' : ' + password
     p4_depot_path = CONFIG.get('p4_gitswarm_depot_root') + user + '/' + project + '/master/...'
-    @p4 = P4Helper.new(CONFIG.get('p4_port'), CONFIG.get('p4_user'), CONFIG.get('p4_password'), p4_dir, p4_depot_path)
+    @p4 = P4Helper.new(CONFIG.get(CONFIG::P4_PORT),
+                       CONFIG.get(CONFIG::P4_USER),
+                       CONFIG.get(CONFIG::P4_PASSWORD), p4_dir, p4_depot_path)
+    create_user
+  end
+
+  after do
+    delete_user # deleting user will also delete user's projects
   end
 
   context 'when I push in a file to the gitswarm repo' do
     commit_message = 'commit_message_'+unique_string
     before do
-      create_user
       create_new_project
       clone_project(project, git_dir)
       @git_filename = 'git-file-'+unique_string
       create_file(git_dir, @git_filename)
       LOG.debug 'Creating file in git : ' + @git_filename
-      @git.add_commit_push(commit_message)
+      @git.add_commit_push
+      sleep(2) # some time to let the file get into perforce
     end
 
     it 'gets pushed into Perforce with the commit message and email' do
@@ -54,7 +60,6 @@ describe 'New Mirrored Project', browser: true do
 
   context 'when I add a file to the Perforce project' do
     before do
-      create_user
       create_new_project
       clone_project(project, git_dir)
       @p4.connect_and_sync
@@ -74,19 +79,19 @@ describe 'New Mirrored Project', browser: true do
 
   context 'when a repo was created in GitFusion' do
     before do
-      create_user
       create_new_project
     end
     it 'is visible in the list of available repos' do
-      cp = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(user, password).goto_create_project_page
+      cp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user, password).goto_create_project_page
       available_repos = cp.repo_names
       expect(available_repos.include?(expected_gf_repo_name)).to be true
     end
   end
 
   context 'when an existing repo with content is mirrored in a new project' do
+    another_project = 'another_project-' + unique_string
+    another_git_dir = Dir.mktmpdir('AnotherGit-', tmp_client_dir)
     before do
-      create_user
       create_new_project
       clone_project(project, git_dir)
       @git_filename = 'git-file-'+unique_string
@@ -101,7 +106,7 @@ describe 'New Mirrored Project', browser: true do
       @p4.add(add_path)
       @p4.submit
 
-      cp = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(user, password).goto_create_project_page
+      cp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user, password).goto_create_project_page
       cp.project_name(another_project)
       cp.select_mirrored_specific
       cp.select_repo(expected_gf_repo_name)
@@ -121,10 +126,9 @@ describe 'New Mirrored Project', browser: true do
     filename = 'Readme.md'
     unique_content = unique_string
     before do
-      create_user
       create_new_project
       proj_page = LoginPage.new(@driver,
-                                CONFIG.get('gitswarm_url')).login(user, password).goto_project_page(user, project)
+                                CONFIG.get(CONFIG::GS_URL)).login(user, password).goto_project_page(user, project)
       edit_page = proj_page.add_readme
       filename = edit_page.file_name
       edit_page.content=unique_content
@@ -151,7 +155,6 @@ describe 'New Mirrored Project', browser: true do
     new_branch = unique_string
     new_file = new_branch+'-file'
     before do
-      create_user
       create_new_project
       clone_project(project, git_dir)
       LOG.log('Add a file to master branch so it exists')
@@ -172,7 +175,7 @@ describe 'New Mirrored Project', browser: true do
       expect(File.exist?(p4_file_from_git)).to be false
 
       branches_page = LoginPage.new(@driver,
-                                    CONFIG.get('gitswarm_url')).login(user, password).goto_branches_page(user, project)
+                                    CONFIG.get(CONFIG::GS_URL)).login(user, password).goto_branches_page(user, project)
       branches = branches_page.available_branches
       expect(branches.include?(new_branch)).to be true
       LOG.log('Merge the branch')
@@ -189,7 +192,6 @@ describe 'New Mirrored Project', browser: true do
       git_filename = 'git-file-'+unique_string
       @p4_file_from_git = p4_dir + '/' + git_filename
 
-      create_user
       create_new_project(false)
       clone_project(project, git_dir)
       create_file(git_dir, git_filename)
@@ -201,7 +203,7 @@ describe 'New Mirrored Project', browser: true do
       LOG.log('File added to git exists in Perforce before we mirror? = ' + File.exist?(@p4_file_from_git).to_s)
       expect(File.exist?(@p4_file_from_git)).to be false
 
-      pp = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(user, password).goto_project_page(user, project)
+      pp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user, password).goto_project_page(user, project)
       LOG.log('Project is mirrored? ' + pp.mirrored_in_helix?.to_s)
       expect(pp.mirrored_in_helix?).to be false
       config_mirroring = pp.click_mirror_in_helix
@@ -221,14 +223,21 @@ describe 'New Mirrored Project', browser: true do
   end
 
   def create_user
-    GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
-                          CONFIG.get('gitswarm_username'),
-                          CONFIG.get('gitswarm_password')
-                         ).create_user(user, password, uemail, nil)
+    GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
+                          CONFIG.get(CONFIG::GS_USER),
+                          CONFIG.get(CONFIG::GS_PASSWORD)
+    ).create_user(user, password, uemail, nil)
+  end
+
+  def delete_user
+    GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
+                          CONFIG.get(CONFIG::GS_USER),
+                          CONFIG.get(CONFIG::GS_PASSWORD)
+    ).delete_user(user)
   end
 
   def create_new_project(mirrored = true, public_project = false)
-    cp = LoginPage.new(@driver, CONFIG.get('gitswarm_url')).login(user, password).goto_create_project_page
+    cp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user, password).goto_create_project_page
     cp.project_name(project)
     cp.select_mirrored_auto if mirrored
     cp.select_public if public_project
@@ -236,8 +245,15 @@ describe 'New Mirrored Project', browser: true do
     cp.logout
   end
 
+  def delete_project(project_name = project)
+    GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
+                          CONFIG.get(CONFIG::GS_USER),
+                          CONFIG.get(CONFIG::GS_PASSWORD)
+    ).delete_project(project_name)
+  end
+
   def clone_project(project_name, dir)
-    user_helper = GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'), user, password)
+    user_helper = GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL), user, password)
     project_info = user_helper.get_project_info(project_name)
     LOG.debug project_info
     LOG.debug 'git dir = ' + dir

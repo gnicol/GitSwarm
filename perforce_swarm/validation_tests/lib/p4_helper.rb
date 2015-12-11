@@ -9,6 +9,8 @@ class P4Helper
   attr_accessor :client_name
 
   def initialize(p4port, user, password, local_dir, depot_path)
+    fail("depot_path must end in /... : #{depot_path}") unless depot_path.end_with?('/...')
+
     # Pointing the p4 environment variables to tmp-clients directory
     p4_home = tmp_client_dir
     ENV['P4ENVIRO'] = File.join(p4_home, '.p4enviro')
@@ -17,7 +19,7 @@ class P4Helper
 
     @user = user
     @password = password
-    @local_dir = local_dir
+    @local_dir = local_dir.chomp('/')
     @depot_path = depot_path
     @p4 = P4.new
     @p4.port = p4port
@@ -54,9 +56,15 @@ class P4Helper
     sync
   end
 
-  def sync
-    LOG.debug 'Syncing from ' + @depot_path + ' into ' + @local_dir
-    @p4.run_sync('-f', '-q') # -q to stop it throwing a warning if no files exist under the depot path
+  def sync(file = nil)
+    LOG.debug("Syncing #{file} from #{@depot_path} into #{@local_dir}")
+    file = File.join(@local_dir, file) if file && !file.start_with?(@local_dir) && !file.empty?
+    # -q to stop it throwing a warning if no files exist under the depot path
+    if file
+      @p4.run_sync('-f', '-q', file)
+    else
+      @p4.run_sync('-f', '-q')
+    end
   end
 
   def add(path)
@@ -132,10 +140,7 @@ class P4Helper
 
   # To get the current state of protects that can be later set
   def protects
-    spec = @p4.fetch_protect
-    LOG.debug('Existing protects are:')
-    LOG.debug(spec.inspect)
-    spec
+    @p4.fetch_protect
   end
 
   # To set the entire state of protects

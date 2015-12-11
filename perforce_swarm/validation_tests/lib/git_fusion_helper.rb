@@ -25,6 +25,29 @@ class GitFusionHelper
     end
   end
 
+  def apply_gf_global_config(properties_hash)
+    LOG.log("Applying new gf config #{properties_hash.inspect} at #{@p4port}")
+    Dir.mktmpdir('GFHelper-', tmp_client_dir) do | local_workspace |
+      file = File.join(local_workspace, 'p4gf_config')
+      begin
+        p4 = P4Helper.new(@p4port, @user, @password, local_workspace, '//.git-fusion/...')
+        p4.connect
+        p4.sync(file)
+        content = File.read(file)
+        properties_hash.each do | name, value |
+          regex = /^#{name}[ =].*$/
+          fail "property not found in p4gf_config file : #{name}" unless content =~ regex
+          content.gsub!(regex, "#{name} = #{value}")
+        end
+        p4.edit(file)
+        File.write(file, content)
+        p4.submit
+      ensure
+        p4.disconnect if p4
+      end
+    end
+  end
+
   private
 
   def gf_config_contents(depot_path)
@@ -36,9 +59,6 @@ class GitFusionHelper
      'enable-git-branch-creation = yes',
      "depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}",
      'depot-branch-creation-enable = all',
-     'change-owner = author',
-     'ignore-author-permissions = no',
-     'read-permission-check = yes',
      '[master]',
      "view = #{depot_path}/master/... ...",
      'git-branch-name = master',

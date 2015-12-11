@@ -77,15 +77,15 @@ class GitSwarmAPIHelper
   end
 
   def delete_user(user)
-    generic_delete('user', user_id(user))
+    generic_delete('user', user)
   end
 
   def delete_project(project)
-    generic_delete('project', project_id(project))
+    generic_delete('project', project)
   end
 
   def delete_group(group)
-    generic_delete('group', group_id(group))
+    generic_delete('group', group)
   end
   #
   # Returns data on a given project
@@ -101,12 +101,18 @@ class GitSwarmAPIHelper
 
   private
 
-  def generic_delete(thing, id)
-    LOG.debug("Deleting GS #{thing} ID #{id}")
+  def generic_delete(thing, name)
+    id = generic_id(thing, name)
+    LOG.debug("Deleting GS #{thing} #{name} (#{id}")
     thing = "#{thing}s" unless thing.end_with?('s')
     RestClient.delete(@base_url + thing + '/' + id, private_token: @admin_token)
   rescue => e
     raise e if @raise_errors
+  end
+
+  def generic_id(data_type, name)
+    data_type = "#{data_type}s" unless data_type.end_with?('s')
+    search_id(data_type, name)
   end
 
   def group_id(group)

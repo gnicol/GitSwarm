@@ -7,12 +7,12 @@ describe 'EnforcePermissionsTests', browser: true do
   # before(:all) does the setup just once before the entire group
   # https://www.relishapp.com/rspec/rspec-core/v/2-2/docs/hooks/before-and-after-hooks
   before(:all) do
-    # local variables to control whether setup /teardown is performed.
+    # control whether setup /teardown is performed. Values in config.yml will configure this
     # Allows us to do a single setup and reuse it for test development to save time
-    # You must change @run_id to a static variable if you skip setup
-    @setup = true
-    @teardown = true
-    @run_id = unique_string
+    # You must provide run_id if you skip setup or things won't work properly
+    @setup    = CONFIG.get(CONFIG::SKIP_SETUP)    ? false : true
+    @teardown = CONFIG.get(CONFIG::SKIP_TEARDOWN) ? false : true
+    @run_id   = CONFIG.get(CONFIG::RUN_ID)        || unique_string
 
     LOG.log('Skipping setup due to setting') unless @setup
     LOG.log("run_id for this run is #{@run_id}")
@@ -181,9 +181,13 @@ describe 'EnforcePermissionsTests', browser: true do
     end
   end
 
+  #
+  # GF repo visibility in GitSwarm as restricted by Perforce permissions
+  #
+
   describe 'A user with full read permissions in perforce' do
     it 'should be allowed to see all GF repos when creating gs projects' do
-      available_repos = list_available_repos_for_user(CONFIG.get(CONFIG::GS_USER), CONFIG.get(CONFIG::GS_PASSWORD))
+      available_repos = list_repos_for_user(CONFIG.get(CONFIG::GS_USER), CONFIG.get(CONFIG::GS_PASSWORD))
       LOG.log(available_repos.inspect)
       expect(available_repos).to include(@read_all_write_all)
       expect(available_repos).to include(@read_all_write_partial)
@@ -195,7 +199,7 @@ describe 'EnforcePermissionsTests', browser: true do
 
   describe 'A user with limited read permissions in perforce' do
     it 'should be allowed to see only GF repos with full read permission when creating gs projects' do
-      available_repos = list_available_repos_for_user(@user_gs_access_p4_access)
+      available_repos = list_repos_for_user(@user_gs_access_p4_access)
       LOG.log(available_repos.inspect)
       expect(available_repos).to include(@read_all_write_all)
       expect(available_repos).to include(@read_all_write_partial)
@@ -207,7 +211,7 @@ describe 'EnforcePermissionsTests', browser: true do
 
   describe 'A user with no read permissions in perforce' do
     it 'should not be allowed to see any GF repos when creating gs projects' do
-      available_repos = list_available_repos_for_user(@user_gs_access_p4_noaccess)
+      available_repos = list_repos_for_user(@user_gs_access_p4_noaccess)
       LOG.log(available_repos.inspect)
       expect(available_repos).to_not include(@read_all_write_all)
       expect(available_repos).to_not include(@read_all_write_partial)
@@ -219,7 +223,7 @@ describe 'EnforcePermissionsTests', browser: true do
 
   describe 'A user not in perforce' do
     it 'should not be allowed to see any GF repos when creating gs projects' do
-      available_repos = list_available_repos_for_user(@user_gs_access_p4_notexist)
+      available_repos = list_repos_for_user(@user_gs_access_p4_notexist)
       LOG.log(available_repos.inspect)
       expect(available_repos).to_not include(@read_all_write_all)
       expect(available_repos).to_not include(@read_all_write_partial)
@@ -229,11 +233,83 @@ describe 'EnforcePermissionsTests', browser: true do
     end
   end
 
+  #
+  # Project visibility in GitSwarm as restricted by Perforce permissions
+  #
+
+  describe 'A user with full read permissions in perforce' do
+    it 'should be allowed to see all GS projects mirrored in perforce' do
+      available_projects = list_projects_for_user(CONFIG.get(CONFIG::GS_USER), CONFIG.get(CONFIG::GS_PASSWORD))
+      LOG.log(available_projects.inspect)
+      expect(available_projects).to include(@read_all_write_all)
+      expect(available_projects).to include(@read_all_write_partial)
+      expect(available_projects).to include(@read_all_write_none)
+      expect(available_projects).to include(@read_partial)
+      expect(available_projects).to include(@read_none)
+    end
+  end
+  describe 'A user with limited read permissions in perforce' do
+    it 'should be allowed to see only GS projects mirrored in perforce where they have read permission in perforce' do
+      available_projects = list_projects_for_user(@user_gs_access_p4_access)
+      LOG.log(available_projects.inspect)
+      expect(available_projects).to include(@read_all_write_all)
+      expect(available_projects).to include(@read_all_write_partial)
+      expect(available_projects).to include(@read_all_write_none)
+      expect(available_projects).to_not include(@read_partial)
+      expect(available_projects).to_not include(@read_none)
+    end
+  end
+
+  describe 'A user with no read permissions in perforce' do
+    it 'should not be allowed to see any GS projects mirrored in perforce' do
+      available_projects = list_projects_for_user(@user_gs_access_p4_noaccess)
+      LOG.log(available_projects.inspect)
+      expect(available_projects).to_not include(@read_all_write_all)
+      expect(available_projects).to_not include(@read_all_write_partial)
+      expect(available_projects).to_not include(@read_all_write_none)
+      expect(available_projects).to_not include(@read_partial)
+      expect(available_projects).to_not include(@read_none)
+    end
+  end
+
+  describe 'A user not in perforce' do
+    it 'should not be allowed to see any GS projects mirrored in perforce' do
+      available_projects = list_projects_for_user(@user_gs_access_p4_notexist)
+      LOG.log(available_projects.inspect)
+      expect(available_projects).to_not include(@read_all_write_all)
+      expect(available_projects).to_not include(@read_all_write_partial)
+      expect(available_projects).to_not include(@read_all_write_none)
+      expect(available_projects).to_not include(@read_partial)
+      expect(available_projects).to_not include(@read_none)
+    end
+  end
+
+  describe 'A user with no access to the GS project' do
+    it 'should not be allowed to see any GS projects even if they have read access in perforce' do
+      available_projects = list_projects_for_user(@user_gs_noaccess_p4_access)
+      LOG.log(available_projects.inspect)
+      expect(available_projects).to_not include(@read_all_write_all)
+      expect(available_projects).to_not include(@read_all_write_partial)
+      expect(available_projects).to_not include(@read_all_write_none)
+      expect(available_projects).to_not include(@read_partial)
+      expect(available_projects).to_not include(@read_none)
+    end
+  end
+
   private
 
-  def list_available_repos_for_user(user, password = @default_password)
+  def list_repos_for_user(user, password = @default_password)
     cp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user, password).goto_create_project_page
     cp.select_server(CONFIG.get(CONFIG::SECURE_GF))
-    cp.repo_names
+    repos = cp.repo_names
+    cp.logout
+    repos
+  end
+
+  def list_projects_for_user(user, password = @default_password)
+    pp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user, password).goto_projects_page
+    projects = pp.projects
+    pp.logout
+    projects
   end
 end

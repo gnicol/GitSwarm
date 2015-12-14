@@ -21,21 +21,28 @@ class LoggedInPage < Page
   def goto_create_project_page
     # could either try navigating, or just go to the appropriate sub-url.
     uri = URI.parse @driver.current_url
-    newuri = uri.scheme + '://' + uri.host + '/projects/new'
+    newuri = "#{uri.scheme}://#{uri.host}/projects/new"
     goto newuri
     CreateProjectPage.new(@driver)
   end
 
   def goto_project_page(namespace, project_name)
     uri = URI.parse @driver.current_url
-    newuri = uri.scheme + '://' + uri.host + '/' + namespace + '/' + project_name
+    newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}"
     goto newuri
     ProjectPage.new(@driver)
   end
 
+  def goto_projects_page
+    uri = URI.parse @driver.current_url
+    newuri = "#{uri.scheme}://#{uri.host}/dashboard/projects"
+    goto newuri
+    ProjectsPage.new(@driver)
+  end
+
   def goto_branches_page(namespace, project_name)
     uri = URI.parse @driver.current_url
-    newuri = uri.scheme + '://' + uri.host + '/' + namespace + '/' + project_name + '/branches'
+    newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}/branches"
     goto newuri
     BranchesPage.new(@driver)
   end

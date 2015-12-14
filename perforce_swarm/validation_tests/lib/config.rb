@@ -7,6 +7,9 @@ class CONFIG
   GS_PASSWORD            = 'gitswarm_password'
   SECURE_GF              = 'secure_git_fusion'
   SECURE_GF_DEPOT_ROOT   = 'secure_git_fusion_depot_root'
+  RUN_ID                 = 'run_id' # static run_id for test development (enforce_permissions_spec)
+  SKIP_SETUP             = 'skip_setup' # skip setup for test development (enforce_permissions_spec)
+  SKIP_TEARDOWN          = 'skip_teardown' # skip teardown for test development (enforce_permissions_spec)
 
   @config                = nil
 

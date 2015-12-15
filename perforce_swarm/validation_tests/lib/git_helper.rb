@@ -32,6 +32,7 @@ class GitHelper
   end
   attr_accessor :url
   attr_accessor :git
+  attr_accessor :fail_on_error # throw exceptions if any system calls return non-0
 
   def initialize(local_dir, user, email)
     @git = CONFIG.get('git_binary') || 'git' # the binary to call, defaulting to whatever is on the path
@@ -40,15 +41,19 @@ class GitHelper
     @user = user
     @email = email
     @current_branch = 'master'
+    @fail_on_error = true
   end
 
   def clone
     LOG.debug 'Cloning from ' + @url + ' into ' + @local_dir_path
-    call_system(@git + ' clone ' + @url + ' ' + @local_dir_path)
-    Dir.chdir(@local_dir_path) do
-      call_system(@git + ' config user.name ' + @user)
-      call_system(@git + ' config user.email ' + @email)
+    success = call_system(@git + ' clone ' + @url + ' ' + @local_dir_path)
+    if success
+      Dir.chdir(@local_dir_path) do
+        success &&= call_system(@git + ' config user.name ' + @user)
+        success &&= call_system(@git + ' config user.email ' + @email)
+      end
     end
+    success
   end
 
   # Adds everything under the git repo
@@ -61,9 +66,7 @@ class GitHelper
   end
 
   def add_commit_push
-    add
-    commit
-    push
+    add && commit && push
   end
 
   def pull
@@ -79,18 +82,17 @@ class GitHelper
   end
 
   def checkout(branchname)
-    run_git_command('checkout', branchname)
-    @current_branch = branchname
+    success = run_git_command('checkout', branchname)
+    @current_branch = branchname if success
+    success
   end
 
   def branch_and_checkout(branchname)
-    branch(branchname)
-    checkout(branchname)
+    branch(branchname) && checkout(branchname)
   end
 
   def checkout_and_pull(branchname)
-    checkout(branchname)
-    pull
+    checkout(branchname) && pull
   end
 
   private
@@ -98,13 +100,18 @@ class GitHelper
   def run_git_command(*args)
     command = [@git, *args].join(' ')
     LOG.debug("Running #{command}")
+    success = false
     Dir.chdir(@local_dir_path) do
-      call_system(command)
+      success = call_system(command)
     end
+    success
   end
 
-  # utility to call the system command and fail if it is not successful
+  # utility to call the system command and fail if it is not successful and error_on_fail is enabled (default on)
   def call_system(command)
-    fail 'system command failed: ' + command unless system(command)
+    LOG.debug(command)
+    success = system(command)
+    fail 'system command failed: ' + command if !success && @fail_on_error
+    success
   end
 end

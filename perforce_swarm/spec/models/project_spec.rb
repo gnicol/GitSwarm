@@ -76,7 +76,7 @@ describe Project do
       end
       it 'disables Git Fusion mirroring' do
         expect(project.git_fusion_mirrored?).to be true
-        project.disable_git_fusion_mirroring
+        project.disable_git_fusion_mirroring!
         expect(project.git_fusion_mirrored?).to be false
       end
     end
@@ -90,7 +90,7 @@ describe Project do
       end
       it 'does not change the mirroring status of a project' do
         expect(project.git_fusion_mirrored?).to be false
-        project.disable_git_fusion_mirroring
+        project.disable_git_fusion_mirroring!
         expect(project.git_fusion_mirrored?).to be false
       end
     end

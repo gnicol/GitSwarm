@@ -36,7 +36,7 @@ describe Project do
   describe 'git_fusion_mirrored?' do
     context 'default project' do
       let(:project) { create(:empty_project, path: 'somewhere') }
-      it { expect(project.git_fusion_mirrored?).to be false }
+      it { expect(project.git_fusion_mirrored?).to be_falsey }
     end
 
     context 'only git_fusion_repo value' do
@@ -45,14 +45,14 @@ describe Project do
                path: 'somewhere',
                git_fusion_repo: 'mirror://foo/bar')
       end
-      it { expect(project.git_fusion_mirrored?).to be false }
+      it { expect(project.git_fusion_mirrored?).to be_falsey }
     end
 
     context 'only git_fusion_mirrored flag set' do
       let(:project) do
         create(:empty_project, path: 'somewhere', git_fusion_mirrored: true)
       end
-      it { expect(project.git_fusion_mirrored?).to be false }
+      it { expect(project.git_fusion_mirrored?).to be_falsey }
     end
 
     context 'both git_fusion_mirrored and git_fusion_repo set' do
@@ -75,6 +75,11 @@ describe Project do
                git_fusion_mirrored: true)
       end
       it 'disables Git Fusion mirroring' do
+        # stub out setting the mirror URL to nil, along with file existence checks
+        File.stub(realpath: '')
+        File.stub(exist?: true)
+        PerforceSwarm::Repo.any_instance.stub('mirror_url=' => nil)
+
         expect(project.git_fusion_mirrored?).to be true
         project.disable_git_fusion_mirroring!
         expect(project.git_fusion_mirrored?).to be false
@@ -89,6 +94,11 @@ describe Project do
                git_fusion_mirrored: false)
       end
       it 'does not change the mirroring status of a project' do
+        # stub out setting the mirror URL to nil, along with file existence checks
+        File.stub(realpath: '')
+        File.stub(exist?: true)
+        PerforceSwarm::Repo.any_instance.stub('mirror_url=' => nil)
+
         expect(project.git_fusion_mirrored?).to be false
         project.disable_git_fusion_mirroring!
         expect(project.git_fusion_mirrored?).to be false

@@ -51,11 +51,11 @@ class Project < ActiveRecord::Base
             format: { with: %r{\Amirror://([^/]+)/([^/]+(/[^/]+)*)\z},
                       message: 'must be a valid Git Fusion repo to enable mirroring.' },
             if: ->(project) { project.git_fusion_repo.present? }
-  validates :git_fusion_mirrored, inclusion: { in: [true, false] }
   prepend PerforceSwarm::ProjectExtension
 
   attr_accessor :git_fusion_auto_create
   attr_accessor :git_fusion_entry
+  attr_accessor :git_fusion_mirrored
 
   # The rspec tests use 'allow_any_instance_of' on Project to stub this method out during testing.
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.

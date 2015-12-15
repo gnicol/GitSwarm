@@ -18,6 +18,7 @@ module PerforceSwarm
         begin
           creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace.name, path)
           creator.save
+          PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: git_fusion_entry)
 
           # GitFusion Repo has been created, flag this project for import
           # We choose to always import from GitFusion because there may have
@@ -41,7 +42,7 @@ class Project < ActiveRecord::Base
             length: { maximum: 255 },
             allow_blank: true,
             allow_nil: true,
-            format: { with: %r{\Amirror://([^/]+)/([^/]+)\z},
+            format: { with: %r{\Amirror://([^/]+)/([^/]+(/[^/]+)*)\z},
                       message: 'must be a valid Git Fusion repo to enable mirroring.' },
             if: ->(project) { project.git_fusion_import? }
   prepend PerforceSwarm::ProjectExtension

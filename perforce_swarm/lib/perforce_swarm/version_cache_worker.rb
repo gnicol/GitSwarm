@@ -14,7 +14,7 @@ module PerforceSwarm
 
     def perform
       # we only run the automated check if the admin has explicitly enabled it
-      return unless current_application_settings.version_check_enabled
+      return unless !Rails.env.test? && current_application_settings.version_check_enabled
 
       # download versions file with forced download and cache
       ::VersionCheck.versions(false)

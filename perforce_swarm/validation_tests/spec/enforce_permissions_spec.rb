@@ -240,7 +240,7 @@ describe 'EnforcePermissionsTests', browser: true do
   #
 
   describe 'A user with full read permissions in perforce' do
-    it 'should be allowed to see all GS projects mirrored in perforce' do
+    it 'should be allowed to SEE all GS projects mirrored in perforce' do
       available_projects = list_projects_for_user(@user_root)
       LOG.log(available_projects.inspect)
       expect(available_projects).to include(@read_all_write_all.name)
@@ -251,7 +251,7 @@ describe 'EnforcePermissionsTests', browser: true do
     end
   end
   describe 'A user with limited read permissions in perforce' do
-    it 'should be allowed to see only GS projects mirrored in perforce where they have read permission in perforce' do
+    it 'should be allowed to SEE only GS projects mirrored in perforce where they have read permission in perforce' do
       available_projects = list_projects_for_user(@user_gs_access_p4_access)
       LOG.log(available_projects.inspect)
       expect(available_projects).to include(@read_all_write_all.name)
@@ -263,7 +263,7 @@ describe 'EnforcePermissionsTests', browser: true do
   end
 
   describe 'A user with no read permissions in perforce' do
-    it 'should not be allowed to see any GS projects mirrored in perforce' do
+    it 'should not be allowed to SEE any GS projects mirrored in perforce' do
       available_projects = list_projects_for_user(@user_gs_access_p4_noaccess)
       LOG.log(available_projects.inspect)
       expect(available_projects).to_not include(@read_all_write_all.name)
@@ -275,7 +275,7 @@ describe 'EnforcePermissionsTests', browser: true do
   end
 
   describe 'A user not in perforce' do
-    it 'should not be allowed to see any GS projects mirrored in perforce' do
+    it 'should not be allowed to SEE any GS projects mirrored in perforce' do
       available_projects = list_projects_for_user(@user_gs_access_p4_notexist)
       LOG.log(available_projects.inspect)
       expect(available_projects).to_not include(@read_all_write_all.name)
@@ -287,7 +287,7 @@ describe 'EnforcePermissionsTests', browser: true do
   end
 
   describe 'A user with no access to the GS project' do
-    it 'should not be allowed to see any GS projects even if they have read access in perforce' do
+    it 'should not be allowed to SEE any GS projects even if they have read access in perforce' do
       available_projects = list_projects_for_user(@user_gs_noaccess_p4_access)
       LOG.log(available_projects.inspect)
       expect(available_projects).to_not include(@read_all_write_all.name)
@@ -295,6 +295,60 @@ describe 'EnforcePermissionsTests', browser: true do
       expect(available_projects).to_not include(@read_all_write_none.name)
       expect(available_projects).to_not include(@read_partial.name)
       expect(available_projects).to_not include(@read_none.name)
+    end
+  end
+
+  #
+  # Project clone through GitSwarm as restricted by Perforce permissions
+  #
+
+  describe 'A user with full read permissions in perforce' do
+    it 'should be allowed to CLONE all GS projects mirrored in perforce' do
+      expect(can_clone(@user_root, @read_all_write_all)).to be true
+      expect(can_clone(@user_root, @read_all_write_partial)).to be true
+      expect(can_clone(@user_root, @read_all_write_none)).to be true
+      expect(can_clone(@user_root, @read_partial)).to be true
+      expect(can_clone(@user_root, @read_none)).to be true
+    end
+  end
+
+  describe 'A user with limited read permissions in perforce' do
+    it 'should be allowed to CLONE only GS projects mirrored in perforce where they have read permission in perforce' do
+      expect(can_clone(@user_gs_access_p4_access, @read_all_write_all)).to be true
+      expect(can_clone(@user_gs_access_p4_access, @read_all_write_partial)).to be true
+      expect(can_clone(@user_gs_access_p4_access, @read_all_write_none)).to be true
+      expect(can_clone(@user_gs_access_p4_access, @read_partial)).to be false
+      expect(can_clone(@user_gs_access_p4_access, @read_none)).to be false
+    end
+  end
+
+  describe 'A user with no read permissions in perforce' do
+    it 'should not be allowed to CLONE any GS projects mirrored in perforce' do
+      expect(can_clone(@user_gs_access_p4_noaccess, @read_all_write_all)).to be false
+      expect(can_clone(@user_gs_access_p4_noaccess, @read_all_write_partial)).to be false
+      expect(can_clone(@user_gs_access_p4_noaccess, @read_all_write_none)).to be false
+      expect(can_clone(@user_gs_access_p4_noaccess, @read_partial)).to be false
+      expect(can_clone(@user_gs_access_p4_noaccess, @read_none)).to be false
+    end
+  end
+
+  describe 'A user not in perforce' do
+    it 'should not be allowed to CLONE any GS projects mirrored in perforce' do
+      expect(can_clone(@user_gs_access_p4_notexist, @read_all_write_all)).to be false
+      expect(can_clone(@user_gs_access_p4_notexist, @read_all_write_partial)).to be false
+      expect(can_clone(@user_gs_access_p4_notexist, @read_all_write_none)).to be false
+      expect(can_clone(@user_gs_access_p4_notexist, @read_partial)).to be false
+      expect(can_clone(@user_gs_access_p4_notexist, @read_none)).to be false
+    end
+  end
+
+  describe 'A user with no access to the GS project' do
+    it 'should not be allowed to CLONE any GS projects even if they have read access in perforce' do
+      expect(can_clone(@user_gs_noaccess_p4_access, @read_all_write_all)).to be false
+      expect(can_clone(@user_gs_noaccess_p4_access, @read_all_write_partial)).to be false
+      expect(can_clone(@user_gs_noaccess_p4_access, @read_all_write_none)).to be false
+      expect(can_clone(@user_gs_noaccess_p4_access, @read_partial)).to be false
+      expect(can_clone(@user_gs_noaccess_p4_access, @read_none)).to be false
     end
   end
 
@@ -313,5 +367,16 @@ describe 'EnforcePermissionsTests', browser: true do
     projects = pp.projects
     pp.logout
     projects
+  end
+
+  def can_clone(user, project)
+    success = false
+    Dir.mktmpdir do | dir |
+      git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)
+      git.fail_on_error=false
+      success = git.clone
+      create_file(dir) unless success # workaround for mktmpdir failure to unlink_internal if clone fails
+    end
+    success
   end
 end

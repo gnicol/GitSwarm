@@ -952,3 +952,6 @@ DEPENDENCIES
   webmock (~> 1.21.0)
   whenever (~> 0.8.4)
   wikicloth (= 0.8.1)
+
+BUNDLED WITH
+   1.10.3

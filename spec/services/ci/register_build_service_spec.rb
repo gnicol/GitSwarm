@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 module Ci
-  describe RegisterBuildService do
+  describe RegisterBuildService, services: true do
     let!(:service) { RegisterBuildService.new }
-    let!(:project) { FactoryGirl.create :ci_project }
+    let!(:project) { FactoryGirl.create :empty_project, shared_runners_enabled: false }
     let!(:commit) { FactoryGirl.create :ci_commit, project: project }
-    let!(:pending_build) { FactoryGirl.create :ci_build, project: project, commit: commit }
+    let!(:pending_build) { FactoryGirl.create :ci_build, commit: commit }
     let!(:shared_runner) { FactoryGirl.create(:ci_runner, is_shared: true) }
     let!(:specific_runner) { FactoryGirl.create(:ci_runner, is_shared: false) }
 
@@ -47,8 +47,7 @@ module Ci
 
       context 'allow shared runners' do
         before do
-          project.shared_runners_enabled = true
-          project.save
+          project.update(shared_runners_enabled: true)
         end
 
         context 'shared runner' do
@@ -71,6 +70,10 @@ module Ci
       end
 
       context 'disallow shared runners' do
+        before do
+          project.update(shared_runners_enabled: false)
+        end
+
         context 'shared runner' do
           let(:build) { service.execute(shared_runner) }
 

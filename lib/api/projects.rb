@@ -7,8 +7,12 @@ module API
       helpers do
         def map_public_to_visibility_level(attrs)
           publik = attrs.delete(:public)
-          publik = parse_boolean(publik)
-          attrs[:visibility_level] = Gitlab::VisibilityLevel::PUBLIC if !attrs[:visibility_level].present? && publik == true
+          if publik.present? && !attrs[:visibility_level].present?
+            publik = parse_boolean(publik)
+            # Since setting the public attribute to private could mean either
+            # private or internal, use the more conservative option, private.
+            attrs[:visibility_level] = (publik == true) ? Gitlab::VisibilityLevel::PUBLIC : Gitlab::VisibilityLevel::PRIVATE
+          end
           attrs
         end
       end
@@ -75,8 +79,10 @@ module API
       #   description (optional) - short project description
       #   issues_enabled (optional)
       #   merge_requests_enabled (optional)
+      #   builds_enabled (optional)
       #   wiki_enabled (optional)
       #   snippets_enabled (optional)
+      #   shared_runners_enabled (optional)
       #   namespace_id (optional) - defaults to user namespace
       #   public (optional) - if true same as setting visibility_level = 20
       #   visibility_level (optional) - 0 by default
@@ -90,8 +96,10 @@ module API
                                      :description,
                                      :issues_enabled,
                                      :merge_requests_enabled,
+                                     :builds_enabled,
                                      :wiki_enabled,
                                      :snippets_enabled,
+                                     :shared_runners_enabled,
                                      :namespace_id,
                                      :public,
                                      :visibility_level,
@@ -117,8 +125,10 @@ module API
       #   default_branch (optional) - 'master' by default
       #   issues_enabled (optional)
       #   merge_requests_enabled (optional)
+      #   builds_enabled (optional)
       #   wiki_enabled (optional)
       #   snippets_enabled (optional)
+      #   shared_runners_enabled (optional)
       #   public (optional) - if true same as setting visibility_level = 20
       #   visibility_level (optional)
       #   import_url (optional)
@@ -132,8 +142,10 @@ module API
                                      :default_branch,
                                      :issues_enabled,
                                      :merge_requests_enabled,
+                                     :builds_enabled,
                                      :wiki_enabled,
                                      :snippets_enabled,
+                                     :shared_runners_enabled,
                                      :public,
                                      :visibility_level,
                                      :import_url]
@@ -172,8 +184,10 @@ module API
       #   description (optional) - short project description
       #   issues_enabled (optional)
       #   merge_requests_enabled (optional)
+      #   builds_enabled (optional)
       #   wiki_enabled (optional)
       #   snippets_enabled (optional)
+      #   shared_runners_enabled (optional)
       #   public (optional) - if true same as setting visibility_level = 20
       #   visibility_level (optional) - visibility level of a project
       # Example Request
@@ -185,8 +199,10 @@ module API
                                      :default_branch,
                                      :issues_enabled,
                                      :merge_requests_enabled,
+                                     :builds_enabled,
                                      :wiki_enabled,
                                      :snippets_enabled,
+                                     :shared_runners_enabled,
                                      :public,
                                      :visibility_level]
         attrs = map_public_to_visibility_level(attrs)
@@ -246,8 +262,8 @@ module API
       # Example Request:
       #  DELETE /projects/:id/fork
       delete ":id/fork" do
-        authenticated_as_admin!
-        unless user_project.forked_project_link.nil?
+        authorize! :remove_fork_project, user_project
+        if user_project.forked?
           user_project.forked_project_link.destroy
         end
       end

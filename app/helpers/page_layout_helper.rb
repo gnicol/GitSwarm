@@ -4,7 +4,8 @@ module PageLayoutHelper
 
     @page_title.push(*titles.compact) if titles.any?
 
-    @page_title.join(" | ")
+    # Segments are seperated by middot
+    @page_title.join(" \u00b7 ")
   end
 
   def header_title(title = nil, title_url = nil)
@@ -26,7 +27,7 @@ module PageLayoutHelper
 
   def fluid_layout(enabled = false)
     if @fluid_layout.nil?
-      @fluid_layout = enabled
+      @fluid_layout = (current_user && current_user.layout == "fluid") || enabled
     else
       @fluid_layout
     end

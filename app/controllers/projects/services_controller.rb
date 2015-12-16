@@ -6,9 +6,15 @@ class Projects::ServicesController < Projects::ApplicationController
                     :description, :issues_url, :new_issue_url, :restrict_to_branch, :channel,
                     :colorize_messages, :channels,
                     :push_events, :issues_events, :merge_requests_events, :tag_push_events,
-                    :note_events, :send_from_committer_email, :disable_diffs, :external_wiki_url,
+                    :note_events, :build_events,
+                    :notify_only_broken_builds, :add_pusher,
+                    :send_from_committer_email, :disable_diffs, :external_wiki_url,
                     :notify, :color,
                     :server_host, :server_port, :default_irc_uri, :enable_ssl_verification]
+
+  # Parameters to ignore if no value is specified
+  FILTER_BLANK_PARAMS = [:password]
+
   # Authorize
   before_action :authorize_admin_project!
   before_action :service, only: [:edit, :update, :test]
@@ -48,7 +54,7 @@ class Projects::ServicesController < Projects::ApplicationController
       message = { alert: error_message }
     end
 
-    redirect_to :back, message
+    redirect_back_or_default(options: message)
   end
 
   private
@@ -58,6 +64,10 @@ class Projects::ServicesController < Projects::ApplicationController
   end
 
   def service_params
-    params.require(:service).permit(ALLOWED_PARAMS)
+    service_params = params.require(:service).permit(ALLOWED_PARAMS)
+    FILTER_BLANK_PARAMS.each do |param|
+      service_params.delete(param) if service_params[param].blank?
+    end
+    service_params
   end
 end

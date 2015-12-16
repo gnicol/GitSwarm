@@ -13,6 +13,18 @@ module StubGitlabCalls
     allow_any_instance_of(Network).to receive(:projects) { project_hash_array }
   end
 
+  def stub_ci_commit_to_return_yaml_file
+    stub_ci_commit_yaml_file(gitlab_ci_yaml)
+  end
+
+  def stub_ci_commit_yaml_file(ci_yaml)
+    allow_any_instance_of(Ci::Commit).to receive(:ci_yaml_file) { ci_yaml }
+  end
+
+  def stub_ci_builds_disabled
+    allow_any_instance_of(Project).to receive(:builds_enabled?).and_return(false)
+  end
+
   private
 
   def gitlab_url

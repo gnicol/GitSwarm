@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Gitlab::OAuth::User do
+describe Gitlab::OAuth::User, lib: true do
   let(:oauth_user) { Gitlab::OAuth::User.new(auth_hash) }
   let(:gl_user) { oauth_user.gl_user }
   let(:uid) { 'my-uid' }
@@ -19,10 +19,6 @@ describe Gitlab::OAuth::User do
     let!(:existing_user) { create(:omniauth_user, extern_uid: 'my-uid', provider: 'my-provider') }
 
     it "finds an existing user based on uid and provider (facebook)" do
-      # FIXME (rspeicher): It's unlikely that this test is actually doing anything
-      # `auth` is never used and removing it entirely doesn't break the test, so
-      # what's it doing?
-      auth = double(info: double(name: 'John'), uid: 'my-uid', provider: 'my-provider')
       expect( oauth_user.persisted? ).to be_truthy
     end
 

@@ -44,6 +44,14 @@ module Gitlab
           diff.old_path
         end
       end
+
+      def added_lines
+        diff_lines.count(&:added?)
+      end
+
+      def removed_lines
+        diff_lines.count(&:removed?)
+      end
     end
   end
 end

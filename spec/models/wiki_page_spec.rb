@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe WikiPage do
+describe WikiPage, models: true do
   let(:project) { create(:empty_project) }
   let(:user) { project.owner }
   let(:wiki) { ProjectWiki.new(project, user) }
@@ -196,7 +196,7 @@ describe WikiPage do
   end
 
   def commit_details
-    commit = { name: user.name, email: user.email, message: "test commit" }
+    { name: user.name, email: user.email, message: "test commit" }
   end
 
   def create_page(name, content)

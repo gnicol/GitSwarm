@@ -7,12 +7,6 @@ Feature: Project Services
     When I visit project "Shop" services page
     Then I should see list of available services
 
-  Scenario: Activate gitlab-ci service
-    When I visit project "Shop" services page
-    And I click gitlab-ci service link
-    And I fill gitlab-ci settings
-    Then I should see service settings saved
-
   Scenario: Activate hipchat service
     When I visit project "Shop" services page
     And I click hipchat service link
@@ -72,6 +66,7 @@ Feature: Project Services
     And I click Atlassian Bamboo CI service link
     And I fill Atlassian Bamboo CI settings
     Then I should see Atlassian Bamboo CI service settings saved
+    And I should see empty field Change Password
 
   Scenario: Activate jetBrains TeamCity CI service
     When I visit project "Shop" services page

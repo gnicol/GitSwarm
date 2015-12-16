@@ -154,7 +154,7 @@ module Gitlab
           while comment = comments.shift
             verb = comment['sVerb']
 
-            next if verb == 'Opened' || verb === 'Closed'
+            next if verb == 'Opened'
 
             content = format_content(comment['s'])
             attachments = format_attachments(comment['rgAttachments'])
@@ -199,7 +199,7 @@ module Gitlab
         s = s.gsub(/^#/, "\\#")
         s = s.gsub(/^-/, "\\-")
         s = s.gsub("`", "\\~")
-        s = s.gsub("\r", "")
+        s = s.delete("\r")
         s = s.gsub("\n", "  \n")
         s
       end

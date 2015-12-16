@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SystemNoteService do
+describe SystemNoteService, services: true do
   let(:project)  { create(:project) }
   let(:author)   { create(:user) }
   let(:noteable) { create(:issue, project: project) }
@@ -207,6 +207,32 @@ describe SystemNoteService do
     end
   end
 
+  describe '.merge_when_build_succeeds' do
+    let(:ci_commit) { build :ci_commit_without_jobs }
+    let(:noteable) { create :merge_request }
+
+    subject { described_class.merge_when_build_succeeds(noteable, project, author, noteable.last_commit) }
+
+    it_behaves_like 'a system note'
+
+    it "posts the Merge When Build Succeeds system note" do
+      expect(subject.note).to match  /Enabled an automatic merge when the build for (\w+\/\w+@)?[0-9a-f]{40} succeeds/
+    end
+  end
+
+  describe '.cancel_merge_when_build_succeeds' do
+    let(:ci_commit) { build :ci_commit_without_jobs }
+    let(:noteable) { create :merge_request }
+
+    subject { described_class.cancel_merge_when_build_succeeds(noteable, project, author) }
+
+    it_behaves_like 'a system note'
+
+    it "posts the Merge When Build Succeeds system note" do
+      expect(subject.note).to eq  "Canceled the automatic merge"
+    end
+  end
+
   describe '.change_title' do
     subject { described_class.change_title(noteable, project, author, 'Old title') }
 
@@ -238,6 +264,18 @@ describe SystemNoteService do
     context 'when target branch name changed' do
       it 'sets the note text' do
         expect(subject.note).to eq "Target branch changed from `#{old_branch}` to `#{new_branch}`"
+      end
+    end
+  end
+
+  describe '.change_branch_presence' do
+    subject { described_class.change_branch_presence(noteable, project, author, :source, 'feature', :delete) }
+
+    it_behaves_like 'a system note'
+
+    context 'when source branch deleted' do
+      it 'sets the note text' do
+        expect(subject.note).to eq "Deleted source branch `feature`"
       end
     end
   end

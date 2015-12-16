@@ -16,11 +16,12 @@
 #  system        :boolean          default(FALSE), not null
 #  st_diff       :text
 #  updated_by_id :integer
+#  is_award      :boolean          default(FALSE), not null
 #
 
 require 'spec_helper'
 
-describe Note do
+describe Note, models: true do
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:noteable) }
@@ -30,77 +31,6 @@ describe Note do
   describe 'validation' do
     it { is_expected.to validate_presence_of(:note) }
     it { is_expected.to validate_presence_of(:project) }
-  end
-
-  describe '#votable?' do
-    it 'is true for issue notes' do
-      note = build(:note_on_issue)
-      expect(note).to be_votable
-    end
-
-    it 'is true for merge request notes' do
-      note = build(:note_on_merge_request)
-      expect(note).to be_votable
-    end
-
-    it 'is false for merge request diff notes' do
-      note = build(:note_on_merge_request_diff)
-      expect(note).not_to be_votable
-    end
-
-    it 'is false for commit notes' do
-      note = build(:note_on_commit)
-      expect(note).not_to be_votable
-    end
-
-    it 'is false for commit diff notes' do
-      note = build(:note_on_commit_diff)
-      expect(note).not_to be_votable
-    end
-  end
-
-  describe 'voting score' do
-    it 'recognizes a neutral note' do
-      note = build(:votable_note, note: 'This is not a +1 note')
-      expect(note).not_to be_upvote
-      expect(note).not_to be_downvote
-    end
-
-    it 'recognizes a neutral emoji note' do
-      note = build(:votable_note, note: "I would :+1: this, but I don't want to")
-      expect(note).not_to be_upvote
-      expect(note).not_to be_downvote
-    end
-
-    it 'recognizes a +1 note' do
-      note = build(:votable_note, note: '+1 for this')
-      expect(note).to be_upvote
-    end
-
-    it 'recognizes a +1 emoji as a vote' do
-      note = build(:votable_note, note: ':+1: for this')
-      expect(note).to be_upvote
-    end
-
-    it 'recognizes a thumbsup emoji as a vote' do
-      note = build(:votable_note, note: ':thumbsup: for this')
-      expect(note).to be_upvote
-    end
-
-    it 'recognizes a -1 note' do
-      note = build(:votable_note, note: '-1 for this')
-      expect(note).to be_downvote
-    end
-
-    it 'recognizes a -1 emoji as a vote' do
-      note = build(:votable_note, note: ':-1: for this')
-      expect(note).to be_downvote
-    end
-
-    it 'recognizes a thumbsdown emoji as a vote' do
-      note = build(:votable_note, note: ':thumbsdown: for this')
-      expect(note).to be_downvote
-    end
   end
 
   describe "Commit notes" do
@@ -138,10 +68,6 @@ describe Note do
 
     it "should be recognized by #for_commit_diff_line?" do
       expect(note).to be_for_commit_diff_line
-    end
-
-    it "should not be votable" do
-      expect(note).not_to be_votable
     end
   end
 
@@ -192,10 +118,9 @@ describe Note do
   end
 
   it_behaves_like 'an editable mentionable' do
-    subject { create :note, noteable: issue, project: project }
+    subject { create :note, noteable: issue, project: issue.project }
 
-    let(:project) { create(:project) }
-    let(:issue) { create :issue, project: project }
+    let(:issue) { create :issue }
     let(:backref_text) { issue.gfm_reference }
     let(:set_mentionable_text) { ->(txt) { subject.note = txt } }
   end
@@ -204,5 +129,43 @@ describe Note do
     let!(:note) { create(:note, note: "WoW") }
 
     it { expect(Note.search('wow')).to include(note) }
+  end
+
+  describe :grouped_awards do
+    before do
+      create :note, note: "smile", is_award: true
+      create :note, note: "smile", is_award: true
+    end
+
+    it "returns grouped array of notes" do
+      expect(Note.grouped_awards.first.first).to eq("smile")
+      expect(Note.grouped_awards.first.last).to match_array(Note.all)
+    end
+  end
+
+  describe "editable?" do
+    it "returns true" do
+      note = build(:note)
+      expect(note.editable?).to be_truthy
+    end
+
+    it "returns false" do
+      note = build(:note, system: true)
+      expect(note.editable?).to be_falsy
+    end
+
+    it "returns false" do
+      note = build(:note, is_award: true, note: "smiley")
+      expect(note.editable?).to be_falsy
+    end
+  end
+  
+  describe "set_award!" do
+    let(:issue) { create :issue }
+
+    it "converts aliases to actual name" do
+      note = create :note, note: ":thumbsup:", noteable: issue
+      expect(note.reload.note).to eq("+1")
+    end
   end
 end

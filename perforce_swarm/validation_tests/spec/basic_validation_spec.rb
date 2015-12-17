@@ -39,23 +39,25 @@ describe 'BasicValidationTests', browser: true do
       if CONFIG.get('gitswarm_username') != 'root' && CONFIG.get('p4_user') != 'root'
         skip "Skipping test because GitSwarm & P4 admin users in config.yml are not 'root'"
       end
-      # Reset password from CONFIG.get('gitswarm_password') to 'new_password'
-      reset_password(CONFIG.get('gitswarm_url'), 'root', CONFIG.get('gitswarm_password'), new_password)
+
+      # Reset password from CONFIG.get('gitswarm_password') to 'new_password':
+      GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
+                            CONFIG.get('gitswarm_username'),
+                            CONFIG.get('gitswarm_password')
+      ).update_admin_password('root', new_password)
 
       # Verify that p4 root user password is 'new_password'
       verify_p4_password(CONFIG.get('p4_port'), 'root', new_password)
 
       # Finally, reset the GitSwarm root user password back to its original password CONFIG.get('gitswarm_password')
-      reset_password(CONFIG.get('gitswarm_url'), 'root', new_password, CONFIG.get('gitswarm_password'))
+      GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
+                            CONFIG.get('gitswarm_username'),
+                            new_password
+      ).update_admin_password('root', CONFIG.get('gitswarm_password'))
 
-      # Verify that p4 root user password is original password
+      # And verify that p4 root user password is back to its original password
       verify_p4_password(CONFIG.get('p4_port'), 'root', CONFIG.get('gitswarm_password'))
     end
-  end
-
-  def reset_password(url, user, existing_password, new_password)
-    login = LoginPage.new(@driver, url)
-    login.click_login_with_password_reset(user, existing_password, new_password)
   end
 
   def verify_p4_password(p4_port, user, password)

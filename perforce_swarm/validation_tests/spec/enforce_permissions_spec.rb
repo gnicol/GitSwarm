@@ -19,6 +19,7 @@ describe 'EnforcePermissionsTests', browser: true do
     @teardown = CONFIG.get(CONFIG::SKIP_TEARDOWN) ? false : true
     @run_id   = CONFIG.get(CONFIG::RUN_ID)        || unique_string
 
+
     LOG.log('Skipping setup due to setting') unless @setup
     LOG.log("run_id for this run is #{@run_id}")
 
@@ -378,10 +379,6 @@ describe 'EnforcePermissionsTests', browser: true do
       expect(can_push(user, @read_all_write_partial, PUBLIC)).to be true
       expect(can_push(user, @read_all_write_none, PRIVATE)).to be false
       expect(can_push(user, @read_all_write_none, PUBLIC)).to be false
-      expect(can_push(user, @read_partial, PRIVATE)).to be false
-      expect(can_push(user, @read_partial, PUBLIC)).to be false
-      expect(can_push(user, @read_none, PRIVATE)).to be false
-      expect(can_push(user, @read_none, PUBLIC)).to be false
     end
   end
 

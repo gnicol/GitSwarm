@@ -5,9 +5,9 @@ Rails.application.routes.draw do
 
   resources :namespaces, path: '/', constraints: { id: /[a-zA-Z.0-9_\-]+/ }, only: [] do
     resources(:projects, constraints: { id: /[a-zA-Z.0-9_\-]+(?<!\.atom)/ }, only:
-                           [:configure_mirroring, :enable_mirroring], path: '/') do
+                           [:helix_mirroring, :enable_mirroring], path: '/') do
       member do
-        get :configure_mirroring
+        get :helix_mirroring
         post :enable_mirroring
       end
     end

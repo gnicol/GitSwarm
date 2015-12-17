@@ -7,10 +7,6 @@ module PerforceSwarm
       super
     end
 
-    def git_fusion_mirrored?
-      git_fusion_repo.present? && git_fusion_mirrored
-    end
-
     def disable_git_fusion_mirroring!
       update_attribute(:git_fusion_mirrored, false)
       # remove the mirror remote, which will turn off mirroring in gitlab-shell
@@ -61,7 +57,7 @@ class Project < ActiveRecord::Base
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.
   # @todo If rspec ever fixed prepend handling; move this to ProjectExtension. Or fix rspec ourselves!
   alias_method :add_import_job_super, :add_import_job
-  alias_method :git_fusion_import?, :git_fusion_mirrored?
+
   def add_import_job
     # no git fusion repo, so carry on with normal import behaviour
     return add_import_job_super unless git_fusion_import?
@@ -80,4 +76,9 @@ class Project < ActiveRecord::Base
     end
     Process.detach(import_job)
   end
+
+  def git_fusion_mirrored?
+    git_fusion_repo.present? && git_fusion_mirrored
+  end
+  alias_method :git_fusion_import?, :git_fusion_mirrored?
 end

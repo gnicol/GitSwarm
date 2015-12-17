@@ -51,12 +51,12 @@ describe ProjectsController, type: :controller do
     controller.instance_variable_set(:@project, project)
   end
 
-  describe 'POST disable_git_fusion_mirroring' do
+  describe 'POST disable_helix_mirroring' do
     it 'does nothing to the mirroring status if the project is not mirrored' do
       expected_redirect = '/' + [project.namespace.to_param,
                                  project.to_param].join('/')
       expect(project.git_fusion_mirrored?).to be false
-      post(:disable_git_fusion_mirroring,
+      post(:disable_helix_mirroring,
            namespace_id: project.namespace.name,
            id: project)
       expect(response).to redirect_to(expected_redirect)
@@ -71,7 +71,7 @@ describe ProjectsController, type: :controller do
       expect(project.git_fusion_mirrored?).to be true
 
       # disable mirroring through our controller
-      post(:disable_git_fusion_mirroring,
+      post(:disable_helix_mirroring,
            namespace_id: project.namespace.name,
            id: project)
       expect(response).to redirect_to(expected_redirect)

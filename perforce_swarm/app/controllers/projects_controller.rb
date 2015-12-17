@@ -2,7 +2,7 @@ require Rails.root.join('app', 'controllers', 'projects_controller')
 
 module PerforceSwarm
   module ProjectsControllerExtension
-    def configure_git_fusion_mirroring
+    def configure_helix_mirroring
       # if the project is already mirrored, redirect back to the project page with a flash message
       if @project.git_fusion_mirrored?
         redirect_to(
@@ -16,7 +16,7 @@ module PerforceSwarm
     end
 
     # actually performs the task of mirroring on the specified project and repo server
-    def enable_git_fusion_mirroring
+    def enable_helix_mirroring
       fail 'No project specified.' unless @project
       fail 'Project is already mirrored in Helix.' if @project.git_fusion_mirrored?
 
@@ -48,7 +48,7 @@ module PerforceSwarm
       redirect_to(redirect_location, alert: e.message)
     end
 
-    def disable_git_fusion_mirroring
+    def disable_helix_mirroring
       fail 'No project specified.' unless @project
 
       # disable mirroring in GitSwarm, and redirect to project details page

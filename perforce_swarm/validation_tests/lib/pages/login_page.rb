@@ -36,16 +36,16 @@ class LoginPage < Page
     LoggedInPage.new(@driver)
   end
 
-  def click_login_with_password_reset(user, password, url = nil)
+  def click_login_with_password_reset(user, password)
     # click login, then return a page for the password reset page
     login(user, password)
-    PasswordResetPage.new(@driver, url)
+    PasswordResetPage.new(@driver, "#{CONFIG.get('gitswarm_url')}/profile/password/edit")
   end
 
-  def click_login_expecting_dashboard(user, password, url = nil)
+  def click_login_expecting_dashboard(user, password)
     # click login, then return a page for the dashboard
     login(user, password)
-    LoggedInPage.new(@driver, url)
+    LoggedInPage.new(@driver)
   end
 
   private

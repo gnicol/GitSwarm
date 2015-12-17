@@ -26,7 +26,7 @@ class P4Helper
     @client_name = Time.new.strftime('%y%m%d-%H%M%S%L')
   end
 
-  def login
+  def connect
     LOG.debug 'Connecting to ' + @p4.port
     @p4.client = @client_name
     @p4.connect
@@ -45,7 +45,7 @@ class P4Helper
   end
 
   def connect_and_sync
-    login
+    connect
     spec = @p4.fetch_client
     spec['Root'] = @local_dir
     spec['View'] = [@depot_path + ' //'+client_name+'/...']

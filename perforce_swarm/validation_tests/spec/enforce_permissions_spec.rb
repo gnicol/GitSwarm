@@ -382,26 +382,6 @@ describe 'EnforcePermissionsTests', browser: true do
     end
   end
 
-  describe 'A user with no write permissions in perforce' do
-    it 'should be not be allowed to PUSH anywhere' do
-      user = @user_gs_access_p4_noaccess
-      @projects.each do | project |
-        expect(can_push(user, project, PRIVATE)).to be false
-        expect(can_push(user, project, PUBLIC)).to be false
-      end
-    end
-  end
-
-  describe 'A user not in perforce' do
-    it 'should be not be allowed to PUSH anywhere' do
-      user = @user_gs_access_p4_notexist
-      @projects.each do | project |
-        expect(can_push(user, project, PRIVATE)).to be false
-        expect(can_push(user, project, PUBLIC)).to be false
-      end
-    end
-  end
-
   describe 'A user with partial write permissions in perforce' do
     it 'should not be allowed to PUSH only if they dont have p4 write access to ALL files in a push' do
       user = @user_gs_access_p4_access

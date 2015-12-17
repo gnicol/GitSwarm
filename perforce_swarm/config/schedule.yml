@@ -1,0 +1,12 @@
+# Here is a list of jobs that are scheduled to run periodically.
+# We use a UNIX cron notation to specify execution schedule.+#
+# Please read here for more information:
+# https://github.com/ondrejbartas/sidekiq-cron#adding-cron-job
+
+# Once a minute we'll scan all the repos to:
+#  - clean up any hung git-fusion imports
+#  - fetch outdated repos to freshen them
+mirror_fetch__worker:
+  cron: "* * * * *"
+  class: "PerforceSwarm::MirrorFetchWorker"
+  queue: "default"

@@ -33,7 +33,7 @@ module PerforceSwarm
       Process.detach(push_job)
       redirect_to(project_path(@project), notice: 'Mirroring successful!')
     rescue => e
-      # any errors occurring in the above are shown on the configure_mirroring page, but if we've
+      # any errors occurring in the above are shown on the helix_mirroring page, but if we've
       # gotten as far as mirroring, this will cause a double redirect, so we hit the project details page instead
       redirect_location = @project && @project.git_fusion_repo.present? ? project_path(@project) : :back
       redirect_to(redirect_location, alert: e.message)

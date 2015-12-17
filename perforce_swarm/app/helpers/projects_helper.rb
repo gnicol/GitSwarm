@@ -75,7 +75,7 @@ module ProjectsHelper
 
     # all good in the 'hood - tooltip is slightly different for the button vs the text below the clone URL
     return 'Click to get mirroring!' if for_button
-    'Click "Mirror in Helix" above to get mirroring!'
+    'Click "Helix Mirroring" above to get mirroring!'
   end
 
   # boolean as to whether there are configured Git Fusion instances in the config

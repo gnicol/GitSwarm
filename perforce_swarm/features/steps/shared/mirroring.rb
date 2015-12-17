@@ -12,7 +12,7 @@ module SharedMirroring
   end
 
   def default_entry
-    { id:      'local',
+    { id:  'local',
       url: 'http://user@foo',
       password: 'bar',
       git_config_params: 'http.sslVerify=false'

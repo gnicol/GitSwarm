@@ -34,7 +34,7 @@ describe 'New Mirrored Project', browser: true do
       @git_filename = 'git-file-'+unique_string
       create_file(git_dir, @git_filename)
       LOG.debug 'Creating file in git : ' + @git_filename
-      @git.add_commit_push
+      @git.add_commit_push(commit_message)
       sleep(2) # some time to let the file get into perforce
     end
 
@@ -53,7 +53,7 @@ describe 'New Mirrored Project', browser: true do
       LOG.debug('Changelist in perforce is : '+output.to_s)
       changelist_description = output.fetch('desc')
       expect(changelist_description.include?(commit_message)).to be true
-      expect(changelist_description.include?(email)).to be true
+      expect(changelist_description.include?(user.email)).to be true
     end
   end
 

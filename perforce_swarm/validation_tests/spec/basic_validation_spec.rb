@@ -28,17 +28,16 @@ describe 'BasicValidationTests', browser: true do
     let(:new_password) { 'new-password-123' }
 
     it 'should have expected p4 root password to match existing Gitswarm root password' do
-      if CONFIG.get('gitswarm_username') != 'root'
-        skip "Skipping test because GitSwarm admin CONFIG.get('gitswarm_username') != 'root'"
+      if CONFIG.get('gitswarm_username') != 'root' && CONFIG.get('p4_user') != 'root'
+        skip "Skipping test because GitSwarm & P4 admin users in config.yml are not 'root'"
       end
-      # Note that the p4 user is 'root'
-      # Verify that p4 'root' user's password matches GitSwarm root user's password
+      # Verify that auto provisioned p4 'root' user's password matches GitSwarm root user's password
       verify_p4_password(CONFIG.get('p4_port'), 'root', CONFIG.get('gitswarm_password'))
     end
 
     it 'should have expected p4 root password to match updated Gitswarm root password' do
-      if CONFIG.get('gitswarm_username') != 'root'
-        skip "Skipping test because GitSwarm admin CONFIG.get('gitswarm_username') != 'root'"
+      if CONFIG.get('gitswarm_username') != 'root' && CONFIG.get('p4_user') != 'root'
+        skip "Skipping test because GitSwarm & P4 admin users in config.yml are not 'root'"
       end
       # Reset password from CONFIG.get('gitswarm_password') to 'new_password'
       reset_password(CONFIG.get('gitswarm_url'), 'root', CONFIG.get('gitswarm_password'), new_password)
@@ -56,8 +55,7 @@ describe 'BasicValidationTests', browser: true do
 
   def reset_password(url, user, existing_password, new_password)
     login = LoginPage.new(@driver, url)
-    password_reset_page = login.click_login_with_password_reset(user, existing_password)
-    password_reset_page.set_password(existing_password, new_password)
+    password_reset_page = login.click_login_with_password_reset(user, existing_password, new_password)
   end
 
   def verify_p4_password(p4_port, user, password)

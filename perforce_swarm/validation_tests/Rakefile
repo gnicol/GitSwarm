@@ -9,12 +9,12 @@ end
 
 RSpec::Core::RakeTask.new(:testLocalGF) do |t|
   t.pattern = Dir.glob('spec/**/*_spec.rb')
-  t.rspec_opts = '--format documentation --tag @localGF'
+  t.rspec_opts = '--format documentation --tag @localGFOnly'
 end
 
 RSpec::Core::RakeTask.new(:testExternalGF) do |t|
   t.pattern = Dir.glob('spec/**/*_spec.rb')
-  t.rspec_opts = '--format documentation  --tag @externalGF'
+  t.rspec_opts = '--format documentation  --tag @externalGFOnly'
 end
 
 task(default: :test)

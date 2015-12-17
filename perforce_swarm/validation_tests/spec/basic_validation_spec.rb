@@ -55,7 +55,7 @@ describe 'BasicValidationTests', browser: true do
 
   def reset_password(url, user, existing_password, new_password)
     login = LoginPage.new(@driver, url)
-    password_reset_page = login.click_login_with_password_reset(user, existing_password, new_password)
+    login.click_login_with_password_reset(user, existing_password, new_password)
   end
 
   def verify_p4_password(p4_port, user, password)

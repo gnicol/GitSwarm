@@ -20,7 +20,6 @@ class GitHelper
     helper.url = url.scheme + '://' + user + ':' + password + '@' + url.host + url.path
     helper
   end
-  
 
   # TODO: define an ssh_helper factory method, including accepting the host key
   # For ssh, adding a key in just the contect of a command use:
@@ -28,7 +27,7 @@ class GitHelper
   # system (command)
 
   attr_accessor :url, :git, :fail_on_error # throw exceptions if any system calls return non-0
-  
+
   def initialize(local_dir, user, email)
     # the binary to call, defaulting to whatever is on the path
     @git            = CONFIG.get('git_binary') || 'git'
@@ -59,11 +58,7 @@ class GitHelper
   end
 
   def commit(message = 'auto_message')
-    run_git_command('commit', '-m', '"' + message + '"')
-  end
-
-  def add_commit_push
-    add && commit && push
+    run_git_command('commit', '-m', "'#{message}'")
   end
 
   def add_commit_push(message = 'auto_message')

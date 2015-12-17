@@ -6,6 +6,9 @@ require_relative '../lib/user'
 require_relative '../lib/project'
 
 describe 'EnforcePermissionsTests', browser: true do
+  PRIVATE = 'private'
+  PUBLIC  = 'public'
+
   # before(:all) does the setup just once before the entire group
   # https://www.relishapp.com/rspec/rspec-core/v/2-2/docs/hooks/before-and-after-hooks
   before(:all) do
@@ -81,8 +84,8 @@ describe 'EnforcePermissionsTests', browser: true do
     # save the initial protects to reset to after
     @initial_protects = @p4_admin.protects
 
-    private_dir = '/master/private'
-    public_dir = '/master/public'
+    private_dir = "/master/#{PRIVATE}"
+    public_dir = "/master/#{PUBLIC}"
 
     if @setup
       LOG.log('Creating repo structure in p4')
@@ -352,6 +355,70 @@ describe 'EnforcePermissionsTests', browser: true do
     end
   end
 
+  #
+  # Project write/push through GitSwarm as restricted by Perforce permissions
+  #
+
+  describe 'A user with full write permissions in perforce' do
+    it 'should be allowed to PUSH to anywhere in a GS project mirrored in perforce' do
+      user = @user_root
+      @projects.each do | project |
+        expect(can_push(user, project, PRIVATE)).to be true
+        expect(can_push(user, project, PUBLIC)).to be true
+      end
+    end
+  end
+
+  describe 'A user with partial write permissions in perforce' do
+    it 'should be allowed to PUSH only to areas where they have write access in perforce' do
+      user = @user_gs_access_p4_access
+      expect(can_push(user, @read_all_write_all, PRIVATE)).to be true
+      expect(can_push(user, @read_all_write_all, PUBLIC)).to be true
+      expect(can_push(user, @read_all_write_partial, PRIVATE)).to be false
+      expect(can_push(user, @read_all_write_partial, PUBLIC)).to be true
+      expect(can_push(user, @read_all_write_none, PRIVATE)).to be false
+      expect(can_push(user, @read_all_write_none, PUBLIC)).to be false
+      expect(can_push(user, @read_partial, PRIVATE)).to be false
+      expect(can_push(user, @read_partial, PUBLIC)).to be false
+      expect(can_push(user, @read_none, PRIVATE)).to be false
+      expect(can_push(user, @read_none, PUBLIC)).to be false
+    end
+  end
+
+  describe 'A user with no write permissions in perforce' do
+    it 'should be not be allowed to PUSH anywhere' do
+      user = @user_gs_access_p4_noaccess
+      @projects.each do | project |
+        expect(can_push(user, project, PRIVATE)).to be false
+        expect(can_push(user, project, PUBLIC)).to be false
+      end
+    end
+  end
+
+  describe 'A user not in perforce' do
+    it 'should be not be allowed to PUSH anywhere' do
+      user = @user_gs_access_p4_notexist
+      @projects.each do | project |
+        expect(can_push(user, project, PRIVATE)).to be false
+        expect(can_push(user, project, PUBLIC)).to be false
+      end
+    end
+  end
+
+  describe 'A user with partial write permissions in perforce' do
+    it 'should not be allowed to PUSH only if they dont have p4 write access to ALL files in a push' do
+      user = @user_gs_access_p4_access
+      Dir.mktmpdir(nil, tmp_client_dir) do | dir |
+        git = GitHelper.http_helper(dir, @read_all_write_partial.http_url, user.name, user.password, user.email)
+        git.clone # leave fail_on_error, this method should only be called for configurations with repo read permission
+        git.fail_on_error=false
+        create_file(File.join(dir, PUBLIC))  # add one file that should be pushable
+        create_file(File.join(dir, PRIVATE)) # add one file that should NOT be pushable
+        expect(git.add_commit_push).to be false
+      end
+    end
+  end
+
   private
 
   def list_repos_for_user(user)
@@ -376,6 +443,19 @@ describe 'EnforcePermissionsTests', browser: true do
       git.fail_on_error=false
       success = git.clone
       create_file(dir) unless success # workaround for mktmpdir failure to unlink_internal if clone fails
+    end
+    success
+  end
+
+  # path should be either public or private
+  def can_push(user, project, path)
+    success = false
+    Dir.mktmpdir(nil, tmp_client_dir) do | dir |
+      git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)
+      git.clone # leave fail_on_error, this method should only be called for configurations with repo read permission
+      git.fail_on_error=false
+      create_file(File.join(dir, path))
+      success = git.add_commit_push
     end
     success
   end

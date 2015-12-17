@@ -19,7 +19,6 @@ describe 'EnforcePermissionsTests', browser: true do
     @teardown = CONFIG.get(CONFIG::SKIP_TEARDOWN) ? false : true
     @run_id   = CONFIG.get(CONFIG::RUN_ID)        || unique_string
 
-
     LOG.log('Skipping setup due to setting') unless @setup
     LOG.log("run_id for this run is #{@run_id}")
 

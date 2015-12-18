@@ -101,7 +101,7 @@ module PerforceSwarm
       base_url = details('more_info')
       return base_url unless base_url
       base_url += base_url.include?('?') ? '&' : '?'
-      base_url + 'version='   + URI.encode(PerforceSwarm::VERSION) +
+      base_url + 'version=' + URI.encode(PerforceSwarm::VERSION) +
         '&revision=' + URI.encode(Gitlab::REVISION) +
         '&platform=' + URI.encode(platform)
     end
@@ -110,9 +110,9 @@ module PerforceSwarm
       details = update_details
       return details[key] if details
       default
-      rescue StandardError => e
-        Rails.logger.warn("Error during check for update: #{e.class} #{e.message}") if Rails.logger
-        return default
+    rescue StandardError => e
+      Rails.logger.warn("Error during check for update: #{e.class} #{e.message}") if Rails.logger
+      return default
     end
 
     def parse_version(version)

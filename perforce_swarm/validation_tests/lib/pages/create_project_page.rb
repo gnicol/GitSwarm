@@ -95,7 +95,7 @@ class CreateProjectPage < LoggedInPage
     elements.each do |x|
       next unless x.text==repo
       x.click
-      return
+      return true
     end
     fail('Did not find requested repo in available repos dropdown: '+repo)
   end

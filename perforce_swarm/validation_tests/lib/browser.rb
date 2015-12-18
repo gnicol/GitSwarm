@@ -12,7 +12,7 @@ module Browser
         case browser
         when :phantomjs
           caps = Selenium::WebDriver::Remote::Capabilities.phantomjs
-          caps['phantomjs.cli.args'] = ['--ignore-ssl-errors=true',  '--web-security=false', '--ssl-protocol=any']
+          caps['phantomjs.cli.args'] = ['--ignore-ssl-errors=true', '--web-security=false', '--ssl-protocol=any']
           @driver = Selenium::WebDriver.for :phantomjs, desired_capabilities: caps
           @driver.manage.window.resize_to 1024, 768
         else

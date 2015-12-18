@@ -23,6 +23,9 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Enabled: false
 
+Performance/Detect:
+  Enabled: false
+
 Style/ClassAndModuleChildren:
   Enabled: false
 
@@ -34,6 +37,9 @@ Style/GlobalVars:
 
 Style/GuardClause:
   Enabled: false
+
+Style/MultilineOperationIndentation:
+  EnforcedStyle: indented
 
 Style/SpaceAroundOperators:
   Enabled: false

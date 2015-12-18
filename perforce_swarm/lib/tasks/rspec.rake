@@ -47,5 +47,5 @@ def run_commands(cmds)
 end
 
 def arglist_string(arglist)
-  arglist.map { |k, v| (k.length > 1 ? '--' :  '-') + "#{k} #{v}" }.join(' ')
+  arglist.map { |k, v| (k.length > 1 ? '--' : '-') + "#{k} #{v}" }.join(' ')
 end

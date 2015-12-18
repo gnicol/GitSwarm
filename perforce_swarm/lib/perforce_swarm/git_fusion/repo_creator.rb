@@ -43,7 +43,7 @@ module PerforceSwarm
       # returns true if there are any files (even deleted) at the specified depot path, otherwise false
       def perforce_path_exists?(path, connection)
         # normalize path to not have a trailing slash or Perforce wildcard
-        path.gsub!(/[\/]+(\.\.\.)?$/, '')
+        path.gsub!(%r{[/]+(\.\.\.)?$}, '')
         # check both the path as a file and path/... (as a directory)
         [path + '/...', path].each do |depot_path|
           begin
@@ -81,7 +81,7 @@ module PerforceSwarm
       # //.git-fusion/repos/repo_name/p4gf_config
       def p4gf_config
         config_description  = 'Repo automatically created by GitSwarm.'
-        config_description += @description ? ' ' + @description.gsub("\n", ' ').strip : ''
+        config_description += @description ? ' ' + @description.tr("\n", ' ').strip : ''
         <<eof
 [@repo]
 description = #{config_description}

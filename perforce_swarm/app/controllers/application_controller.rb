@@ -16,7 +16,7 @@ module PerforceSwarm
     def load_recent_projects
       if current_user
         @recent_projects = current_user.authorized_projects
-                           .reorder('last_activity_at DESC, created_at DESC').non_archived.limit(5)
+          .reorder('last_activity_at DESC, created_at DESC').non_archived.limit(5)
       end
     end
 

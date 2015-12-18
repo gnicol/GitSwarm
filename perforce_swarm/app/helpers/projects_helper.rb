@@ -118,7 +118,7 @@ module ProjectsHelper
     return nil unless git_fusion_enabled?
 
     # Call the url method on each server to validate the config
-    gitlab_shell_config.git_fusion.entries.each { | _id, config | config.url }
+    gitlab_shell_config.git_fusion.entries.each { |_id, config| config.url }
     nil
   rescue => e
     return e.message

@@ -19,6 +19,7 @@ module PerforceSwarm
     def enable_helix_mirroring
       fail 'No project specified.' unless @project
       fail 'Project is already mirrored in Helix.' if @project.git_fusion_mirrored?
+      fail 'This project is already associated to a Helix Git Fusion repository.' if @project.git_fusion_repo.present?
 
       # create the p4gf_config file, which creates the repo in Git Fusion
       fusion_server = params['fusion_server']
@@ -27,11 +28,8 @@ module PerforceSwarm
       repo_creator.save
       PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: fusion_server)
 
-      # modify the project to include the mirror URL
-      @project.update_column(:git_fusion_repo, "mirror://#{fusion_server}/#{repo_creator.repo_name}")
-
-      # create mirror remote
-      PerforceSwarm::Repo.new(@project.repository.path_to_repo).mirror_url = @project.git_fusion_repo
+      # enable mirroring on the project and create the mirror remote
+      @project.enable_mirroring!(fusion_server, repo_creator.repo_name)
 
       # kick off and background initial push
       push_job = fork do
@@ -50,6 +48,7 @@ module PerforceSwarm
 
     def disable_helix_mirroring
       fail 'No project specified.' unless @project
+      fail 'Project is not mirrored in Helix.' unless @project.git_fusion_mirrored?
 
       # disable mirroring in GitSwarm, and redirect to project details page
       @project.disable_git_fusion_mirroring!

@@ -26,7 +26,7 @@ module PerforceSwarm
       end
 
       # if we thought a git-fusion import was ongoing; flag it as finished
-      if project.import_in_progress? && project.git_fusion_import?
+      if project.import_in_progress? && project.git_fusion_mirrored?
         project.import_finish
         project.save
       end

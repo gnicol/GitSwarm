@@ -6,6 +6,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
       # get the desired project and throw if it is already mirrored
       @project = Project.find(params['project_id'])
       fail 'This project is already mirrored in Helix.' if @project.git_fusion_mirrored?
+      fail 'This project is already associated to a Helix Git Fusion repository.' if @project.git_fusion_repo.present?
 
       # first verify we can talk to git-fusion successfully, add error out with details if we cannot
       begin

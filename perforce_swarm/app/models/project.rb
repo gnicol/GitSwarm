@@ -3,14 +3,26 @@ require Rails.root.join('app', 'models', 'project')
 module PerforceSwarm
   module ProjectExtension
     def import_in_progress?
-      return true if git_fusion_import? && import_status == 'started'
+      return true if git_fusion_mirrored? && import_status == 'started'
       super
     end
 
+    # disables Git Fusion mirroring on the project, and removes the mirror remote
+    # on the bare GitSwarm repo
     def disable_git_fusion_mirroring!
       update_attribute(:git_fusion_mirrored, false)
       # remove the mirror remote, which will turn off mirroring in gitlab-shell
       PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = nil
+    end
+
+    # enables Git Fusion mirroring on the project with the specified server and
+    # repo name, and creates the mirror remote on the GitSwarm bare repo
+    def enable_git_fusion_mirroring!(fusion_server, repo_name)
+      # update_attributes will validate the values it has been passed
+      update_attributes(git_fusion_repo: "mirror://#{fusion_server}/#{repo_name}",
+                        git_fusion_mirrored: true
+      )
+      PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
     end
 
     def create_repository
@@ -51,7 +63,6 @@ class Project < ActiveRecord::Base
 
   attr_accessor :git_fusion_auto_create
   attr_accessor :git_fusion_entry
-  attr_accessor :git_fusion_mirrored
 
   # The rspec tests use 'allow_any_instance_of' on Project to stub this method out during testing.
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.
@@ -60,7 +71,7 @@ class Project < ActiveRecord::Base
 
   def add_import_job
     # no git fusion repo, so carry on with normal import behaviour
-    return add_import_job_super unless git_fusion_import?
+    return add_import_job_super unless git_fusion_mirrored?
 
     # we have a git fusion import request- ensure project is marked as imported from git fusion
     update_column(:import_type, 'git_fusion')
@@ -77,8 +88,9 @@ class Project < ActiveRecord::Base
     Process.detach(import_job)
   end
 
+  # we don't include this in the ProjectExtension due to RSpec not allowing us
+  # to stub it out - see the comment above for details
   def git_fusion_mirrored?
     git_fusion_repo.present? && git_fusion_mirrored
   end
-  alias_method :git_fusion_import?, :git_fusion_mirrored?
 end

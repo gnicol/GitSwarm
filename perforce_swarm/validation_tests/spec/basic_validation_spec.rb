@@ -28,7 +28,7 @@ describe 'BasicValidationTests', browser: true do
     let(:new_password) { 'new-password-123' }
 
     it 'should have expected p4 root password to match existing Gitswarm root password' do
-      if CONFIG.get('gitswarm_username') != 'root' && CONFIG.get('p4_user') != 'root'
+      if CONFIG.get('gitswarm_username') != 'root' || CONFIG.get('p4_user') != 'root'
         skip "Skipping test because GitSwarm & P4 admin users in config.yml are not 'root'"
       end
       # Verify that auto provisioned p4 'root' user's password matches GitSwarm root user's password
@@ -36,7 +36,7 @@ describe 'BasicValidationTests', browser: true do
     end
 
     it 'should have expected p4 root password to match updated Gitswarm root password' do
-      if CONFIG.get('gitswarm_username') != 'root' && CONFIG.get('p4_user') != 'root'
+      if CONFIG.get('gitswarm_username') != 'root' || CONFIG.get('p4_user') != 'root'
         skip "Skipping test because GitSwarm & P4 admin users in config.yml are not 'root'"
       end
 

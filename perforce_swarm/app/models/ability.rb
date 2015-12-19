@@ -9,8 +9,8 @@ module PerforceSwarm
 
       # Return no abilities if the subject is a mirrored project and the user doesn't have access to it
       return [] if subject.class.name == 'Project' &&
-                   subject.git_fusion_repo &&
-                   !GitFusion::RepoAccess.access?(user, subject)
+          subject.git_fusion_repo &&
+          !GitFusion::RepoAccess.access?(user, subject)
 
       super
     end

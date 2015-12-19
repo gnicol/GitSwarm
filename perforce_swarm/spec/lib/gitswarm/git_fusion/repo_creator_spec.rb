@@ -11,15 +11,15 @@ describe PerforceSwarm::GitFusion::RepoCreator do
   before(:each) do
     @p4root      = Dir.mktmpdir
     @base_config = ::PerforceSwarm::GitFusion::Config.new(
-        'enabled' => true,
-        'global' => {},
-        'foo' => {
-          'url'  => 'foo@unknown-host',
-          'user' => 'p4test',
-          'perforce' => {
-            'port' => "rsh:#{@p4d} -r #{@p4root} -i -q"
-          }
+      'enabled' => true,
+      'global' => {},
+      'foo' => {
+        'url'  => 'foo@unknown-host',
+        'user' => 'p4test',
+        'perforce' => {
+          'port' => "rsh:#{@p4d} -r #{@p4root} -i -q"
         }
+      }
     )
     @connection = PerforceSwarm::P4::Connection.new(@base_config.entry('foo'), @p4root)
     @connection.input = @connection.run('user', '-o', 'p4test').last

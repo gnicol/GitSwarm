@@ -14,7 +14,7 @@ module PerforceSwarm
 
       def cache_content
         Rails.cache.fetch(cache_key) do
-          access = Hash.new
+          access = {}
           access[:cached_at] = Time.new
           access[:repos]     = []
           begin

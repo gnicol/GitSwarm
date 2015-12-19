@@ -54,12 +54,12 @@ class GitSwarmAPIHelper
                     access_level: '40'
   end
 
-  def create_project(project, userOrGroup)
-    LOG.debug 'Creating project ' + project + ' for namespace ' + userOrGroup
+  def create_project(project, user_or_group)
+    LOG.debug 'Creating project ' + project + ' for namespace ' + user_or_group
     RestClient.post @base_url+'projects',
                     private_token: @admin_token,
                     name: project,
-                    namespace_id: get_namespace_id(userOrGroup)
+                    namespace_id: get_namespace_id(user_or_group)
   end
 
   def delete_user(user)

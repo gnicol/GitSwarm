@@ -16,7 +16,7 @@ module PerforceSwarm
       end
 
       project_namespace.gsub!(/\.git\z/, '')
-      project_namespace.gsub!(/\A\//, '')
+      project_namespace.gsub!(%r{\A/}, '')
 
       project = Project.find_with_namespace(project_namespace)
 

@@ -67,6 +67,7 @@ module PerforceSwarm
   def self.ee?
     edition == 'ee'
   end
+
   def self.ce?
     edition == 'ce'
   end

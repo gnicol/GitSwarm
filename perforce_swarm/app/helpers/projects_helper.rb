@@ -78,6 +78,18 @@ module ProjectsHelper
     'Click "Helix Mirroring" above to get mirroring!'
   end
 
+  # time (as a string) of the last successful fetch from Git Fusion, or false if no timestamp is present
+  def git_fusion_last_fetched(project)
+    last_fetched = PerforceSwarm::Mirror.last_fetched(project.repository.path_to_repo)
+    return last_fetched.strftime('%F %T %z') if last_fetched
+    false
+  end
+
+  # the error being reported by Git Fusion mirroring, or false if there are no errors
+  def git_fusion_last_fetch_error(project)
+    PerforceSwarm::Mirror.last_fetch_error(project.repository.path_to_repo)
+  end
+
   # boolean as to whether there are configured Git Fusion instances in the config
   def git_fusion_instances?
     !git_fusion_servers.empty?

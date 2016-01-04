@@ -3,7 +3,7 @@ require Rails.root.join('app', 'models', 'ability')
 module PerforceSwarm
   module AbilitySelfExtension
     def allowed(user, subject)
-      return not_auth_abilities(user, subject) if user.nil?
+      return anonymous_abilities(user, subject) if user.nil?
       return [] unless user.is_a?(User)
       return [] if user.blocked?
 

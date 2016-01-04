@@ -47,7 +47,17 @@ module Banzai
         { object_sym => LazyReference.new(object_class, node.attr(data_reference)) }
       end
 
-      delegate :object_class, :object_sym, :references_in, to: :class
+      def object_class
+        self.class.object_class
+      end
+
+      def object_sym
+        self.class.object_sym
+      end
+
+      def references_in(*args, &block)
+        self.class.references_in(*args, &block)
+      end
 
       def find_object(project, id)
         # Implement in child class
@@ -98,7 +108,7 @@ module Banzai
           project = project_from_ref(project_ref)
 
           if project && object = find_object(project, id)
-            title = escape_once(object_link_title(object))
+            title = object_link_title(object)
             klass = reference_class(object_sym)
 
             data  = data_attribute(
@@ -110,17 +120,11 @@ module Banzai
             url = matches[:url] if matches.names.include?("url")
             url ||= url_for_object(object, project)
 
-            text = link_text
-            unless text
-              text = object.reference_link_text(context[:project])
-
-              extras = object_link_text_extras(object, matches)
-              text += " (#{extras.join(", ")})" if extras.any?
-            end
+            text = link_text || object_link_text(object, matches)
 
             %(<a href="#{url}" #{data}
-                 title="#{title}"
-                 class="#{klass}">#{text}</a>)
+                 title="#{escape_once(title)}"
+                 class="#{klass}">#{escape_once(text)}</a>)
           else
             match
           end
@@ -139,6 +143,15 @@ module Banzai
 
       def object_link_title(object)
         "#{object_class.name.titleize}: #{object.title}"
+      end
+
+      def object_link_text(object, matches)
+        text = object.reference_link_text(context[:project])
+
+        extras = object_link_text_extras(object, matches)
+        text += " (#{extras.join(", ")})" if extras.any?
+
+        text
       end
     end
   end

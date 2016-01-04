@@ -1,13 +1,40 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 8.4.0 (unreleased)
+  - Expire view caches when application settings change (e.g. Gravatar disabled) (Stan Hu)
   - Implement new UI for group page
+  - Implement search inside emoji picker
+  - Add API support for looking up a user by username (Stan Hu)
+  - Add project permissions to all project API endpoints (Stan Hu)
+  - Only allow group/project members to mention `@all`
+  - Expose Git's version in the admin area (Trey Davis)
+  - Add "Frequently used" category to emoji picker
+  - Add CAS support (tduehr)
+  - Add link to merge request on build detail page
+  - Revert back upvote and downvote button to the issue and MR pages
+  - Swap position of Assignee and Author selector on Issuables (Zeger-Jan van de Weg)
+  - Add system hook messages for project rename and transfer (Steve Norman)
+  - Fix version check image in Safari
+  - Show 'All' tab by default in the builds page
+
+v 8.3.3 (unreleased)
+  - Fix project transfer e-mail sending incorrect paths in e-mail notification (Stan Hu)
+  - Enable "Add key" button when user fills in a proper key (Stan Hu)
+
+v 8.3.2
+  - Disable --follow in `git log` to avoid loading duplicate commit data in infinite scroll (Stan Hu)
+  - Add support for Google reCAPTCHA in user registration
+
+v 8.3.1
+  - Fix Error 500 when global milestones have slashes (Stan Hu)
+  - Fix Error 500 when doing a search in dashboard before visiting any project (Stan Hu)
+  - Fix LDAP identity and user retrieval when special characters are used
+  - Move Sidekiq-cron configuration to gitlab.yml
+  - Enable forcing Two-Factor authentication sitewide, with optional grace period
 
 v 8.3.0
-  - Add CAS support (tduehr)
   - Bump rack-attack to 4.3.1 for security fix (Stan Hu)
   - API support for starred projects for authorized user (Zeger-Jan van de Weg)
-  - Add link to merge request on build detail page.
   - Add open_issues_count to project API (Stan Hu)
   - Expand character set of usernames created by Omniauth (Corey Hinshaw)
   - Add button to automatically merge a merge request when the build succeeds (Zeger-Jan van de Weg)
@@ -67,7 +94,6 @@ v 8.3.0
   - Do not show build status unless builds are enabled and `.gitlab-ci.yml` is present
   - Persist runners registration token in database
   - Fix online editor should not remove newlines at the end of the file
-  - Expose Git's version in the admin area
 
 v 8.2.3
   - Fix application settings cache not expiring after changes (Stan Hu)

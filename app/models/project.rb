@@ -64,10 +64,24 @@ class Project < ActiveRecord::Base
     update_column(:last_activity_at, self.created_at)
   end
 
+  # update visibility_levet of forks
+  after_update :update_forks_visibility_level
+  def update_forks_visibility_level
+    return unless visibility_level < visibility_level_was
+
+    forks.each do |forked_project|
+      if forked_project.visibility_level > visibility_level
+        forked_project.visibility_level = visibility_level
+        forked_project.save!
+      end
+    end
+  end
+
   ActsAsTaggableOn.strict_case_match = true
   acts_as_taggable_on :tags
 
   attr_accessor :new_default_branch
+  attr_accessor :old_path_with_namespace
 
   # Relations
   belongs_to :creator, foreign_key: 'creator_id', class_name: 'User'
@@ -100,9 +114,12 @@ class Project < ActiveRecord::Base
   has_one :gitlab_issue_tracker_service, dependent: :destroy
   has_one :external_wiki_service, dependent: :destroy
 
-  has_one :forked_project_link, dependent: :destroy, foreign_key: "forked_to_project_id"
+  has_one  :forked_project_link,  dependent: :destroy, foreign_key: "forked_to_project_id"
+  has_one  :forked_from_project,  through:   :forked_project_link
 
-  has_one :forked_from_project, through: :forked_project_link
+  has_many :forked_project_links, foreign_key: "forked_from_project_id"
+  has_many :forks,                through:     :forked_project_links, source: :forked_to_project
+
   # Merge Requests for target project should be removed with it
   has_many :merge_requests,     dependent: :destroy, foreign_key: 'target_project_id'
   # Merge requests from source project should be kept when source project was removed
@@ -539,7 +556,9 @@ class Project < ActiveRecord::Base
   end
 
   def send_move_instructions(old_path_with_namespace)
-    NotificationService.new.project_was_moved(self, old_path_with_namespace)
+    # New project path needs to be committed to the DB or notification will
+    # retrieve stale information
+    run_after_commit { NotificationService.new.project_was_moved(self, old_path_with_namespace) }
   end
 
   def owner
@@ -683,6 +702,11 @@ class Project < ActiveRecord::Base
         gitlab_shell.mv_repository("#{old_path_with_namespace}.wiki", "#{new_path_with_namespace}.wiki")
         send_move_instructions(old_path_with_namespace)
         reset_events_cache
+
+        @old_path_with_namespace = old_path_with_namespace
+
+        SystemHooksService.new.execute_hooks_for(self, :rename)
+
         @repository = nil
       rescue
         # Returning false does not rollback after_* transaction but gives
@@ -768,7 +792,7 @@ class Project < ActiveRecord::Base
   end
 
   def forks_count
-    ForkedProjectLink.where(forked_from_project_id: self.id).count
+    forks.count
   end
 
   def find_label(name)
@@ -861,5 +885,10 @@ class Project < ActiveRecord::Base
 
   def open_issues_count
     issues.opened.count
+  end
+
+  def visibility_level_allowed?(level)
+    return true unless forked?
+    Gitlab::VisibilityLevel.allowed_fork_levels(forked_from_project.visibility_level).include?(level.to_i)
   end
 end

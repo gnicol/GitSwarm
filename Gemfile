@@ -39,6 +39,9 @@ gem 'omniauth-twitter',       '~> 1.2.0'
 gem 'omniauth_crowd'
 gem 'rack-oauth2',            '~> 1.2.1'
 
+# reCAPTCHA protection
+gem 'recaptcha', require: 'recaptcha/rails'
+
 # Two-factor authentication
 gem 'devise-two-factor', '~> 2.0.0'
 gem 'rqrcode-rails3', '~> 0.1.7'
@@ -170,13 +173,13 @@ gem 'asana', '~> 0.4.0'
 gem 'ruby-fogbugz', '~> 0.2.1'
 
 # d3
-gem 'd3_rails', '~> 3.5.5'
+gem 'd3_rails', '~> 3.5.0'
 
 #cal-heatmap
-gem "cal-heatmap-rails", "~> 0.0.1"
+gem 'cal-heatmap-rails', '~> 3.5.0'
 
 # underscore-rails
-gem "underscore-rails", "~> 1.4.4"
+gem "underscore-rails", "~> 1.8.0"
 
 # Sanitize user input
 gem "sanitize", '~> 2.0'
@@ -194,21 +197,21 @@ gem 'mousetrap-rails', '~> 1.4.6'
 # Detect and convert string character encoding
 gem 'charlock_holmes', '~> 0.7.3'
 
-gem "sass-rails", '~> 4.0.5'
+gem "sass-rails", '~> 5.0.0'
 gem "coffee-rails", '~> 4.1.0'
 gem "uglifier", '~> 2.7.2'
 gem 'turbolinks', '~> 2.5.0'
 gem 'jquery-turbolinks', '~> 2.1.0'
 
 gem 'addressable',        '~> 2.3.8'
-gem 'bootstrap-sass',     '~> 3.0'
+gem 'bootstrap-sass',     '~> 3.3.0'
 gem 'font-awesome-rails', '~> 4.2'
 gem 'gitlab_emoji',       '~> 0.2.0'
 gem 'gon',                '~> 6.0.1'
 gem 'jquery-atwho-rails', '~> 1.3.2'
-gem 'jquery-rails',       '~> 3.1.3'
+gem 'jquery-rails',       '~> 4.0.0'
 gem 'jquery-scrollto-rails', '~> 1.4.3'
-gem 'jquery-ui-rails',    '~> 4.2.1'
+gem 'jquery-ui-rails',    '~> 5.0.0'
 gem 'nprogress-rails',    '~> 0.1.6.7'
 gem 'raphael-rails',      '~> 2.1.2'
 gem 'request_store',      '~> 1.2.0'
@@ -216,9 +219,17 @@ gem 'select2-rails',      '~> 3.5.9'
 gem 'virtus',             '~> 1.0.1'
 gem 'net-ssh',            '~> 3.0.1'
 
+# Metrics
+group :metrics do
+  gem 'allocations', '~> 1.0', require: false, platform: :mri
+  gem 'method_source', '~> 0.8', require: false
+  gem 'influxdb', '~> 0.2', require: false
+  gem 'connection_pool', '~> 2.0', require: false
+end
+
 group :development do
   gem "foreman"
-  gem 'brakeman', '3.0.1', require: false
+  gem 'brakeman', '~> 3.1.0', require: false
 
   gem "annotate", "~> 2.6.0"
   gem "letter_opener", '~> 1.1.2'

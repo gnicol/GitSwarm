@@ -80,7 +80,7 @@ if ENV['RAILS_ENV'] == 'test'
     # if it is not tagged as an override it will check the overrides array
     # if the array contains the test's identifier string it will skip the test
     # if the array does not contain it, it will not skip the test
-    config.filter_run_excluding example_group: (lambda do |_example_group_meta, metadata|
+    config.filter_run_excluding do |_example_group_meta, metadata|
       metadata[:main_app] = true unless metadata[:file_path].include?('perforce_swarm')
       if metadata.key?(:override) && metadata[:override] == true
         unless overrides.include? override_label(metadata)
@@ -90,6 +90,6 @@ if ENV['RAILS_ENV'] == 'test'
       end
       return true if overrides.include? override_label(metadata)
       false
-    end)
+    end
   end
 end

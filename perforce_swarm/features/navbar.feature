@@ -262,28 +262,6 @@ Feature: NavBar
     And the title of the dropdown should be "Forum"
 
   #########################
-  # User Menu Dropdown
-  #########################
-
-  @automated @PGL-123
-  Scenario: Click on the "Profile" link of User Menu dropdown and verify that user is taken to the user page
-    When I click on the User Menu icon
-    And I click on "Profile" link
-    Then I should see the user page
-
-  @automated @PGL-123
-  Scenario: Click on the "My Settings" link of User Menu dropdown and verify that user is taken to the user settings page
-    When I click on the User Menu icon
-    And I click on "My Settings" link
-    Then I should see the user settings page
-
-  @automated @PGL-123
-  Scenario: Click on the "Logout" link of User Menu dropdown and verify that user is logged out
-    When I click on the User Menu icon
-    And I click on "Logout" link
-    Then I should see the login page
-
-  #########################
   # Back Button Behavior
   #########################
 

@@ -344,26 +344,4 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
       find(:css, '.dropdown-toggle').text.should have_content('PerforceProject')
     end
   end
-
-  #########################
-  # User Menu
-  #########################
-
-  step 'I click on the User Menu icon' do
-    find(:css, '.profile-pic').click
-  end
-
-  step 'I click on "Logout" link' do
-    find(:css, '.logout').click
-  end
-
-  step 'I click on "Profile" link' do
-    find(:css, '.profile-link').click
-  end
-
-  step 'I click on "My Settings" link' do
-    page.within '.user-menu' do
-      find(:css, "a[href='/profile']").click
-    end
-  end
 end

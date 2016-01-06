@@ -34,7 +34,7 @@ module PerforceSwarm
         @versions = JSON.parse(response.body)
         @versions = @versions['versions']
       rescue
-        @versions = {}
+        @versions = []
       end
       Rails.cache.write(VERSIONS_CACHE_KEY, @versions, expires_in: 25.hours)
       @versions

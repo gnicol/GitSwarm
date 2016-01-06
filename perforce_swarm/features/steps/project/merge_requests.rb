@@ -34,7 +34,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I submit new merge request "Jira Integration"' do
-    page.find('h3.page-title').should have_content 'New merge request'
+    page.find('h3.page-title').should have_content 'New Merge Request'
     fill_in 'merge_request_title', with: 'Jira Integration'
     click_button 'Submit new merge request'
   end

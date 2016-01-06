@@ -29,26 +29,26 @@ describe 'gitlab:app namespace rake task' do
 
     context 'gitlab version' do
       before do
-        Dir.stub glob: ['foo']
+        allow(Dir).to receive(:glob).and_return(['foo'])
         allow(Dir).to receive(:chdir)
-        File.stub exist?: true
-        Kernel.stub system: true
-        FileUtils.stub cp_r: true
-        FileUtils.stub mv: true
-        Rake::Task['gitlab:shell:setup'].stub invoke: true
+        allow(File).to receive(:exist?).and_return(true)
+        allow(Kernel).to receive(:system).and_return(true)
+        allow(FileUtils).to receive(:cp_r).and_return(true)
+        allow(FileUtils).to receive(:mv).and_return(true)
+        allow(Rake::Task['gitlab:shell:setup']).to receive(:invoke).and_return(true)
       end
 
       let(:gitswarm_version) { PerforceSwarm::VERSION }
 
       it 'should fail on mismatch', override: true do
-        YAML.stub load_file: { gitswarm_version: "not #{gitswarm_version}" }
+        allow(YAML).to receive(:load_file).and_return(gitswarm_version: "not #{gitswarm_version}")
         expect { run_rake_task('gitlab:backup:restore') }.to(
           raise_error SystemExit
         )
       end
 
       it 'should invoke restoration on mach', override: true do
-        YAML.stub load_file: { gitswarm_version: gitswarm_version }
+        allow(YAML).to receive(:load_file).and_return(gitswarm_version: gitswarm_version)
         expect(Rake::Task['gitlab:backup:db:restore']).to receive :invoke
         expect(Rake::Task['gitlab:backup:repo:restore']).to receive :invoke
         expect(Rake::Task['gitlab:backup:builds:restore']).to receive :invoke
@@ -166,7 +166,7 @@ describe 'gitlab:app namespace rake task' do
     end
 
     it 'does not invoke repositories restore', override: true do
-      Rake::Task['gitlab:shell:setup'].stub invoke: true
+      allow(Rake::Task['gitlab:shell:setup']).to receive(:invoke).and_return(true)
       allow($stdout).to receive :write
 
       expect(Rake::Task['gitlab:backup:db:restore']).to receive :invoke

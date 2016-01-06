@@ -351,34 +351,6 @@ Feature: NavBar
     When I click on the Recent Projects dropdown
     Then I should not see any projects in the recent projects dropdown
 
-  @javascript @PGL-123
-  Scenario: As an admin, click on the "Profile" link of the User Menu dropdown and verify that admin is taken to the admin user page
-    And I logout
-    Then I should see the login page
-    When I sign in as an admin
-    When I click on the User Menu icon
-    And I click on "Profile" link
-    Then I should see the admin user page
-
-  @javascript @automated @PGL-123
-  Scenario: As an admin, click on the "My Settings" link of the User Menu dropdown and verify that admin is taken to the admin settings page
-    And I logout
-    Then I should see the login page
-    When I sign in as an admin
-    When I click on the User Menu icon
-    And I click on "My Settings" link
-    When I click on the User Menu icon
-    Then I should see the admin user settings page
-
-  @javascript @PGL-123
-  Scenario: As an admin, click on the "Logout" link of the User Menu dropdown and verify that admin is logged out
-    And I logout
-    Then I should see the login page
-    When I sign in as an admin
-    When I click on the User Menu icon
-    And I click on "Logout" link
-    Then I should see the login page
-
   #########################
   # User and Group - Related
   #########################

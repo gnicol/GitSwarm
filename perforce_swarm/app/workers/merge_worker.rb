@@ -12,7 +12,7 @@ module PerforceSwarm
       merge_request.should_remove_source_branch = true if params[:should_remove_source_branch].present?
 
       MergeRequests::MergeService.new(merge_request.target_project, current_user)
-        .execute(merge_request, params[:commit_message])
+        .execute(merge_request)
     end
   end
 end

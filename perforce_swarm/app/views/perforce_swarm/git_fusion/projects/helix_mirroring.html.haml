@@ -24,10 +24,14 @@
       %p
         This project is currently mirrored in Helix Git Fusion as:
         = @project.git_fusion_repo
+      %p
+        It can be reached via the following Git URL:
+        = git_fusion_url(@project)
       - if git_fusion_last_fetched(@project)
         %p
-          This project was last updated from Helix Git Fusion at
-          = git_fusion_last_fetched(@project)
+          This project was last updated from Helix Git Fusion
+          %time.time_ago.js-timeago{ datetime: git_fusion_last_fetched(@project), data: {placement: 'top', toggle: 'tooltip'} }
+            = git_fusion_last_fetched(@project)
         - if git_fusion_last_fetch_error(@project)
           %p
             During the last fetch, the following error occurred:
@@ -43,3 +47,5 @@
     - else
       -# project isn't currently mirrored, so show the configure mirroring form
       = render partial: 'perforce_swarm/git_fusion/projects/configure_helix_mirroring'
+:javascript
+  $('.js-timeago').timeago()

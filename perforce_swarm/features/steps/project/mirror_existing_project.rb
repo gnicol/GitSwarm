@@ -38,15 +38,11 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'Helix mirroring is enabled for project "Shop"' do
-    Project.any_instance.stub(git_fusion_mirrored?: true)
-    project                 = Project.find_by(name: 'Shop')
-    project               ||= create(:project, name: 'Shop')
-    project.git_fusion_repo = 'mirror://local/foo'
+    project = create(:project, name: 'Shop', git_fusion_repo: 'mirror://local/foo', git_fusion_mirrored: true)
     project.team << [@user, :master]
   end
 
   step 'Helix mirroring is not enabled for project "Shop"' do
-    Project.any_instance.stub(git_fusion_mirrored?: false)
     project = create(:project, name: 'Shop')
     project.team << [@user, :master]
   end

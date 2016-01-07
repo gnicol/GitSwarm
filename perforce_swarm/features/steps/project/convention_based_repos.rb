@@ -19,14 +19,16 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
 
   step 'Git Fusion returns a list containing repos with an invalid path_template' do
     config = default_config.dup
-    config.entry.global['auto_create'] = { 'path_template' => '', 'repo_name_template' => '' }
+    config['global'] = { 'auto_create' => { 'path_template' => '', 'repo_name_template' => '' } }
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
     allow(PerforceSwarm::P4::Connection).to receive(:login).and_return(true)
   end
 
   step 'Git Fusion returns a list containing repos with a path_template referencing a non-existent Perforce depot' do
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
     allow(PerforceSwarm::P4::Spec::Depot).to receive(:exists?).and_return(false)
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
   end
 
   step 'Git Fusion returns a list containing repos that have incorrect Perforce credentials' do
@@ -34,9 +36,11 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
     error_message = 'Login failed. [P4#run] Errors during command execution( "p4 login -p" ) ' \
                     "[Error]: User #{user} doesn't exist."
     config = default_config.dup
-    config.entry.global['auto_create'] = {
-      'path_template' => '//depot/gitswarm/{namespace}/{project-path}',
-      'repo_name_template' => 'gitswarm-{namespace}-{project-path}'
+    config['global'] = {
+      'auto_create' => {
+        'path_template' => '//depot/gitswarm/{namespace}/{project-path}',
+        'repo_name_template' => 'gitswarm-{namespace}-{project-path}'
+      }
     }
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')

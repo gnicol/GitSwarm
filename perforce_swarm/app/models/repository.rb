@@ -2,7 +2,7 @@ require Rails.root.join('app', 'models', 'repository')
 
 module PerforceSwarm
   module RepositoryExtension
-    def commit_file(user, path, content, message, branch)
+    def commit_file(user, path, content, message, branch, update)
       PerforceSwarm::Mirror.fetch!(path_to_repo)
       super
     end

@@ -203,7 +203,7 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
   end
 
   def add_to_versions_list(version, critical: nil, more_info: nil, platform: nil)
-    cached = Rails.cache.fetch(PerforceSwarm::VersionCheckSelf::VERSIONS_CACHE_KEY)
+    cached = Rails.cache.fetch(PerforceSwarm::VersionCheckSelf::VERSIONS_CACHE_KEY) || []
 
     # delete it if we've already got it
     cached.delete_if { |v| v['version'] == version }

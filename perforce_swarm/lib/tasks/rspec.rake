@@ -1,7 +1,7 @@
 namespace :rspec do
-  @engine_command = 'rspec perforce_swarm/spec'
-  @rspec_command = 'rspec perforce_swarm/spec spec'
-  @rspec_w_overrides_command = 'rspec -t override -t main_app perforce_swarm/spec spec'
+  @engine_command = 'rspec -t ~benchmark perforce_swarm/spec'
+  @rspec_command = 'rspec -t ~benchmark perforce_swarm/spec spec'
+  @rspec_w_overrides_command = 'rspec -t override -t main_app -t ~benchmark perforce_swarm/spec spec'
 
   desc 'GITLAB | Run main application specs with engine overrides'
   task :app do

@@ -94,9 +94,6 @@ module PerforceSwarm
 
       # do a variety of page specific touch-ups
 
-      # de-link absolute links, since they don't play nice with our static docs
-      content.gsub!(/\[([^\]]+)\]\(\/[^)]+\)/, '\1') unless file == 'markdown'
-
       content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure'
 
       # the markdown page needs some finesse to avoid taking undue credit

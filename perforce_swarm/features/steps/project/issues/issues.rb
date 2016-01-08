@@ -12,11 +12,13 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   end
 
   step 'I click the "Close" button' do
-    click_link 'Close'
+    page.within '.detail-page-header' do
+      click_link 'Close'
+    end
   end
 
   step 'I click the "Close Issue" button' do
-    page.within '.voting_notes' do
+    page.within first('.note-form-actions') do
       click_link 'Close Issue'
     end
   end
@@ -38,7 +40,7 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   end
 
   step 'I should see the issue closed' do
-    page.should have_selector('.issue-box-closed')
+    page.should have_selector('.status-box-closed')
   end
 
   step 'I click link "All"' do

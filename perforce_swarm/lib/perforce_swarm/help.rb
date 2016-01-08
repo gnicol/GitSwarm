@@ -52,8 +52,11 @@ module PerforceSwarm
       content.gsub!('http://doc.gitlab.com/ee/', 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/')
 
       # fix example links value
-      content.gsub!(/(your-)?gitlab.example.com/, '\1gitswarm.example.com')
-      content.gsub!(/gitlab.company.com/, 'gitswarm.company.com')
+      content.gsub!(/(your-)?gitlab\.example\.com/, '\1gitswarm.example.com')
+      content.gsub!(/gitlab\.company\.com/, 'gitswarm.company.com')
+
+      # de-link absolute links, since they don't play nice with our static docs
+      content.gsub!(/\[([^\]]+)\]\(\/[^)]+\)/, '\1')
 
       # replace /etc/gitlab with /etc/gitswarm but leave /opt/gitswarm/etc/gitlab alone
       content.gsub!(%r{(?<!gitswarm)/etc/gitlab}, '/etc/gitswarm')

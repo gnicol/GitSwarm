@@ -55,9 +55,6 @@ module PerforceSwarm
       content.gsub!(/(your-)?gitlab\.example\.com/, '\1gitswarm.example.com')
       content.gsub!(/gitlab\.company\.com/, 'gitswarm.company.com')
 
-      # de-link absolute links, since they don't play nice with our static docs
-      content.gsub!(/\[([^\]]+)\]\(\/[^)]+\)/, '\1')
-
       # replace /etc/gitlab with /etc/gitswarm but leave /opt/gitswarm/etc/gitlab alone
       content.gsub!(%r{(?<!gitswarm)/etc/gitlab}, '/etc/gitswarm')
 
@@ -96,6 +93,9 @@ module PerforceSwarm
       content.gsub!(/Omnibus Installation/, 'Package Installation')
 
       # do a variety of page specific touch-ups
+
+      # de-link absolute links, since they don't play nice with our static docs
+      content.gsub!(/\[([^\]]+)\]\(\/[^)]+\)/, '\1') unless file == 'markdown'
 
       content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure'
 

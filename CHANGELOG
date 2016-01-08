@@ -1,6 +1,7 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 8.4.0 (unreleased)
+  - Accept 2xx status codes for successful Web hook triggers (Stan Hu)
   - Fix missing date of month in network graph when commits span a month (Stan Hu)
   - Expire view caches when application settings change (e.g. Gravatar disabled) (Stan Hu)
   - Don't notify users twice if they are both project watchers and subscribers (Stan Hu)
@@ -14,6 +15,7 @@ v 8.4.0 (unreleased)
   - Add "Frequently used" category to emoji picker
   - Add CAS support (tduehr)
   - Add link to merge request on build detail page
+  - Fix: Problem with projects ending with .keys (Jose Corcuera)
   - Revert back upvote and downvote button to the issue and MR pages
   - Swap position of Assignee and Author selector on Issuables (Zeger-Jan van de Weg)
   - Add system hook messages for project rename and transfer (Steve Norman)
@@ -24,8 +26,9 @@ v 8.4.0 (unreleased)
   - Validate README format before displaying
   - Enable Microsoft Azure OAuth2 support (Janis Meybohm)
   - Properly set task-list class on single item task lists
-  - Add file finder feature in tree view (koreamic)
+  - Add file finder feature in tree view (Kyungchul Shin)
   - Ajax filter by message for commits page
+  - API: Add support for deleting a tag via the API (Robert Schilling)
 
 v 8.3.3 (unreleased)
   - Get "Merge when build succeeds" to work when commits were pushed to MR target branch while builds were running

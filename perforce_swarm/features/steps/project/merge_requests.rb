@@ -36,14 +36,14 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   step 'I submit new merge request "Jira Integration"' do
     page.find('h3.page-title').should have_content 'New Merge Request'
     fill_in 'merge_request_title', with: 'Jira Integration'
-    click_button 'Submit new merge request'
+    click_button 'Submit merge request'
   end
 
   step 'I submit new merge request "Dependency Fix"' do
     page.should have_selector('.merge-request-form-info')
     page.find('h3.page-title').should have_content 'New merge request'
     fill_in 'merge_request_title', with: 'Dependency Fix'
-    click_button 'Submit new merge request'
+    click_button 'Submit merge request'
   end
 
   step 'I should see "Jira Integration" in merge requests' do

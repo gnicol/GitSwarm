@@ -4,18 +4,20 @@ describe Project do
   describe 'validations' do
     it { is_expected.to validate_length_of(:git_fusion_repo).is_within(0..255) }
 
+    # Everything but nil will be string cast
     ['mirror://',
      'mirror:',
      'foo/bar',
      'zirror://foo/bar',
      0,
+     false,
      'mirror://foo/'
     ].each do |url|
       it { should_not allow_value(url).for(:git_fusion_repo), url }
     end
 
+    # Everything but nil will be string cast
     [nil,
-     false,
      '',
      'mirror://foo/bar',
      'mirror://foo/bar/baz',

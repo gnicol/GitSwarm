@@ -55,6 +55,12 @@ if ENV['RAILS_ENV'] == 'test'
       Dir[Rails.root.join('perforce_swarm/spec/support/**/*.rb')].each { |f| require f }
     end
 
+    # in webmock/rspec, stubs are reset after each run. Set a gloabl stub here for our version updates
+    config.before(:each) do
+      WebMock.stub_request(:get, %r{https://updates\.perforce\.com/static/GitSwarm/GitSwarm(\-ee)?\.json})
+        .to_return(status: 200, body: '{"versions":[]}', headers: {})
+    end
+
     # Clear sidekiq worker jobs
     config.after(:each) do
       Sidekiq::Worker.clear_all

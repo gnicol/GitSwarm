@@ -24,7 +24,7 @@ describe API::API, api: true do
     it 'should return a 400 if editor fails to create file', override: true do
       module PerforceSwarm::RepositoryExtension
         alias_method :orig_commit_file, :commit_file
-        def commit_file(_user, _path, _content, _message, _branch)
+        def commit_file(_user, _path, _content, _message, _branch, _update)
           false
         end
       end

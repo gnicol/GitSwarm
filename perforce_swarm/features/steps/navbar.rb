@@ -266,7 +266,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the Dashboard page with no projects' do
-    find('a[href="/projects/new"]').should have_content('New Project')
+    find('.dashboard-intro-text a[href="/projects/new"]').should have_content('New Project')
   end
 
   step 'I should see the "All Projects" page' do
@@ -284,12 +284,12 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I should see the "QAProject" page' do
     project = Project.find_by(name: 'QAProject')
-    expect(page).to have_field('project_clone', with: project.url_to_repo)
+    expect(page).to have_link('ssh-selector', href: project.url_to_repo)
   end
 
   step 'I should see the "PerforceProject" page' do
     project = Project.find_by(name: 'PerforceProject')
-    expect(page).to have_field('project_clone', with: project.url_to_repo)
+    expect(page).to have_link('ssh-selector', href: project.url_to_repo)
   end
 
   step 'I should see a project page' do

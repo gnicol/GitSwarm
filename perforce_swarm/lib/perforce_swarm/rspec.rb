@@ -66,6 +66,7 @@ if ENV['RAILS_ENV'] == 'test'
       Sidekiq::Worker.clear_all
     end
 
+    # Capybara retry:  https://gist.github.com/afn/c04ccfe71d648763b306#gistcomment-1658044
     CAPYBARA_TIMEOUT_RETRIES = 3
 
     config.around(:each, type: :feature) do |ex|

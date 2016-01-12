@@ -25,7 +25,6 @@ describe Grack::Auth, lib: true do
           end
         end
         allow_any_instance_of(PerforceSwarm::Repo).to receive(:mirrored?).and_return(false)
-        # Dir.mkdir(File.join(Gitlab.config.gitlab_shell.repos_path, "#{project.path_with_namespace}.git"))
       end
 
       after do

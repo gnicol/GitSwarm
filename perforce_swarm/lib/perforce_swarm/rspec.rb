@@ -55,17 +55,46 @@ if ENV['RAILS_ENV'] == 'test'
       Dir[Rails.root.join('perforce_swarm/spec/support/**/*.rb')].each { |f| require f }
     end
 
+    # in webmock/rspec, stubs are reset after each run. Set a gloabl stub here for our version updates
+    config.before(:each) do
+      WebMock.stub_request(:get, %r{https://updates\.perforce\.com/static/GitSwarm/GitSwarm(\-ee)?\.json})
+        .to_return(status: 200, body: '{"versions":[]}', headers: {})
+    end
+
     # Clear sidekiq worker jobs
     config.after(:each) do
       Sidekiq::Worker.clear_all
     end
 
-    # print a warning to users who are not running any tests from the engine
-    unless config.files_to_run.any? { |path| path.include?('perforce_swarm') }
-      p 'WARNING: Running the main test without the Swarm overrides.'
-      p 'To include the overrides add the perforce_swarm/spec filepath and the main_app and override tags'
-      p 'eg: rspec -t override -t main_app spec perforce_swarm/spec'
-      p 'Or run the rake task: "rake rspec:app"'
+    # Capybara retry:  https://gist.github.com/afn/c04ccfe71d648763b306#gistcomment-1658044
+    CAPYBARA_TIMEOUT_RETRIES = 3
+
+    config.around(:each, type: :feature) do |ex|
+      example = RSpec.current_example
+      CAPYBARA_TIMEOUT_RETRIES.times do
+        example.instance_variable_set('@exception', nil)
+        __init_memoized
+        ex.run
+        break unless example.exception.is_a?(Capybara::Poltergeist::TimeoutError)
+        puts("\nCapybara::Poltergeist::TimeoutError at #{example.location}\n   Restarting phantomjs and retrying...")
+        restart_phantomjs
+      end
+    end
+
+    def restart_phantomjs
+      puts '-> Restarting phantomjs: iterating through capybara sessions...'
+      session_pool = Capybara.send('session_pool')
+      session_pool.each do |mode, session|
+        msg = "  => #{mode} -- "
+        driver = session.driver
+        if driver.is_a?(Capybara::Poltergeist::Driver)
+          msg += 'restarting'
+          driver.restart
+        else
+          msg += "not poltergeist: #{driver.class}"
+        end
+        puts msg
+      end
     end
 
     # this filter sets up which tests to run

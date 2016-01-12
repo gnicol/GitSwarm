@@ -266,7 +266,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I should see the Dashboard page with no projects' do
-    find('a[href="/projects/new"]').should have_content('New Project')
+    find('.dashboard-intro-text a[href="/projects/new"]').should have_content('New Project')
   end
 
   step 'I should see the "All Projects" page' do
@@ -284,12 +284,12 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I should see the "QAProject" page' do
     project = Project.find_by(name: 'QAProject')
-    expect(page).to have_field('project_clone', with: project.url_to_repo)
+    expect(page).to have_link('ssh-selector', href: project.url_to_repo)
   end
 
   step 'I should see the "PerforceProject" page' do
     project = Project.find_by(name: 'PerforceProject')
-    expect(page).to have_field('project_clone', with: project.url_to_repo)
+    expect(page).to have_link('ssh-selector', href: project.url_to_repo)
   end
 
   step 'I should see a project page' do
@@ -342,28 +342,6 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   step 'the title of the dropdown should be "PerforceProject"' do
     page.within '.navbar-gitlab .dashboard-menu' do
       find(:css, '.dropdown-toggle').text.should have_content('PerforceProject')
-    end
-  end
-
-  #########################
-  # User Menu
-  #########################
-
-  step 'I click on the User Menu icon' do
-    find(:css, '.profile-pic').click
-  end
-
-  step 'I click on "Logout" link' do
-    find(:css, '.logout').click
-  end
-
-  step 'I click on "Profile" link' do
-    find(:css, '.profile-link').click
-  end
-
-  step 'I click on "My Settings" link' do
-    page.within '.user-menu' do
-      find(:css, "a[href='/profile']").click
     end
   end
 end

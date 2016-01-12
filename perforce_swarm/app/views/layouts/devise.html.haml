@@ -1,9 +1,9 @@
 !!! 5
 %html{ lang: 'en'}
   = render 'layouts/head'
-  %body.ui_charcoal.login-page.application
-    = render 'layouts/broadcast'
+  %body.ui_charcoal.login-page.application.navless
     = render "layouts/header/empty"
+    = render "layouts/broadcast"
     .container.navless-container
       .content
         = render 'layouts/flash'

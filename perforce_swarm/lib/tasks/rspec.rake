@@ -1,5 +1,5 @@
 namespace :rspec do
-  @engine_command = 'rspec -t ~benchmark perforce_swarm/spec'
+  @engine_command = 'rspec -t ~benchmark -t ~override perforce_swarm/spec'
   @rspec_command = 'rspec -t ~benchmark perforce_swarm/spec spec'
   @rspec_w_overrides_command = 'rspec -t override -t main_app -t ~benchmark perforce_swarm/spec spec'
 

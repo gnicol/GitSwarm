@@ -19,7 +19,7 @@
   - else
     - can_mirror   = mirroring_permitted?(@project, current_user) && mirroring_configured?
     - button_class = 'btn btn-save' + (can_mirror ? '' : ' disabled')
-    - if mirrored?(@project)
+    - if @project.git_fusion_mirrored?
       -# currently mirrored, so show relevant mirroring settings and the disable button
       %p
         This project is currently mirrored in Helix Git Fusion as:

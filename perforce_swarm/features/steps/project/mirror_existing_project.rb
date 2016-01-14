@@ -43,7 +43,6 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'Helix mirroring is not enabled for project "Shop"' do
-    allow(ProjectsHelper).to receive(:mirrored?).and_return(false)
     project = create(:project, name: 'Shop')
     project.team << [@user, :master]
   end

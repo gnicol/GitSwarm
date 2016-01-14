@@ -2,7 +2,7 @@ require Rails.root.join('app', 'controllers', 'projects_controller')
 
 module PerforceSwarm
   module ProjectsControllerExtension
-    def helix_mirroring
+    def configure_helix_mirroring
       render 'perforce_swarm/git_fusion/projects/helix_mirroring', layout: 'project_settings'
     end
 
@@ -55,10 +55,12 @@ module PerforceSwarm
       # if we were given git fusion parameters, incorporate those now
       if params[:git_fusion_entry] && !params[:git_fusion_entry].blank? &&
          params[:git_fusion_repo_name] && params[:git_fusion_auto_create] == false
-        params[:git_fusion_repo] = "mirror://#{params[:git_fusion_entry]}/#{params[:git_fusion_repo_name]}"
+        params[:git_fusion_repo]     = "mirror://#{params[:git_fusion_entry]}/#{params[:git_fusion_repo_name]}"
+        params[:git_fusion_mirrored] = true
       end
 
-      super.merge(params.permit(:git_fusion_repo, :git_fusion_auto_create, :git_fusion_entry))
+      super.merge(params.permit(:git_fusion_repo, :git_fusion_auto_create,
+                                :git_fusion_entry, :git_fusion_mirrored))
     end
 
     protected

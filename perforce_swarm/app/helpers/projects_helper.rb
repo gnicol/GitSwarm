@@ -88,7 +88,7 @@ module ProjectsHelper
 
   # returns the rendered (sans password) URL for a mirrored project
   def git_fusion_url(project)
-    return '' unless mirrored?(project)
+    return '' unless project.git_fusion_mirrored?
     PerforceSwarm::GitFusionRepo.resolve_url(project.git_fusion_repo).to_s
   rescue
     return ''
@@ -181,7 +181,7 @@ module ProjectsHelper
 
       # add the button at the appropriate haml indent level
       haml_concat(
-          link_to(helix_mirroring_namespace_project_path(project.namespace, project), attributes) do
+          link_to(configure_helix_mirroring_namespace_project_path(project.namespace, project), attributes) do
             haml_concat(icon('helix-icon-white'))
             haml_concat('Helix Mirroring')
           end

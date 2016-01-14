@@ -9,7 +9,7 @@ class ProjectPage < Page
 
   def elements_for_validation
     elems = super
-    elems << [:class, 'git-protocols'] # project name
+    elems << [:css, 'input#project_clone'] # project name
     elems
   end
 
@@ -41,6 +41,6 @@ class ProjectPage < Page
   private
 
   def wait_for_clone
-    wait_for(:class, 'git-protocols', 45)
+    wait_for(:css, 'input#project_clone', 45)
   end
 end

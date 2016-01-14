@@ -9,12 +9,11 @@ class LoggedInPage < Page
   def elements_for_validation
     elems = super
     elems << [:id, 'search'] # search menu
-    elems << [:class, 'profile-pic'] # the rop right menu
+    elems << [:class, 'sidebar-user'] # the user profile
     elems
   end
 
   def logout
-    @driver.find_element(:class, 'profile-pic').click
     @driver.find_element(:class, 'logout').click
     LoginPage.new(@driver)
   end

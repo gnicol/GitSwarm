@@ -5,12 +5,12 @@
 - page_title    "Projects"
 - header_title  "Projects", dashboard_projects_path
 
-= render 'dashboard/projects_head'
-
 -# gitswarm changes start
 - if show_version_check?
   = render 'shared/version_check'
 -# gitswarm changes end
+
+= render 'dashboard/projects_head'
 
 - if @last_push
   = render "events/event_last_push", event: @last_push

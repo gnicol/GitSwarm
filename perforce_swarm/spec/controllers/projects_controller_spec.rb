@@ -67,7 +67,7 @@ describe ProjectsController, type: :controller do
       expected_redirect = '/' + [project.namespace.to_param,
                                  project.to_param].join('/')
       project.git_fusion_repo     = 'mirror://default/bar'
-      project.git_fusion_mirrored =  true
+      project.git_fusion_mirrored = true
       expect(project.git_fusion_mirrored?).to be true
 
       # disable mirroring through our controller

@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 20151127232342) do
     t.integer  "default_branch_protection",         default: 2
     t.boolean  "twitter_sharing_enabled",           default: true
     t.text     "restricted_visibility_levels"
-    t.boolean  "version_check_enabled"        
+    t.boolean  "version_check_enabled"
     t.integer  "max_attachment_size",               default: 10,          null: false
     t.integer  "default_project_visibility"
     t.integer  "default_snippet_visibility"
@@ -657,7 +657,6 @@ ActiveRecord::Schema.define(version: 20151127232342) do
     t.string   "issues_tracker_id"
     t.boolean  "snippets_enabled",       default: true,     null: false
     t.datetime "last_activity_at"
-    t.string   "git_fusion_repo"
     t.string   "import_url"
     t.integer  "visibility_level",       default: 0,        null: false
     t.boolean  "archived",               default: false,    null: false
@@ -668,10 +667,21 @@ ActiveRecord::Schema.define(version: 20151127232342) do
     t.string   "import_type"
     t.string   "import_source"
     t.integer  "commit_count",           default: 0
+    t.text     "import_error"
+    t.integer  "ci_id"
+    t.boolean  "builds_enabled",         default: true,     null: false
+    t.boolean  "shared_runners_enabled", default: true,     null: false
+    t.string   "runners_token"
+    t.string   "build_coverage_regex"
+    t.boolean  "build_allow_git_fetch",  default: true,     null: false
+    t.integer  "build_timeout",          default: 3600,     null: false
     t.string   "git_fusion_repo"
     t.boolean  "git_fusion_mirrored",    default: false,    null: false
   end
 
+  add_index "projects", ["builds_enabled", "shared_runners_enabled"], name: "index_projects_on_builds_enabled_and_shared_runners_enabled", using: :btree
+  add_index "projects", ["builds_enabled"], name: "index_projects_on_builds_enabled", using: :btree
+  add_index "projects", ["ci_id"], name: "index_projects_on_ci_id", using: :btree
   add_index "projects", ["created_at", "id"], name: "index_projects_on_created_at_and_id", using: :btree
   add_index "projects", ["creator_id"], name: "index_projects_on_creator_id", using: :btree
   add_index "projects", ["last_activity_at"], name: "index_projects_on_last_activity_at", using: :btree

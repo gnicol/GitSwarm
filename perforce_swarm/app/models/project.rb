@@ -21,7 +21,7 @@ module PerforceSwarm
       # update_attributes will validate the values it has been passed
       update_attributes(git_fusion_repo: "mirror://#{fusion_server}/#{repo_name}",
                         git_fusion_mirrored: true
-      )
+                       )
       PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
     end
 
@@ -37,7 +37,8 @@ module PerforceSwarm
           # GitFusion Repo has been created, flag this project for import
           # We choose to always import from GitFusion because there may have
           # been perforce changes that will come down, even on a new repo
-          self.git_fusion_repo = "mirror://#{git_fusion_entry}/#{creator.repo_name}"
+          self.git_fusion_repo     = "mirror://#{git_fusion_entry}/#{creator.repo_name}"
+          self.git_fusion_mirrored = true
           save
 
           true

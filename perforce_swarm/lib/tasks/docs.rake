@@ -47,6 +47,9 @@ namespace :gitswarm do
         root_path = depth > 0 ? '../' * depth : './'
         root_path = root_path.gsub(%r{/$}, '')
 
+        # de-link absolute links, since they don't play nice with our static docs
+        content.gsub!(/\[([^\]]+)\]\(\/[^)]+\)/, '\1') unless file.end_with?('markdown.md')
+
         # Some files already have a table of contents, don't add another table of contents to them.
         toc = file.end_with?('README.md') || file.end_with?('markdown.md') ? nil : '--toc'
 

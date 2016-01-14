@@ -28,7 +28,7 @@ Perforce Helix as the master for all assets.
       from GitLab EE running on CentOS 6 to GitSwarm EE running on Ubuntu 14).
     * Migrating from GitLab CE to GitSwarm EE can be accomplished by migrating
       from GitLab CE to GitSwarm, then upgrading to GitSwarm EE. See
-      [these instructions](/help/update/README.md) for upgrading to GitSwarm
+      [these instructions](../update/README.md) for upgrading to GitSwarm
       EE.
 
 1.  **An existing GitLab EE install**
@@ -40,7 +40,7 @@ Perforce Helix as the master for all assets.
 1.  **A new, up-to-date GitSwarm EE install**
 
     If the GitSwarm EE instance you're looking to migrate to is not on the above
-    list, you will need to follow [these instructions](/help/update/README.md)
+    list, you will need to follow [these instructions](../update/README.md)
     to upgrade as necessary to a supported version.
 
     Migrating GitLab EE to an existing GitSwarm EE (one that has existing users,
@@ -59,7 +59,7 @@ Perforce Helix as the master for all assets.
     instances to the most up-to-date combination (GitLab EE 8.0.5 and
     GitSwarm EE 15.4). Upgrading to GitSwarm EE 15.4 (and GitLab EE 8.0.5) is an
     absolute requirement for GitSwarm EE, since migration is not supported in
-    earlier versions. See [these instructions](/help/update/README.md) for how
+    earlier versions. See [these instructions](../update/README.md) for how
     to upgrade.
 
     It is also recommended that the same hostname be used for both the GitLab EE
@@ -115,7 +115,7 @@ Perforce Helix as the master for all assets.
     [following note](#additional-help), since a workaround regarding attachments
     may apply to your migration.
 
-    Follow [these instructions](/help/raketasks/backup_restore.md#omnibus-installations)
+    Follow [these instructions](../raketasks/backup_restore.md#omnibus-installations)
     for restoring the backup on your GitSwarm EE instance, ensuring that you use
     the correct `TIMESTAMP` value that you made note of in step 1 of the
     migration process.
@@ -124,7 +124,7 @@ Perforce Helix as the master for all assets.
     schema, and then restore any backed-up repositories to your GitSwarm EE
     instance. Once the backup process is complete and your GitSwarm EE instance
     has been (re)started, you can then continue with enabling
-    [mirroring for your existing projects](/help/workflow/importing/import_from_gitfusion.md),
+    [mirroring for your existing projects](../workflow/importing/import_from_gitfusion.md),
     to gain the full benefit of using GitSwarm EE.
 
     As a final step, if you are using the same FQDN (fully-qualified domain
@@ -186,6 +186,6 @@ Perforce Helix as the master for all assets.
     psql:/var/opt/gitlab/backups/db/database.sql:2931: WARNING:  no privileges could be revoked for "public" (two occurences)
     psql:/var/opt/gitlab/backups/db/database.sql:2933: WARNING:  no privileges were granted for "public" (two occurences)
     ```
-    Please see [this document](/help/raketasks/backup_restore.md#restoring-database-backup-using-omnibus-packages-outputs-warnings)
+    Please see [this document](../raketasks/backup_restore.md#restoring-database-backup-using-omnibus-packages-outputs-warnings)
 
 

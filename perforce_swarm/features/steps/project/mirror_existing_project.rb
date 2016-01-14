@@ -38,13 +38,11 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'Helix mirroring is enabled for project "Shop"' do
-    allow(ProjectsHelper).to receive(:mirrored?).and_return(true)
-    project = create(:project, name: 'Shop', git_fusion_repo: 'mirror://local/foo')
+    project = create(:project, name: 'Shop', git_fusion_repo: 'mirror://local/foo', git_fusion_mirrored: true)
     project.team << [@user, :master]
   end
 
   step 'Helix mirroring is not enabled for project "Shop"' do
-    allow(ProjectsHelper).to receive(:mirrored?).and_return(false)
     project = create(:project, name: 'Shop')
     project.team << [@user, :master]
   end
@@ -83,7 +81,7 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'I should be on the Mirror in Helix page for the "Shop" project' do
     project = Project.find_by(name: 'Shop')
-    expect(page.current_path).to eq(configure_mirroring_namespace_project_path(project.namespace, project))
+    expect(page.current_path).to eq(configure_helix_mirroring_namespace_project_path(project.namespace, project))
   end
 
   step 'The Git Fusion repo selected by default is the first one that has auto_create enabled' do

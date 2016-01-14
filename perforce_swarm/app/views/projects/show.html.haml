@@ -58,7 +58,7 @@
             Add Contribution guide
     -# gitswarm changes start
     %li.mirrored-status{data: {toggle: 'tooltip', html: 'true', title: mirroring_tooltip(@project, current_user)}}
-      - mirrored = mirrored?(@project)
+      - mirrored = @project.git_fusion_mirrored?
       = link_to '#' do
         = (mirrored ? '' : 'Not ') + 'Mirrored in Helix'
         = icon('fw question-circle') unless mirrored

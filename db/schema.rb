@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160113111034) do
+ActiveRecord::Schema.define(version: 20151127232342) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -668,19 +668,10 @@ ActiveRecord::Schema.define(version: 20160113111034) do
     t.string   "import_type"
     t.string   "import_source"
     t.integer  "commit_count",           default: 0
-    t.text     "import_error"
-    t.integer  "ci_id"
-    t.boolean  "builds_enabled",         default: true,     null: false
-    t.boolean  "shared_runners_enabled", default: true,     null: false
-    t.string   "runners_token"
-    t.string   "build_coverage_regex"
-    t.boolean  "build_allow_git_fetch",  default: true,     null: false
-    t.integer  "build_timeout",          default: 3600,     null: false
+    t.string   "git_fusion_repo"
+    t.boolean  "git_fusion_mirrored",    default: false,    null: false
   end
 
-  add_index "projects", ["builds_enabled", "shared_runners_enabled"], name: "index_projects_on_builds_enabled_and_shared_runners_enabled", using: :btree
-  add_index "projects", ["builds_enabled"], name: "index_projects_on_builds_enabled", using: :btree
-  add_index "projects", ["ci_id"], name: "index_projects_on_ci_id", using: :btree
   add_index "projects", ["created_at", "id"], name: "index_projects_on_created_at_and_id", using: :btree
   add_index "projects", ["creator_id"], name: "index_projects_on_creator_id", using: :btree
   add_index "projects", ["last_activity_at"], name: "index_projects_on_last_activity_at", using: :btree

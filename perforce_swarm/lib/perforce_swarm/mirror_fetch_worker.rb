@@ -101,7 +101,7 @@ module PerforceSwarm
       # returns only entries that represent git-fusion imports that are finished but marked as in progress
       def import_hung
         stats.select do |stat|
-          stat[:project].import_in_progress? && stat[:project].git_fusion_import? && stat[:last_fetched]
+          stat[:project].import_in_progress? && stat[:project].git_fusion_mirrored? && stat[:last_fetched]
         end
       end
     end

@@ -45,9 +45,9 @@
       = render 'projects/buttons/fork'
 
     -# gitswarm changes start
-    - if !mirrored?(@project) && current_user
+    - if !@project.git_fusion_mirrored? && current_user
       %span.has_tooltip.mirror-button-wrapper{data: {title: mirroring_tooltip(@project, current_user, true), html: 'true'}}
-        = link_to configure_mirroring_namespace_project_path(@project.namespace, @project), class: "btn #{'disabled' unless mirroring_permitted?(@project, current_user) && mirroring_configured?}" do
+        = link_to configure_helix_mirroring_namespace_project_path(@project.namespace, @project), class: "btn #{'disabled' unless mirroring_permitted?(@project, current_user) && mirroring_configured?}" do
           = icon 'helix-icon-white'
           Mirror in Helix
     -# gitswarm changes end

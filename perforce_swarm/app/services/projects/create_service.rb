@@ -6,7 +6,7 @@ module PerforceSwarm
       super
 
       # user has chosen to import via Git Fusion, so start the import process
-      @project.import_start if @project.git_fusion_import?
+      @project.import_start if @project.git_fusion_mirrored?
     end
   end
 end

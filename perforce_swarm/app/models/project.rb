@@ -25,6 +25,11 @@ module PerforceSwarm
       PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
     end
 
+    # re-enables Git Fusion mirroring on the project
+    def reenable_git_fusion_mirroring!
+      fail 'Not implemented.'
+    end
+
     def create_repository
       # Attempt to submit the config for a new GitFusion repo to perforce if
       # git_fusion_auto_create was set on this project

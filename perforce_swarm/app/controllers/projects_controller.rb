@@ -20,7 +20,7 @@ module PerforceSwarm
       PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: fusion_server)
 
       # enable mirroring on the project and create the mirror remote
-      @project.enable_mirroring!(fusion_server, repo_creator.repo_name)
+      @project.enable_git_fusion_mirroring!(fusion_server, repo_creator.repo_name)
 
       # kick off and background initial push
       push_job = fork do

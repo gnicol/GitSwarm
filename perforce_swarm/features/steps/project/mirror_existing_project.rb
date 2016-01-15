@@ -6,17 +6,17 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   include SharedProject
   include SharedMirroring
 
-  step 'I should see a disabled Mirror in Helix button' do
-    page.should have_selector('a.btn.disabled', text: 'Mirror in Helix')
+  step 'I should see a disabled Helix Mirroring button' do
+    page.should have_selector('a.btn.disabled', text: 'Helix Mirroring')
   end
 
-  step 'I should see a Mirror in Helix button' do
-    page.should have_text('Mirror in Helix')
-    page.should_not have_selector('a.btn.disabled', text: 'Mirror in Helix')
+  step 'I should see a Helix Mirroring button' do
+    page.should have_text('Helix Mirroring')
+    page.should_not have_selector('a.btn.disabled', text: 'Helix Mirroring')
   end
 
-  step 'I should not see a Mirror in Helix button' do
-    page.should_not have_content('Mirror in Helix')
+  step 'I should not see a Helix Mirroring button' do
+    page.should_not have_content('Helix Mirroring')
   end
 
   step 'I should see a no Git Fusion instances configured tooltip' do
@@ -48,17 +48,20 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I am an admin of project "Shop"' do
-    project = create(:project, name: 'Shop')
+    project   = Project.find_by(name: 'Shop')
+    project ||= create(:project, name: 'Shop')
     project.team << [@user, :master]
   end
 
   step 'I am a member of project "Shop"' do
-    project = create(:project, name: 'Shop')
+    project   = Project.find_by(name: 'Shop')
+    project ||= create(:project, name: 'Shop')
     project.team << [@user, :reporter]
   end
 
   step 'I am not a member of project "Shop"' do
-    project = create(:project, name: 'Shop')
+    project   = Project.find_by(name: 'Shop')
+    project ||= create(:project, name: 'Shop')
     project.team << [@user, :guest]
   end
 
@@ -75,11 +78,11 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
     end
   end
 
-  step 'I click the Mirror in Helix button' do
-    page.click_link('Mirror in Helix')
+  step 'I click the Helix Mirroring button' do
+    page.click_link('Helix Mirroring')
   end
 
-  step 'I should be on the Mirror in Helix page for the "Shop" project' do
+  step 'I should be on the Helix Mirroring page for the "Shop" project' do
     project = Project.find_by(name: 'Shop')
     expect(page.current_path).to eq(configure_helix_mirroring_namespace_project_path(project.namespace, project))
   end

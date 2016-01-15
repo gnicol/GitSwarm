@@ -3,16 +3,7 @@ require Rails.root.join('app', 'controllers', 'projects_controller')
 module PerforceSwarm
   module ProjectsControllerExtension
     def configure_helix_mirroring
-      # if the project is already mirrored, redirect back to the project page with a flash message
-      if @project.git_fusion_mirrored?
-        redirect_to(
-          project_path(@project),
-          alert: 'Project is already mirrored in Helix.'
-        )
-        return
-      end
-
-      render 'perforce_swarm/git_fusion/projects/configure_mirroring'
+      render 'perforce_swarm/git_fusion/projects/helix_mirroring', layout: 'project_settings'
     end
 
     # actually performs the task of mirroring on the specified project and repo server
@@ -40,6 +31,7 @@ module PerforceSwarm
       Process.detach(push_job)
       redirect_to(project_path(@project), notice: 'Helix mirroring successful!')
     rescue => e
+
       # any errors occurring in the above are shown on the configure mirroring page, but if we've
       # gotten as far as mirroring, this will cause a double redirect, so we hit the project details page instead
       redirect_location = @project && @project.git_fusion_mirrored? ? project_path(@project) : :back
@@ -62,11 +54,13 @@ module PerforceSwarm
 
       # if we were given git fusion parameters, incorporate those now
       if params[:git_fusion_entry] && !params[:git_fusion_entry].blank? &&
-          params[:git_fusion_repo_name] && params[:git_fusion_auto_create] == false
-        params[:git_fusion_repo] = "mirror://#{params[:git_fusion_entry]}/#{params[:git_fusion_repo_name]}"
+         params[:git_fusion_repo_name] && params[:git_fusion_auto_create] == false
+        params[:git_fusion_repo]     = "mirror://#{params[:git_fusion_entry]}/#{params[:git_fusion_repo_name]}"
+        params[:git_fusion_mirrored] = true
       end
 
-      super.merge(params.permit(:git_fusion_repo, :git_fusion_auto_create, :git_fusion_entry))
+      super.merge(params.permit(:git_fusion_repo, :git_fusion_auto_create,
+                                :git_fusion_entry, :git_fusion_mirrored))
     end
 
     protected

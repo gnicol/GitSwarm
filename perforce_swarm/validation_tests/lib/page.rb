@@ -64,7 +64,7 @@ class Page
 
   def wait_for_no_text(type, locator, text, timeout = 30)
     wait = Selenium::WebDriver::Wait.new(timeout: timeout) # seconds
-    wait.until { !@driver.find_element(type, locator).text.include?(text) }
+    wait.until { !@driver.find_element(type, locator) || !@driver.find_element(type, locator).text.include?(text) }
   end
 end
 

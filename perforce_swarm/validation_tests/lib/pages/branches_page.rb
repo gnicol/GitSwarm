@@ -13,7 +13,7 @@ class BranchesPage < Page
   end
 
   def available_branches
-    elems = @driver.find_element(:class, 'all-branches').find_elements(:tag_name, 'strong')
+    elems = @driver.find_element(:class, 'all-branches').find_elements(:class, 'branch-name')
     branches = []
     elems.each { |br| branches << br.text }
     branches

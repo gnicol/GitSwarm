@@ -29,12 +29,12 @@ class ProjectPage < Page
   end
 
   def mirrored_in_helix?
-    !page_has_element(:link_text, 'MIRROR IN HELIX') | page_has_element(:link_text, 'Mirrored in Helix')
+    page_has_element(:link_text, 'Mirrored in Helix')
   end
 
   def click_mirror_in_helix
     fail 'project already mirrored' if mirrored_in_helix?
-    @driver.find_element(:link_text, 'MIRROR IN HELIX').click
+    @driver.find_element(:link_text, 'Helix Mirroring').click
     ConfigureMirroringPage.new(@driver)
   end
 

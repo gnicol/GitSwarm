@@ -44,11 +44,11 @@
       = render 'projects/buttons/star'
       = render 'projects/buttons/fork'
 
-    -# gitswarm changes start
-    - if current_user
-      - helix_mirroring_button(@project, current_user)
-    -# gitswarm changes end
-    
+      -# gitswarm changes start
+      - if current_user
+        - helix_mirroring_button(@project, current_user)
+      -# gitswarm changes end
+
     .clone-row
       .project-clone-holder
         = render "shared/clone_panel"

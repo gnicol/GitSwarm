@@ -5,7 +5,8 @@ Rails.application.routes.draw do
 
   project_routes = [:configure_helix_mirroring,
                     :enable_helix_mirroring,
-                    :disable_helix_mirroring]
+                    :disable_helix_mirroring,
+                    :reenable_helix_mirroring]
   resources :namespaces, path: '/', constraints: { id: /[a-zA-Z.0-9_\-]+/ }, only: [] do
     resources(:projects, constraints: { id: /[a-zA-Z.0-9_\-]+(?<!\.atom)/ }, only:
                            project_routes, path: '/') do
@@ -13,6 +14,7 @@ Rails.application.routes.draw do
         get :configure_helix_mirroring
         post :enable_helix_mirroring
         post :disable_helix_mirroring
+        post :reenable_helix_mirroring
       end
     end
   end

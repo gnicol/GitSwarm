@@ -49,6 +49,12 @@
         = link_to disable_helix_mirroring_namespace_project_path(@project.namespace, @project), { method: 'post', class: button_class, data: { confirm: 'Are you sure you want to disable Helix Mirroring?' } } do
           = icon 'helix-icon-white'
           Disable Helix Mirroring
+    - elsif @project.git_fusion_repo.present?
+      -# project is not currently mirrored, but a repo is specified; it is a candidate for re-enabling mirroring
+      %span.mirror-button-wrapper
+        = link_to reenable_helix_mirroring_namespace_project_path(@project.namespace, @project), { method: 'post', class: button_class, data: { confirm: 'Are you sure you want to re-enable Helix Mirroring?' } } do
+          = icon 'helix-icon-white'
+          Re-enable Helix Mirroring
     - else
       -# project isn't currently mirrored, so show the configure mirroring form
       = render partial: 'perforce_swarm/git_fusion/projects/configure_helix_mirroring'

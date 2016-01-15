@@ -13,8 +13,6 @@
         = link_to project_path(forked_from_project) do
           = forked_from_project.namespace.try(:name)
 
-
-
   .project-repo-buttons
     = render 'projects/buttons/star'
 
@@ -25,12 +23,10 @@
         = link_to archive_namespace_project_repository_path(@project.namespace, @project, ref: @ref, format: 'zip'), class: 'btn', rel: 'nofollow' do
           = icon('download fw')
           Download
+
     -# gitswarm changes start
-    - if !@project.git_fusion_mirrored? && current_user
-      %span.has_tooltip.mirror-button-wrapper{data: {title: mirroring_tooltip(@project, current_user, true), html: 'true'}}
-        = link_to configure_helix_mirroring_namespace_project_path(@project.namespace, @project), class: "btn #{'disabled' unless mirroring_permitted?(@project, current_user) && mirroring_configured?}" do
-          = icon 'helix-icon-white'
-          Mirror in Helix
+    - if current_user
+      - helix_mirroring_button(@project, current_user)
     -# gitswarm changes end
 
     = render 'projects/buttons/notifications'

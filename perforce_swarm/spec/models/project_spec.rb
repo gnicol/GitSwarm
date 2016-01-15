@@ -78,9 +78,9 @@ describe Project do
       end
       it 'disables Git Fusion mirroring' do
         # stub out setting the mirror URL to nil, along with file existence checks
-        File.stub(realpath: '')
-        File.stub(exist?: true)
-        PerforceSwarm::Repo.any_instance.stub('mirror_url=' => nil)
+        allow(File).to receive(:realpath).and_return('')
+        allow(File).to receive(:exist?).and_return(true)
+        allow_any_instance_of(PerforceSwarm::Repo).to receive(:mirror_url=).and_return(nil)
 
         expect(project.git_fusion_mirrored?).to be true
         project.disable_git_fusion_mirroring!
@@ -97,9 +97,9 @@ describe Project do
       end
       it 'does not change the mirroring status of a project' do
         # stub out setting the mirror URL to nil, along with file existence checks
-        File.stub(realpath: '')
-        File.stub(exist?: true)
-        PerforceSwarm::Repo.any_instance.stub('mirror_url=' => nil)
+        allow(File).to receive(:realpath).and_return('')
+        allow(File).to receive(:exist?).and_return(true)
+        allow_any_instance_of(PerforceSwarm::Repo).to receive(:mirror_url=).and_return(nil)
 
         expect(project.git_fusion_mirrored?).to be false
         project.disable_git_fusion_mirroring!

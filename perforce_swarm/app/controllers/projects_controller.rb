@@ -54,7 +54,7 @@ module PerforceSwarm
 
       # if we were given git fusion parameters, incorporate those now
       if params[:git_fusion_entry] && !params[:git_fusion_entry].blank? &&
-         params[:git_fusion_repo_name] && params[:git_fusion_auto_create] == false
+          params[:git_fusion_repo_name] && params[:git_fusion_auto_create] == false
         params[:git_fusion_repo]     = "mirror://#{params[:git_fusion_entry]}/#{params[:git_fusion_repo_name]}"
         params[:git_fusion_mirrored] = true
       end

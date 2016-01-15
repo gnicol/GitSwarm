@@ -183,10 +183,10 @@ module ProjectsHelper
 
       # add the button at the appropriate haml indent level
       haml_concat(
-          link_to(configure_helix_mirroring_namespace_project_path(project.namespace, project), attributes) do
-            haml_concat(icon('helix-icon-white'))
-            haml_concat('Helix Mirroring')
-          end
+        link_to(configure_helix_mirroring_namespace_project_path(project.namespace, project), attributes) do
+          haml_concat(icon('helix-icon-white'))
+          haml_concat('Helix Mirroring')
+        end
       )
     end
   end

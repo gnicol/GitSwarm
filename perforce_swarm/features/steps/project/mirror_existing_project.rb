@@ -66,13 +66,13 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I should see "Not Mirrored in Helix" under the clone URL field' do
-    page.within('ul.nav-pills > li.mirrored-status') do
+    page.within('.project-stats > ul.nav > li.mirrored-status') do
       page.should have_link('Not Mirrored in Helix')
     end
   end
 
   step 'I should see "Mirrored in Helix" under the clone URL field' do
-    page.within('ul.nav-pills > li.mirrored-status') do
+    page.within('.project-stats > ul.nav > li.mirrored-status') do
       page.should have_link('Mirrored in Helix')
       page.should_not have_link('Not Mirrored in Helix')
     end

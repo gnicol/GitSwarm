@@ -17,44 +17,12 @@
       For help on configuring your Helix Git Fusion instances, have an admin
       = link_to 'see these directions.', help_page_path('workflow', 'importing', 'import_from_gitfusion'), target: '_blank'
   - else
-    - can_mirror   = mirroring_permitted?(@project, current_user) && mirroring_configured?
-    - button_class = 'btn btn-save' + (can_mirror ? '' : ' disabled')
     - if @project.git_fusion_mirrored?
       -# currently mirrored, so show relevant mirroring settings and the disable button
-      %p
-        - git_fusion_repo = @project.git_fusion_repo
-        - parsed          = git_fusion_repo.sub(%r{^mirror://}, '').split('/', 2)
-        This project is currently mirrored to the
-        = "'#{parsed[0]}'"
-        Helix Git Fusion server on the repo
-        = "'#{parsed[1]}'"
-
-      %p
-        It can be reached via the following Git URL:
-        = git_fusion_url(@project)
-      - if git_fusion_last_fetched(@project)
-        %p
-          This project was last updated from Helix Git Fusion
-          %time.time_ago.js-timeago{ datetime: git_fusion_last_fetched(@project), data: {placement: 'top', toggle: 'tooltip'} }
-            = git_fusion_last_fetched(@project)
-        - if git_fusion_last_fetch_error(@project)
-          %p
-            During the last fetch, the following error occurred:
-            %pre
-              = git_fusion_last_fetch_error(@project)
-      - else
-        %p
-          It appears this project hasn't updated from Helix Git Fusion yet.
-      %span.mirror-button-wrapper
-        = link_to disable_helix_mirroring_namespace_project_path(@project.namespace, @project), { method: 'post', class: button_class, data: { confirm: 'Are you sure you want to disable Helix Mirroring?' } } do
-          = icon 'helix-icon-white'
-          Disable Helix Mirroring
+      = render partial: 'perforce_swarm/git_fusion/projects/currently_mirrored_settings'
     - elsif @project.git_fusion_repo.present?
       -# project is not currently mirrored, but a repo is specified; it is a candidate for re-enabling mirroring
-      %span.mirror-button-wrapper
-        = link_to reenable_helix_mirroring_namespace_project_path(@project.namespace, @project), { method: 'post', class: button_class, data: { confirm: 'Are you sure you want to re-enable Helix Mirroring?' } } do
-          = icon 'helix-icon-white'
-          Re-enable Helix Mirroring
+      = render partial: 'perforce_swarm/git_fusion/projects/previously_mirrored_settings'
     - else
       -# project isn't currently mirrored, so show the configure mirroring form
       = render partial: 'perforce_swarm/git_fusion/projects/configure_helix_mirroring'

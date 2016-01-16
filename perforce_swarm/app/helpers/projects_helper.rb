@@ -86,10 +86,15 @@ module ProjectsHelper
     PerforceSwarm::Mirror.last_fetch_error(project.repository.path_to_repo)
   end
 
-  # returns the rendered (sans password) URL for a mirrored project
+  # returns the rendered (sans password) URL for a currently or previously mirrored project
   def git_fusion_url(project)
-    return '' unless project.git_fusion_mirrored?
-    url = PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url
+    # project is currently mirrored
+    url = nil
+    if project.git_fusion_mirrored?
+      url = PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url
+    elsif project.git_fusion_repo.present?
+      url = PerforceSwarm::GitFusionRepo.resolve_url(project.git_fusion_repo).to_s
+    end
     return '' unless url
     url
   rescue

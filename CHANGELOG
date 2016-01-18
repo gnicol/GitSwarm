@@ -1,6 +1,9 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+v 8.5.0 (unreleased)
+
 v 8.4.0 (unreleased)
+  - Ensure Gravatar host looks like an actual host
   - Add pagination headers to already paginated API resources
   - Properly generate diff of orphan commits, like the first commit in a repository
   - Improve the consistency of commit titles, branch names, tag names, issue/MR titles, on their respective project pages
@@ -58,6 +61,7 @@ v 8.4.0 (unreleased)
   - Import GitHub wiki into GitLab
   - Add reporters ability to download and browse build artifacts (Andrew Johnson)
   - Autofill referring url in message box when reporting user abuse. (Josh Frye)
+  - Remove leading comma on award emoji when the user is the first to award the emoji (Zeger-Jan van de Weg)
 
 v 8.3.4
   - Use gitlab-workhorse 0.5.4 (fixes API routing bug)

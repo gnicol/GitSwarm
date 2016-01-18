@@ -21,6 +21,7 @@ describe ProjectsController, type: :controller do
     @connection.input     = user_spec
     @connection.run('user', '-i')
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return({})
+    PerforceSwarm::Repo.any_instance.stub('mirror_url=' => nil)
   end
 
   after(:each) do
@@ -106,6 +107,43 @@ describe ProjectsController, type: :controller do
       expect(response).to redirect_to(expected_redirect)
       expect(project.git_fusion_mirrored?).to be false
       expect(controller).to set_flash[:alert].to('Project is not associated with a Helix Git Fusion Repository.').now
+    end
+
+    it 'displays an error and leaves mirroring disabled when the Git Fusion server cannot be reached' do
+      fetch_error = <<-EOM
+        ssh: connect to host foo port 22: Operation timed out
+        fatal: Could not read from remote repository.
+
+        Please make sure you have the correct access rights
+        and the repository exists.
+      EOM
+
+      allow(PerforceSwarm::Mirror).to receive(:fetch!).and_raise(fetch_error)
+      expected_redirect = '/' + [project.namespace.to_param,
+                                 project.to_param].join('/')
+      project.git_fusion_repo     = 'mirror://default/bar'
+      project.git_fusion_mirrored =  false
+      expect(project.git_fusion_mirrored?).to be false
+      post(:reenable_helix_mirroring,
+           namespace_id: project.namespace.name,
+           id: project)
+      expect(response).to redirect_to(expected_redirect)
+      expect(project.git_fusion_mirrored?).to be false
+      expect(controller).to set_flash[:alert].to(fetch_error).now
+    end
+
+    it 're-enables mirroring on a project where no updates were made to Helix or GitSwarm while it was disabled' do
+      expected_redirect = '/' + [project.namespace.to_param,
+                                 project.to_param].join('/')
+      project.git_fusion_repo     = 'mirror://default/bar'
+      project.git_fusion_mirrored =  false
+      expect(project.git_fusion_mirrored?).to be false
+      post(:reenable_helix_mirroring,
+           namespace_id: project.namespace.name,
+           id: project)
+      expect(response).to redirect_to(expected_redirect)
+      expect(controller).to set_flash[:notice].to('Helix mirroring successfully re-enabled!').now
+      expect(project.git_fusion_mirrored?).to be true
     end
   end
 end

@@ -147,7 +147,12 @@ module ProjectsHelper
     return false
   end
 
-  def git_fusion_connection_error(project, user)
+  # performs pre-flight checks against Git Fusion, including connecting to the
+  # server, and checking that the user can see the Git Fusion repo specified
+  # for the given project
+  #
+  # returns the error as a string, or nil if no errors were found
+  def git_fusion_preflight_errors(project, user)
     return nil unless project.git_fusion_repo.present?
 
     server = project.git_fusion_server_id

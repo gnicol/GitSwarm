@@ -85,6 +85,7 @@ module PerforceSwarm
     end
 
     def git_fusion_repo_segments
+      return [] unless git_fusion_repo.present?
       git_fusion_repo.sub(%r{^mirror://}, '').split('/', 2)
     end
 

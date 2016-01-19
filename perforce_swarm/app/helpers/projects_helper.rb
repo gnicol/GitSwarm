@@ -80,11 +80,8 @@ module ProjectsHelper
                       mirroring_configured? &&
                       git_fusion_url &&
                       !git_fusion_url.empty?
-    git_fusion_repo = project.git_fusion_repo
-    parsed          = git_fusion_repo.sub(%r{^mirror://}, '').split('/', 2)
-
-    "Configuration for the Helix Git Fusion server '#{parsed[0]}' is either missing, " \
-    'or is not properly configured in GitSwarm.' unless can_reenable
+    "Configuration for the Helix Git Fusion server '#{project.git_fusion_server_id}' " \
+    'is either missing, or is not properly configured in GitSwarm.' unless can_reenable
   end
 
   # time (as a string) of the last successful fetch from Git Fusion, or false if no timestamp is present

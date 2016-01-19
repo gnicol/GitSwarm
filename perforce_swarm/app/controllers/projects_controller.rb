@@ -15,7 +15,7 @@ module PerforceSwarm
       # create the p4gf_config file, which creates the repo in Git Fusion
       fusion_server = params['fusion_server']
       fail 'No Git Fusion server specified.' unless fusion_server
-      repo_creator  = PerforceSwarm::GitFusion::RepoCreator.new(fusion_server, @project.namespace.name, @project.path)
+      repo_creator = PerforceSwarm::GitFusion::RepoCreator.new(fusion_server, @project.namespace.name, @project.path)
       repo_creator.save
       PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: fusion_server)
 
@@ -66,7 +66,7 @@ module PerforceSwarm
 
       # if we were given git fusion parameters, incorporate those now
       if params[:git_fusion_entry] && !params[:git_fusion_entry].blank? &&
-         params[:git_fusion_repo_name] && params[:git_fusion_auto_create] == false
+          params[:git_fusion_repo_name] && params[:git_fusion_auto_create] == false
         params[:git_fusion_repo]     = "mirror://#{params[:git_fusion_entry]}/#{params[:git_fusion_repo_name]}"
         params[:git_fusion_mirrored] = true
       end

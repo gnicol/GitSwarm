@@ -20,6 +20,9 @@
     Each project can also have an issue tracker and a wiki.
     %br
     Read more about GitSwarm at #{link_to promo_host, promo_url, target: '_blank'}.
+    - if current_application_settings.help_page_text.present?
+      %hr
+      = markdown(current_application_settings.help_page_text)
 
 %hr
 

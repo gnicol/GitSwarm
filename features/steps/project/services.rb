@@ -11,22 +11,12 @@ class Spinach::Features::ProjectServices < Spinach::FeatureSteps
     expect(page).to have_content 'Project services'
     expect(page).to have_content 'Campfire'
     expect(page).to have_content 'HipChat'
-    expect(page).to have_content 'GitLab CI'
     expect(page).to have_content 'Assembla'
     expect(page).to have_content 'Pushover'
     expect(page).to have_content 'Atlassian Bamboo'
     expect(page).to have_content 'JetBrains TeamCity'
     expect(page).to have_content 'Asana'
     expect(page).to have_content 'Irker (IRC gateway)'
-  end
-
-  step 'I click gitlab-ci service link' do
-    click_link 'GitLab CI'
-  end
-
-  step 'I fill gitlab-ci settings' do
-    check 'Active'
-    click_button 'Save'
   end
 
   step 'I should see service settings saved' do
@@ -183,6 +173,24 @@ class Spinach::Features::ProjectServices < Spinach::FeatureSteps
     expect(find_field('Sound').find('option[selected]').value).to eq 'bike'
   end
 
+  step 'I click jira service link' do
+    click_link 'JIRA'
+  end
+
+  step 'I fill jira settings' do
+    fill_in 'Project url', with: 'http://jira.example'
+    fill_in 'Username', with: 'gitlab'
+    fill_in 'Password', with: 'gitlab'
+    fill_in 'Api url', with: 'http://jira.example/rest/api/2'
+    click_button 'Save'
+  end
+
+  step 'I should see jira service settings saved' do
+    expect(find_field('Project url').value).to eq 'http://jira.example'
+    expect(find_field('Username').value).to eq 'gitlab'
+    expect(find_field('Api url').value).to eq 'http://jira.example/rest/api/2'
+  end
+
   step 'I click Atlassian Bamboo CI service link' do
     click_link 'Atlassian Bamboo CI'
   end
@@ -200,6 +208,10 @@ class Spinach::Features::ProjectServices < Spinach::FeatureSteps
     expect(find_field('Bamboo url').value).to eq 'http://bamboo.example.com'
     expect(find_field('Build key').value).to eq 'KEY'
     expect(find_field('Username').value).to eq 'user'
+  end
+
+  step 'I should see empty field Change Password' do
+    expect(find_field('Change Password').value).to be_nil
   end
 
   step 'I click JetBrains TeamCity CI service link' do

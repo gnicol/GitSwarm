@@ -1,5 +1,5 @@
 module API
-  module APIHelpers
+  module Helpers
     PRIVATE_TOKEN_HEADER = "HTTP_PRIVATE_TOKEN"
     PRIVATE_TOKEN_PARAM = :private_token
     SUDO_HEADER ="HTTP_SUDO"
@@ -63,11 +63,11 @@ module API
           user_project.build_missing_services
 
           service_method = "#{underscored_service}_service"
-          
+
           send_service(service_method)
         end
       end
-   
+
       @project_service || not_found!("Service")
     end
 
@@ -97,11 +97,9 @@ module API
     end
 
     def paginate(relation)
-      per_page  = params[:per_page].to_i
-      paginated = relation.page(params[:page]).per(per_page)
-      add_pagination_headers(paginated, per_page)
-
-      paginated
+      relation.page(params[:page]).per(params[:per_page].to_i).tap do |data|
+        add_pagination_headers(data)
+      end
     end
 
     def authenticate!
@@ -133,6 +131,12 @@ module API
       authorize! :admin_project, user_project
     end
 
+    def require_gitlab_workhorse!
+      unless env['HTTP_GITLAB_WORKHORSE'].present?
+        forbidden!('Request should be executed via GitLab Workhorse')
+      end
+    end
+
     def can?(object, action, subject)
       abilities.allowed?(object, action, subject)
     end
@@ -149,7 +153,6 @@ module API
     end
 
     def attributes_for_keys(keys, custom_params = nil)
-      params_hash = custom_params || params
       attrs = {}
       keys.each do |key|
         if params[key].present? or (params.has_key?(key) and params[key] == false)
@@ -235,6 +238,10 @@ module API
       render_api_error!(message || '409 Conflict', 409)
     end
 
+    def file_to_large!
+      render_api_error!('413 Request Entity Too Large', 413)
+    end
+
     def render_validation_error!(model)
       if model.errors.any?
         render_api_error!(model.errors.messages || '400 Bad Request', 400)
@@ -257,12 +264,7 @@ module API
         projects = projects.search(params[:search])
       end
 
-      if params[:ci_enabled_first].present?
-        projects.includes(:gitlab_ci_service).
-          reorder("services.active DESC, projects.#{project_order_by} #{project_sort}")
-      else
-        projects.reorder(project_order_by => project_sort)
-      end
+      projects.reorder(project_order_by => project_sort)
     end
 
     def project_order_by
@@ -283,18 +285,68 @@ module API
       end
     end
 
+    # file helpers
+
+    def uploaded_file(field, uploads_path)
+      if params[field]
+        bad_request!("#{field} is not a file") unless params[field].respond_to?(:filename)
+        return params[field]
+      end
+
+      return nil unless params["#{field}.path"] && params["#{field}.name"]
+
+      # sanitize file paths
+      # this requires all paths to exist
+      required_attributes! %W(#{field}.path)
+      uploads_path = File.realpath(uploads_path)
+      file_path = File.realpath(params["#{field}.path"])
+      bad_request!('Bad file path') unless file_path.start_with?(uploads_path)
+
+      UploadedFile.new(
+        file_path,
+        params["#{field}.name"],
+        params["#{field}.type"] || 'application/octet-stream',
+      )
+    end
+
+    def present_file!(path, filename, content_type = 'application/octet-stream')
+      filename ||= File.basename(path)
+      header['Content-Disposition'] = "attachment; filename=#{filename}"
+      header['Content-Transfer-Encoding'] = 'binary'
+      content_type content_type
+
+      # Support download acceleration
+      case headers['X-Sendfile-Type']
+      when 'X-Sendfile'
+        header['X-Sendfile'] = path
+        body
+      else
+        file FileStreamer.new(path)
+      end
+    end
+
     private
 
-    def add_pagination_headers(paginated, per_page)
+    def add_pagination_headers(paginated_data)
+      header 'X-Total',       paginated_data.total_count.to_s
+      header 'X-Total-Pages', paginated_data.total_pages.to_s
+      header 'X-Per-Page',    paginated_data.limit_value.to_s
+      header 'X-Page',        paginated_data.current_page.to_s
+      header 'X-Next-Page',   paginated_data.next_page.to_s
+      header 'X-Prev-Page',   paginated_data.prev_page.to_s
+      header 'Link',          pagination_links(paginated_data)
+    end
+
+    def pagination_links(paginated_data)
       request_url = request.url.split('?').first
 
       links = []
-      links << %(<#{request_url}?page=#{paginated.current_page - 1}&per_page=#{per_page}>; rel="prev") unless paginated.first_page?
-      links << %(<#{request_url}?page=#{paginated.current_page + 1}&per_page=#{per_page}>; rel="next") unless paginated.last_page?
-      links << %(<#{request_url}?page=1&per_page=#{per_page}>; rel="first")
-      links << %(<#{request_url}?page=#{paginated.total_pages}&per_page=#{per_page}>; rel="last")
+      links << %(<#{request_url}?page=#{paginated_data.current_page - 1}&per_page=#{paginated_data.limit_value}>; rel="prev") unless paginated_data.first_page?
+      links << %(<#{request_url}?page=#{paginated_data.current_page + 1}&per_page=#{paginated_data.limit_value}>; rel="next") unless paginated_data.last_page?
+      links << %(<#{request_url}?page=1&per_page=#{paginated_data.limit_value}>; rel="first")
+      links << %(<#{request_url}?page=#{paginated_data.total_pages}&per_page=#{paginated_data.limit_value}>; rel="last")
 
-      header 'Link', links.join(', ')
+      links.join(', ')
     end
 
     def abilities

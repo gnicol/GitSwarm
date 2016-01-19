@@ -36,7 +36,7 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   step 'I should see a no Git Fusion instances configured for auto-create tooltip' do
     page.should have_selector('li[data-title*="None of the Helix Git Fusion instances GitSwarm knows about ' \
                               'are configured for \'auto create\'."]'
-    )
+                             )
   end
 
   step 'I should see an inadequate permissions tooltip' do
@@ -81,13 +81,13 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I should see "Not Mirrored in Helix" under the clone URL field' do
-    page.within('ul.nav-pills > li.mirrored-status') do
+    page.within('.project-stats > ul.nav > li.mirrored-status') do
       page.should have_link('Not Mirrored in Helix')
     end
   end
 
   step 'I should see "Mirrored in Helix" under the clone URL field' do
-    page.within('ul.nav-pills > li.mirrored-status') do
+    page.within('.project-stats > ul.nav > li.mirrored-status') do
       page.should have_link('Mirrored in Helix')
       page.should_not have_link('Not Mirrored in Helix')
     end
@@ -138,7 +138,7 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'I should see an error message that says there was an error communicating with Helix Git Fusion' do
     expect(page.find(:div, '.mirroring-errors')).to(
-        have_content('There was an error communicating with Helix Git Fusion: ')
+      have_content('There was an error communicating with Helix Git Fusion: ')
     )
   end
 end

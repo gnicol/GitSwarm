@@ -5,17 +5,17 @@
 # the compiled file.
 #
 #= require jquery
-#= require jquery.ui.all
+#= require jquery-ui
 #= require jquery_ujs
 #= require jquery.cookie
 #= require jquery.endless-scroll
 #= require jquery.highlight
-#= require jquery.history
 #= require jquery.waitforimages
 #= require jquery.atwho
 #= require jquery.scrollTo
-#= require jquery.blockUI
 #= require jquery.turbolinks
+#= require d3
+#= require cal-heatmap
 #= require turbolinks
 #= require autosave
 #= require bootstrap
@@ -27,7 +27,6 @@
 #= require branch-graph
 #= require ace/ace
 #= require ace/ext-searchbox
-#= require d3
 #= require underscore
 #= require nprogress
 #= require nprogress-turbolinks
@@ -39,9 +38,9 @@
 #= require shortcuts_dashboard_navigation
 #= require shortcuts_issuable
 #= require shortcuts_network
-#= require cal-heatmap
 #= require jquery.nicescroll.min
 #= require_tree .
+#= require fuzzaldrin-plus.min
 
 window.slugify = (text) ->
   text.replace(/[^-a-zA-Z0-9]+/g, '_').toLowerCase()
@@ -135,17 +134,25 @@ $ ->
     ), 1
 
   # Initialize tooltips
-  $('body').tooltip({
-    selector: '.has_tooltip, [data-toggle="tooltip"], .page-sidebar-collapsed .nav-sidebar a'
+  $('body').tooltip(
+    selector: '.has_tooltip, [data-toggle="tooltip"]'
     placement: (_, el) ->
       $el = $(el)
-      if $el.attr('id') == 'js-shortcuts-home'
-        # Place the logo tooltip on the right when collapsed, bottom when expanded
-        $el.parents('header').hasClass('header-collapsed') and 'right' or 'bottom'
-      else
-        # Otherwise use the data-placement attribute, or 'bottom' if undefined
-        $el.data('placement') or 'bottom'
-  })
+      $el.data('placement') || 'bottom'
+  )
+
+  $('.header-logo .home').tooltip(
+    placement: (_, el) ->
+      $el = $(el)
+      if $('.page-with-sidebar').hasClass('page-sidebar-collapsed') then 'right' else 'bottom'
+    container: 'body'
+  )
+
+  $('.page-with-sidebar').tooltip(
+    selector: '.sidebar-collapsed .nav-sidebar a, .sidebar-collapsed a.sidebar-user'
+    placement: 'right'
+    container: 'body'
+  )
 
   # Form submitter
   $('.trigger-submit').on 'change', ->
@@ -180,6 +187,7 @@ $ ->
   $('.navbar-toggle').on 'click', ->
     $('.header-content .title').toggle()
     $('.header-content .navbar-collapse').toggle()
+    $('.navbar-toggle').toggleClass('active')
 
   # Show/hide comments on diff
   $("body").on "click", ".js-toggle-diff-comments", (e) ->

@@ -4,18 +4,20 @@ describe Project do
   describe 'validations' do
     it { is_expected.to validate_length_of(:git_fusion_repo).is_within(0..255) }
 
+    # Everything but nil will be string cast
     ['mirror://',
      'mirror:',
      'foo/bar',
      'zirror://foo/bar',
      0,
+     false,
      'mirror://foo/'
     ].each do |url|
       it { should_not allow_value(url).for(:git_fusion_repo), url }
     end
 
+    # Everything but nil will be string cast
     [nil,
-     false,
      '',
      'mirror://foo/bar',
      'mirror://foo/bar/baz',
@@ -76,9 +78,9 @@ describe Project do
       end
       it 'disables Git Fusion mirroring' do
         # stub out setting the mirror URL to nil, along with file existence checks
-        File.stub(realpath: '')
-        File.stub(exist?: true)
-        PerforceSwarm::Repo.any_instance.stub('mirror_url=' => nil)
+        allow(File).to receive(:realpath).and_return('')
+        allow(File).to receive(:exist?).and_return(true)
+        allow_any_instance_of(PerforceSwarm::Repo).to receive(:mirror_url=).and_return(nil)
 
         expect(project.git_fusion_mirrored?).to be true
         project.disable_git_fusion_mirroring!
@@ -95,9 +97,9 @@ describe Project do
       end
       it 'does not change the mirroring status of a project' do
         # stub out setting the mirror URL to nil, along with file existence checks
-        File.stub(realpath: '')
-        File.stub(exist?: true)
-        PerforceSwarm::Repo.any_instance.stub('mirror_url=' => nil)
+        allow(File).to receive(:realpath).and_return('')
+        allow(File).to receive(:exist?).and_return(true)
+        allow_any_instance_of(PerforceSwarm::Repo).to receive(:mirror_url=).and_return(nil)
 
         expect(project.git_fusion_mirrored?).to be false
         project.disable_git_fusion_mirroring!

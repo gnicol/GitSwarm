@@ -6,8 +6,8 @@ module API
 
         # Throw error if repo is mirrored, and the gitswarm user is missing
         if project &&
-           PerforceSwarm::Repo.new(project.repository.path_to_repo).mirrored? &&
-           !User.find_by(username: 'gitswarm')
+            PerforceSwarm::Repo.new(project.repository.path_to_repo).mirrored? &&
+            !User.find_by(username: 'gitswarm')
           render_api_error!('gitswarm user doesn\'t exist in GitSwarm', 400)
         end
       end

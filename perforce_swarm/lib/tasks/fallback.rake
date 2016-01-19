@@ -1,6 +1,6 @@
 # This rule will capture any calls to the gitswarm namespace that don't already have defined tasks
 rule(/^gitswarm:/, [:args]) do |task, args|
-  task_name  = task.name.sub(/^gitswarm:/, 'gitlab:').sub(/gitlab_/, 'gitswarm_')
+  task_name = task.name.sub(/^gitswarm:/, 'gitlab:').sub(/gitlab_/, 'gitswarm_')
 
   if Rake.application.lookup(task_name)
     Rake.application[task_name].invoke(args[:args])

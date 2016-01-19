@@ -21,7 +21,7 @@ module PerforceSwarm
       # update_attributes will validate the values it has been passed
       update_attributes(git_fusion_repo: "mirror://#{fusion_server}/#{repo_name}",
                         git_fusion_mirrored: true
-      )
+                       )
       PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
     end
 

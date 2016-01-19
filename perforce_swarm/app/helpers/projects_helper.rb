@@ -171,7 +171,7 @@ module ProjectsHelper
     return nil unless git_fusion_enabled?
 
     # Call the url method on each server to validate the config
-    gitlab_shell_config.git_fusion.entries.each { | _id, config | config.url }
+    gitlab_shell_config.git_fusion.entries.each { |_id, config| config.url }
     nil
   rescue => e
     return e.message
@@ -218,10 +218,10 @@ module ProjectsHelper
 
       # add the button at the appropriate haml indent level
       haml_concat(
-          link_to(configure_helix_mirroring_namespace_project_path(project.namespace, project), attributes) do
-            haml_concat(icon('helix-icon-white'))
-            haml_concat('Helix Mirroring')
-          end
+        link_to(configure_helix_mirroring_namespace_project_path(project.namespace, project), attributes) do
+          haml_concat(icon('helix-icon-white'))
+          haml_concat('Helix Mirroring')
+        end
       )
     end
   end

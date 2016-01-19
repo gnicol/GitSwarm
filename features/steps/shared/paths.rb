@@ -31,6 +31,10 @@ module SharedPaths
     visit merge_requests_group_path(Group.find_by(name: "Owned"))
   end
 
+  step 'I visit group "Owned" milestones page' do
+    visit group_milestones_path(Group.find_by(name: "Owned"))
+  end
+
   step 'I visit group "Owned" members page' do
     visit group_group_members_path(Group.find_by(name: "Owned"))
   end
@@ -208,8 +212,8 @@ module SharedPaths
   end
 
   step 'I visit a binary file in the repo' do
-    visit namespace_project_blob_path(@project.namespace, @project, File.join(
-      root_ref, 'files/images/logo-black.png'))
+    visit namespace_project_blob_path(@project.namespace, @project,
+      File.join(root_ref, 'files/images/logo-black.png'))
   end
 
   step "I visit my project's commits page" do
@@ -253,6 +257,10 @@ module SharedPaths
 
   step 'I visit project deploy keys page' do
     visit namespace_project_deploy_keys_path(@project.namespace, @project)
+  end
+
+  step 'I visit project find file page' do
+    visit namespace_project_find_file_path(@project.namespace, @project, root_ref)
   end
 
   # ----------------------------------------
@@ -312,8 +320,8 @@ module SharedPaths
   end
 
   step 'I am on the ".gitignore" edit file page' do
-    expect(current_path).to eq(namespace_project_edit_blob_path(
-      @project.namespace, @project, File.join(root_ref, '.gitignore')))
+    expect(current_path).to eq(
+      namespace_project_edit_blob_path(@project.namespace, @project, File.join(root_ref, '.gitignore')))
   end
 
   step 'I visit project source page for "6d39438"' do

@@ -1,6 +1,7 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 8.5.0 (unreleased)
+  - Add "visibility" flag to GET /projects api endpoint
 
 v 8.4.0 (unreleased)
   - Ensure Gravatar host looks like an actual host
@@ -67,6 +68,7 @@ v 8.4.0 (unreleased)
   - Improve UX in builds artifacts browser
   - Increase default size of `data` column in `events` table when using MySQL
   - Expose button to CI Lint tool on project builds page
+  - Fix: Creator should be added as a master of the project on creation
 
 v 8.3.4
   - Use gitlab-workhorse 0.5.4 (fixes API routing bug)

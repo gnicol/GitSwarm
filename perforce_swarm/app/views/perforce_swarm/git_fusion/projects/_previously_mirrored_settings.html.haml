@@ -1,6 +1,8 @@
 - git_fusion_error = git_fusion_preflight_errors(@project, current_user)
 - git_fusion_url   = git_fusion_url(@project)
-- can_reenable     = mirroring_permitted?(@project, current_user) && mirroring_configured? && git_fusion_url && !git_fusion_url.empty? && !git_fusion_error
+- has_fusion_error = git_fusion_error && !git_fusion_error.empty?
+- has_fusion_url   = git_fusion_url && !git_fusion_url.empty?
+- can_reenable     = mirroring_permitted?(@project, current_user) && mirroring_configured? && has_fusion_url && !has_fusion_error
 - button_class     = 'btn btn-save' + (can_reenable ? '' : ' disabled')
 
 %p
@@ -15,7 +17,7 @@
     The Git Fusion repo can be reached via the following Git URL:
     = git_fusion_url
   - else
-    = git_fusion_error if git_fusion_error
+    = git_fusion_error if has_fusion_error
     = helix_reenable_mirroring_tooltip(@project)
     %br
       = link_to '#' do

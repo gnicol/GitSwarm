@@ -80,7 +80,7 @@ describe ProjectsController, type: :controller do
   end
 
   describe 'POST reenable_helix_mirroring' do
-    it 'gives error message with no mirroring status change if the project is already mirrored' do
+    it 'gives error message and project remains un-mirrored if the project is already mirrored' do
       expected_redirect = '/' + [project.namespace.to_param,
                                  project.to_param].join('/')
       project.git_fusion_repo     = 'mirror://default/bar'
@@ -94,7 +94,7 @@ describe ProjectsController, type: :controller do
       expect(controller).to set_flash[:alert].to('Project is already mirrored in Helix.').now
     end
 
-    it 'gives error message with no mirroring status change if the project has no repo' do
+    it 'gives error message and project remains un-mirrored if the project has no repo' do
       expected_redirect = '/' + [project.namespace.to_param,
                                  project.to_param].join('/')
       project.git_fusion_repo     = ''

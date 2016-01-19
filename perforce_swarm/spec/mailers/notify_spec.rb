@@ -88,7 +88,7 @@ describe Notify do
 
       it 'is sent as the author' do
         sender = subject.header[:from].addrs[0]
-        expect(sender.display_name).to eq("GitSwarm")
+        expect(sender.display_name).to eq('GitSwarm')
         expect(sender.address).to eq(gitlab_sender)
       end
     end

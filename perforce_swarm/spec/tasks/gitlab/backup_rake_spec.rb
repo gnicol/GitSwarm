@@ -16,11 +16,8 @@ describe 'gitlab:app namespace rake task' do
   end
 
   def reenable_backup_sub_tasks
-    if PerforceSwarm.ee?
-      folder_list = %w(db repo uploads builds artifacts pages lfs)
-    else
-      folder_list = %w(db repo uploads builds artifacts lfs)
-    end
+    folder_list = %w(db repo uploads builds artifacts lfs)
+    folder_list += %w(pages) if PerforceSwarm.ee?
     folder_list.each do |subtask|
       Rake::Task["gitlab:backup:#{subtask}:create"].reenable
     end
@@ -117,14 +114,9 @@ describe 'gitlab:app namespace rake task' do
     end
 
     it 'should set correct permissions on the tar contents', override: true do
-      if PerforceSwarm.ee?
-        archive_files = %W(
-          tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz pages.tar.gz lfs.tar.gz
-        )
-      else
-        archive_files =
-          %W(tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz lfs.tar.gz)
-      end
+      archive_files =
+        %W(tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz lfs.tar.gz)
+      archive_files += %w(pages.tar.gz) if PerforceSwarm.ee?
       tar_contents, exit_status = Gitlab::Popen.popen(archive_files)
       expect(exit_status).to eq(0)
       expect(tar_contents).to match('db/')
@@ -185,14 +177,9 @@ describe 'gitlab:app namespace rake task' do
     end
 
     it 'does not contain skipped item', override: true do
-      if PerforceSwarm.ee?
-        archive_files = %W(
-          tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz pages.tar.gz lfs.tar.gz
-        )
-      else
-        archive_files =
-          %W(tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz lfs.tar.gz)
-      end
+      archive_files =
+        %W(tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz lfs.tar.gz)
+      archive_files += %w(pages.tar.gz) if PerforceSwarm.ee?
       tar_contents, _exit_status = Gitlab::Popen.popen(archive_files)
 
       expect(tar_contents).to match('db/')

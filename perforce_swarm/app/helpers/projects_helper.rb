@@ -74,6 +74,19 @@ module ProjectsHelper
     'Click "Helix Mirroring" above to get mirroring!'
   end
 
+  def helix_reenable_mirroring_tooltip(project)
+    git_fusion_url  = git_fusion_url(project)
+    can_reenable    = mirroring_permitted?(project, current_user) &&
+                      mirroring_configured? &&
+                      git_fusion_url &&
+                      !git_fusion_url.empty?
+    git_fusion_repo = project.git_fusion_repo
+    parsed          = git_fusion_repo.sub(%r{^mirror://}, '').split('/', 2)
+
+    "Configuration for the Helix Git Fusion server '#{parsed[0]}' is either missing, " \
+    'or is not properly configured in GitSwarm.' unless can_reenable
+  end
+
   # time (as a string) of the last successful fetch from Git Fusion, or false if no timestamp is present
   def git_fusion_last_fetched(project)
     PerforceSwarm::Mirror.last_fetched(project.repository.path_to_repo).strftime('%F %T %z')
@@ -135,6 +148,26 @@ module ProjectsHelper
   rescue
     # as the code sits, this is not likely to occur, but we're being defensive anyway
     return false
+  end
+
+  def git_fusion_connection_error(project, user)
+    return nil unless project.git_fusion_repo.present?
+
+    server = project.git_fusion_server_id
+    repo   = project.git_fusion_repo_name
+
+    # verify we can talk to Git Fusion successfully, add error with details if we cannot
+    begin
+      PerforceSwarm::GitFusion.run(server, 'info')
+    rescue => error
+      return error.message
+    end
+
+    # verify that the specified repo is accessible to the user
+    repos   = PerforceSwarm::GitFusionRepo.list(server, user)
+    message = "Either the repo '#{repo}' does not exist, or you do not have permission to access it."
+    return message unless repos[repo]
+    nil
   end
 
   def git_fusion_server_error

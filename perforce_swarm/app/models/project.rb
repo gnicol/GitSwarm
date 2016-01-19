@@ -83,6 +83,18 @@ module PerforceSwarm
       end
       super
     end
+
+    def git_fusion_repo_segments
+      git_fusion_repo.sub(%r{^mirror://}, '').split('/', 2)
+    end
+
+    def git_fusion_server_id
+      git_fusion_repo_segments[0]
+    end
+
+    def git_fusion_repo_name
+      git_fusion_repo_segments[1]
+    end
   end
 end
 

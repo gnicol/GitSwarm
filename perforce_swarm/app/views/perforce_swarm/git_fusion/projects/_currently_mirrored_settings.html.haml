@@ -1,13 +1,13 @@
 %p
-- can_mirror      = mirroring_permitted?(@project, current_user) && mirroring_configured?
-- button_class    = 'btn btn-save' + (can_mirror ? '' : ' disabled')
-- git_fusion_repo = @project.git_fusion_repo
-- parsed          = git_fusion_repo.sub(%r{^mirror://}, '').split('/', 2)
-- git_fusion_url  = git_fusion_url(@project)
+- git_fusion_error = git_fusion_connection_error(@project, current_user)
+- can_disable      = mirroring_permitted?(@project, current_user) && mirroring_configured?
+- button_class     = 'btn btn-save' + (can_disable ? '' : ' disabled')
+- git_fusion_url   = git_fusion_url(@project)
+
 This project is currently mirrored to the
-= "'#{parsed[0]}'"
+= "'#{@project.git_fusion_server_id}'"
 Helix Git Fusion server on the repo
-= "'#{parsed[1]}'"
+= "'#{@project.git_fusion_repo_name}'"
 - if git_fusion_url && git_fusion_url.is_a?(String) && !git_fusion_url.empty?
   %p
     It can be reached via the following Git URL:
@@ -25,6 +25,9 @@ Helix Git Fusion server on the repo
 - else
   %p
     It appears this project hasn't updated from Helix Git Fusion yet.
+- if git_fusion_error
+  %p= git_fusion_error
+= render partial: 'perforce_swarm/git_fusion/projects/mirroring_config_errors'
 %span.mirror-button-wrapper
   = link_to disable_helix_mirroring_namespace_project_path(@project.namespace, @project), { method: 'post', class: button_class, data: { confirm: 'Are you sure you want to disable Helix Mirroring?' } } do
     = icon 'helix-icon-white'

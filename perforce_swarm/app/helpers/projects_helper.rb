@@ -77,9 +77,9 @@ module ProjectsHelper
   def helix_reenable_mirroring_tooltip(project)
     git_fusion_url  = git_fusion_url(project)
     can_reenable    = mirroring_permitted?(project, current_user) &&
-                      mirroring_configured? &&
-                      git_fusion_url &&
-                      !git_fusion_url.empty?
+      mirroring_configured? &&
+      git_fusion_url &&
+      !git_fusion_url.empty?
     "Configuration for the Helix Git Fusion server '#{project.git_fusion_server_id}' " \
     'is either missing, or is not properly configured in GitSwarm.' unless can_reenable
   end

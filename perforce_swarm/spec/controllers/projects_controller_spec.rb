@@ -122,7 +122,7 @@ describe ProjectsController, type: :controller do
       expected_redirect = '/' + [project.namespace.to_param,
                                  project.to_param].join('/')
       project.git_fusion_repo     = 'mirror://default/bar'
-      project.git_fusion_mirrored =  false
+      project.git_fusion_mirrored = false
       expect(project.git_fusion_mirrored?).to be false
       post(:reenable_helix_mirroring,
            namespace_id: project.namespace.name,
@@ -136,7 +136,7 @@ describe ProjectsController, type: :controller do
       expected_redirect = '/' + [project.namespace.to_param,
                                  project.to_param].join('/')
       project.git_fusion_repo     = 'mirror://default/bar'
-      project.git_fusion_mirrored =  false
+      project.git_fusion_mirrored = false
       expect(project.git_fusion_mirrored?).to be false
       post(:reenable_helix_mirroring,
            namespace_id: project.namespace.name,

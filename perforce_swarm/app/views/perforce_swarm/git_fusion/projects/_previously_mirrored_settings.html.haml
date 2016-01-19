@@ -1,4 +1,4 @@
-- git_fusion_error = git_fusion_connection_error(@project, current_user)
+- git_fusion_error = git_fusion_preflight_errors(@project, current_user)
 - git_fusion_url   = git_fusion_url(@project)
 - can_reenable     = mirroring_permitted?(@project, current_user) && mirroring_configured? && git_fusion_url && !git_fusion_url.empty? && !git_fusion_error
 - button_class     = 'btn btn-save' + (can_reenable ? '' : ' disabled')

@@ -53,10 +53,7 @@ module PerforceSwarm
       fail 'No project specified.' unless @project
       fail 'Project is already mirrored in Helix.' if @project.git_fusion_mirrored?
       fail 'Project is not associated with a Helix Git Fusion Repository.' unless @project.git_fusion_repo.present?
-
-      # re-enable mirroring, and redirect to project details page
-      @project.reenable_git_fusion_mirroring!
-      redirect_to(project_path(@project), notice: 'Helix mirroring successfully re-enabled!')
+      fail 'Not implemented.'
     rescue => e
       redirect_to(project_path(@project), alert: e.message)
     end

@@ -58,6 +58,7 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'Helix mirroring is disabled, but was once enabled for project "Shop"' do
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('foo' => '')
     project = create(:project, name: 'Shop', git_fusion_repo: 'mirror://local/foo', git_fusion_mirrored: false)
     project.team << [@user, :master]
   end

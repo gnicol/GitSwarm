@@ -25,40 +25,6 @@ module PerforceSwarm
       PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
     end
 
-    # re-enables Git Fusion mirroring on the project
-    def reenable_git_fusion_mirroring!
-      # attempt to re-create the mirror remote
-      repo_path = repository.path_to_repo
-      PerforceSwarm::Repo.new(repo_path).mirror_url = git_fusion_repo
-
-      # perform a fetch from fusion, eating most errors, logging all
-      begin
-        Mirror.fetch!(repo_path)
-      rescue => e
-        logger.error(e.message)
-        raise e.message if e.message.include?('Could not read from remote repository.')
-      end
-
-      # gather all heads/tags and convert them to colon-delimited
-      refs = Mirror.show_ref(repo_path)
-      refs = refs.split("\n").map { |ref| ref.sub(' ', ':') }
-
-      # push all of the detected refs to the remote mirror
-      Mirror.push(refs, repo_path, require_block: false)
-
-      # check for errors
-
-      # if we didn't encounter any errors, enable mirroring (mirror remote
-      # has already been created, and the git_fusion_repo field is already correct)
-      update_attribute(:git_fusion_mirrored, true)
-    rescue => e
-      # we've encountered an error re-establishing the mirror remote, or
-      # during our push - we ensure mirroring is disabled, and throw so the
-      # user gets the error message
-      disable_git_fusion_mirroring!
-      raise e
-    end
-
     def create_repository
       # Attempt to submit the config for a new GitFusion repo to perforce if
       # git_fusion_auto_create was set on this project

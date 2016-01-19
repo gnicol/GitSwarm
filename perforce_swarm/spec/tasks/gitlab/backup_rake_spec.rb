@@ -16,7 +16,9 @@ describe 'gitlab:app namespace rake task' do
   end
 
   def reenable_backup_sub_tasks
-    %w(db repo uploads builds artifacts lfs).each do |subtask|
+    folder_list = %w(db repo uploads builds artifacts lfs)
+    folder_list += %w(pages) if PerforceSwarm.ee?
+    folder_list.each do |subtask|
       Rake::Task["gitlab:backup:#{subtask}:create"].reenable
     end
   end
@@ -55,6 +57,7 @@ describe 'gitlab:app namespace rake task' do
         expect(Rake::Task['gitlab:backup:builds:restore']).to receive(:invoke)
         expect(Rake::Task['gitlab:backup:uploads:restore']).to receive(:invoke)
         expect(Rake::Task['gitlab:backup:artifacts:restore']).to receive(:invoke)
+        expect(Rake::Task['gitlab:backup:pages:restore']).to receive(:invoke) if PerforceSwarm.ee?
         expect(Rake::Task['gitlab:backup:lfs:restore']).to receive(:invoke)
         expect(Rake::Task['gitlab:shell:setup']).to receive(:invoke)
         expect { run_rake_task('gitlab:backup:restore') }.not_to raise_error
@@ -111,25 +114,36 @@ describe 'gitlab:app namespace rake task' do
     end
 
     it 'should set correct permissions on the tar contents', override: true do
-      tar_contents, exit_status = Gitlab::Popen.popen(
+      archive_files =
         %W(tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz lfs.tar.gz)
-      )
+      archive_files += %w(pages.tar.gz) if PerforceSwarm.ee?
+      tar_contents, exit_status = Gitlab::Popen.popen(archive_files)
       expect(exit_status).to eq(0)
       expect(tar_contents).to match('db/')
       expect(tar_contents).to match('uploads.tar.gz')
       expect(tar_contents).to match('repositories/')
       expect(tar_contents).to match('builds.tar.gz')
       expect(tar_contents).to match('artifacts.tar.gz')
+      expect(tar_contents).to match('pages.tar.gz') if PerforceSwarm.ee?
       expect(tar_contents).to match('lfs.tar.gz')
-      expect(tar_contents).not_to match(
-        %r{^.{4,9}[rwx].* (database.sql.gz|uploads.tar.gz|repositories|builds.tar.gz|artifacts.tar.gz)/$}
-      )
+
+      if PerforceSwarm.ee?
+        content_regex =
+          %r{^.{4,9}[rwx].* (database.sql.gz|uploads.tar.gz|repositories|builds.tar.gz|pages.tar.gz|artifacts.tar.gz)/$}
+      else
+        content_regex =
+          %r{^.{4,9}[rwx].* (database.sql.gz|uploads.tar.gz|repositories|builds.tar.gz|artifacts.tar.gz)/$}
+      end
+      expect(tar_contents).not_to match(content_regex)
     end
 
     it 'should delete temp directories', override: true do
-      temp_dirs = Dir.glob(
-        File.join(Gitlab.config.backup.path, '{db,repositories,uploads,builds,artifacts,lfs}')
-      )
+      if PerforceSwarm.ee?
+        dirs = '{db,repositories,uploads,builds,artifacts,pages,lfs}'
+      else
+        dirs = '{db,repositories,uploads,builds,artifacts,lfs}'
+      end
+      temp_dirs = Dir.glob(File.join(Gitlab.config.backup.path, dirs))
 
       expect(temp_dirs).to be_empty
     end
@@ -163,14 +177,16 @@ describe 'gitlab:app namespace rake task' do
     end
 
     it 'does not contain skipped item', override: true do
-      tar_contents, _exit_status = Gitlab::Popen.popen(
+      archive_files =
         %W(tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz lfs.tar.gz)
-      )
+      archive_files += %w(pages.tar.gz) if PerforceSwarm.ee?
+      tar_contents, _exit_status = Gitlab::Popen.popen(archive_files)
 
       expect(tar_contents).to match('db/')
       expect(tar_contents).to match('uploads.tar.gz')
       expect(tar_contents).to match('builds.tar.gz')
       expect(tar_contents).to match('artifacts.tar.gz')
+      expect(tar_contents).to match('pages.tar.gz') if PerforceSwarm.ee?
       expect(tar_contents).to match('lfs.tar.gz')
       expect(tar_contents).not_to match('repositories/')
     end
@@ -184,6 +200,7 @@ describe 'gitlab:app namespace rake task' do
       expect(Rake::Task['gitlab:backup:uploads:restore']).not_to receive :invoke
       expect(Rake::Task['gitlab:backup:builds:restore']).to receive :invoke
       expect(Rake::Task['gitlab:backup:artifacts:restore']).to receive :invoke
+      expect(Rake::Task['gitlab:backup:pages:restore']).to receive :invoke if PerforceSwarm.ee?
       expect(Rake::Task['gitlab:backup:lfs:restore']).to receive :invoke
       expect(Rake::Task['gitlab:shell:setup']).to receive :invoke
       expect { run_rake_task('gitlab:backup:restore') }.not_to raise_error

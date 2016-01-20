@@ -24,7 +24,7 @@ describe 'BasicValidationTests', browser: true do
     end
   end
 
-  describe 'GitSwarm root password synced to Perforce', localGF: true do
+  describe 'GitSwarm root password synced to Perforce', PasswordSync: true do
     let(:new_password) { 'new-password-123' }
 
     it 'should have expected p4 root password to match existing Gitswarm root password' do

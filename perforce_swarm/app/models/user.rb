@@ -36,13 +36,11 @@ module PerforceSwarm
 
     # Projects user has access to
     def authorized_projects
-      return @authorized_projects if @authorized_projects
-
       # Our ActiveRecord relation ends up being turned into an array, so we grab just the ids
       project_ids = GitFusion::RepoAccess.filter_by_p4_access(self, super).map(&:id)
 
       # Callers are expecting an ActiveRecord result, so do another query for the authorized_projects
-      @authorized_projects = Project.where(id: project_ids)
+      Project.where(id: project_ids)
     end
   end
 end

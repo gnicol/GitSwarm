@@ -53,7 +53,7 @@ gem "browser", '~> 1.0.0'
 
 # Extracting information from a git repository
 # Provide access to Gitlab::Git library
-gem "gitlab_git", '~> 7.2.22'
+gem "gitlab_git", '~> 7.2.23'
 
 # LDAP Auth
 # GitLab fork with several improvements to original library. For full list of changes
@@ -297,6 +297,9 @@ end
 
 group :production do
   gem "gitlab_meta", '7.0'
+
+  # Sentry integration
+  gem 'sentry-raven'
 end
 
 gem "newrelic_rpm", '~> 3.9.4.245'

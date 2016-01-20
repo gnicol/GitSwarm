@@ -9,7 +9,7 @@ class LoggedInPage < Page
   def elements_for_validation
     elems = super
     elems << [:id, 'search'] # search menu
-    elems << [:class, 'sidebar-user'] # the user profile
+    elems << [:class, 'logout'] # Logout button
     elems
   end
 

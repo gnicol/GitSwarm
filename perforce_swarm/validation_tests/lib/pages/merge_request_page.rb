@@ -35,6 +35,6 @@ class MergeRequestPage < Page
     # Wait until we are no longer merging anymore
     wait_for_no_text(:class, 'mr-widget-body', 'Merge in progress', 180)
     # Once the page reloads we should see the issue box merged
-    wait_for(:class, 'issue-box-merged')
+    wait_for(:class, 'status-box-merged', 90)
   end
 end

@@ -20,62 +20,116 @@
       position: fixed;
       top: 70px;
       margin-right: 35px;
+
+      &.no-affix {
+        position: relative;
+        top: 0;
+      }
     }
-  }
-}
-
-.issuable-context-title {
-  margin-bottom: 5px;
-
-  .avatar {
-    margin-left: 0;
-  }
-
-  label {
-    color: $gl-gray;
-    font-weight: normal;
-    margin-right: 4px;
   }
 }
 
 .project-issuable-filter {
   .controls {
     float: right;
-    margin-top: 7px;
+    margin-top: 11px;
   }
 
-  .center-top-menu {
+  .nav-links {
     text-align: left;
   }
 }
 
 .issuable-details {
-  .page-title {
-    margin-top: -15px;
-    padding: 10px 0;
-    margin-bottom: 0;
-    color: $gl-gray;
-    font-size: 16px;
+  section {
+    border-right: 1px solid $border-white-light;
 
-    .author {
+    .issuable-discussion {
+      margin-right: 1px;
+    }
+  }
+}
+
+.issuable-filter-count {
+  span {
+    display: block;
+    margin-bottom: -16px;
+    padding: 13px 0;
+  }
+}
+
+.issuable-show-labels {
+  a {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+    .color-label {
+      padding: 6px 10px;
+    }
+  }
+}
+
+.issuable-sidebar {
+  .block {
+    @include clearfix;
+    padding:  $gl-padding 0;
+    border-bottom: 1px solid #F0F0F0;
+
+    &:last-child {
+      border: none;
+    }
+  }
+
+  .title {
+    color: $gl-text-color;
+    margin-bottom: 8px;
+
+    .avatar {
+      margin-left: 0;
+    }
+
+    label {
+      font-weight: normal;
+      margin-right: 4px;
+    }
+
+    .edit-link {
       color: $gl-gray;
     }
+  }
 
-    .issue-id {
-      font-size: 19px;
-      color: $gl-text-color;
+  .cross-project-reference {
+    color: $gl-link-color;
+
+    span {
+      white-space: nowrap;
+      width: 85%;
+      overflow: hidden;
+      position: relative;
+      display: inline-block;
+      text-overflow: ellipsis;
+    }
+
+    cite {
+      font-style: normal;
+    }
+
+    button {
+      float: right;
+      padding: 3px 5px;
     }
   }
 
-  .issue-title {
-    margin: 0;
+  .selectbox {
+    display: none
   }
 
-  .description {
+  .btn-clipboard {
+    color: $gl-gray;
+  }
+
+  .participants .avatar {
     margin-top: 6px;
-
-    p:last-child {
-      margin-bottom: 0;
-    }
+    margin-right: 2px;
   }
 }

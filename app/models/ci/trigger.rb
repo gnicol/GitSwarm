@@ -1,13 +1,14 @@
 # == Schema Information
 #
-# Table name: triggers
+# Table name: ci_triggers
 #
-#  id         :integer          not null, primary key
-#  token      :string(255)
-#  project_id :integer          not null
-#  deleted_at :datetime
-#  created_at :datetime
-#  updated_at :datetime
+#  id            :integer          not null, primary key
+#  token         :string(255)
+#  project_id    :integer
+#  deleted_at    :datetime
+#  created_at    :datetime
+#  updated_at    :datetime
+#  gl_project_id :integer
 #
 
 module Ci
@@ -16,7 +17,7 @@ module Ci
 
     acts_as_paranoid
 
-    belongs_to :project, class_name: 'Ci::Project'
+    belongs_to :project, class_name: '::Project', foreign_key: :gl_project_id
     has_many :trigger_requests, dependent: :destroy, class_name: 'Ci::TriggerRequest'
 
     validates_presence_of :token
@@ -30,6 +31,10 @@ module Ci
 
     def last_trigger_request
       trigger_requests.last
+    end
+
+    def last_used
+      last_trigger_request.try(:created_at)
     end
 
     def short_token

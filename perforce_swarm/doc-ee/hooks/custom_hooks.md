@@ -2,7 +2,7 @@
 
 **Note: Custom git hooks must be configured on the filesystem of the
 GitSwarm EE server. Only GitSwarm EE server administrators will be able to
-complete these tasks. Please explore [webhooks](/help/web_hooks/web_hooks.md)
+complete these tasks. Please explore [webhooks](../web_hooks/web_hooks.md)
 as an option if you do not have filesystem access.**
 
 Git natively supports hooks that are executed on different actions.

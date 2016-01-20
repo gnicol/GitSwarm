@@ -28,8 +28,7 @@ Feature: Project Team Management
 
   @javascript @automated @PGL-537
   Scenario: Attempt to add a invalid user to a public/internal/private project and verify that "No matches are found" and page remains the same.
-    Given I click the button "Add members"
-    Then I should see the "New project member(s)" form
+    Given I should see the "New project member(s)" form
     When I attempt to add a non-existent user in the People field
     Then I should see "No matches found"
     When I click on the "Add users" button
@@ -37,8 +36,7 @@ Feature: Project Team Management
 
   @javascript @automated @PGL-537
   Scenario: Attempt to add '*$%&^!()' in the user field where adding users in a public/internal/private project and verify that 'No matches are found' and page remains the same.
-    Given I click the button "Add members"
-    Then I should see the "New project member(s)" form
+    Given I should see the "New project member(s)" form
     When I attempt to add "*$%&^!()" in the People field
     Then I should see "No matches found"
     When I click on the "Add users" button

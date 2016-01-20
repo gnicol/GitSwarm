@@ -109,7 +109,7 @@ module CommitsHelper
         )
       elsif @path.present?
         return link_to(
-          "Browse Dir »",
+          "Browse Directory »",
           namespace_project_tree_path(project.namespace, project,
                                       tree_join(commit.id, @path)),
           class: "pull-right"
@@ -117,7 +117,7 @@ module CommitsHelper
       end
     end
     link_to(
-      "Browse Code »",
+      "Browse Files »",
       namespace_project_tree_path(project.namespace, project, commit),
       class: "pull-right"
     )
@@ -135,7 +135,7 @@ module CommitsHelper
   #  size:   size of the avatar image in px
   def commit_person_link(commit, options = {})
     user = commit.send(options[:source])
-    
+
     source_name = clean(commit.send "#{options[:source]}_name".to_sym)
     source_email = clean(commit.send "#{options[:source]}_email".to_sym)
 

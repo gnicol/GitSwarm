@@ -12,7 +12,7 @@ describe 'PerforceSwarm::VersionCheck Version Comparison', no_db: true do
   context '>' do
     it { expect(@v2015_1_1).to be > @v2015_1_beta }
     it { expect(@v2015_1_2).to be > @v2015_1_1 }
-    it { expect(@v2015_5_alpha).to be >  @v2015_1_1 }
+    it { expect(@v2015_5_alpha).to be > @v2015_1_1 }
     it { expect(@v2016_1_1).to be > @v2015_1 }
     it { expect(@v2016_1_1).to be > @v2015_2_beta }
   end

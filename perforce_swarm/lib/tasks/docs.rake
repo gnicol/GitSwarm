@@ -11,7 +11,7 @@ namespace :gitswarm do
 
     output_dir = ARGV[0]
     fail 'You must specify an output directory' unless output_dir
-    output_dir = output_dir.gsub(/\/$/, '')
+    output_dir = output_dir.gsub(%r{/$}, '')
 
     PerforceSwarm::Help.render do |content, file|
       output_file = File.join(output_dir, file)
@@ -31,7 +31,7 @@ namespace :gitswarm do
 
     output_dir = ARGV[0]
     fail 'You must specify an output directory' unless output_dir
-    output_dir = output_dir.gsub(/\/$/, '')
+    output_dir = output_dir.gsub(%r{/$}, '')
 
     fail 'It does not appear pandoc is installed; kindly install it.' unless `pandoc -v` && $CHILD_STATUS.success?
 
@@ -45,7 +45,10 @@ namespace :gitswarm do
         # Calculate how deep this particular file is and then a relative root path
         depth     = file.gsub(%r{^/|/$}, '').count('/')
         root_path = depth > 0 ? '../' * depth : './'
-        root_path = root_path.gsub(/\/$/, '')
+        root_path = root_path.gsub(%r{/$}, '')
+
+        # de-link absolute links, since they don't play nice with our static docs
+        content.gsub!(%r{\[([^\]]+)\]\(/[^)]+\)}, '\1') unless file.end_with?('markdown.md')
 
         # Some files already have a table of contents, don't add another table of contents to them.
         toc = file.end_with?('README.md') || file.end_with?('markdown.md') ? nil : '--toc'

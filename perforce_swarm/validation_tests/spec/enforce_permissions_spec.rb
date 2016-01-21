@@ -5,7 +5,7 @@ require_relative '../lib/pages/logged_in_page'
 require_relative '../lib/user'
 require_relative '../lib/project'
 
-describe 'EnforcePermissionsTests', browser: true do
+describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
   PRIVATE = 'private'
   PUBLIC  = 'public'
 
@@ -105,7 +105,10 @@ describe 'EnforcePermissionsTests', browser: true do
       @git_fusion_helper.apply_gf_global_config('read-permission-check' => 'user')
 
       LOG.log('Setting up P4 users and protections')
-      @p4_admin.remove_protects('*')
+      @p4_admin.remove_protects('*') # Explicitly remove any wildcard permissions
+
+      # Add write protect for unknown_git. Allows 'root' to push anywhere as the email addresss doesn't match
+      @p4_admin.add_write_protects('unknown_git', "#{@depot_root}#{@run_id}/...")
 
       @p4_admin.create_user(@user_gs_access_p4_noaccess.name,
                             @user_gs_access_p4_noaccess.password,
@@ -363,8 +366,8 @@ describe 'EnforcePermissionsTests', browser: true do
     it 'should be allowed to PUSH to anywhere in a GS project mirrored in perforce' do
       user = @user_root
       @projects.each do | project |
-        expect(can_push(user, project, PRIVATE)).to be true
         expect(can_push(user, project, PUBLIC)).to be true
+        expect(can_push(user, project, PRIVATE)).to be true
       end
     end
   end
@@ -432,6 +435,7 @@ describe 'EnforcePermissionsTests', browser: true do
       git.fail_on_error=false
       create_file(File.join(dir, path))
       success = git.add_commit_push
+      LOG.log("User #{user} failed to push to project #{project} at path #{path}") unless sucess
     end
     success
   end

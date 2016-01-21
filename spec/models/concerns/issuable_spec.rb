@@ -68,7 +68,6 @@ describe Issue, "Issuable" do
     end
   end
 
-
   describe "#to_hook_data" do
     let(:hook_data) { issue.to_hook_data(user) }
 
@@ -80,6 +79,38 @@ describe Issue, "Issuable" do
       expect(hook_data[:repository][:description]).to eq(issue.project.description)
       expect(hook_data[:repository][:homepage]).to eq(issue.project.web_url)
       expect(hook_data[:object_attributes]).to eq(issue.hook_attrs)
+    end
+  end
+
+  describe '#card_attributes' do
+    it 'includes the author name' do
+      allow(issue).to receive(:author).and_return(double(name: 'Robert'))
+      allow(issue).to receive(:assignee).and_return(nil)
+
+      expect(issue.card_attributes).
+        to eq({ 'Author' => 'Robert', 'Assignee' => nil })
+    end
+
+    it 'includes the assignee name' do
+      allow(issue).to receive(:author).and_return(double(name: 'Robert'))
+      allow(issue).to receive(:assignee).and_return(double(name: 'Douwe'))
+
+      expect(issue.card_attributes).
+        to eq({ 'Author' => 'Robert', 'Assignee' => 'Douwe' })
+    end
+  end
+
+  describe "votes" do
+    before do
+      author = create :user
+      project = create :empty_project
+      issue.notes.awards.create!(note: "thumbsup", author: author, project: project)
+      issue.notes.awards.create!(note: "thumbsdown", author: author, project: project)
+    end
+
+    it "returns correct values" do
+      expect(issue.upvotes).to eq(1)
+      expect(issue.downvotes).to eq(1)
     end
   end
 end

@@ -6,7 +6,7 @@ describe 'New Mirrored Project', browser: true do
   let(:user) { 'user-'+unique_string }
   let(:password) { 'Passw0rd' }
   let(:uemail) { 'p4cloudtest+'+user+'@gmail.com' }
-  let(:email) { 'root@mp-gs-ubuntu-12-153' }
+  let(:email) { user+'@gitswarm.test.com' }
   let(:project) { 'project-'+unique_string }
   let(:expected_gf_repo_name) { 'gitswarm-'+user+'-'+project }
   let(:git_dir) { Dir.mktmpdir('Git-', tmp_client_dir) }
@@ -22,6 +22,7 @@ describe 'New Mirrored Project', browser: true do
   end
 
   context 'when I push in a file to the gitswarm repo' do
+    commit_message = 'commit_message_'+unique_string
     before do
       create_user
       create_new_project
@@ -29,14 +30,25 @@ describe 'New Mirrored Project', browser: true do
       @git_filename = 'git-file-'+unique_string
       create_file(git_dir, @git_filename)
       LOG.debug 'Creating file in git : ' + @git_filename
-      @git.add_commit_push
-      sleep(2) # some time to let the file get into perforce
+      @git.add_commit_push(commit_message)
     end
 
-    it 'gets pushed into Perforce' do
+    it 'gets pushed into Perforce with the commit message and email' do
       @p4.connect_and_sync
       p4_file_from_git = p4_dir + '/' + @git_filename
-      expect(File.exist?(p4_file_from_git)).to be true
+      # Verify file exists in P4
+      p4_file_exists = run_block_with_retry(12, 5) do
+        @p4.sync
+        File.exist?(p4_file_from_git)
+      end
+      LOG.log('File added to git exists in Perforce after we mirror? = ' + p4_file_exists.to_s)
+      expect(p4_file_exists).to be true
+
+      output = @p4.last_commit_message(p4_file_from_git)
+      LOG.debug('Changelist in perforce is : '+output.to_s)
+      changelist_description = output.fetch('desc')
+      expect(changelist_description.include?(commit_message)).to be true
+      expect(changelist_description.include?(email)).to be true
     end
   end
 
@@ -212,7 +224,7 @@ describe 'New Mirrored Project', browser: true do
     GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
                           CONFIG.get('gitswarm_username'),
                           CONFIG.get('gitswarm_password')
-    ).create_user(user, password, uemail, nil)
+                         ).create_user(user, password, uemail, nil)
   end
 
   def create_new_project(mirrored = true, public_project = false)

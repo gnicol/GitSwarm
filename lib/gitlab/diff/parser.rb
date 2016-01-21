@@ -14,8 +14,6 @@ module Gitlab
         lines_arr = ::Gitlab::InlineDiff.processing lines
 
         lines_arr.each do |line|
-          raw_line = line.dup
-
           next if filename?(line)
 
           full_line = html_escape(line.gsub(/\n/, ''))
@@ -58,8 +56,9 @@ module Gitlab
       private
 
       def filename?(line)
-        line.start_with?('--- /dev/null', '+++ /dev/null', '--- a', '+++ b',
-                         '--- /tmp/diffy', '+++ /tmp/diffy')
+        line.start_with?( '--- /dev/null', '+++ /dev/null', '--- a', '+++ b',
+                          '+++ a', # The line will start with `+++ a` in the reverse diff of an orphan commit
+                          '--- /tmp/diffy', '+++ /tmp/diffy')
       end
 
       def identification_type(line)

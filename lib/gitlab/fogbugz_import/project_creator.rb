@@ -12,7 +12,8 @@ module Gitlab
       end
 
       def execute
-        project = ::Projects::CreateService.new(current_user,
+        project = ::Projects::CreateService.new(
+          current_user,
           name: repo.safe_name,
           path: repo.path,
           namespace: namespace,
@@ -23,7 +24,7 @@ module Gitlab
           import_url: Project::UNKNOWN_IMPORT_URL
         ).execute
 
-        import_data = project.create_import_data(
+        project.create_import_data(
           data: {
             'repo' => repo.raw_data,
             'user_map' => user_map,

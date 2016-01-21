@@ -24,10 +24,9 @@ class DeleteBranchService < BaseService
       return error('You dont have push access to repo', 405)
     end
 
-    if repository.rm_branch(branch_name)
+    if repository.rm_branch(current_user, branch_name)
       push_data = build_push_data(branch)
 
-      EventCreateService.new.push(project, current_user, push_data)
       project.execute_hooks(push_data.dup, :push_hooks)
       project.execute_services(push_data.dup, :push_hooks)
 
@@ -35,6 +34,8 @@ class DeleteBranchService < BaseService
     else
       error('Failed to remove branch')
     end
+  rescue GitHooksService::PreReceiveError
+    error('Branch deletion was rejected by Git hook')
   end
 
   def error(message, return_code = 400)

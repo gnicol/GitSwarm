@@ -20,7 +20,13 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Enabled: false
 
+Metrics/ParameterLists:
+  Max: 6
+
 Metrics/PerceivedComplexity:
+  Enabled: false
+
+Performance/Detect:
   Enabled: false
 
 Style/ClassAndModuleChildren:
@@ -34,6 +40,9 @@ Style/GlobalVars:
 
 Style/GuardClause:
   Enabled: false
+
+Style/MultilineOperationIndentation:
+  EnforcedStyle: indented
 
 Style/SpaceAroundOperators:
   Enabled: false

@@ -331,11 +331,11 @@ namespace :gitlab do
     end
 
     def check_redis_version
-      min_redis_version = "2.4.0"
+      min_redis_version = "2.8.0"
       print "Redis version >= #{min_redis_version}? ... "
 
       redis_version = run(%W(redis-cli --version))
-      redis_version = redis_version.try(:match, /redis-cli (.*)/)
+      redis_version = redis_version.try(:match, /redis-cli (\d+\.\d+\.\d+)/)
       if redis_version &&
           (Gem::Version.new(redis_version[1]) > Gem::Version.new(min_redis_version))
         puts "yes".green
@@ -431,7 +431,7 @@ namespace :gitlab do
         try_fixing_it(
           "sudo chmod -R ug+rwX,o-rwx #{repo_base_path}",
           "sudo chmod -R ug-s #{repo_base_path}",
-          "find #{repo_base_path} -type d -print0 | sudo xargs -0 chmod g+s"
+          "sudo find #{repo_base_path} -type d -print0 | sudo xargs -0 chmod g+s"
         )
         for_more_information(
           see_installation_guide_section "GitLab Shell"
@@ -642,7 +642,6 @@ namespace :gitlab do
 
       if Gitlab.config.incoming_email.enabled
         check_address_formatted_correctly
-        check_mail_room_config_exists
         check_imap_authentication
 
         if Rails.env.production?
@@ -744,42 +743,16 @@ namespace :gitlab do
       end
     end
 
-    def check_mail_room_config_exists
-      print "MailRoom config exists? ... "
-
-      mail_room_config_file = Rails.root.join("config", "mail_room.yml")
-
-      if File.exists?(mail_room_config_file)
-        puts "yes".green
-      else
-        puts "no".red
-        try_fixing_it(
-          "Copy config/mail_room.yml.example to config/mail_room.yml",
-          "Check that the information in config/mail_room.yml is correct"
-        )
-        for_more_information(
-          "doc/incoming_email/README.md"
-        )
-        fix_and_rerun
-      end
-    end
-
     def check_imap_authentication
       print "IMAP server credentials are correct? ... "
 
-      mail_room_config_file = Rails.root.join("config", "mail_room.yml")
-
-      unless File.exists?(mail_room_config_file)
-        puts "can't check because of previous errors".magenta
-        return
-      end
-
-      config = YAML.load_file(mail_room_config_file)[:mailboxes].first rescue nil
+      config = Gitlab.config.incoming_email
 
       if config
         begin
-          imap = Net::IMAP.new(config[:host], port: config[:port], ssl: config[:ssl])
-          imap.login(config[:email], config[:password])
+          imap = Net::IMAP.new(config.host, port: config.port, ssl: config.ssl)
+          imap.starttls if config.start_tls
+          imap.login(config.user, config.password)
           connected = true
         rescue
           connected = false
@@ -791,7 +764,7 @@ namespace :gitlab do
       else
         puts "no".red
         try_fixing_it(
-          "Check that the information in config/mail_room.yml is correct"
+          "Check that the information in config/gitlab.yml is correct"
         )
         for_more_information(
           "doc/incoming_email/README.md"
@@ -849,10 +822,27 @@ namespace :gitlab do
 
       namespace_dirs.each do |namespace_dir|
         repo_dirs = Dir.glob(File.join(namespace_dir, '*'))
-        repo_dirs.each do |dir|
-          puts "\nChecking repo at #{dir}"
-          system(*%w(git fsck), chdir: dir)
-        end
+        repo_dirs.each { |repo_dir| check_repo_integrity(repo_dir) }
+      end
+    end
+  end
+
+  namespace :user do
+    desc "GitLab | Check the integrity of a specific user's repositories"
+    task :check_repos, [:username] => :environment do |t, args|
+      username = args[:username] || prompt("Check repository integrity for which username? ".blue)
+      user = User.find_by(username: username)
+      if user
+        repo_dirs = user.authorized_projects.map do |p|
+                      File.join(
+                        Gitlab.config.gitlab_shell.repos_path,
+                        "#{p.path_with_namespace}.git"
+                      )
+                    end
+
+        repo_dirs.each { |repo_dir| check_repo_integrity(repo_dir) }
+      else
+        puts "\nUser '#{username}' not found".red
       end
     end
   end
@@ -977,6 +967,37 @@ namespace :gitlab do
       true
     else
       false
+    end
+  end
+
+  def check_repo_integrity(repo_dir)
+    puts "\nChecking repo at #{repo_dir.yellow}"
+
+    git_fsck(repo_dir)
+    check_config_lock(repo_dir)
+    check_ref_locks(repo_dir)
+  end
+
+  def git_fsck(repo_dir)
+    puts "Running `git fsck`".yellow
+    system(*%W(#{Gitlab.config.git.bin_path} fsck), chdir: repo_dir)
+  end
+
+  def check_config_lock(repo_dir)
+    config_exists = File.exist?(File.join(repo_dir,'config.lock'))
+    config_output = config_exists ? 'yes'.red : 'no'.green
+    puts "'config.lock' file exists?".yellow + " ... #{config_output}"
+  end
+
+  def check_ref_locks(repo_dir)
+    lock_files = Dir.glob(File.join(repo_dir,'refs/heads/*.lock'))
+    if lock_files.present?
+      puts "Ref lock files exist:".red
+      lock_files.each do |lock_file|
+        puts "  #{lock_file}"
+      end
+    else
+      puts "No ref lock files exist".green
     end
   end
 end

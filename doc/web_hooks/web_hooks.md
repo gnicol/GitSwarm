@@ -57,6 +57,9 @@ X-Gitlab-Event: Push Hook
         "name": "Jordi Mallach",
         "email": "jordi@softcatala.org"
       }
+      "added": ["CHANGELOG"],
+      "modified": ["app/controller/application.rb"],
+      "removed": []
     },
     {
       "id": "da1560886d4f094c3e6c9ef40349f7d38b5d27d7",
@@ -66,10 +69,14 @@ X-Gitlab-Event: Push Hook
       "author": {
         "name": "GitLab dev user",
         "email": "gitlabdev@dv6700.(none)"
-      }
+      },
+      "added": ["CHANGELOG"],
+      "modified": ["app/controller/application.rb"],
+      "removed": []
     }
   ],
   "total_commits_count": 4
+  
 }
 ```
 
@@ -181,7 +188,7 @@ X-Gitlab-Event: Note Hook
 {
   "object_kind": "note",
   "user": {
-    "name": "Adminstrator",
+    "name": "Administrator",
     "username": "root",
     "avatar_url": "http://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=40\u0026d=identicon"
   },
@@ -314,7 +321,8 @@ X-Gitlab-Event: Note Hook
         "name": "John Smith",
         "email": "john@example.com"
       }
-    }
+    },
+    "work_in_progress": false
   }
 }
 ```
@@ -333,7 +341,7 @@ X-Gitlab-Event: Note Hook
 {
   "object_kind": "note",
   "user": {
-    "name": "Adminstrator",
+    "name": "Administrator",
     "username": "root",
     "avatar_url": "http://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=40\u0026d=identicon"
   },
@@ -500,6 +508,7 @@ X-Gitlab-Event: Merge Request Hook
         "email": "gitlabdev@dv6700.(none)"
       }
     },
+    "work_in_progress": false,
     "url": "http://example.com/diaspora/merge_requests/1",
     "action": "open"
   }

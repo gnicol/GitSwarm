@@ -16,7 +16,7 @@ module PerforceSwarm
       end
 
       project_namespace.gsub!(/\.git\z/, '')
-      project_namespace.gsub!(/\A\//, '')
+      project_namespace.gsub!(%r{\A/}, '')
 
       project = Project.find_with_namespace(project_namespace)
 
@@ -26,7 +26,7 @@ module PerforceSwarm
       end
 
       # if we thought a git-fusion import was ongoing; flag it as finished
-      if project.import_in_progress? && project.git_fusion_import?
+      if project.import_in_progress? && project.git_fusion_mirrored?
         project.import_finish
         project.save
       end

@@ -342,7 +342,7 @@ Feature: Project Issues
     And I change the milestone of an issue to unassigned
     Then I should see issue with no milestone
 
-  @automated @PGL-521
+  @automated @javascript @PGL-521
   Scenario: I click the "Close" button on a single issue page
     Given I visit issue page "Tumblr control"
     And I click the "Close" button
@@ -351,7 +351,7 @@ Feature: Project Issues
     Then I should not see "Tumblr control" in issues
     And I should see "HipChat" in issues
 
-  @automated @PGL-521
+  @automated @javascript @PGL-521
   Scenario: I click the "Close Issue" button on a single issue page
     Given I visit issue page "Tumblr control"
     And I click the "Close Issue" button

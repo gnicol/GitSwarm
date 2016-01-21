@@ -44,7 +44,7 @@ module PerforceSwarm
 
     initializer :engine_middleware do |app|
       # Engine's public folder is searched first for assets
-      if app.config.serve_static_assets
+      if app.config.serve_static_files
         app.middleware.insert_before(Gitlab::Middleware::Static, ::ActionDispatch::Static, "#{root}/public")
       end
 
@@ -67,6 +67,7 @@ module PerforceSwarm
   def self.ee?
     edition == 'ee'
   end
+
   def self.ce?
     edition == 'ce'
   end

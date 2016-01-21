@@ -44,7 +44,7 @@ describe 'BasicValidationTests', browser: true do
       GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
                             CONFIG.get('gitswarm_username'),
                             CONFIG.get('gitswarm_password')
-      ).update_admin_password('root', new_password)
+                           ).update_admin_password('root', new_password)
 
       # Verify that p4 root user password is 'new_password'
       verify_p4_password(CONFIG.get('p4_port'), 'root', new_password)
@@ -53,7 +53,7 @@ describe 'BasicValidationTests', browser: true do
       GitSwarmAPIHelper.new(CONFIG.get('gitswarm_url'),
                             CONFIG.get('gitswarm_username'),
                             new_password
-      ).update_admin_password('root', CONFIG.get('gitswarm_password'))
+                           ).update_admin_password('root', CONFIG.get('gitswarm_password'))
 
       # And verify that p4 root user password is back to its original password
       verify_p4_password(CONFIG.get('p4_port'), 'root', CONFIG.get('gitswarm_password'))

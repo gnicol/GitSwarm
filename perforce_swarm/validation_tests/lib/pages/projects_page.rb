@@ -17,7 +17,7 @@ class ProjectsPage < LoggedInPage
   def projects
     projects = @driver.find_elements(:class, 'project-name')
     project_names = []
-    projects.each do | proj |
+    projects.each do |proj|
       project_names << proj.text unless proj.text.length <1
     end
     project_names

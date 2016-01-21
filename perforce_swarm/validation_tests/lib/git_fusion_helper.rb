@@ -10,7 +10,7 @@ class GitFusionHelper
   # depot_path should not include trailing /...
   def make_new_gf_repo(gf_repo_name, depot_path)
     LOG.log("Making new gf repo #{gf_repo_name} at #{@p4port}")
-    Dir.mktmpdir('GFHelper-', tmp_client_dir) do | local_workspace |
+    Dir.mktmpdir('GFHelper-', tmp_client_dir) do |local_workspace|
       path = local_workspace + '/p4gf_config'
       begin
         p4 = P4Helper.new(@p4port, @user, @password, local_workspace, "//.git-fusion/repos/#{gf_repo_name}/...")
@@ -27,14 +27,14 @@ class GitFusionHelper
 
   def apply_gf_global_config(properties_hash)
     LOG.log("Applying new gf config #{properties_hash.inspect} at #{@p4port}")
-    Dir.mktmpdir('GFHelper-', tmp_client_dir) do | local_workspace |
+    Dir.mktmpdir('GFHelper-', tmp_client_dir) do |local_workspace|
       file = File.join(local_workspace, 'p4gf_config')
       begin
         p4 = P4Helper.new(@p4port, @user, @password, local_workspace, '//.git-fusion/...')
         p4.connect
         p4.sync(file)
         content = File.read(file)
-        properties_hash.each do | name, value |
+        properties_hash.each do |name, value|
           regex = /^#{name}[ =].*$/
           fail "property not found in p4gf_config file : #{name}" unless content =~ regex
           content.gsub!(regex, "#{name} = #{value}")

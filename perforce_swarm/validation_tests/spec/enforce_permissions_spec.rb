@@ -26,7 +26,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
     # These two config properties are required for these tests - fail immediately unless they are configured
 
-    [CONFIG::SECURE_GF, CONFIG::SECURE_GF_DEPOT_ROOT].each do | property |
+    [CONFIG::SECURE_GF, CONFIG::SECURE_GF_DEPOT_ROOT].each do |property|
       fail("Required config.yml property does not exist: #{property}") unless CONFIG.get(property)
     end
 
@@ -59,7 +59,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
                                     @read_all_write_none,
                                     @read_partial,
                                     @read_none]
-    @projects.each do | project |
+    @projects.each do |project|
       LOG.log("Project for test run : #{project.name}")
     end
 
@@ -76,7 +76,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
                                     @user_gs_noaccess_p4_access,
                                     @user_gs_access_p4_noaccess,
                                     @user_gs_access_p4_notexist]
-    @users.each do | user |
+    @users.each do |user|
       LOG.log("User for test run    : #{user.name}")
     end
 
@@ -98,7 +98,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       @p4_admin.submit
 
       LOG.log('Creating Git Fusion repos')
-      @projects.each do | proj |
+      @projects.each do |proj|
         LOG.debug(proj.name)
         @git_fusion_helper.make_new_gf_repo(proj.name, "#{@depot_root}#{@run_id}/#{proj.name}")
       end
@@ -114,7 +114,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
                             @user_gs_access_p4_noaccess.password,
                             @user_gs_access_p4_noaccess.email)
 
-      [@user_gs_access_p4_access, @user_gs_noaccess_p4_access].each do | usr |
+      [@user_gs_access_p4_access, @user_gs_noaccess_p4_access].each do |usr|
         # create user
         @p4_admin.create_user(usr.name, usr.password, usr.email)
         # read_all_write_all
@@ -131,7 +131,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
       LOG.log('Creating GitSwarm users, and group')
       @gs_api.create_group(@groupname)
-      @users.each do | usr |
+      @users.each do |usr|
         @gs_api.create_user(usr.name, usr.password, usr.email)
         # gs_naccess should not be in the group
         @gs_api.add_user_to_group(usr.name, @groupname) unless usr == @user_gs_noaccess_p4_access
@@ -141,7 +141,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       @driver = Browser.driver
       logged_in_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(CONFIG.get(CONFIG::GS_USER),
                                                                                 CONFIG.get(CONFIG::GS_PASSWORD))
-      @projects.each do | project |
+      @projects.each do |project|
         cp = logged_in_page.goto_create_project_page
         cp.project_name(project.name)
         cp.namespace(@groupname)
@@ -154,7 +154,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       Browser.reset!
     end # if @setup
 
-    @projects.each do | project |
+    @projects.each do |project|
       project.http_url= @gs_api.get_project_info(project.name)[GitSwarmAPIHelper::HTTP_URL]
     end
   end
@@ -168,17 +168,17 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     if @teardown
       begin
         LOG.log('Deleting created users')
-        @users.each do | usr |
+        @users.each do |usr|
           @p4_admin.delete_user(usr.name) unless usr == @user_gs_access_p4_notexist
         end
         @p4_admin.disconnect
 
         @git_fusion_helper.apply_gf_global_config('read-permission-check' => '')
 
-        @projects.each do | project |
+        @projects.each do |project|
           @gs_api.delete_project(project.name)
         end
-        @users.each do | user |
+        @users.each do |user|
           @gs_api.delete_user(user.name)
         end
         @gs_api.delete_group(@groupname)
@@ -365,7 +365,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
   describe 'A user with full write permissions in perforce' do
     it 'should be allowed to PUSH to anywhere in a GS project mirrored in perforce' do
       user = @user_root
-      @projects.each do | project |
+      @projects.each do |project|
         expect(can_push(user, project, PUBLIC)).to be true
         expect(can_push(user, project, PRIVATE)).to be true
       end
@@ -387,7 +387,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
   describe 'A user with partial write permissions in perforce' do
     it 'should not be allowed to PUSH only if they dont have p4 write access to ALL files in a push' do
       user = @user_gs_access_p4_access
-      Dir.mktmpdir(nil, tmp_client_dir) do | dir |
+      Dir.mktmpdir(nil, tmp_client_dir) do |dir|
         git = GitHelper.http_helper(dir, @read_all_write_partial.http_url, user.name, user.password, user.email)
         git.clone # leave fail_on_error, this method should only be called for configurations with repo read permission
         git.fail_on_error=false
@@ -417,7 +417,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   def can_clone(user, project)
     success = false
-    Dir.mktmpdir do | dir |
+    Dir.mktmpdir do |dir|
       git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)
       git.fail_on_error=false
       success = git.clone
@@ -429,7 +429,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
   # path should be either public or private
   def can_push(user, project, path)
     success = false
-    Dir.mktmpdir(nil, tmp_client_dir) do | dir |
+    Dir.mktmpdir(nil, tmp_client_dir) do |dir|
       git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)
       git.clone # leave fail_on_error, this method should only be called for configurations with repo read permission
       git.fail_on_error=false

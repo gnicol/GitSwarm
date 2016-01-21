@@ -226,14 +226,14 @@ describe 'New Mirrored Project', browser: true do
     GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
                           CONFIG.get(CONFIG::GS_USER),
                           CONFIG.get(CONFIG::GS_PASSWORD)
-    ).create_user(user.name, user.password, user.email, nil)
+                         ).create_user(user.name, user.password, user.email, nil)
   end
 
   def delete_user
     GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
                           CONFIG.get(CONFIG::GS_USER),
                           CONFIG.get(CONFIG::GS_PASSWORD)
-    ).delete_user(user.name)
+                         ).delete_user(user.name)
   end
 
   def create_new_project(mirrored = true, public_project = false)
@@ -245,11 +245,11 @@ describe 'New Mirrored Project', browser: true do
     cp.logout
   end
 
-  def delete_project(project = project)
+  def delete_project(project)
     GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
                           CONFIG.get(CONFIG::GS_USER),
                           CONFIG.get(CONFIG::GS_PASSWORD)
-    ).delete_project(project.name)
+                         ).delete_project(project.name)
   end
 
   def clone_project(project, dir)

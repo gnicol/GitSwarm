@@ -48,7 +48,7 @@ module FusionServerDropdownModule
     elements.each do |x|
       next unless x.text==option
       x.click
-      return
+      return true
     end
     fail('Did not find requested server in available servers dropdown: '+option)
   end

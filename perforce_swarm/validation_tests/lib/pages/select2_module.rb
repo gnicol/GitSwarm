@@ -24,7 +24,7 @@ module Select2Module
     elements.each do |x|
       next unless x.text.start_with?(option)
       x.click
-      return
+      return true
     end
     fail('Did not find requested option : '+option)
   end

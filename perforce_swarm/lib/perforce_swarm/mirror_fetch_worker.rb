@@ -35,6 +35,12 @@ module PerforceSwarm
         stat[:project].save
       end
 
+      # ensure any projects that have a mirror remote and a git_fusion_repo
+      # field get the mirroring flag enabled
+      repo_stats.reenabled.each do |stat|
+        stat[:project].update_attribute(:git_fusion_mirrored, true)
+      end
+
       # locate the gitlab-shell mirror script we'll be calling
       shell_path    = File.expand_path(Gitlab.config.gitlab_shell.path)
       mirror_script = File.join(shell_path, 'perforce_swarm', 'bin', 'gitswarm-mirror')
@@ -103,6 +109,11 @@ module PerforceSwarm
         stats.select do |stat|
           stat[:project].import_in_progress? && stat[:project].git_fusion_mirrored? && stat[:last_fetched]
         end
+      end
+
+      # returns only entries that represent projects that should be mirrored but are currently not
+      def reenabled
+        stats.select { |stat| !stat[:project].git_fusion_mirrored? && stat[:project].git_fusion_repo.present? }
       end
     end
   end

@@ -31,3 +31,9 @@ Helix Git Fusion server on the repo
   = link_to disable_helix_mirroring_namespace_project_path(@project.namespace, @project), { method: 'post', class: button_class, data: { confirm: 'Are you sure you want to disable Helix Mirroring?' } } do
     = icon 'helix-icon-white'
     Disable Helix Mirroring
+
+- reenable_error = helix_reenable_mirroring_error(@project)
+- if reenable_error && !reenable_error.empty?
+  %p
+    The following error occurred the last time mirroring was re-enabled:
+    = reenable_error

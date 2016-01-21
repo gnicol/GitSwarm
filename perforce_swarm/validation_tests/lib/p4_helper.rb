@@ -67,6 +67,12 @@ class P4Helper
     @p4.run_submit('-d', 'auto description')
   end
 
+  def last_commit_message(file)
+    LOG.debug 'Getting last commit message for file ' + file
+    output = @p4.run_changes('-l', '-m', '1', file)
+    output.first
+  end
+
   def disconnect
     LOG.debug 'Disconnecting from p4d'
     @p4.run_client('-d', client_name)

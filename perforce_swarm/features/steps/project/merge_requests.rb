@@ -34,16 +34,15 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I submit new merge request "Jira Integration"' do
-    page.find('h3.page-title').should have_content 'New merge request'
+    page.find('h3.page-title').should have_content 'New Merge Request'
     fill_in 'merge_request_title', with: 'Jira Integration'
-    click_button 'Submit new merge request'
+    click_button 'Submit merge request'
   end
 
   step 'I submit new merge request "Dependency Fix"' do
-    page.should have_selector('.merge-request-form-info')
-    page.find('h3.page-title').should have_content 'New merge request'
+    page.find('h3.page-title').should have_content 'New Merge Request'
     fill_in 'merge_request_title', with: 'Dependency Fix'
-    click_button 'Submit new merge request'
+    click_button 'Submit merge request'
   end
 
   step 'I should see "Jira Integration" in merge requests' do
@@ -71,7 +70,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   end
 
   step 'I fill out a "Compare branches for new Merge Request"' do
-    page.find('.lead').should have_content 'Compare branches for new Merge Request'
+    page.find('.page-title').should have_content 'New Merge Request'
     select @project.path_with_namespace, from: 'merge_request_source_project_id'
     select @project.path_with_namespace, from: 'merge_request_target_project_id'
     select 'fix', from: 'merge_request_source_branch'
@@ -89,7 +88,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   step 'I visit merge request page "Dependency Fix"' do
     mr = MergeRequest.find_by(title: 'Dependency Fix')
     visit namespace_project_merge_request_path(mr.target_project.namespace, mr.target_project, mr)
-    page.find('h2.issue-title').should have_content 'Dependency Fix'
+    page.find('h2.title').should have_content 'Dependency Fix'
   end
 
   step 'I should see project branch "Fix"' do

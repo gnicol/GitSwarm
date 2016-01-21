@@ -1,4 +1,4 @@
-# Helper methods for Gitlab::Markdown filter specs
+# Helper methods for Banzai filter specs
 #
 # Must be included into specs manually
 module FilterSpecHelper
@@ -10,29 +10,49 @@ module FilterSpecHelper
   # if none is provided.
   #
   # html     - HTML String to pass to the filter's `call` method.
-  # contexts - Hash context for the filter. (default: {project: project})
+  # context - Hash context for the filter. (default: {project: project})
   #
   # Returns a Nokogiri::XML::DocumentFragment
-  def filter(html, contexts = {})
+  def filter(html, context = {})
     if defined?(project)
-      contexts.reverse_merge!(project: project)
+      context.reverse_merge!(project: project)
     end
 
-    described_class.call(html, contexts)
+    described_class.call(html, context)
   end
 
   # Run text through HTML::Pipeline with the current filter and return the
   # result Hash
   #
   # body     - String text to run through the pipeline
-  # contexts - Hash context for the filter. (default: {project: project})
+  # context - Hash context for the filter. (default: {project: project})
   #
   # Returns the Hash
-  def pipeline_result(body, contexts = {})
-    contexts.reverse_merge!(project: project)
+  def pipeline_result(body, context = {})
+    context.reverse_merge!(project: project) if defined?(project)
 
-    pipeline = HTML::Pipeline.new([described_class], contexts)
+    pipeline = HTML::Pipeline.new([described_class], context)
     pipeline.call(body)
+  end
+
+  def reference_pipeline(context = {})
+    context.reverse_merge!(project: project) if defined?(project)
+
+    filters = [
+      Banzai::Filter::AutolinkFilter,
+      described_class,
+      Banzai::Filter::ReferenceGathererFilter
+    ]
+
+    HTML::Pipeline.new(filters, context)
+  end
+
+  def reference_pipeline_result(body, context = {})
+    reference_pipeline(context).call(body)
+  end
+
+  def reference_filter(html, context = {})
+    reference_pipeline(context).to_document(html)
   end
 
   # Modify a String reference to make it invalid
@@ -53,20 +73,6 @@ module FilterSpecHelper
     else
       reference.gsub(/\w+\z/) { |v| v.reverse }
     end
-  end
-
-  # Stub CrossProjectReference#user_can_reference_project? to return true for
-  # the current test
-  def allow_cross_reference!
-    allow_any_instance_of(described_class).
-      to receive(:user_can_reference_project?).and_return(true)
-  end
-
-  # Stub CrossProjectReference#user_can_reference_project? to return false for
-  # the current test
-  def disallow_cross_reference!
-    allow_any_instance_of(described_class).
-      to receive(:user_can_reference_project?).and_return(false)
   end
 
   # Shortcut to Rails' auto-generated routes helpers, to avoid including the

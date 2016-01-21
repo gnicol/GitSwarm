@@ -7,6 +7,9 @@ describe API::API, api: true  do
   let(:admin) { create(:admin) }
   let(:key)   { create(:key, user: user) }
   let(:email)   { create(:email, user: user) }
+  let(:omniauth_user) { create(:omniauth_user) }
+  let(:ldap_user) { create(:omniauth_user, provider: 'ldapmain') }
+  let(:ldap_blocked_user) { create(:omniauth_user, provider: 'ldapmain', state: 'ldap_blocked') }
 
   describe "GET /users" do
     context "when unauthenticated" do
@@ -25,6 +28,13 @@ describe API::API, api: true  do
         expect(json_response.detect do |user|
           user['username'] == username
         end['username']).to eq(username)
+      end
+
+      it "should return one user" do
+        get api("/users?username=#{omniauth_user.username}", user)
+        expect(response.status).to eq(200)
+        expect(json_response).to be_an Array
+        expect(json_response.first['username']).to eq(omniauth_user.username)
       end
     end
 
@@ -152,7 +162,7 @@ describe API::API, api: true  do
       expect(json_response['message']['projects_limit']).
         to eq(['must be greater than or equal to 0'])
       expect(json_response['message']['username']).
-        to eq([Gitlab::Regex.send(:namespace_regex_message)])
+        to eq([Gitlab::Regex.namespace_regex_message])
     end
 
     it "shouldn't available for non admin users" do
@@ -230,6 +240,19 @@ describe API::API, api: true  do
       expect(user.reload.username).to eq(user.username)
     end
 
+    it "should update user's existing identity" do
+      put api("/users/#{omniauth_user.id}", admin), provider: 'ldapmain', extern_uid: '654321'
+      expect(response.status).to eq(200)
+      expect(omniauth_user.reload.identities.first.extern_uid).to eq('654321')
+    end
+
+    it 'should update user with new identity' do
+      put api("/users/#{user.id}", admin), provider: 'github', extern_uid: '67890'
+      expect(response.status).to eq(200)
+      expect(user.reload.identities.first.extern_uid).to eq('67890')
+      expect(user.reload.identities.first.provider).to eq('github')
+    end
+
     it "should update admin status" do
       put api("/users/#{user.id}", admin), { admin: true }
       expect(response.status).to eq(200)
@@ -282,7 +305,7 @@ describe API::API, api: true  do
       expect(json_response['message']['projects_limit']).
         to eq(['must be greater than or equal to 0'])
       expect(json_response['message']['username']).
-        to eq([Gitlab::Regex.send(:namespace_regex_message)])
+        to eq([Gitlab::Regex.namespace_regex_message])
     end
 
     context "with existing user" do
@@ -329,8 +352,9 @@ describe API::API, api: true  do
       end.to change{ user.keys.count }.by(1)
     end
 
-    it "should raise error for invalid ID" do
-      expect{post api("/users/ASDF/keys", admin) }.to raise_error(ActionController::RoutingError)
+    it "should return 405 for invalid ID" do
+      post api("/users/ASDF/keys", admin)
+      expect(response.status).to eq(405)
     end
   end
 
@@ -360,9 +384,9 @@ describe API::API, api: true  do
         expect(json_response.first['title']).to eq(key.title)
       end
 
-      it "should return 404 for invalid ID" do
+      it "should return 405 for invalid ID" do
         get api("/users/ASDF/keys", admin)
-        expect(response.status).to eq(404)
+        expect(response.status).to eq(405)
       end
     end
   end
@@ -420,7 +444,8 @@ describe API::API, api: true  do
     end
 
     it "should raise error for invalid ID" do
-      expect{post api("/users/ASDF/emails", admin) }.to raise_error(ActionController::RoutingError)
+      post api("/users/ASDF/emails", admin)
+      expect(response.status).to eq(405)
     end
   end
 
@@ -451,7 +476,8 @@ describe API::API, api: true  do
       end
 
       it "should raise error for invalid ID" do
-        expect{put api("/users/ASDF/emails", admin) }.to raise_error(ActionController::RoutingError)
+        put api("/users/ASDF/emails", admin)
+        expect(response.status).to eq(405)
       end
     end
   end
@@ -759,6 +785,12 @@ describe API::API, api: true  do
       expect(user.reload.state).to eq('blocked')
     end
 
+    it 'should not re-block ldap blocked users' do
+      put api("/users/#{ldap_blocked_user.id}/block", admin)
+      expect(response.status).to eq(403)
+      expect(ldap_blocked_user.reload.state).to eq('ldap_blocked')
+    end
+
     it 'should not be available for non admin users' do
       put api("/users/#{user.id}/block", user)
       expect(response.status).to eq(403)
@@ -773,7 +805,9 @@ describe API::API, api: true  do
   end
 
   describe 'PUT /user/:id/unblock' do
+    let(:blocked_user)  { create(:user, state: 'blocked') }
     before { admin }
+
     it 'should unblock existing user' do
       put api("/users/#{user.id}/unblock", admin)
       expect(response.status).to eq(200)
@@ -781,12 +815,15 @@ describe API::API, api: true  do
     end
 
     it 'should unblock a blocked user' do
-      put api("/users/#{user.id}/block", admin)
+      put api("/users/#{blocked_user.id}/unblock", admin)
       expect(response.status).to eq(200)
-      expect(user.reload.state).to eq('blocked')
-      put api("/users/#{user.id}/unblock", admin)
-      expect(response.status).to eq(200)
-      expect(user.reload.state).to eq('active')
+      expect(blocked_user.reload.state).to eq('active')
+    end
+
+    it 'should not unblock ldap blocked users' do
+      put api("/users/#{ldap_blocked_user.id}/unblock", admin)
+      expect(response.status).to eq(403)
+      expect(ldap_blocked_user.reload.state).to eq('ldap_blocked')
     end
 
     it 'should not be available for non admin users' do

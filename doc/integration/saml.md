@@ -14,7 +14,7 @@ First configure SAML 2.0 support in GitLab, then register the GitLab application
       sudo editor /etc/gitlab/gitlab.rb
     ```
 
-    For instalations from source:
+    For installations from source:
 
     ```sh
       cd /home/git/gitlab
@@ -38,7 +38,8 @@ First configure SAML 2.0 support in GitLab, then register the GitLab application
                    idp_sso_target_url: 'https://login.example.com/idp',
                    issuer: 'https://gitlab.example.com',
                    name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
-                 }
+                 },
+          "label" => "Company Login" # optional label for SAML login button, defaults to "Saml"
         }
       ]
     ```
@@ -77,6 +78,18 @@ On the sign in page there should now be a SAML button below the regular sign in 
 
 ## Troubleshooting
 
-If you see a "500 error" in GitLab when you are redirected back from the SAML sign in page, this likely indicates that GitLab could not get the email address for the SAML user.
+If you see a "500 error" in GitLab when you are redirected back from the SAML sign in page,
+this likely indicates that GitLab could not get the email address for the SAML user.
 
-Make sure the IdP provides a claim containing the user's email address, using claim name 'email' or 'mail'. The email will be used to automatically generate the GitLab username.
+Make sure the IdP provides a claim containing the user's email address, using claim name
+'email' or 'mail'. The email will be used to automatically generate the GitLab username.
+
+If after signing in into your SAML server you are redirected back to the sign in page and
+no error is displayed, check your `production.log` file. It will most likely contain the
+message `Can't verify CSRF token authenticity`. This means that there is an error during
+the SAML request, but this error never reaches GitLab due to the CSRF check.
+
+To bypass this you can add `skip_before_action :verify_authenticity_token` to the
+`omniauth_callbacks_controller.rb` file. This will allow the error to hit GitLab,
+where it can then be seen in the usual logs, or as a flash message in the login
+screen.

@@ -27,6 +27,10 @@
 
 FactoryGirl.define do
   factory :ci_build, class: Ci::Build do
+    name 'test'
+    ref 'master'
+    tag false
+    created_at 'Di 29. Okt 09:50:00 CET 2013'
     started_at 'Di 29. Okt 09:51:28 CET 2013'
     finished_at 'Di 29. Okt 09:53:28 CET 2013'
     commands 'ls -a'
@@ -39,9 +43,27 @@ FactoryGirl.define do
 
     commit factory: :ci_commit
 
+    trait :canceled do
+      status 'canceled'
+    end
+
+    after(:build) do |build, evaluator|
+      build.project = build.commit.project
+    end
+
     factory :ci_not_started_build do
       started_at nil
       finished_at nil
+    end
+
+    factory :ci_build_tag do
+      tag true
+    end
+
+    factory :ci_build_with_trace do
+      after(:create) do  |build, evaluator|
+        build.trace = 'BUILD TRACE'
+      end
     end
   end
 end

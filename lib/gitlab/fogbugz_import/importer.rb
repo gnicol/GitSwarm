@@ -154,7 +154,7 @@ module Gitlab
           while comment = comments.shift
             verb = comment['sVerb']
 
-            next if verb == 'Opened' || verb === 'Closed'
+            next if verb == 'Opened'
 
             content = format_content(comment['s'])
             attachments = format_attachments(comment['rgAttachments'])
@@ -199,7 +199,7 @@ module Gitlab
         s = s.gsub(/^#/, "\\#")
         s = s.gsub(/^-/, "\\-")
         s = s.gsub("`", "\\~")
-        s = s.gsub("\r", "")
+        s = s.delete("\r")
         s = s.gsub("\n", "  \n")
         s
       end
@@ -232,9 +232,7 @@ module Gitlab
 
         return nil if res.nil?
 
-        text = "[#{res['alt']}](#{res['url']})"
-        text = "!#{text}" if res['is_image']
-        text
+        res[:markdown]
       end
 
       def build_attachment_url(rel_url)

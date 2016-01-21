@@ -5,6 +5,12 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   include SharedPaths
   include RepoHelpers
 
+  step "I don't have write access" do
+    @project = create(:project, name: "Other Project", path: "other-project")
+    @project.team << [@user, :reporter]
+    visit namespace_project_tree_path(@project.namespace, @project, root_ref)
+  end
+
   step 'I should see files from repository' do
     expect(page).to have_content "VERSION"
     expect(page).to have_content ".gitignore"
@@ -37,6 +43,10 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     expect(page).to have_content new_gitignore_content
   end
 
+  step 'I should see its content with new lines preserved at end of file' do
+    expect(evaluate_script('blob.editor.getValue()')).to eq "Sample\n\n\n"
+  end
+
   step 'I click link "Raw"' do
     click_link 'Raw'
   end
@@ -53,10 +63,6 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     expect(page).not_to have_link 'edit'
   end
 
-  step 'The edit button is disabled' do
-    expect(page).to have_css '.disabled', text: 'Edit'
-  end
-
   step 'I can edit code' do
     set_new_content
     expect(evaluate_script('blob.editor.getValue()')).to eq new_gitignore_content
@@ -66,40 +72,52 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     set_new_content
   end
 
+  step 'I edit code with new lines at end of file' do
+    execute_script('blob.editor.setValue("Sample\n\n\n")')
+  end
+
   step 'I fill the new file name' do
     fill_in :file_name, with: new_file_name
   end
 
   step 'I fill the new branch name' do
-    fill_in :new_branch, with: 'new_branch_name'
+    fill_in :target_branch, with: 'new_branch_name', visible: true
   end
 
   step 'I fill the new file name with an illegal name' do
     fill_in :file_name, with: 'Spaces Not Allowed'
   end
 
+  step 'I fill the new file name with a new directory' do
+    fill_in :file_name, with: new_file_name_with_directory
+  end
+
   step 'I fill the commit message' do
-    fill_in :commit_message, with: 'Not yet a commit message.', visible: true
+    fill_in :commit_message, with: 'New commit message', visible: true
   end
 
   step 'I click link "Diff"' do
-    click_link 'Preview changes'
+    click_link 'Preview Changes'
   end
 
   step 'I click on "Commit Changes"' do
     click_button 'Commit Changes'
   end
 
-  step 'I click on "Remove"' do
-    click_button 'Remove'
+  step 'I click on "Create directory"' do
+    click_button 'Create directory'
   end
 
-  step 'I click on "Remove file"' do
-    click_button 'Remove file'
+  step 'I click on "Delete"' do
+    click_on 'Delete'
+  end
+
+  step 'I click on "Delete file"' do
+    click_button 'Delete file'
   end
 
   step 'I click on "Replace"' do
-    click_button  "Replace"
+    click_on  "Replace"
   end
 
   step 'I click on "Replace file"' do
@@ -110,21 +128,32 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     expect(page).to have_css '.line_holder.new'
   end
 
-  step 'I click on "new file" link in repo' do
-    click_link 'new-file-link'
+  step 'I click on "New file" link in repo' do
+    find('.add-to-tree').click
+    click_link 'New file'
+  end
+
+  step 'I click on "Upload file" link in repo' do
+    find('.add-to-tree').click
+    click_link 'Upload file'
+  end
+
+  step 'I click on "New directory" link in repo' do
+    find('.add-to-tree').click
+    click_link 'New directory'
+  end
+
+  step 'I fill the new directory name' do
+    fill_in :dir_name, with: new_dir_name
+  end
+
+  step 'I fill an existing directory name' do
+    fill_in :dir_name, with: 'files'
   end
 
   step 'I can see new file page' do
-    expect(page).to have_content "new file"
+    expect(page).to have_content "New File"
     expect(page).to have_content "Commit message"
-  end
-
-  step 'I can see "upload an existing one"' do
-    expect(page).to have_content "upload an existing one"
-  end
-
-  step 'I click on "upload"' do
-    click_link 'upload'
   end
 
   step 'I click on "Upload file"' do
@@ -132,7 +161,7 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   end
 
   step 'I can see the new commit message' do
-    expect(page).to have_content "New upload commit message"
+    expect(page).to have_content "New commit message"
   end
 
   step 'I upload a new text file' do
@@ -141,7 +170,7 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
 
   step 'I fill the upload file commit message' do
     page.within('#modal-upload-blob') do
-      fill_in :commit_message, with: 'New upload commit message'
+      fill_in :commit_message, with: 'New commit message'
     end
   end
 
@@ -173,7 +202,7 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   end
 
   step 'I see Browse dir link' do
-    expect(page).to have_link 'Browse Dir »'
+    expect(page).to have_link 'Browse Directory »'
     expect(page).not_to have_link 'Browse Code »'
   end
 
@@ -185,13 +214,13 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
 
   step 'I see Browse file link' do
     expect(page).to have_link 'Browse File »'
-    expect(page).not_to have_link 'Browse Code »'
+    expect(page).not_to have_link 'Browse Files »'
   end
 
   step 'I see Browse code link' do
-    expect(page).to have_link 'Browse Code »'
+    expect(page).to have_link 'Browse Files »'
     expect(page).not_to have_link 'Browse File »'
-    expect(page).not_to have_link 'Browse Dir »'
+    expect(page).not_to have_link 'Browse Directory »'
   end
 
   step 'I click on Permalink' do
@@ -206,10 +235,6 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     expect(current_path).to eq(namespace_project_blob_path(@project.namespace, @project, 'master/.gitignore'))
   end
 
-  step 'I am redirected to the ".gitignore" on new branch' do
-    expect(current_path).to eq(namespace_project_blob_path(@project.namespace, @project, 'new_branch_name/.gitignore'))
-  end
-
   step 'I am redirected to the permalink URL' do
     expect(current_path).to(
       eq(namespace_project_blob_path(@project.namespace, @project,
@@ -219,17 +244,35 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   end
 
   step 'I am redirected to the new file' do
-    expect(current_path).to eq(namespace_project_blob_path(
-      @project.namespace, @project, 'master/' + new_file_name))
+    expect(current_path).to eq(
+      namespace_project_blob_path(@project.namespace, @project, 'master/' + new_file_name))
   end
 
-  step 'I am redirected to the new file on new branch' do
-    expect(current_path).to eq(namespace_project_blob_path(
-      @project.namespace, @project, 'new_branch_name/' + new_file_name))
+  step 'I am redirected to the new file with directory' do
+    expect(current_path).to eq(
+      namespace_project_blob_path(@project.namespace, @project, 'master/' + new_file_name_with_directory))
+  end
+
+  step 'I am redirected to the new merge request page' do
+    expect(current_path).to eq(new_namespace_project_merge_request_path(@project.namespace, @project))
+  end
+
+  step "I am redirected to the fork's new merge request page" do
+    fork = @user.fork_of(@project)
+    expect(current_path).to eq(new_namespace_project_merge_request_path(fork.namespace, fork))
+  end
+
+  step 'I am redirected to the root directory' do
+    expect(current_path).to eq(
+      namespace_project_tree_path(@project.namespace, @project, 'master'))
   end
 
   step "I don't see the permalink link" do
     expect(page).not_to have_link('permalink')
+  end
+
+  step 'I see "Unable to create directory"' do
+    expect(page).to have_content('Directory already exists')
   end
 
   step 'I see a commit error message' do
@@ -251,6 +294,10 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     select "'test'", from: 'ref'
   end
 
+  step "I switch ref to fix" do
+    select "fix", from: 'ref'
+  end
+
   step "I see the ref 'test' has been selected" do
     expect(page).to have_selector '.select2-chosen', text: "'test'"
   end
@@ -259,9 +306,49 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     visit namespace_project_tree_path(@project.namespace, @project, "'test'")
   end
 
+  step "I visit the fix tree" do
+    visit namespace_project_tree_path(@project.namespace, @project, "fix/.testdir")
+  end
+
   step 'I see the commit data' do
     expect(page).to have_css('.tree-commit-link', visible: true)
     expect(page).not_to have_content('Loading commit data...')
+  end
+
+  step 'I see the commit data for a directory with a leading dot' do
+    expect(page).to have_css('.tree-commit-link', visible: true)
+    expect(page).not_to have_content('Loading commit data...')
+  end
+
+  step 'I click on "files/lfs/lfs_object.iso" file in repo' do
+    visit namespace_project_tree_path(@project.namespace, @project, "lfs")
+    click_link 'files'
+    click_link "lfs"
+    click_link "lfs_object.iso"
+  end
+
+  step 'I should see download link and object size' do
+    expect(page).to have_content 'Download (1.5 MB)'
+  end
+
+  step 'I should not see lfs pointer details' do
+    expect(page).not_to have_content 'version https://git-lfs.github.com/spec/v1'
+    expect(page).not_to have_content 'oid sha256:91eff75a492a3ed0dfcb544d7f31326bc4014c8551849c192fd1e48d4dd2c897'
+    expect(page).not_to have_content 'size 1575078'
+  end
+
+  step 'I should see buttons for allowed commands' do
+    expect(page).to have_content 'Raw'
+    expect(page).to have_content 'History'
+    expect(page).to have_content 'Permalink'
+    expect(page).not_to have_content 'Edit'
+    expect(page).not_to have_content 'Blame'
+    expect(page).to have_content 'Delete'
+    expect(page).to have_content 'Replace'
+  end
+
+  step 'I should see a notice about a new fork having been created' do
+    expect(page).to have_content "You're not allowed to make changes to this project directly. A fork of this project has been created that you can make changes in, so you can submit a merge request."
   end
 
   private
@@ -285,6 +372,18 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   # not a filename present at root of the seed repository.
   def new_file_name
     'not_a_file.md'
+  end
+
+  # Constant value that is a valid filename with directory and
+  # not a filename present at root of the seed repository.
+  def new_file_name_with_directory
+    'foo/bar/baz.txt'
+  end
+
+  # Constant value that is a valid directory and
+  # not a directory present at root of the seed repository.
+  def new_dir_name
+    'new_dir/subdir'
   end
 
   def drop_in_dropzone(file_path)

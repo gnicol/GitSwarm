@@ -4,7 +4,7 @@
     %span.depot-path
       = @path_template
     .form-actions.mirroring-enable
-      = button_to enable_mirroring_namespace_project_path(@project.namespace, @project), params: {fusion_server: @fusion_server}, method: 'post', class: 'btn btn-create' do
+      = button_to enable_helix_mirroring_namespace_project_path(@project.namespace, @project), params: {fusion_server: @fusion_server}, method: 'post', class: 'btn btn-create' do
         = icon 'helix-icon-white'
         Launch Mirroring
 - else

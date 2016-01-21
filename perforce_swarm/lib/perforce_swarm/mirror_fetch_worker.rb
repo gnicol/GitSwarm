@@ -1,13 +1,14 @@
 require 'rubygems'
 require 'sidekiq'
-require 'sidetiq'
 
 module PerforceSwarm
   class MirrorFetchWorker
     include Sidekiq::Worker
-    include Sidetiq::Schedulable
 
-    # Once a minute we'll scan all the repos to:
+    # We are scheduled for every minute, so don't bother throwing in the retry queue
+    sidekiq_options retry: false
+
+    # We'll scan all the repos to:
     #  - clean up any hung git-fusion imports
     #  - fetch outdated repos to freshen them
     # Note we'll limit the number of active fetches to be ongoing via the
@@ -19,8 +20,6 @@ module PerforceSwarm
     #
     # If we assume you have 20 repos that are fairly inactive in perforce (so generally we're pulling
     # down no or only small changes) this approach will keep you within ~10 minutes of up to date.
-    recurrence { minutely(1) }
-
     def perform
       # bail completely if the feature isn't enabled
       config = PerforceSwarm::GitlabConfig.new
@@ -69,7 +68,7 @@ module PerforceSwarm
           stats.push(project:       project,
                      last_fetched:  PerforceSwarm::Mirror.last_fetched(repo_path),
                      active:        active
-          )
+                    )
         end
 
         # return sorted stats based on last_fetched time, oldest (smaller value) first
@@ -102,7 +101,7 @@ module PerforceSwarm
       # returns only entries that represent git-fusion imports that are finished but marked as in progress
       def import_hung
         stats.select do |stat|
-          stat[:project].import_in_progress? && stat[:project].git_fusion_import? && stat[:last_fetched]
+          stat[:project].import_in_progress? && stat[:project].git_fusion_mirrored? && stat[:last_fetched]
         end
       end
     end

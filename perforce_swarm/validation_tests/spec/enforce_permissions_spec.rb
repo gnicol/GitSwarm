@@ -435,7 +435,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       git.fail_on_error=false
       create_file(File.join(dir, path))
       success = git.add_commit_push
-      LOG.log("User #{user} failed to push to project #{project} at path #{path}") unless sucess
+      LOG.log("User #{user} failed to push to project #{project} at path #{path}") unless success
     end
     success
   end

@@ -1,0 +1,10 @@
+.reenable-status
+- if @status == 'in_progress'
+  .loading
+    %p
+      %i.fa.fa-spinner.fa-spin= 'Re-enable in progress'
+- elsif @status == 'error'
+  %p
+    The last time re-enabling was attempted, the following error occurred:
+  .reenable-error
+    = @error if @error && !@error.empty?

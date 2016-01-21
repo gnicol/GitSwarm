@@ -64,6 +64,43 @@ class PerforceSwarm::GitFusionController < ApplicationController
     end
   end
 
+  def reenable_helix_mirroring
+    @status = nil
+    @error  = nil
+    begin
+      @project  = Project.find(params['project_id'])
+      reenable  = params['reenable_mirroring']
+      fail 'Project is not associated with a Helix Git Fusion Repository.' unless @project.git_fusion_repo.present?
+
+      repo_path = @project.repository.path_to_repo
+      @error    = PerforceSwarm::Mirror.reenable_error(repo_path)
+      if @project.git_fusion_mirrored?
+        @status = 'mirrored'
+      elsif PerforceSwarm::Mirror.reenabling?(repo_path)
+        @status = 'in_progress'
+      elsif reenable
+        @status = 'in_progress'
+        # kick off and background the re-enable process
+        job = fork do
+          gitlab_shell  = File.expand_path(Gitlab.config.gitlab_shell.path)
+          mirror_script = File.join(gitlab_shell, 'perforce_swarm', 'bin', 'gitswarm-mirror')
+          args          = [mirror_script, 'reenable_mirroring',
+                           @project.git_fusion_repo, @project.path_with_namespace]
+          exec Shellwords.shelljoin(args)
+        end
+        Process.detach(job)
+      end
+    rescue => e
+      @status = 'error'
+      @error  = e.message
+    end
+
+    respond_to do |format|
+      format.html { render partial: 'reenable_mirroring', layout: false }
+      format.json { render json: { html: view_to_html_string('perforce_swarm/git_fusion/_reenable_mirroring') } }
+    end
+  end
+
   protected
 
   def init_auto_create

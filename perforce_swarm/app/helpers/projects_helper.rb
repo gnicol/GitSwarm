@@ -85,6 +85,10 @@ module ProjectsHelper
     'The Git Fusion mirroring URL is missing for this project.' unless fusion_url_ok
   end
 
+  def helix_reenable_mirroring_error(project)
+    PerforceSwarm::Mirror.reenable_error(project.repository.path_to_repo)
+  end
+
   # time (as a string) of the last successful fetch from Git Fusion, or false if no timestamp is present
   def git_fusion_last_fetched(project)
     PerforceSwarm::Mirror.last_fetched(project.repository.path_to_repo).strftime('%F %T %z')

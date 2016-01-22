@@ -8,7 +8,7 @@ class P4Helper
   attr_reader :p4
   attr_accessor :client_name
 
-  def initialize(p4port, user, password, local_dir, depot_path)
+  def initialize(p4port, user, password, local_dir = nil, depot_path = nil)
     # Pointing the p4 environment variables to tmp-clients directory
     p4_home = tmp_client_dir
     ENV['P4ENVIRO']  = File.join(p4_home, '.p4enviro')
@@ -26,7 +26,7 @@ class P4Helper
     @client_name = Time.new.strftime('%y%m%d-%H%M%S%L')
   end
 
-  def connect_and_sync
+  def connect
     LOG.debug 'Connecting to ' + @p4.port
     @p4.client = @client_name
     @p4.connect
@@ -42,7 +42,11 @@ class P4Helper
     @p4.charset='utf8' if @p4.server_unicode?
 
     @p4.run_login
-    spec = p4.fetch_client
+  end
+
+  def connect_and_sync
+    connect
+    spec = @p4.fetch_client
     spec['Root'] = @local_dir
     spec['View'] = [@depot_path + ' //'+client_name+'/...']
     @p4.save_client(spec)

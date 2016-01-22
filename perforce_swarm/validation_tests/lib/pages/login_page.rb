@@ -36,15 +36,18 @@ class LoginPage < Page
     LoggedInPage.new(@driver)
   end
 
-  def click_login_expecting_password_reset
-    # click login, then return a page for the password reset page
-    click_login
-    PasswordResetPage.new(@driver)
+  # Click login, then visit the password reset page
+  # This method should be used when we need to reset user password after initial login
+  def click_login_with_password_reset(user, existing_password, new_password)
+    login(user, existing_password)
+    password_set_link = "#{CONFIG.get('gitswarm_url')}/profile/password/edit"
+    password_set_page = PasswordResetPage.new(@driver, password_set_link)
+    password_set_page.set_password(existing_password, new_password)
   end
 
-  def click_login_expecting_dashboard
-    # click login, then return a page for the dashboard
-    click_login
+  # click login, then return a page for the dashboard
+  def click_login_expecting_dashboard(user, password)
+    login(user, password)
     LoggedInPage.new(@driver)
   end
 

@@ -77,10 +77,16 @@ class GitSwarmAPIHelper
     RestClient.delete @base_url+'groups/'+ get_group_id(group), private_token: @admin_token
   end
 
+  def update_admin_password(user, new_password)
+    LOG.debug 'Updating admin user '+ user + ' password to ' + new_password
+    # admin_user = RestClient.get @base_url+'users/'+ get_user_id(user), private_token: @admin_token
+    RestClient.put @base_url + 'users/' + get_user_id(user), private_token: @admin_token, password: new_password
+  end
+
   #
   # Returns data on a given project
   # ssh_url_to_repo and http_url_to_repo are probably useful data from the return hash
-  # and will be used by tests to get the correct turl's to use after creating projects
+  # and will be used by tests to get the correct url's to use after creating projects
   #
   HTTP_URL = 'http_url_to_repo'
   SSH_URL = 'SSH_url_to_repo'

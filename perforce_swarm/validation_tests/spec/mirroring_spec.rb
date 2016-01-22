@@ -21,7 +21,7 @@ describe 'New Mirrored Project', browser: true do
     @p4 = P4Helper.new(CONFIG.get('p4_port'), CONFIG.get('p4_user'), CONFIG.get('p4_password'), p4_dir, p4_depot_path)
   end
 
-  context 'when I push in a file to the gitswarm repo' do
+  context 'when I push in a file to the gitswarm repo', Mirroring: true do
     commit_message = 'commit_message_'+unique_string
     before do
       create_user
@@ -52,7 +52,7 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
-  context 'when I add a file to the Perforce project' do
+  context 'when I add a file to the Perforce project', Mirroring: true do
     before do
       create_user
       create_new_project
@@ -72,7 +72,7 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
-  context 'when a repo was created in GitFusion' do
+  context 'when a repo was created in GitFusion', Mirroring: true do
     before do
       create_user
       create_new_project
@@ -84,7 +84,7 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
-  context 'when an existing repo with content is mirrored in a new project' do
+  context 'when an existing repo with content is mirrored in a new project', Mirroring: true do
     before do
       create_user
       create_new_project
@@ -117,7 +117,7 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
-  context 'when a file is added to a project through the web ui' do
+  context 'when a file is added to a project through the web ui', Mirroring: true do
     filename = 'Readme.md'
     unique_content = unique_string
     before do
@@ -147,7 +147,7 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
-  context 'when I merge a branch into master' do
+  context 'when I merge a branch into master', Mirroring: true do
     new_branch = unique_string
     new_file = new_branch+'-file'
     before do
@@ -184,7 +184,7 @@ describe 'New Mirrored Project', browser: true do
     end
   end
 
-  context 'when I mirror a existing non-mirrored project with content' do
+  context 'when I mirror a existing non-mirrored project with content', Mirroring: true do
     before do
       git_filename = 'git-file-'+unique_string
       @p4_file_from_git = p4_dir + '/' + git_filename

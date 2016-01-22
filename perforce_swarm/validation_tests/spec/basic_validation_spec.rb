@@ -16,11 +16,6 @@ describe 'BasicValidationTests', browser: true do
       dashboard = login.login(CONFIG.get('gitswarm_username'), CONFIG.get('gitswarm_password'))
       expect(@driver.title).to eq('Projects · Dashboard · GitSwarm')
       dashboard.logout
-
-      login = LoginPage.new(@driver, CONFIG.get('gitswarm_url'))
-      dashboard = login.login(CONFIG.get('gitswarm_username'), CONFIG.get('gitswarm_password'))
-      expect(@driver.title).to eq('Projects | Dashboard | GitSwarm')
-      dashboard.logout
     end
   end
 

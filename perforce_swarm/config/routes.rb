@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       get :new_project
       get :existing_project
       post :reenable_helix_mirroring
+      get :reenable_helix_mirroring_status
     end
   end
 end

@@ -22,7 +22,7 @@ log_level : INFO
 
 # For enforce permissions tests
 secure_git_fusion            : CHANGE_ME_LOCAL_GF
-secure_git_fusion_depot_root : //gitswarm/project/
+secure_git_fusion_depot_root : //gitswarm/projects/
 
 # run_id                       : value  # define a permanent non-unique run id.  Do not use in automation.
 # skip_setup                   : true   # for test development. Do not use in automation.

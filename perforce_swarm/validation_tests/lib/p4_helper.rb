@@ -13,9 +13,9 @@ class P4Helper
 
     # Pointing the p4 environment variables to tmp-clients directory
     p4_home = tmp_client_dir
-    ENV['P4ENVIRO'] = File.join(p4_home, '.p4enviro')
+    ENV['P4ENVIRO']  = File.join(p4_home, '.p4enviro')
     ENV['P4TICKETS'] = File.join(p4_home, '.p4tickets')
-    ENV['P4TRUST'] = File.join(p4_home, '.p4trust')
+    ENV['P4TRUST']   = File.join(p4_home, '.p4trust')
 
     @user = user
     @password = password
@@ -44,11 +44,12 @@ class P4Helper
     @p4.charset='utf8' if @p4.server_unicode?
 
     LOG.debug 'Logging in p4 user ' + @p4.user
-    @p4.run_login
+    login_result = @p4.run_login
     spec = @p4.fetch_client
     spec['Root'] = @local_dir
     spec['View'] = [@depot_path + ' //'+client_name+'/...']
     @p4.save_client(spec)
+    login_result
   end
 
   def connect_and_sync

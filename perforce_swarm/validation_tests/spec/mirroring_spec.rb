@@ -4,7 +4,7 @@ require_relative '../lib/page'
 require_relative '../lib/user'
 require_relative '../lib/project'
 
-describe 'New Mirrored Project', browser: true do
+describe 'New Mirrored Project', browser: true, Mirroring: true do
   let(:run_id)                { unique_string }
   let(:user)                  { User.new('user-' + run_id) }
   let(:project)               { Project.new('project-'+run_id, user.name) }
@@ -15,15 +15,11 @@ describe 'New Mirrored Project', browser: true do
   before do
     LOG.debug("p4 dir = #{p4_dir}")
     LOG.debug("user is #{user.name} : #{user.password}")
-    p4_depot_path = "#{CONFIG.get('p4_gitswarm_depot_root')}#{user.name}/#{project.name}/master/..."
+    p4_depot_path = "#{CONFIG.get(CONFIG::P4_DEPOT_ROOT)}#{user.name}/#{project.name}/master/..."
     @p4 = P4Helper.new(CONFIG.get(CONFIG::P4_PORT),
                        CONFIG.get(CONFIG::P4_USER),
                        CONFIG.get(CONFIG::P4_PASSWORD), p4_dir, p4_depot_path)
     create_user
-  end
-
-  after do
-    delete_user # deleting user will also delete user's projects
   end
 
   context 'when I push in a file to the gitswarm repo' do

@@ -9,7 +9,7 @@ class ProjectPage < Page
 
   def elements_for_validation
     elems = super
-    elems << [:css, 'input#project_clone'] # project name
+    elems << [:class, 'project-home-desc'] # project name
     elems
   end
 
@@ -41,6 +41,6 @@ class ProjectPage < Page
   private
 
   def wait_for_clone
-    wait_for(:css, 'input#project_clone', 45)
+    wait_for(:class, 'project-home-desc', 45)
   end
 end

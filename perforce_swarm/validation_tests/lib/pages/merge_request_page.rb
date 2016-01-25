@@ -1,6 +1,10 @@
-require_relative '../page'
+require_relative 'logged_in_page'
 
-class MergeRequestPage < Page
+class MergeRequestPage < LoggedInPage
+  OPEN         = 'Open'
+  CLOSED       = 'Closed'
+  MERGED       = 'Merged'
+
   def initialize(driver)
     super(driver)
     wait_for_page_to_load
@@ -27,6 +31,25 @@ class MergeRequestPage < Page
   end
 
   def accept_merge_request
+    accept_merge_and_wait
+    # Once the page reloads we should see the issue box merged
+    wait_for(:class, 'status-box-merged', 90)
+    fail('MR state is not CLOSED as expected') unless state == MERGED
+  end
+
+  def accept_merge_request_expecting_failure
+    accept_merge_and_wait
+    wait_for_text(:class, 'mr-state-widget', 'Something went wrong during merge', 90)
+    fail('MR state is not OPEN as expected') unless state == OPEN
+  end
+
+  def state
+    @driver.find_element(:class, 'status-box').text
+  end
+
+  private
+
+  def accept_merge_and_wait
     LOG.debug('Accepting merge request')
     wait_for(:class, 'accept_merge_request', 90)
     @driver.find_element(:class, 'accept_merge_request').click
@@ -34,7 +57,5 @@ class MergeRequestPage < Page
     wait_for_text(:class, 'mr-widget-body', 'Merge in progress')
     # Wait until we are no longer merging anymore
     wait_for_no_text(:class, 'mr-widget-body', 'Merge in progress', 180)
-    # Once the page reloads we should see the issue box merged
-    wait_for(:class, 'status-box-merged', 90)
   end
 end

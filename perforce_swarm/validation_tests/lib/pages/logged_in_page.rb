@@ -46,4 +46,14 @@ class LoggedInPage < Page
     goto newuri
     BranchesPage.new(@driver)
   end
+
+  def goto_merge_request_page(namespace, project_name, merge_request_name)
+    uri = URI.parse @driver.current_url
+    newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}/merge_requests"
+    goto newuri
+    mr_links = @driver.find_elements(:link_text, merge_request_name)
+    fail("unique merge request not found for #{merge_request_name} : #{mr_links}") unless mr_links.length == 1
+    mr_links.first.click
+    MergeRequestPage.new(@driver)
+  end
 end

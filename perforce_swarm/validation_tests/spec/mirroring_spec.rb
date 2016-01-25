@@ -7,7 +7,7 @@ require_relative '../lib/project'
 describe 'New Mirrored Project', browser: true do
   let(:run_id)                { unique_string }
   let(:user)                  { User.new('user-' + run_id) }
-  let(:project)               { Project.new('project-'+run_id) }
+  let(:project)               { Project.new('project-'+run_id, user.name) }
   let(:expected_gf_repo_name) { "gitswarm-#{user.name}-#{project.name}" }
   let(:git_dir)               { Dir.mktmpdir('Git-', tmp_client_dir) }
   let(:p4_dir)                { Dir.mktmpdir('P4-', tmp_client_dir) }
@@ -88,9 +88,9 @@ describe 'New Mirrored Project', browser: true do
   end
 
   context 'when an existing repo with content is mirrored in a new project' do
-    another_project = Project.new('another_project-' + unique_string)
-    another_git_dir = Dir.mktmpdir('AnotherGit-', tmp_client_dir)
-    before do
+    it 'contains files from that repo' do
+      another_project = Project.new("another_project-#{unique_string}", user.name)
+      another_git_dir = Dir.mktmpdir('AnotherGit-', tmp_client_dir)
       create_new_project
       clone_project(project, git_dir)
       @git_filename = 'git-file-'+unique_string
@@ -110,9 +110,7 @@ describe 'New Mirrored Project', browser: true do
       cp.select_mirrored_specific
       cp.select_repo(expected_gf_repo_name)
       cp.create_project_and_wait_for_clone
-    end
 
-    it 'contains files from that repo' do
       clone_project(another_project, another_git_dir)
       existing_git_file_from_p4 = another_git_dir + '/' + @p4_filename
       existing_p4_file_from_git = another_git_dir + '/' + @git_filename
@@ -178,7 +176,7 @@ describe 'New Mirrored Project', browser: true do
       branches = branches_page.available_branches
       expect(branches.include?(new_branch)).to be true
       LOG.log('Merge the branch')
-      branches_page.create_and_accept_merge_request(new_branch)
+      branches_page.create_and_accept_merge_request(new_branch, "merge request for #{new_branch}")
 
       @p4.sync
       LOG.log('Check the file exists in perforce after the branch is merged')

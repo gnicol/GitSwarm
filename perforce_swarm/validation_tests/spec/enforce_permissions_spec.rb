@@ -49,11 +49,11 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
                                     CONFIG.get(CONFIG::GS_USER),
                                     CONFIG.get(CONFIG::GS_PASSWORD))
 
-    @read_all_write_all          = Project.new(@run_id + '_read_all_write_all')
-    @read_all_write_partial      = Project.new(@run_id + '_read_all_write_partial')
-    @read_all_write_none         = Project.new(@run_id + '_read_all_write_none')
-    @read_partial                = Project.new(@run_id + '_read_partial')
-    @read_none                   = Project.new(@run_id + '_read_none')
+    @read_all_write_all          = Project.new(@run_id + '_read_all_write_all', @run_id)
+    @read_all_write_partial      = Project.new(@run_id + '_read_all_write_partial', @run_id)
+    @read_all_write_none         = Project.new(@run_id + '_read_all_write_none', @run_id)
+    @read_partial                = Project.new(@run_id + '_read_partial', @run_id)
+    @read_none                   = Project.new(@run_id + '_read_none', @run_id)
     @projects                    = [@read_all_write_all,
                                     @read_all_write_partial,
                                     @read_all_write_none,
@@ -398,7 +398,74 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     end
   end
 
+  describe 'During a merge, a user with no write permissions in perforce' do
+    it 'should have attempts to accept the merge fail, even if the author of the MR has full write permissions' do
+      branch = "branch-#{unique_string}"
+      mr_title = "Merge request for #{branch}"
+
+      create_merge_request(@user_root, @read_all_write_none, branch, mr_title)
+      lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
+      loggedin_page = lp.login(@user_gs_access_p4_access.name, @user_gs_access_p4_access.password)
+      mr_page = loggedin_page.goto_merge_request_page(@read_all_write_none.namespace,
+                                                      @read_all_write_none.name,
+                                                      mr_title)
+      LOG.log('Merge the branch as user with no write permission')
+      mr_page.accept_merge_request_expecting_failure
+    end
+  end
+
+  describe 'During a merge, a user with partial write permissions in perforce' do
+    it 'should have attempts to accept the merge fail, even if the author of the MR has full write permissions' do
+      branch = "branch-#{unique_string}"
+      mr_title = "Merge request for #{branch}"
+
+      create_merge_request(@user_root, @read_all_write_partial, branch, mr_title)
+      lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
+      loggedin_page = lp.login(@user_gs_access_p4_access.name, @user_gs_access_p4_access.password)
+      mr_page = loggedin_page.goto_merge_request_page(@read_all_write_partial.namespace,
+                                                      @read_all_write_partial.name,
+                                                      mr_title)
+      LOG.log('Merge the branch as user with partial write permission')
+      mr_page.accept_merge_request_expecting_failure
+    end
+  end
+
+  describe 'During a merge, a user with full write permissions in perforce' do
+    it 'should have attempts to accept the merge succeed' do
+      branch = "branch-#{unique_string}"
+      mr_title = "Merge request for #{branch}"
+
+      create_merge_request(@user_root, @read_all_write_all, branch, mr_title)
+      lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
+      loggedin_page = lp.login(@user_gs_access_p4_access.name, @user_gs_access_p4_access.password)
+      mr_page = loggedin_page.goto_merge_request_page(@read_all_write_all.namespace,
+                                                      @read_all_write_all.name,
+                                                      mr_title)
+      LOG.log('Merge the branch as user without permission')
+      mr_page.accept_merge_request
+    end
+  end
+
   private
+
+  def create_merge_request(user, project, branch, title)
+    Dir.mktmpdir(nil, tmp_client_dir) do |dir|
+      git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)
+      git.clone
+      LOG.log("Branching new branch #{branch}")
+      git.branch_and_checkout(branch)
+      create_file(File.join(dir, PUBLIC))  # add one file that should be pushable
+      create_file(File.join(dir, PRIVATE)) # add one file that should NOT be pushable
+      LOG.log('Adding files to public and private parts of new branch')
+      git.add_commit_push
+    end
+    lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
+    branches_page = lp.login(user.name, user.password).goto_branches_page(project.namespace, project.name)
+    branches = branches_page.available_branches
+    expect(branches.include?(branch)).to be true
+    LOG.log('Create the merge request')
+    branches_page.create_merge_request(branch, title).logout
+  end
 
   def list_repos_for_user(user)
     cp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user.name, user.password).goto_create_project_page

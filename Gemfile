@@ -4,7 +4,7 @@ eval_gemfile File.join(File.dirname(__FILE__), 'perforce_swarm/Gemfile')
 
 source "https://rubygems.org"
 
-gem 'rails', '4.2.4'
+gem 'rails', '4.2.5'
 gem 'rails-deprecated_sanitizer', '~> 1.0.3'
 
 # Responders respond_to and respond_with

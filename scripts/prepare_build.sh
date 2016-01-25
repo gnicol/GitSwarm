@@ -9,8 +9,8 @@ if [ -f /.dockerinit ]; then
     dpkg -i /cache/phantomjs_1.9.8-0jessie_amd64.deb
 
     apt-get update -qq
-    apt-get -o dir::cache::archives="/cache/apt" install -y -qq \
-        libicu-dev libkrb5-dev cmake nodejs postgresql-client mysql-client
+    apt-get -o dir::cache::archives="/cache/apt" install -y -qq --force-yes \
+        libicu-dev libkrb5-dev cmake nodejs postgresql-client mysql-client unzip
 
     cp config/database.yml.mysql config/database.yml
     sed -i 's/username:.*/username: root/g' config/database.yml

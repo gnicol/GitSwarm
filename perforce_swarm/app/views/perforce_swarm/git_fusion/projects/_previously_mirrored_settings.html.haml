@@ -4,7 +4,7 @@
 - has_fusion_url   = git_fusion_url && !git_fusion_url.empty?
 - can_reenable     = mirroring_permitted?(@project, current_user) && mirroring_configured? && has_fusion_url && !has_fusion_error
 - button_class     = 'btn btn-save' + (can_reenable ? '' : ' disabled')
-
+- reenable_error   = helix_reenable_mirroring_error(@project)
 %p
   Mirroring for this project has been disabled.
 %p
@@ -29,7 +29,10 @@
     = link_to '#', class: button_class do
       = icon 'helix-icon-white'
       Re-enable Helix Mirroring
-  .reenable-status
+  - if reenable_error
+    = render partial: 'perforce_swarm/git_fusion/reenable_helix_mirroring_status', locals: { status: 'error', error: reenable_error }
+  - else
+    .reenable-status
 
 :javascript
   var reenable_helix_mirroring;

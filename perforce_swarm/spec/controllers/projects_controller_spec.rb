@@ -79,34 +79,4 @@ describe ProjectsController, type: :controller do
       expect(project.git_fusion_mirrored?).to be false
     end
   end
-
-  describe 'POST reenable_helix_mirroring' do
-    it 'gives error message and project remains un-mirrored if the project is already mirrored' do
-      expected_redirect = '/' + [project.namespace.to_param,
-                                 project.to_param].join('/')
-      project.git_fusion_repo     = 'mirror://default/bar'
-      project.git_fusion_mirrored = true
-      expect(project.git_fusion_mirrored?).to be true
-      post(:reenable_helix_mirroring,
-           namespace_id: project.namespace.name,
-           id: project)
-      expect(response).to redirect_to(expected_redirect)
-      expect(project.git_fusion_mirrored?).to be true
-      expect(controller).to set_flash[:alert].to('Project is already mirrored in Helix.').now
-    end
-
-    it 'gives error message and project remains un-mirrored if the project has no repo' do
-      expected_redirect = '/' + [project.namespace.to_param,
-                                 project.to_param].join('/')
-      project.git_fusion_repo     = ''
-      project.git_fusion_mirrored = false
-      expect(project.git_fusion_mirrored?).to be false
-      post(:reenable_helix_mirroring,
-           namespace_id: project.namespace.name,
-           id: project)
-      expect(response).to redirect_to(expected_redirect)
-      expect(project.git_fusion_mirrored?).to be false
-      expect(controller).to set_flash[:alert].to('Project is not associated with a Helix Git Fusion Repository.').now
-    end
-  end
 end

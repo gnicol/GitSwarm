@@ -86,7 +86,9 @@ module ProjectsHelper
   end
 
   def helix_reenable_mirroring_error(project)
-    PerforceSwarm::Mirror.reenable_error(project.repository.path_to_repo)
+    error = PerforceSwarm::Mirror.reenable_error(project.repository.path_to_repo)
+    error = false if error == 'Unknown error.'
+    error
   end
 
   # time (as a string) of the last successful fetch from Git Fusion, or false if no timestamp is present

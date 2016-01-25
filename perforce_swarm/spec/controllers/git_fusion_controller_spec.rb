@@ -50,6 +50,17 @@ describe PerforceSwarm::GitFusionController, type: :controller do
     project.team << [user, :master]
   end
 
+  describe 'POST reenable_helix_mirroring' do
+    it 'project remains un-mirrored if the project is already mirrored' do
+      project.git_fusion_repo     = 'mirror://default/bar'
+      project.git_fusion_mirrored = false
+      expect(project.git_fusion_mirrored?).to be false
+      post(:reenable_helix_mirroring,
+           project_id: project)
+      expect(project.git_fusion_mirrored?).to be false
+    end
+  end
+
   describe 'GET existing_project' do
     it 'gives an appropriate error when Git Fusion config is missing' do
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(configify({}))

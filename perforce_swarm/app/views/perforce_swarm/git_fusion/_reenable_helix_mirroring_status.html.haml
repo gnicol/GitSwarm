@@ -1,3 +1,7 @@
+- # take care of variables if rendered as a partial
+- @as_partial = defined?(error)
+- @error      = error if defined?(error)
+- @status     = status if defined?(status)
 .reenable-status
   - if @status == 'in_progress'
     .loading
@@ -5,7 +9,15 @@
         %i.fa.fa-spinner.fa-spin
         Re-enable in progress
   - elsif @status == 'error'
-    %p
+    %br
+    - if @as_partial
       The last time re-enabling was attempted, the following error occurred:
-    .reenable-error
-      = @error if @error && !@error.empty?
+      .reenable-error.js-toggle-container
+        = link_to '#', class: 'btn js-toggle-button' do
+          %span Show/Hide Error
+        %pre.js-toggle-content.hide
+          = @error
+    - else
+      The following error occurred while attempting to re-enable the project:
+      %pre
+        = @error

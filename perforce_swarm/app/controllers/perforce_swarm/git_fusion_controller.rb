@@ -70,6 +70,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
       init_reenable
 
       repo_path = @project.repository.path_to_repo
+      # grab the error, ignoring the default 'Unknown error.'
       @error    = PerforceSwarm::Mirror.reenable_error(repo_path)
       @error    = false if @error == 'Unknown error.'
       if @project.git_fusion_mirrored?

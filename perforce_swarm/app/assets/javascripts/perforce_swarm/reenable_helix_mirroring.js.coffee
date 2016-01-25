@@ -18,7 +18,7 @@ class @ReenableHelixMirroring
         dataType: 'json',
         complete: =>
           # immediately start polling the status URL, which will schedule subsequent polls
-          reenable_helix_mirroring.updateReenableStatus()
+          @updateReenableStatus()
         beforeSend: =>
           # disable the button and display an in progress message
           this.$button.addClass('disabled').prop('disabled', true)
@@ -46,7 +46,12 @@ class @ReenableHelixMirroring
 
           # re-schedule status poll if we're in progress
           if data.status == 'in_progress'
-            callback = -> reenable_helix_mirroring.updateReenableStatus()
+            callback = => @updateReenableStatus()
             setTimeout(callback, 2000)
+            return
+
+          # re-enable the button on error
+          if data.status == 'error'
+            this.$button.removeClass('disabled').prop('disabled', false)
     })
 

@@ -1,24 +1,18 @@
 class @ReenableHelixMirroring
   constructor: (@opts) ->
-    console.log('REENABLE URL:' + @opts.reenable_url)
-    console.log('STATUS URL:' + @opts.reenable_status_url)
     this.$el = $('.reenable-mirror-button-wrapper a')
     this.$el.on 'click', (e) =>
-      console.log('Clicked')
       @reenableHelixMirroring()
       return false
 
   reenableHelixMirroring: ->
-    console.log('Called reenableHelixMirroring')
     # make an AJAX request to re-enable mirroring for this project
     $.ajax(@opts.reenable_url, {
         type: 'POST',
         dataType: 'json',
-        complete: (status) =>
+        complete: =>
           # immediately start polling the status URL, which will schedule subsequent polls
-          console.log('STATUS: ' + status)
-          @updateReenableStatus(2000)
-          return false
+          reenable_helix_mirroring.updateReenableStatus()
         beforeSend: =>
           # disable the button and display an in progress message
           this.$el.addClass('disabled').prop('disabled', true)
@@ -28,9 +22,13 @@ class @ReenableHelixMirroring
             '</div>')
     })
 
-  updateReenableStatus: (@delay) ->
-    $.get @opts.reenable_status_url, (data) ->
-      console.log('Called updateReenableStatus')
-      $('.reenable-state').replaceWith(data)
-      setTimeout(@updateReenableStatus(@delay), @delay)
-      return false
+  updateReenableStatus: ->
+    $.ajax(@opts.reenable_status_url, {
+        type: 'GET',
+        dataType: 'json',
+        success: (data) =>
+          $('.reenable-status').append(data)
+          callback = -> reenable_helix_mirroring.updateReenableStatus()
+          setTimeout(callback, 2000)
+    })
+

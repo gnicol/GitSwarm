@@ -70,15 +70,15 @@ class PerforceSwarm::GitFusionController < ApplicationController
       init_reenable
 
       repo_path = @project.repository.path_to_repo
-      @status   = 'unknown'
       @error    = PerforceSwarm::Mirror.reenable_error(repo_path)
       if @project.git_fusion_mirrored?
         @status = 'mirrored'
-      elsif PerforceSwarm::Mirror.reenabling?(repo_path)
+      elsif PerforceSwarm::Mirror.reenabling?(repo_path) || !@error
         @status = 'in_progress'
       elsif @error
         @status = 'error'
       end
+
     rescue => e
       @error  = e.message
       @status = 'error'

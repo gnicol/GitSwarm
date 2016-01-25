@@ -25,7 +25,8 @@ module PerforceSwarm
         return false
       end
 
-      reenable_complete = Mirror.mirrored?(repo_path) && Mirror.reenabling?(repo_path)
+      repo = Repo.new(project_namespace)
+      reenable_complete = repo.mirrored? && Mirror.reenabling?(repo_path)
       reenable_errors   = Mirror.reenable_errors(repo_path)
 
       # already mirrored, or mirroring is incomplete

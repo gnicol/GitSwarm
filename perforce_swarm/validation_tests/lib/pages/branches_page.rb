@@ -1,6 +1,6 @@
-require_relative '../page'
+require_relative 'logged_in_page'
 
-class BranchesPage < Page
+class BranchesPage < LoggedInPage
   def initialize(driver)
     super(driver)
     verify
@@ -30,19 +30,22 @@ class BranchesPage < Page
   end
 
   # Fails if there are no changes in the branch to merge
-  def create_and_accept_merge_request(branch, delete_source = true)
-    url = current_url
+  # returns a MergeRequestPage
+  def create_merge_request(branch, title)
     # finds the first button which should be merge request - not a great search
     LOG.log('Creating merge request for '+branch)
     @driver.find_element(:class, 'js-branch-'+branch).find_element(:class, 'btn').click
-
     nmrp = NewMergeRequestPage.new(@driver)
     fail('There are no changes to merge') unless nmrp.changes?
+    nmrp.create_merge_request(title)
+  end
 
-    mrp = nmrp.create_merge_request
+  # returns you to this page
+  def create_and_accept_merge_request(branch, title, delete_source = true)
+    url = current_url
+    mrp = create_merge_request(branch, title)
     mrp.remove_source_branch(delete_source)
     mrp.accept_merge_request
-
     goto(url)
   end
 end

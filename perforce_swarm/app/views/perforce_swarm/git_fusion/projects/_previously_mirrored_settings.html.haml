@@ -4,7 +4,6 @@
 - has_fusion_url   = git_fusion_url && !git_fusion_url.empty?
 - can_reenable     = mirroring_permitted?(@project, current_user) && mirroring_configured? && has_fusion_url && !has_fusion_error
 - button_class     = 'btn btn-save' + (can_reenable ? '' : ' disabled')
-- reenabling       = PerforceSwarm::Mirror.reenabling?(@project.repository.path_to_repo)
 
 %p
   Mirroring for this project has been disabled.
@@ -25,17 +24,17 @@
         %strong= 'Please fix the configuration'
       to re-enable mirroring for this project.
 = render partial: 'perforce_swarm/git_fusion/projects/mirroring_config_errors'
-%span.reenable-mirror-button-wrapper{data: {toggle: 'tooltip', html: 'true', title: helix_reenable_mirroring_tooltip(@project)}}
-  = link_to reenable_helix_mirroring_perforce_swarm_git_fusion_path(project_id: @project.id), method: 'post', remote: true, class: button_class, data: { confirm: 'Are you sure you want to re-enable Helix Mirroring?' } do
-    = icon 'helix-icon-white'
-    Re-enable Helix Mirroring
-.reenable-state
+.reenable-mirror-wrapper
+  %span.reenable-mirror-button-wrapper{data: {toggle: 'tooltip', html: 'true', title: helix_reenable_mirroring_tooltip(@project)}}
+    = link_to '#', class: button_class do
+      = icon 'helix-icon-white'
+      Re-enable Helix Mirroring
+  .reenable-status
 
 :javascript
   var reenable_helix_mirroring;
 
   reenable_helix_mirroring = new ReenableHelixMirroring({
     reenable_url: "#{reenable_helix_mirroring_perforce_swarm_git_fusion_path(project_id: @project.id)}",
-    reenable_status_url: "#{reenable_helix_mirroring_status_perforce_swarm_git_fusion_path(project_id: @project.id)}",
-    reenable_status: "#{reenabling ? 'in_progress' : 'error'}"
+    reenable_status_url: "#{reenable_helix_mirroring_status_perforce_swarm_git_fusion_path(project_id: @project.id)}"
   });

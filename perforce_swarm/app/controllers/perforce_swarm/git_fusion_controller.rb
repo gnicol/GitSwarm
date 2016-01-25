@@ -71,6 +71,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
 
       repo_path = @project.repository.path_to_repo
       @error    = PerforceSwarm::Mirror.reenable_error(repo_path)
+      @error    = false if @error == 'Unknown error.'
       if @project.git_fusion_mirrored?
         @status = 'mirrored'
       elsif PerforceSwarm::Mirror.reenabling?(repo_path) || !@error
@@ -87,7 +88,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     view_file = 'perforce_swarm/git_fusion/_reenable_helix_mirroring_status'
     respond_to do |format|
       format.html { render partial: 'reenable_helix_mirroring_status', layout: false }
-      format.json { render json: { html: view_to_html_string(view_file) } }
+      format.json { render json: { status: @status, html: view_to_html_string(view_file) } }
     end
   end
 

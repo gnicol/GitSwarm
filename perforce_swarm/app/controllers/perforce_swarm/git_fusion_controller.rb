@@ -1,4 +1,6 @@
 class PerforceSwarm::GitFusionController < ApplicationController
+  GIT_FUSION_REENABLE_TIMEOUT = 20
+
   def existing_project
     init_auto_create
 
@@ -90,10 +92,30 @@ class PerforceSwarm::GitFusionController < ApplicationController
       exec Shellwords.shelljoin(args)
     end
     Process.detach(job)
+
+    # we want to return once the above process has started, so we don't return until
+    # either the child process is done, the re-enabling process has started, or
+    # we hit a timeout
+    begin
+      Timeout.timeout(GIT_FUSION_REENABLE_TIMEOUT) do
+        sleep(0.1) until reenable_started?(job)
+      end
+    rescue Timeout::Error
+      logger.error('reenable_helix_mirroring failed to start a re-enable shell task.')
+    end
+
     render nothing: true
   end
 
   protected
+
+  # boolean as to whether we've started the re-enable process - either the project
+  # reports re-enabling as being in-progress, or the shell task has quit
+  def reenable_started?(shell_pid)
+    return true if @project.git_fusion_reenable_status == Project::GIT_FUSION_REENABLE_IN_PROGRESS
+    return true unless Process.getpgid(shell_pid)
+    false
+  end
 
   def init_reenable
     @project = Project.find(params['project_id'])

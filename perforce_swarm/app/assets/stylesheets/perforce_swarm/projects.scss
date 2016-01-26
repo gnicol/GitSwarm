@@ -100,3 +100,9 @@ span.mirror-button-wrapper {
   // although not dangerous, use this to get the red color for the displayed depot path
   color: $brand-danger;
 }
+
+// apply pre-formatted rules so we get what looks like a <pre> block
+.preformatted {
+  font-family: monospace;
+  white-space: pre;
+}

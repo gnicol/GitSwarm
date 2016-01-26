@@ -16,46 +16,14 @@ class @ReenableHelixMirroring
   reenableHelixMirroring: ->
     # make an AJAX request to re-enable mirroring for this project
     $.ajax(@opts.reenable_url, {
-        type: 'POST',
-        dataType: 'json',
-        complete: =>
-          # immediately start polling the status URL, which will schedule subsequent polls
-          @updateStatus('in_progress', null, true)
-        beforeSend: =>
-          @updateStatus('in_progress')
+      type: 'POST',
+      dataType: 'json',
+      beforeSend: =>
+        @updateStatus('in_progress')
+      complete: =>
+        # immediately start polling the status URL, which will schedule subsequent polls
+        @updateStatus('in_progress', null, true)
     })
-
-  updateStatusContent: (@status, @error, @polling) ->
-    spinner = '<div class="loading">' +
-      '<p><i class="fa fa-spinner fa-spin"></i> Re-enabling mirroring</p>' +
-      '</div>'
-    if @status == 'in_progress'
-      reenable_html = this.$('.reenable-status').html
-      this.$button.addClass('disabled').prop('disabled', true) unless this.$button.prop('disabled')
-      this.$('.reenable-status').html(spinner) unless reenable_html == spinner
-    else if @status == 'mirrored'
-      if @opts.success_redirect
-        window.location.href = @opts.success_redirect
-        return
-      location.reload()
-    else if @status == 'error'
-      this.$button.removeClass('disabled').prop('disabled', false) if this.$button.prop('disabled')
-      this.$('.reenable-status').html(@errorHtml(@error, @polling))
-    else if @status == 'unmirrored' && @polling
-        location.reload()
-
-  errorHtml: (@error, @polling) ->
-    html = '<br />'
-    if @polling
-      html += 'The following error occurred while attempting to re-enable the project:'
-      html += '<pre>' + @error + '</pre>'
-    else
-      html += 'The last time re-enabling was attempted, the following error occurred:'
-      html += '<div class="reenable-error js-toggle-container">'
-      html += '<a href="#" class="btn js-toggle-button"<span>Show/Hide Error</span></a>'
-      html += '<pre class="js-toggle-content hide">' + @error + '</pre>'
-      html += '</div>'
-    html
 
   updateStatus: (@status, @error, @polling) ->
     @updateStatusContent(@status, @error, @polling)
@@ -66,8 +34,45 @@ class @ReenableHelixMirroring
 
   pollStatus: ->
     $.ajax(@opts.reenable_status_url, {
-        type: 'GET',
-        dataType: 'json',
-        success: (data) =>
-          @updateStatus(data.status, data.error, true)
+      type: 'GET',
+      dataType: 'json',
+      success: (data) =>
+        @updateStatus(data.status, data.error, true)
+      error: =>
+        error = 'An unexpected error occurred while polling for status. Please reload the page.'
+        @updateStatus('error', error)
     })
+
+  updateStatusContent: (@status, @error, @polling) ->
+    spinner = '<div class="loading">' +
+      '<p><i class="fa fa-spinner fa-spin"></i> Re-enabling mirroring</p>' +
+      '</div>'
+    if @status == 'in_progress'
+      this.$button.addClass('disabled').prop('disabled', true) unless this.$button.prop('disabled')
+      this.$('.reenable-status').html(spinner) unless this.$('.reenable-status .fa-spinner').length
+    else if @status == 'mirrored'
+      # TODO: Flash message here.
+      if @opts.success_redirect
+        window.location.href = @opts.success_redirect
+        return
+      else
+        location.reload()
+    else if @status == 'error'
+      this.$button.removeClass('disabled').prop('disabled', false) if this.$button.prop('disabled')
+      this.$('.reenable-status').html(@errorHtml(@error, @polling))
+    else if @polling
+      location.reload()
+
+  errorHtml: (@error, @polling) ->
+    html = '<br />'
+    if @polling
+      html += 'The following error occurred while attempting to re-enable the project:'
+      html += '<div class="preformatted">' + escape(@error) + '</div>'
+    else
+      html += '<div class="reenable-error js-toggle-container">'
+      html += 'The last time re-enabling was attempted, '
+      html += '<a href="#" class="js-toggle-button">an error occurred.</a>'
+      html += '<br />'
+      html += '<div class="preformatted js-toggle-content hide">' + escape(@error) + '</div>'
+      html += '</div>'
+    html

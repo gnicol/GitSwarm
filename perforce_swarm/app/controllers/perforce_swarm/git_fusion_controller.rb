@@ -68,29 +68,13 @@ class PerforceSwarm::GitFusionController < ApplicationController
   def reenable_helix_mirroring_status
     begin
       init_reenable
-
-      repo_path = @project.repository.path_to_repo
-      # grab the error, ignoring the default 'Unknown error.'
-      @error    = PerforceSwarm::Mirror.reenable_error(repo_path)
-      @error    = false if @error == 'Unknown error.'
-      if @project.git_fusion_mirrored?
-        @status = 'mirrored'
-      elsif PerforceSwarm::Mirror.reenabling?(repo_path) || !@error
-        @status = 'in_progress'
-      elsif @error
-        @status = 'error'
-      end
-
+      @status = @project.git_fusion_reenable_status
+      @error  = @project.git_fusion_reenable_error
     rescue => e
+      @status = Project::GIT_FUSION_REENABLE_ERROR
       @error  = e.message
-      @status = 'error'
     end
-
-    view_file = 'perforce_swarm/git_fusion/_reenable_helix_mirroring_status'
-    respond_to do |format|
-      format.html { render partial: 'reenable_helix_mirroring_status', layout: false }
-      format.json { render json: { status: @status, html: view_to_html_string(view_file) } }
-    end
+    render json: { status: @status, error: @error }
   end
 
   # re-enables helix mirroring on the specified project

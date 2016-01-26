@@ -86,7 +86,7 @@ module ProjectsHelper
   end
 
   def helix_reenable_mirroring_error(project)
-    error = PerforceSwarm::Mirror.reenable_error(project.repository.path_to_repo)
+    error = project.git_fusion_reenable_error
     error = false if error == 'Unknown error.'
     error
   end

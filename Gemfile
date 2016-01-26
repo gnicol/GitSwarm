@@ -4,7 +4,7 @@ eval_gemfile File.join(File.dirname(__FILE__), 'perforce_swarm/Gemfile')
 
 source "https://rubygems.org"
 
-gem 'rails', '4.2.4'
+gem 'rails', '4.2.5.1'
 gem 'rails-deprecated_sanitizer', '~> 1.0.3'
 
 # Responders respond_to and respond_with
@@ -107,7 +107,8 @@ gem 'asciidoctor',   '~> 1.5.2'
 gem 'rouge',         '~> 1.10.1'
 
 # See https://groups.google.com/forum/#!topic/ruby-security-ann/aSbgDiwb24s
-gem 'nokogiri', '1.6.7.1'
+# and https://groups.google.com/forum/#!topic/ruby-security-ann/Dy7YiKb_pMM
+gem 'nokogiri', '1.6.7.2'
 
 # Diffs
 gem 'diffy', '~> 3.0.3'
@@ -297,6 +298,9 @@ end
 
 group :production do
   gem "gitlab_meta", '7.0'
+
+  # Sentry integration
+  gem 'sentry-raven'
 end
 
 gem "newrelic_rpm", '~> 3.9.4.245'

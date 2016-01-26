@@ -63,19 +63,24 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       LOG.log("Project for test run : #{project.name}")
     end
 
-    @user_root = User.new(CONFIG.get(CONFIG::GS_USER), CONFIG.get(CONFIG::GS_PASSWORD), 'admin@example.com')
+    @user_root                        = User.new(CONFIG.get(CONFIG::GS_USER),
+                                                 CONFIG.get(CONFIG::GS_PASSWORD),
+                                                 'admin@example.com')
     # in both p4 and gs and has access in both places
-    @user_gs_access_p4_access    = User.new(@run_id + '_gs_access_p4_access')
+    @user_gs_master_access_p4_access  = User.new(@run_id + '_gs_master_access_p4_access')
+    # in both p4 and gs and has access in p4, but only developer access in gs (cannot merge to preotected branches)
+    @user_gs_dev_access_p4_access     = User.new(@run_id + '_gs_dev_access_p4_access')
     # in both p4 and gs and has access in p4 only
-    @user_gs_noaccess_p4_access  = User.new(@run_id + '_gs_noaccess_p4_access')
+    @user_gs_no_access_p4_access      = User.new(@run_id + '_gs_no_access_p4_access')
     # in both p4 and gs and has access in gs only
-    @user_gs_access_p4_noaccess  = User.new(@run_id + '_gs_access_p4_noaccess')
+    @user_gs_access_p4_no_access      = User.new(@run_id + '_gs_access_p4_no_access')
     # only in gs
-    @user_gs_access_p4_notexist  = User.new(@run_id + '_gs_access_p4_notexist')
-    @users                       = [@user_gs_access_p4_access,
-                                    @user_gs_noaccess_p4_access,
-                                    @user_gs_access_p4_noaccess,
-                                    @user_gs_access_p4_notexist]
+    @user_gs_access_p4_not_exist      = User.new(@run_id + '_gs_access_p4_not_exist')
+    @users                            = [@user_gs_master_access_p4_access,
+                                         @user_gs_dev_access_p4_access,
+                                         @user_gs_no_access_p4_access,
+                                         @user_gs_access_p4_no_access,
+                                         @user_gs_access_p4_not_exist]
     @users.each do |user|
       LOG.log("User for test run    : #{user.name}")
     end
@@ -110,11 +115,11 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       # Add write protect for unknown_git. Allows 'root' to push anywhere as the email addresss doesn't match
       @p4_admin.add_write_protects('unknown_git', "#{@depot_root}#{@run_id}/...")
 
-      @p4_admin.create_user(@user_gs_access_p4_noaccess.name,
-                            @user_gs_access_p4_noaccess.password,
-                            @user_gs_access_p4_noaccess.email)
+      @p4_admin.create_user(@user_gs_access_p4_no_access.name,
+                            @user_gs_access_p4_no_access.password,
+                            @user_gs_access_p4_no_access.email)
 
-      [@user_gs_access_p4_access, @user_gs_noaccess_p4_access].each do |usr|
+      [@user_gs_master_access_p4_access, @user_gs_no_access_p4_access, @user_gs_dev_access_p4_access].each do |usr|
         # create user
         @p4_admin.create_user(usr.name, usr.password, usr.email)
         # read_all_write_all
@@ -134,8 +139,10 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       @users.each do |usr|
         @gs_api.create_user(usr.name, usr.password, usr.email)
         # gs_naccess should not be in the group
-        @gs_api.add_user_to_group(usr.name, @groupname) unless usr == @user_gs_noaccess_p4_access
+        @gs_api.add_user_to_group(usr.name, @groupname) unless
+            (usr == @user_gs_no_access_p4_access) || (usr == @user_gs_dev_access_p4_access)
       end
+      @gs_api.add_user_to_group(@user_gs_dev_access_p4_access.name, @groupname, GitSwarmAPIHelper::DEVELOPER)
 
       LOG.log('Creating GitSwarm projects')
       @driver = Browser.driver
@@ -169,7 +176,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       begin
         LOG.log('Deleting created users')
         @users.each do |usr|
-          @p4_admin.delete_user(usr.name) unless usr == @user_gs_access_p4_notexist
+          @p4_admin.delete_user(usr.name) unless usr == @user_gs_access_p4_not_exist
         end
         @p4_admin.disconnect
 
@@ -207,7 +214,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user with limited read permissions in perforce' do
     it 'should be allowed to see only GF repos with full read permission when creating gs projects' do
-      available_repos = list_repos_for_user(@user_gs_access_p4_access)
+      available_repos = list_repos_for_user(@user_gs_master_access_p4_access)
       LOG.log(available_repos.inspect)
       expect(available_repos).to include(@read_all_write_all.name)
       expect(available_repos).to include(@read_all_write_partial.name)
@@ -219,7 +226,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user with no read permissions in perforce' do
     it 'should not be allowed to see any GF repos when creating gs projects' do
-      available_repos = list_repos_for_user(@user_gs_access_p4_noaccess)
+      available_repos = list_repos_for_user(@user_gs_access_p4_no_access)
       LOG.log(available_repos.inspect)
       expect(available_repos).to_not include(@read_all_write_all.name)
       expect(available_repos).to_not include(@read_all_write_partial.name)
@@ -231,7 +238,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user not in perforce' do
     it 'should not be allowed to see any GF repos when creating gs projects' do
-      available_repos = list_repos_for_user(@user_gs_access_p4_notexist)
+      available_repos = list_repos_for_user(@user_gs_access_p4_not_exist)
       LOG.log(available_repos.inspect)
       expect(available_repos).to_not include(@read_all_write_all.name)
       expect(available_repos).to_not include(@read_all_write_partial.name)
@@ -258,7 +265,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
   end
   describe 'A user with limited read permissions in perforce' do
     it 'should be allowed to SEE only GS projects mirrored in perforce where they have read permission in perforce' do
-      available_projects = list_projects_for_user(@user_gs_access_p4_access)
+      available_projects = list_projects_for_user(@user_gs_master_access_p4_access)
       LOG.log(available_projects.inspect)
       expect(available_projects).to include(@read_all_write_all.name)
       expect(available_projects).to include(@read_all_write_partial.name)
@@ -270,7 +277,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user with no read permissions in perforce' do
     it 'should not be allowed to SEE any GS projects mirrored in perforce' do
-      available_projects = list_projects_for_user(@user_gs_access_p4_noaccess)
+      available_projects = list_projects_for_user(@user_gs_access_p4_no_access)
       LOG.log(available_projects.inspect)
       expect(available_projects).to_not include(@read_all_write_all.name)
       expect(available_projects).to_not include(@read_all_write_partial.name)
@@ -282,7 +289,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user not in perforce' do
     it 'should not be allowed to SEE any GS projects mirrored in perforce' do
-      available_projects = list_projects_for_user(@user_gs_access_p4_notexist)
+      available_projects = list_projects_for_user(@user_gs_access_p4_not_exist)
       LOG.log(available_projects.inspect)
       expect(available_projects).to_not include(@read_all_write_all.name)
       expect(available_projects).to_not include(@read_all_write_partial.name)
@@ -294,7 +301,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user with no access to the GS project' do
     it 'should not be allowed to SEE any GS projects even if they have read access in perforce' do
-      available_projects = list_projects_for_user(@user_gs_noaccess_p4_access)
+      available_projects = list_projects_for_user(@user_gs_no_access_p4_access)
       LOG.log(available_projects.inspect)
       expect(available_projects).to_not include(@read_all_write_all.name)
       expect(available_projects).to_not include(@read_all_write_partial.name)
@@ -320,41 +327,41 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user with limited read permissions in perforce' do
     it 'should be allowed to CLONE only GS projects mirrored in perforce where they have read permission in perforce' do
-      expect(can_clone(@user_gs_access_p4_access, @read_all_write_all)).to be true
-      expect(can_clone(@user_gs_access_p4_access, @read_all_write_partial)).to be true
-      expect(can_clone(@user_gs_access_p4_access, @read_all_write_none)).to be true
-      expect(can_clone(@user_gs_access_p4_access, @read_partial)).to be false
-      expect(can_clone(@user_gs_access_p4_access, @read_none)).to be false
+      expect(can_clone(@user_gs_master_access_p4_access, @read_all_write_all)).to be true
+      expect(can_clone(@user_gs_master_access_p4_access, @read_all_write_partial)).to be true
+      expect(can_clone(@user_gs_master_access_p4_access, @read_all_write_none)).to be true
+      expect(can_clone(@user_gs_master_access_p4_access, @read_partial)).to be false
+      expect(can_clone(@user_gs_master_access_p4_access, @read_none)).to be false
     end
   end
 
   describe 'A user with no read permissions in perforce' do
     it 'should not be allowed to CLONE any GS projects mirrored in perforce' do
-      expect(can_clone(@user_gs_access_p4_noaccess, @read_all_write_all)).to be false
-      expect(can_clone(@user_gs_access_p4_noaccess, @read_all_write_partial)).to be false
-      expect(can_clone(@user_gs_access_p4_noaccess, @read_all_write_none)).to be false
-      expect(can_clone(@user_gs_access_p4_noaccess, @read_partial)).to be false
-      expect(can_clone(@user_gs_access_p4_noaccess, @read_none)).to be false
+      expect(can_clone(@user_gs_access_p4_no_access, @read_all_write_all)).to be false
+      expect(can_clone(@user_gs_access_p4_no_access, @read_all_write_partial)).to be false
+      expect(can_clone(@user_gs_access_p4_no_access, @read_all_write_none)).to be false
+      expect(can_clone(@user_gs_access_p4_no_access, @read_partial)).to be false
+      expect(can_clone(@user_gs_access_p4_no_access, @read_none)).to be false
     end
   end
 
   describe 'A user not in perforce' do
     it 'should not be allowed to CLONE any GS projects mirrored in perforce' do
-      expect(can_clone(@user_gs_access_p4_notexist, @read_all_write_all)).to be false
-      expect(can_clone(@user_gs_access_p4_notexist, @read_all_write_partial)).to be false
-      expect(can_clone(@user_gs_access_p4_notexist, @read_all_write_none)).to be false
-      expect(can_clone(@user_gs_access_p4_notexist, @read_partial)).to be false
-      expect(can_clone(@user_gs_access_p4_notexist, @read_none)).to be false
+      expect(can_clone(@user_gs_access_p4_not_exist, @read_all_write_all)).to be false
+      expect(can_clone(@user_gs_access_p4_not_exist, @read_all_write_partial)).to be false
+      expect(can_clone(@user_gs_access_p4_not_exist, @read_all_write_none)).to be false
+      expect(can_clone(@user_gs_access_p4_not_exist, @read_partial)).to be false
+      expect(can_clone(@user_gs_access_p4_not_exist, @read_none)).to be false
     end
   end
 
   describe 'A user with no access to the GS project' do
     it 'should not be allowed to CLONE any GS projects even if they have read access in perforce' do
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_all_write_all)).to be false
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_all_write_partial)).to be false
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_all_write_none)).to be false
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_partial)).to be false
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_none)).to be false
+      expect(can_clone(@user_gs_no_access_p4_access, @read_all_write_all)).to be false
+      expect(can_clone(@user_gs_no_access_p4_access, @read_all_write_partial)).to be false
+      expect(can_clone(@user_gs_no_access_p4_access, @read_all_write_none)).to be false
+      expect(can_clone(@user_gs_no_access_p4_access, @read_partial)).to be false
+      expect(can_clone(@user_gs_no_access_p4_access, @read_none)).to be false
     end
   end
 
@@ -374,7 +381,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user with partial write permissions in perforce' do
     it 'should be allowed to PUSH only to areas where they have write access in perforce' do
-      user = @user_gs_access_p4_access
+      user = @user_gs_master_access_p4_access
       expect(can_push(user, @read_all_write_all, PRIVATE)).to be true
       expect(can_push(user, @read_all_write_all, PUBLIC)).to be true
       expect(can_push(user, @read_all_write_partial, PRIVATE)).to be false
@@ -386,7 +393,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user with partial write permissions in perforce' do
     it 'should not be allowed to PUSH only if they dont have p4 write access to ALL files in a push' do
-      user = @user_gs_access_p4_access
+      user = @user_gs_master_access_p4_access
       Dir.mktmpdir(nil, tmp_client_dir) do |dir|
         git = GitHelper.http_helper(dir, @read_all_write_partial.http_url, user.name, user.password, user.email)
         git.clone # leave fail_on_error, this method should only be called for configurations with repo read permission
@@ -405,7 +412,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
       create_merge_request(@user_root, @read_all_write_none, branch, mr_title)
       lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
-      loggedin_page = lp.login(@user_gs_access_p4_access.name, @user_gs_access_p4_access.password)
+      loggedin_page = lp.login(@user_gs_master_access_p4_access.name, @user_gs_master_access_p4_access.password)
       mr_page = loggedin_page.goto_merge_request_page(@read_all_write_none.namespace,
                                                       @read_all_write_none.name,
                                                       mr_title)
@@ -421,7 +428,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
       create_merge_request(@user_root, @read_all_write_partial, branch, mr_title)
       lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
-      loggedin_page = lp.login(@user_gs_access_p4_access.name, @user_gs_access_p4_access.password)
+      loggedin_page = lp.login(@user_gs_master_access_p4_access.name, @user_gs_master_access_p4_access.password)
       mr_page = loggedin_page.goto_merge_request_page(@read_all_write_partial.namespace,
                                                       @read_all_write_partial.name,
                                                       mr_title)
@@ -437,12 +444,32 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
       create_merge_request(@user_root, @read_all_write_all, branch, mr_title)
       lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
-      loggedin_page = lp.login(@user_gs_access_p4_access.name, @user_gs_access_p4_access.password)
+      loggedin_page = lp.login(@user_gs_master_access_p4_access.name, @user_gs_master_access_p4_access.password)
       mr_page = loggedin_page.goto_merge_request_page(@read_all_write_all.namespace,
                                                       @read_all_write_all.name,
                                                       mr_title)
       LOG.log('Merge the branch as user without permission')
       mr_page.accept_merge_request
+    end
+  end
+
+  describe 'During a merge, a user with full write permissions in perforce but only developer access in GitSwarm' do
+    it 'should not be allowed to try to accept a merge request into master branch' do
+      branch = "branch-#{unique_string}"
+      mr_title = "Merge request for #{branch}"
+
+      create_merge_request(@user_root, @read_all_write_all, branch, mr_title)
+      lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
+      loggedin_page = lp.login(@user_gs_dev_access_p4_access.name, @user_gs_dev_access_p4_access.password)
+      mr_page = loggedin_page.goto_merge_request_page(@read_all_write_all.namespace,
+                                                      @read_all_write_all.name,
+                                                      mr_title)
+      LOG.log('Expect the merge request to be \'Open\'')
+      expect(mr_page.state).to eq(MergeRequestPage::OPEN)
+      LOG.log('Expect there to be no \'accept merge request\' button')
+      expect(mr_page.can_accept_merge).to be false
+      LOG.log('Expect there to be a message telling you to ask someone with permission to do the merge')
+      expect(mr_page.page_has_text('Ask someone with write access to this repository to merge this request')).to be true
     end
   end
 

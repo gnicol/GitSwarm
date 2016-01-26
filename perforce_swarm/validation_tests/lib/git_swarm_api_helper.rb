@@ -7,6 +7,12 @@ class GitSwarmAPIHelper
   TOKEN_PARAM = 'private_token'
   APP         = '/api/v3/'
 
+  GUEST       = '10'
+  REPORTER    = '20'
+  DEVELOPER   = '30'
+  MASTER      = '40'
+  OWNER       = '50'
+
   #
   # Log in as the admin user and get and hold onto the Admin user's security token
   #
@@ -60,7 +66,7 @@ class GitSwarmAPIHelper
   # MASTER    = 40
   # OWNER     = 50
   # Default access level is MASTER
-  def add_user_to_group(user, group, access_level = '40')
+  def add_user_to_group(user, group, access_level = MASTER)
     LOG.debug("Adding GS user #{user} to group #{group}")
     RestClient.post("#{@base_url}groups/#{group_id(group)}/members",
                     private_token: @admin_token,

@@ -1,6 +1,4 @@
 class PerforceSwarm::GitFusionController < ApplicationController
-  GIT_FUSION_REENABLE_TIMEOUT = 20
-
   def existing_project
     init_auto_create
 
@@ -104,7 +102,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     # either the child process is done, the re-enabling process has started, or
     # we hit a timeout
     begin
-      Timeout.timeout(GIT_FUSION_REENABLE_TIMEOUT) do
+      Timeout.timeout(20) do
         sleep(0.1) until reenable_started?(job)
       end
     rescue Timeout::Error
@@ -120,6 +118,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
   # reports re-enabling as being in-progress, or the shell task has quit
   def reenable_started?(shell_pid)
     return true if @project.git_fusion_reenable_status == Project::GIT_FUSION_REENABLE_IN_PROGRESS
+    # getpgid returns false if the argument PID doesn't exist (shell task completed or an error)
     return true unless Process.getpgid(shell_pid)
     false
   end

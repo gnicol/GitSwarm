@@ -65,7 +65,7 @@ module PerforceSwarm
       elsif git_fusion_mirrored?
         return GIT_FUSION_REENABLE_MIRRORED
       else
-        error  = git_fusion_reenable_error
+        error = git_fusion_reenable_error
         return error ? GIT_FUSION_REENABLE_ERROR : GIT_FUSION_REENABLE_UNMIRRORED
       end
     rescue

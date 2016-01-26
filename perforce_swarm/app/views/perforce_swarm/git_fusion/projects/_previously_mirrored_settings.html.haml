@@ -39,5 +39,5 @@
     reenable_status_url: "#{reenable_helix_mirroring_status_perforce_swarm_git_fusion_path(project_id: @project.id)}",
     status: "#{@project.git_fusion_reenable_status}",
     error: "#{reenable_error}",
-    success_redirect: "#{project_path(@project)}"
+    success_redirect: "#{reenable_helix_mirroring_redirect_perforce_swarm_git_fusion_path(project_id: @project.id)}"
   });

@@ -66,6 +66,12 @@ class PerforceSwarm::GitFusionController < ApplicationController
     end
   end
 
+  def reenable_helix_mirroring_redirect
+    init_reenable
+    flash[:notice] = 'Helix mirroring successfully re-enabled.' if @project.git_fusion_mirrored?
+    redirect_to project_path(@project)
+  end
+
   # gives us the status of the re-enable process for a specific project
   def reenable_helix_mirroring_status
     begin
@@ -76,6 +82,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
       @status = Project::GIT_FUSION_REENABLE_ERROR
       @error  = e.message
     end
+
     render json: { status: @status, error: @error }
   end
 

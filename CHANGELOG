@@ -1,10 +1,5 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
-v 8.0.6
-  - Fix loading spinner sometimes not being hidden on Merge Request tab switches
-v 8.5.0 (unreleased)
-
-v 8.4.0 (unreleased)
 v 8.4.1
   - Apply security updates for Rails (4.2.5.1), rails-html-sanitizer (1.0.3),
     and Nokogiri (1.6.7.2)
@@ -73,7 +68,6 @@ v 8.4.0
   - Autosize Markdown textareas
   - Import GitHub wiki into GitLab
   - Add reporters ability to download and browse build artifacts (Andrew Johnson)
-  - Autofill referring url in message box when reporting user abuse. (Josh Frye)
   - Autofill referring url in message box when reporting user abuse.
   - Remove leading comma on award emoji when the user is the first to award the emoji (Zeger-Jan van de Weg)
   - Add build artifacts browser
@@ -375,6 +369,7 @@ v 8.1.0
 
 v 8.0.5
   - Correct lookup-by-email for LDAP logins
+  - Fix loading spinner sometimes not being hidden on Merge Request tab switches
 
 v 8.0.4
   - Fix Message-ID header to be RFC 2111-compliant to prevent e-mails being dropped (Stan Hu)

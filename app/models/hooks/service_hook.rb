@@ -3,11 +3,11 @@
 # Table name: web_hooks
 #
 #  id                      :integer          not null, primary key
-#  url                     :string(2000)
+#  url                     :string(255)
 #  project_id              :integer
 #  created_at              :datetime
 #  updated_at              :datetime
-#  type                    :string           default("ProjectHook")
+#  type                    :string(255)      default("ProjectHook")
 #  service_id              :integer
 #  push_events             :boolean          default(TRUE), not null
 #  issues_events           :boolean          default(FALSE), not null

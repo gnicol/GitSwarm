@@ -47,6 +47,10 @@ class MergeRequestPage < LoggedInPage
     @driver.find_element(:class, 'status-box').text
   end
 
+  def can_accept_merge
+    page_has_element(:class, 'accept_merge_request')
+  end
+
   private
 
   def accept_merge_and_wait

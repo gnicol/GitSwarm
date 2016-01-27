@@ -37,8 +37,7 @@ module PerforceSwarm
 
       # ensure any projects that are in an inconsistent re-enable state have mirroring turned off
       repo_stats.reenabled_hung.each do |stat|
-        stat[:project].update_attribute(:git_fusion_mirrored, false)
-        PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url = nil
+        PerforceSwarm::Repo.new(stat[:project].repository.path_to_repo).mirror_url = nil
       end
 
       # locate the gitlab-shell mirror script we'll be calling
@@ -74,8 +73,7 @@ module PerforceSwarm
           stats.push(project:        project,
                      last_fetched:   PerforceSwarm::Mirror.last_fetched(repo_path),
                      active:         active,
-                     reenabling:     PerforceSwarm::Mirror.reenabling?(repo_path),
-                     reenable_error: PerforceSwarm::Mirror.reenable_error(repo_path)
+                     reenabling:     PerforceSwarm::Mirror.reenabling?(repo_path)
                     )
         end
 
@@ -116,18 +114,9 @@ module PerforceSwarm
       # returns only entries that represent projects that:
       #  * are currently not being re-enabled
       #  * are eligible for re-enabling
-      #  * have an error message indicating re-enabling was attempted but not completed
       def reenabled_hung
         stats.select do |stat|
-          # we know it is not hung if it is already mirrored or is being re-enabled
-          next if stat[:project].git_fusion_mirrored? || stat[:reenabling]
-
-          # we can't re-enable it if there is no repo to enable to
-          next unless stat[:project].git_fusion_repo.present?
-
-          # if there are no errors, or valid errors the last time we re-enabled, we're not hung
-          next if !stat[:reenable_error] || stat[:reenable_error] != 'Unknown error.'
-          true
+          !stat[:project].git_fusion_mirrored? && !stat[:reenabling]
         end
       end
     end

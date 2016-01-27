@@ -3,7 +3,6 @@
 - can_disable      = mirroring_permitted?(@project, current_user) && mirroring_configured?
 - button_class     = 'btn btn-save' + (can_disable ? '' : ' disabled')
 - git_fusion_url   = git_fusion_url(@project)
-- reenable_error   = helix_reenable_mirroring_error(@project)
 This project is currently mirrored to the
 = "'#{@project.git_fusion_server_id}'"
 Helix Git Fusion server on the repo

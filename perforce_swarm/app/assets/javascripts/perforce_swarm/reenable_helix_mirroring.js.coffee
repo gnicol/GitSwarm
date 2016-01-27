@@ -40,7 +40,7 @@ class @ReenableHelixMirroring
         @updateStatus(data.status, data.error, true)
       error: =>
         error = 'An unexpected error occurred while polling for status. Please reload the page.'
-        @updateStatus('error', error)
+        @updateStatus('error', error, true)
     })
 
   updateStatusContent: (@status, @error, @polling) ->
@@ -67,7 +67,7 @@ class @ReenableHelixMirroring
     @error = $('<div/>').text(@error).html()
     if @polling
       html += 'The following error occurred while attempting to re-enable the project:'
-      html += '<div class="preformatted">' + @error + '</div>'
+      html += '<pre>' + @error + '</pre>'
     else
       html += '<div class="reenable-error js-toggle-container">'
       html += 'The last time re-enabling was attempted, '

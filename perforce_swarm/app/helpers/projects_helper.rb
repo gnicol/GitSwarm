@@ -75,20 +75,27 @@ module ProjectsHelper
   end
 
   def helix_reenable_mirroring_tooltip(project)
+    tooltip = <<-EOM
+      GitSwarm is configured for Helix mirroring, but you lack permissions to enable it for this project.<br />
+      To enable Helix mirroring, you must be a project 'master' or an 'admin'.
+    EOM
+    return tooltip.html_safe unless mirroring_permitted?(project, current_user)
+
     git_fusion_url  = git_fusion_url(project)
     fusion_url_ok   = git_fusion_url && !git_fusion_url.empty?
-    mirroring_ok    = mirroring_permitted?(project, current_user) && mirroring_configured?
 
-    "Configuration for the Helix Git Fusion server '#{project.git_fusion_server_id}' " \
-    'is either missing, or is not properly configured in GitSwarm.' unless mirroring_ok
+    tooltip = <<-EOM
+      Configuration for the Helix Git Fusion server '#{project.git_fusion_server_id}'
+      is either missing, or is not properly configured in GitSwarm.
+    EOM
+    return tooltip.html_safe unless mirroring_configured?
 
-    'The Git Fusion mirroring URL is missing for this project.' unless fusion_url_ok
-  end
-
-  def helix_reenable_mirroring_error(project)
-    error = project.git_fusion_reenable_error
-    error = false if error == 'Unknown error.'
-    error
+    tooltip = <<-EOM
+      This project has no record of being previously mirrored. If you wish to enable Helix
+      mirroring for this project, please
+    EOM
+    return tooltip.html_safe unless fusion_url_ok
+    nil
   end
 
   # time (as a string) of the last successful fetch from Git Fusion, or false if no timestamp is present

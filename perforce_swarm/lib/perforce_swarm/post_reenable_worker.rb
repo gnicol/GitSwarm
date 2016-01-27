@@ -31,7 +31,7 @@ module PerforceSwarm
       reenable_errors   = Mirror.reenable_error(repo_path)
 
       # already mirrored, or mirroring is incomplete
-      return true if !reenable_complete || (project.git_fusion_mirrored? && reenable_complete)
+      return true if !reenable_complete || project.git_fusion_mirrored?
 
       # errors were encountered, so let's ensure that mirroring is completely off
       if reenable_errors

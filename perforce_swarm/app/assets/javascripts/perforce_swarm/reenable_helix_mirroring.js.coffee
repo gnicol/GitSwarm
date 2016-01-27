@@ -51,7 +51,6 @@ class @ReenableHelixMirroring
       this.$button.addClass('disabled').prop('disabled', true) unless this.$button.prop('disabled')
       this.$('.reenable-status').html(spinner) unless this.$('.reenable-status .fa-spinner').length
     else if @status == 'mirrored'
-      # TODO: Flash message here.
       if @opts.success_redirect
         window.location.href = @opts.success_redirect
         return
@@ -64,15 +63,16 @@ class @ReenableHelixMirroring
       location.reload()
 
   errorHtml: (@error, @polling) ->
-    html = '<br />'
+    html   = '<br />'
+    @error = $('<div/>').text(@error).html()
     if @polling
       html += 'The following error occurred while attempting to re-enable the project:'
-      html += '<div class="preformatted">' + escape(@error) + '</div>'
+      html += '<div class="preformatted">' + @error + '</div>'
     else
       html += '<div class="reenable-error js-toggle-container">'
       html += 'The last time re-enabling was attempted, '
       html += '<a href="#" class="js-toggle-button">an error occurred.</a>'
       html += '<br />'
-      html += '<div class="preformatted js-toggle-content hide">' + escape(@error) + '</div>'
+      html += '<pre class="js-toggle-content hide">' + @error + '</pre>'
       html += '</div>'
     html

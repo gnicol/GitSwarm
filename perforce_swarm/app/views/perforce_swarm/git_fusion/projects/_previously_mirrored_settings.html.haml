@@ -30,14 +30,10 @@
       Re-enable Helix Mirroring
   .reenable-status
 - reenable_error = @project.git_fusion_reenable_error
-- reenable_error = reenable_error.is_a?(String) ? reenable_error.strip : reenable_error
+- params = { reenable_url: reenable_helix_mirroring_perforce_swarm_git_fusion_path(project_id: @project.id) }
+- params[:reenable_status_url] = reenable_helix_mirroring_status_perforce_swarm_git_fusion_path(project_id: @project.id)
+- params[:status] = @project.git_fusion_reenable_status
+- params[:error]  = reenable_error.is_a?(String) ? reenable_error.strip : reenable_error
+- params[:success_redirect] = reenable_helix_mirroring_redirect_perforce_swarm_git_fusion_path(project_id: @project.id)
 :javascript
-  var reenable_helix_mirroring;
-
-  reenable_helix_mirroring = new ReenableHelixMirroring({
-    reenable_url: "#{reenable_helix_mirroring_perforce_swarm_git_fusion_path(project_id: @project.id)}",
-    reenable_status_url: "#{reenable_helix_mirroring_status_perforce_swarm_git_fusion_path(project_id: @project.id)}",
-    status: "#{@project.git_fusion_reenable_status}",
-    error: "#{reenable_error}",
-    success_redirect: "#{reenable_helix_mirroring_redirect_perforce_swarm_git_fusion_path(project_id: @project.id)}"
-  });
+  var reenable_helix_mirroring = new ReenableHelixMirroring(#{params.to_json});

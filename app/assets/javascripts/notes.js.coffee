@@ -336,7 +336,6 @@ class @Notes
     form.show()
     textarea = form.find("textarea")
     textarea.focus()
-    autosize(textarea)
 
     # HACK (rspeicher/DouweM): Work around a Chrome 43 bug(?).
     # The textarea has the correct value, Chrome just won't show it unless we

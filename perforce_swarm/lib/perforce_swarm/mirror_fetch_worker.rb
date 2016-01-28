@@ -35,9 +35,15 @@ module PerforceSwarm
         stat[:project].save
       end
 
-      # ensure any projects that are in an inconsistent re-enable state have mirroring turned off
+      # ensure any projects that are in an inconsistent re-enable state have:
+      #  * mirroring turned off if an error is present
+      #  * mirroring turned on (flag set to true) if no error is present
       repo_stats.reenabled_hung.each do |stat|
-        PerforceSwarm::Repo.new(stat[:project].repository.path_to_repo).mirror_url = nil
+        if stat[:reenable_error]
+          PerforceSwarm::Repo.new(stat[:project].repository.path_to_repo).mirror_url = nil
+        else
+          stat[:project].update_attribute(:git_fusion_mirrored, true)
+        end
       end
 
       # locate the gitlab-shell mirror script we'll be calling
@@ -73,7 +79,8 @@ module PerforceSwarm
           stats.push(project:        project,
                      last_fetched:   PerforceSwarm::Mirror.last_fetched(repo_path),
                      active:         active,
-                     reenabling:     PerforceSwarm::Mirror.reenabling?(repo_path)
+                     reenabling:     PerforceSwarm::Mirror.reenabling?(repo_path),
+                     reenable_error: project.git_fusion_reenable_error
                     )
         end
 

@@ -17,12 +17,20 @@ class @ReenableHelixMirroring
     # make an AJAX request to re-enable mirroring for this project
     $.ajax(@opts.reenable_url, {
       type: 'POST',
-      dataType: 'json',
       beforeSend: =>
         @updateStatus('in_progress')
-      complete: =>
+      success: =>
         # immediately start polling the status URL, which will schedule subsequent polls
         @updateStatus('in_progress', null, true)
+      error: (data) =>
+        try
+          data = $.parseJSON(data.responseText)
+        catch e
+          data = {}
+
+        data.status  = 'error'
+        data.error ||= 'An unexpected error occurred while attempting to re-enable.'
+        @updateStatus(data.status, data.error, true)
     })
 
   updateStatus: (@status, @error, @polling) ->
@@ -64,7 +72,7 @@ class @ReenableHelixMirroring
 
   errorHtml: (@error, @polling) ->
     html   = '<br />'
-    @error = $('<div/>').text(@error).html()
+    @error = $('<pre/>').text(@error).html()
     if @polling
       html += 'The following error occurred while attempting to re-enable the project:'
       html += '<pre>' + @error + '</pre>'

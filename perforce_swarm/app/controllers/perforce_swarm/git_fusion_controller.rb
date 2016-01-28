@@ -88,6 +88,23 @@ class PerforceSwarm::GitFusionController < ApplicationController
   def reenable_helix_mirroring
     init_reenable
 
+    # ensure the repo still exists, and the user re-enabling can see it
+    error = nil
+    begin
+      server  = project.git_fusion_server_id
+      repo    = project.git_fusion_repo_name
+      repos   = PerforceSwarm::GitFusionRepo.list(server, current_user)
+      message = "Either the repo '#{repo}' does not exist, or you do not have permission to access it."
+      error   = message unless repos[repo]
+    rescue => e
+      error = e.message
+    end
+
+    if error
+      render status: :bad_request, json: { status: 'error', error: error }
+      return
+    end
+
     # kick off and background the re-enable process
     job = fork do
       gitlab_shell  = File.expand_path(Gitlab.config.gitlab_shell.path)

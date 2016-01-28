@@ -81,20 +81,20 @@ module ProjectsHelper
     EOM
     return tooltip.html_safe unless mirroring_permitted?(project, current_user)
 
-    git_fusion_url  = git_fusion_url(project)
-    fusion_url_ok   = git_fusion_url && !git_fusion_url.empty?
+    begin
+      gitlab_shell_config.git_fusion.entry(project.git_fusion_server_id)
+    rescue
+      tooltip = <<-EOM
+        Configuration for the Helix Git Fusion server '#{ERB::Util.html_escape(project.git_fusion_server_id)}'
+        is either missing, or is not properly configured in GitSwarm.
+      EOM
+      return tooltip.html_safe unless mirroring_configured?
+    end
 
-    tooltip = <<-EOM
-      Configuration for the Helix Git Fusion server '#{project.git_fusion_server_id}'
-      is either missing, or is not properly configured in GitSwarm.
-    EOM
-    return tooltip.html_safe unless mirroring_configured?
+    git_fusion_url = git_fusion_url(project)
+    tooltip        = 'This project has no record of being previously mirrored.'
+    return tooltip.html_safe unless git_fusion_url && !git_fusion_url.empty?
 
-    tooltip = <<-EOM
-      This project has no record of being previously mirrored. If you wish to enable Helix
-      mirroring for this project, please
-    EOM
-    return tooltip.html_safe unless fusion_url_ok
     nil
   end
 
@@ -157,27 +157,6 @@ module ProjectsHelper
   rescue
     # as the code sits, this is not likely to occur, but we're being defensive anyway
     return false
-  end
-
-  # performs pre-flight checks against Git Fusion, including connecting to the
-  # server, and checking that the user can see the Git Fusion repo specified
-  # for the given project
-  #
-  # returns the error as a string, or nil if no errors were found
-  def git_fusion_preflight_errors(project, user)
-    return nil unless project.git_fusion_repo.present?
-
-    # break out the server id and repo name
-    server = project.git_fusion_server_id
-    repo   = project.git_fusion_repo_name
-
-    # verify that the specified repo is accessible to the user
-    repos   = PerforceSwarm::GitFusionRepo.list(server, user)
-    message = "Either the repo '#{repo}' does not exist, or you do not have permission to access it."
-    return message unless repos[repo]
-    nil
-  rescue => e
-    return e.message
   end
 
   def git_fusion_server_error

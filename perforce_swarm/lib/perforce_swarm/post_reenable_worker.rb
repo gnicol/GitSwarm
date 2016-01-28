@@ -26,15 +26,14 @@ module PerforceSwarm
       end
 
       # get mirroring status and either re-enable or disable mirroring
-      repo = Repo.new(repo_path)
-      reenable_complete = repo.mirrored? && !Mirror.reenabling?(repo_path)
-      reenable_errors   = Mirror.reenable_error(repo_path)
+      repo     = Repo.new(repo_path)
+      complete = repo.mirrored? && !Mirror.reenabling?(repo_path)
 
-      # already mirrored, or mirroring is incomplete
-      return true if !reenable_complete || project.git_fusion_mirrored?
+      # mirroring is incomplete or project is already mirrored
+      return true if !complete || project.git_fusion_mirrored?
 
       # errors were encountered, so let's ensure that mirroring is completely off
-      if reenable_errors
+      if project.git_fusion_reenable_error
         project.disable_git_fusion_mirroring!
         return false
       end

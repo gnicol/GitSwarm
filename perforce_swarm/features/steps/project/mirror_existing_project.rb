@@ -19,6 +19,16 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
     page.should_not have_content('Helix Mirroring')
   end
 
+  step 'I should see the Disable Helix Mirroring button' do
+    page.should have_selector('a.btn', text: 'Disable Helix Mirroring')
+    page.should_not have_selector('a.btn.disabled', text: 'Disable Helix Mirroring')
+  end
+
+  step 'I should see the Re-enable Helix Mirroring button' do
+    page.should have_selector('a.btn', text: 'Re-enable Helix Mirroring')
+    page.should_not have_selector('a.btn.disabled', text: 'Re-enable Helix Mirroring')
+  end
+
   step 'I should see a no Git Fusion instances configured tooltip' do
     page.should have_selector('li[data-title*="no Git Fusion instances have been configured."]')
   end
@@ -44,6 +54,12 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'Helix mirroring is not enabled for project "Shop"' do
     project = create(:project, name: 'Shop')
+    project.team << [@user, :master]
+  end
+
+  step 'Helix mirroring is disabled, but was once enabled for project "Shop"' do
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('foo' => '')
+    project = create(:project, name: 'Shop', git_fusion_repo: 'mirror://local/foo', git_fusion_mirrored: false)
     project.team << [@user, :master]
   end
 

@@ -74,6 +74,30 @@ module ProjectsHelper
     'Click "Helix Mirroring" above to get mirroring!'
   end
 
+  def helix_reenable_mirroring_tooltip(project)
+    tooltip = <<-EOM
+      GitSwarm is configured for Helix mirroring, but you lack permissions to enable it for this project.<br />
+      To enable Helix mirroring, you must be a project 'master' or an 'admin'.
+    EOM
+    return tooltip.html_safe unless mirroring_permitted?(project, current_user)
+
+    begin
+      gitlab_shell_config.git_fusion.entry(project.git_fusion_server_id)
+    rescue
+      tooltip = <<-EOM
+        Configuration for the Helix Git Fusion server '#{ERB::Util.html_escape(project.git_fusion_server_id)}'
+        is either missing, or is not properly configured in GitSwarm.
+      EOM
+      return tooltip.html_safe unless mirroring_configured?
+    end
+
+    git_fusion_url = git_fusion_url(project)
+    tooltip        = 'This project has no record of being previously mirrored.'
+    return tooltip.html_safe unless git_fusion_url && !git_fusion_url.empty?
+
+    nil
+  end
+
   # time (as a string) of the last successful fetch from Git Fusion, or false if no timestamp is present
   def git_fusion_last_fetched(project)
     PerforceSwarm::Mirror.last_fetched(project.repository.path_to_repo).strftime('%F %T %z')
@@ -86,14 +110,17 @@ module ProjectsHelper
     PerforceSwarm::Mirror.last_fetch_error(project.repository.path_to_repo)
   end
 
-  # returns the rendered (sans password) URL for a mirrored project
+  # returns the rendered (sans password) URL for a currently or previously mirrored project
   def git_fusion_url(project)
-    return '' unless project.git_fusion_mirrored?
-    url = PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url
-    return '' unless url
-    url
+    if project.git_fusion_mirrored?
+      return PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url
+    elsif project.git_fusion_repo.present?
+      return PerforceSwarm::GitFusionRepo.resolve_url(project.git_fusion_repo).to_s
+    else
+      return ''
+    end
   rescue
-    return ''
+    return false
   end
 
   # boolean as to whether there are configured Git Fusion instances in the config

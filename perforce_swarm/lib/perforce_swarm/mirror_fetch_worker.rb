@@ -35,6 +35,17 @@ module PerforceSwarm
         stat[:project].save
       end
 
+      # ensure any projects that are in an inconsistent re-enable state have:
+      #  * mirroring turned off if an error is present
+      #  * mirroring turned on (flag set to true) if no error is present
+      repo_stats.reenabled_hung.each do |stat|
+        if stat[:reenable_error]
+          PerforceSwarm::Repo.new(stat[:project].repository.path_to_repo).mirror_url = nil
+        else
+          stat[:project].update_attribute(:git_fusion_mirrored, true)
+        end
+      end
+
       # locate the gitlab-shell mirror script we'll be calling
       shell_path    = File.expand_path(Gitlab.config.gitlab_shell.path)
       mirror_script = File.join(shell_path, 'perforce_swarm', 'bin', 'gitswarm-mirror')
@@ -65,9 +76,11 @@ module PerforceSwarm
 
           repo_path = project.repository.path_to_repo
           active    = PerforceSwarm::Mirror.fetch_locked?(repo_path) || PerforceSwarm::Mirror.write_locked?(repo_path)
-          stats.push(project:       project,
-                     last_fetched:  PerforceSwarm::Mirror.last_fetched(repo_path),
-                     active:        active
+          stats.push(project:        project,
+                     last_fetched:   PerforceSwarm::Mirror.last_fetched(repo_path),
+                     active:         active,
+                     reenabling:     PerforceSwarm::Mirror.reenabling?(repo_path),
+                     reenable_error: project.git_fusion_reenable_error
                     )
         end
 
@@ -102,6 +115,15 @@ module PerforceSwarm
       def import_hung
         stats.select do |stat|
           stat[:project].import_in_progress? && stat[:project].git_fusion_mirrored? && stat[:last_fetched]
+        end
+      end
+
+      # returns only entries that represent projects that:
+      #  * are currently not being re-enabled
+      #  * are eligible for re-enabling
+      def reenabled_hung
+        stats.select do |stat|
+          !stat[:project].git_fusion_mirrored? && !stat[:reenabling]
         end
       end
     end

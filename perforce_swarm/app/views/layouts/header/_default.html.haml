@@ -52,3 +52,6 @@
             = icon('sign-out')
 
 = render 'shared/outdated_browser'
+- if @project && !@project.empty_repo?
+  :javascript
+    var findFileURL = "#{namespace_project_find_file_path(@project.namespace, @project, @ref || @project.repository.root_ref)}";

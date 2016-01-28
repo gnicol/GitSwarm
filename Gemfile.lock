@@ -1,3 +1,9 @@
+PATH
+  remote: perforce_swarm
+  specs:
+    perforce_swarm (2016.2)
+      rails (~> 4.2.4)
+
 GEM
   remote: https://rubygems.org/
   specs:

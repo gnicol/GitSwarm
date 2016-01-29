@@ -26,9 +26,14 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   end
 
   step 'Git Fusion returns a list containing repos with a path_template referencing a non-existent Perforce depot' do
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
-    allow(PerforceSwarm::P4::Spec::Depot).to receive(:exists?).and_return(false)
+    config = default_config.dup
+    config.entry.global['auto_create'] = { 'path_template' => '//depot/gitswarm{namespace}/{project-path}',
+                                           'repo_name_template' => 'gitswarm-{namespace}-{project-path}'
+    }
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
+    allow(PerforceSwarm::P4::Connection).to receive(:login).and_return(true)
+    allow(PerforceSwarm::P4::Spec::Depot).to receive(:exists?).and_return(false)
   end
 
   step 'Git Fusion returns a list containing repos that have incorrect Perforce credentials' do

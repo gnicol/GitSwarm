@@ -50,16 +50,16 @@ module PerforceSwarm
     end
 
     def project_params
-      params[:git_fusion_auto_create] = param_from_string(params[:git_fusion_auto_create])
+      params[:git_fusion_import_type] = param_from_string(params[:git_fusion_import_type])
 
       # if we were given git fusion parameters, incorporate those now
       if params[:git_fusion_entry] && !params[:git_fusion_entry].blank? &&
-          params[:git_fusion_repo_name] && params[:git_fusion_auto_create] == false
+          params[:git_fusion_repo_name] && params[:git_fusion_import_type] == 'import-repo'
         params[:git_fusion_repo]     = "mirror://#{params[:git_fusion_entry]}/#{params[:git_fusion_repo_name]}"
         params[:git_fusion_mirrored] = true
       end
 
-      super.merge(params.permit(:git_fusion_repo, :git_fusion_auto_create,
+      super.merge(params.permit(:git_fusion_repo, :git_fusion_import_type,
                                 :git_fusion_entry, :git_fusion_mirrored))
     end
 

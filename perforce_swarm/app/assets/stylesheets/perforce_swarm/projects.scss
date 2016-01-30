@@ -65,6 +65,14 @@
   padding: 5px 0 0 15px;
 }
 
+.git-fusion-import .import-repo-wrapper {
+  display: inline-block;
+}
+
+.git-fusion-import .git-fusion-radios label {
+  width: 100%;
+}
+
 .git-fusion-import .radio {
   margin-bottom: 10px;
 }
@@ -100,3 +108,67 @@ span.mirror-button-wrapper {
   // although not dangerous, use this to get the red color for the displayed depot path
   color: $brand-danger;
 }
+
+.git-fusion-tree-holder {
+  border: none;
+  border: 1px solid $border-color;
+  padding: 0;
+
+  .cancel-btn {
+    color: #B94A48;
+    &:hover {
+      color: #B94A48;
+    }
+  }
+
+  .tree-title {
+    font-family: $monospace_font;
+    font-size: 90%;
+    line-height: 42px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+
+  .depot-type {
+    background: $background-color;
+    padding-right: $gl-padding;
+    border-right: 1px solid $border-color;
+    display: block;
+    float: left;
+    margin-right: 10px;
+  }
+
+  .new-branch-name {
+    display: inline-block;
+    width: 200px;
+    float: left;
+  }
+
+  .tree-title {
+    position: relative;
+    background: $background-color;
+    border-bottom: 1px solid $border-color;
+    margin: 0;
+    text-align: left;
+    padding: 10px $gl-padding;
+
+    .file-actions {
+      float: right;
+      position: absolute;
+      top: 5px;
+      right: 15px;
+
+      .btn {
+        padding: 0px 10px;
+        font-size: 13px;
+        line-height: 28px;
+      }
+    }
+  }
+  .tree-content {
+    background: #fff;
+    height: 250px;
+    overflow: auto;
+  }
+}
+

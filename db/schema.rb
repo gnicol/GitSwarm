@@ -680,6 +680,7 @@ ActiveRecord::Schema.define(version: 20160128233227) do
     t.integer  "build_timeout",          default: 3600,     null: false
     t.string   "git_fusion_repo"
     t.boolean  "git_fusion_mirrored",    default: false,    null: false
+    t.boolean  "pending_delete",         default: false
   end
 
   add_index "projects", ["builds_enabled", "shared_runners_enabled"], name: "index_projects_on_builds_enabled_and_shared_runners_enabled", using: :btree

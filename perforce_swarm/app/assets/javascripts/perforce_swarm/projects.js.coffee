@@ -31,8 +31,8 @@ class @GitFusionProject
 
     this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}", (e) =>
       $(@original_settings_selector).remove()
-      # clear the repo name when we're not mirring to existing
-      this.$(@repo_name_selector).val('').select2() unless 'input#' + e.target.id == @repo_import_selector
+      # clear the repo name when we're not mirroring to existing
+      this.$(@repo_name_selector).val('').select2() unless this.$(e.target).is(this.$(@repo_import_selector))
       @update_ui()
 
     $(document).on 'input', @import_url_selector, (e) =>

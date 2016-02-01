@@ -199,7 +199,7 @@ module ProjectsHelper
     @gitlab_shell_config ||= PerforceSwarm::GitlabConfig.new
   end
 
-  def helix_mirroring_button(project, user)
+  def helix_mirroring_button(project, user, color = 'white')
     # wrapper for tooltip
     haml_tag(:span,
              data:  { title: mirroring_tooltip(project, user, true), html: 'true' },
@@ -211,7 +211,7 @@ module ProjectsHelper
       # add the button at the appropriate haml indent level
       haml_concat(
         link_to(configure_helix_mirroring_namespace_project_path(project.namespace, project), attributes) do
-          haml_concat(icon('helix-icon-white'))
+          haml_concat(icon('helix-icon ' + color))
           haml_concat('Helix Mirroring')
         end
       )

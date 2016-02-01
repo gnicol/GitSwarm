@@ -969,6 +969,7 @@ DEPENDENCIES
   js-routes (~> 1.0.0)
   kaminari (~> 0.16.3)
   letter_opener (~> 1.1.2)
+  loofah (~> 2.0.3)
   mail_room (~> 0.6.1)
   method_source (~> 0.8)
   minitest (~> 5.7.0)

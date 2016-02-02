@@ -17,17 +17,14 @@ class SentNotification < ActiveRecord::Base
   belongs_to :noteable, polymorphic: true
   belongs_to :recipient, class_name: "User"
 
-  validate :project, :recipient, :reply_key, presence: true
-  validate :reply_key, uniqueness: true
-
+  validates :project, :recipient, :reply_key, presence: true
+  validates :reply_key, uniqueness: true
   validates :noteable_id, presence: true, unless: :for_commit?
   validates :commit_id, presence: true, if: :for_commit?
-  validates :line_code, format: { with: /\A[a-z0-9]+_\d+_\d+\Z/ }, allow_blank: true
+  validates :line_code, line_code: true, allow_blank: true
 
   class << self
     def reply_key
-      return nil unless Gitlab::IncomingEmail.enabled?
-
       SecureRandom.hex(16)
     end
 
@@ -60,9 +57,13 @@ class SentNotification < ActiveRecord::Base
 
     def record_note(note, recipient_id, reply_key, params = {})
       params[:line_code] = note.line_code
-      
+
       record(note.noteable, recipient_id, reply_key, params)
     end
+  end
+
+  def unsubscribable?
+    !for_commit?
   end
 
   def for_commit?
@@ -75,5 +76,9 @@ class SentNotification < ActiveRecord::Base
     else
       super
     end
+  end
+
+  def to_param
+    self.reply_key
   end
 end

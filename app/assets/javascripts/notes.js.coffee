@@ -1,4 +1,5 @@
 #= require autosave
+#= require autosize
 #= require dropzone
 #= require dropzone_input
 #= require gfm_auto_complete
@@ -33,8 +34,6 @@ class @Notes
     $(document).on "click", ".note-edit-cancel", @cancelEdit
 
     # Reopen and close actions for Issue/MR combined with note form submit
-    $(document).on "click", ".js-note-target-reopen", @targetReopen
-    $(document).on "click", ".js-note-target-close", @targetClose
     $(document).on "click", ".js-comment-button", @updateCloseButton
     $(document).on "keyup", ".js-note-text", @updateTargetButtons
 
@@ -63,12 +62,6 @@ class @Notes
     # fetch notes when tab becomes visible
     $(document).on "visibilitychange", @visibilityChange
 
-    # Chrome doesn't fire keypress or keyup for Command+Enter, so we need keydown.
-    $(document).on 'keydown', '.js-note-text', (e) ->
-      return if e.originalEvent.repeat
-      if e.keyCode == 10 || ((e.metaKey || e.ctrlKey) && e.keyCode == 13)
-        $(@).closest('form').submit()
-
   cleanBinding: ->
     $(document).off "ajax:success", ".js-main-target-form"
     $(document).off "ajax:success", ".js-discussion-note-form"
@@ -82,7 +75,6 @@ class @Notes
     $(document).off "click", ".js-discussion-reply-button"
     $(document).off "click", ".js-add-diff-note-button"
     $(document).off "visibilitychange"
-    $(document).off "keydown", ".js-note-text"
     $(document).off "keyup", ".js-note-text"
     $(document).off "click", ".js-note-target-reopen"
     $(document).off "click", ".js-note-target-close"
@@ -118,14 +110,24 @@ class @Notes
   Note: for rendering inline notes use renderDiscussionNote
   ###
   renderNote: (note) ->
+    unless note.valid
+      if note.award
+        flash = new Flash('You have already used this award emoji!', 'alert')
+        flash.pinTo('.header-content')
+      return
+
     # render note if it not present in loaded list
     # or skip if rendered
-    if @isNewNote(note)
+    if @isNewNote(note) && !note.award
       @note_ids.push(note.id)
       $('ul.main-notes-list').
         append(note.html).
         syntaxHighlight()
       @initTaskList()
+
+    if note.award
+      awards_handler.addAwardToEmojiBar(note.note)
+      awards_handler.scrollToAwards()
 
   ###
   Check if note does not exists on page
@@ -145,6 +147,8 @@ class @Notes
     @note_ids.push(note.id)
     form = $("form[rel='" + note.discussion_id + "']")
     row = form.closest("tr")
+    note_html = $(note.html)
+    note_html.syntaxHighlight()
 
     # is this the first note of discussion?
     if row.is(".js-temp-notes-holder")
@@ -155,14 +159,16 @@ class @Notes
       row.next().find(".note").remove()
 
       # Add note to 'Changes' page discussions
-      $(".notes[rel='" + note.discussion_id + "']").append note.html
+      $(".notes[rel='" + note.discussion_id + "']").append note_html
 
       # Init discussion on 'Discussion' page if it is merge request page
       if $('body').attr('data-page').indexOf('projects:merge_request') == 0
-        $('ul.main-notes-list').append(note.discussion_with_diff_html)
+        discussion_html = $(note.discussion_with_diff_html)
+        discussion_html.syntaxHighlight()
+        $('ul.main-notes-list').append(discussion_html)
     else
       # append new note to all matching discussions
-      $(".notes[rel='" + note.discussion_id + "']").append note.html
+      $(".notes[rel='" + note.discussion_id + "']").append note_html
 
     # cleanup after successfully creating a diff/discussion note
     @removeDiscussionNoteForm(form)
@@ -241,6 +247,7 @@ class @Notes
       else
         previewButton.removeClass("turn-on").addClass "turn-off"
 
+    autosize(textarea)
     new Autosave textarea, [
       "Note"
       form.find("#note_commit_id").val()
@@ -262,7 +269,6 @@ class @Notes
   ###
   addNote: (xhr, note, status) =>
     @renderNote(note)
-    @updateVotes()
 
   ###
   Called in response to the new note form being submitted
@@ -277,13 +283,15 @@ class @Notes
 
   Updates the current note field.
   ###
-  updateNote: (xhr, note, status) =>
-    note_li = $(".note-row-" + note.id)
-    note_li.replaceWith(note.html)
-    note_li.find('.note-edit-form').hide()
-    note_li.find('.note-body > .note-text').show()
-    note_li.find('js-task-list-container').taskList('enable')
-    @enableTaskList()
+  updateNote: (_xhr, note, _status) =>
+    # Convert returned HTML to a jQuery object so we can modify it further
+    $html = $(note.html)
+    $html.syntaxHighlight()
+    $html.find('.js-task-list-container').taskList('enable')
+
+    # Find the note's `li` element by ID and replace it with the updated HTML
+    $note_li = $('.note-row-' + note.id)
+    $note_li.replaceWith($html)
 
   ###
   Called in response to clicking the edit note link
@@ -342,18 +350,27 @@ class @Notes
   ###
   removeNote: ->
     note = $(this).closest(".note")
-    notes = note.closest(".notes")
+    note_id = note.attr('id')
 
-    # check if this is the last note for this line
-    if notes.find(".note").length is 1
+    $('.note[id="' + note_id + '"]').each ->
+      note = $(this)
+      notes = note.closest(".notes")
+      count = notes.closest(".issuable-details").find(".notes-tab .badge")
 
-      # for discussions
-      notes.closest(".discussion").remove()
+      # check if this is the last note for this line
+      if notes.find(".note").length is 1
 
-      # for diff lines
-      notes.closest("tr").remove()
+        # for discussions
+        notes.closest(".discussion").remove()
 
-    note.remove()
+        # for diff lines
+        notes.closest("tr").remove()
+
+      # update notes count
+      oldNum = parseInt(count.text())
+      count.text(oldNum - 1)
+
+      note.remove()
 
   ###
   Called in response to clicking the delete attachment link
@@ -365,8 +382,8 @@ class @Notes
     note = $(this).closest(".note")
     note.find(".note-attachment").remove()
     note.find(".note-body > .note-text").show()
-    note.find(".js-note-attachment-delete").hide()
-    note.find(".note-edit-form").hide()
+    note.find(".note-header").show()
+    note.find(".current-note-edit-form").remove()
 
   ###
   Called when clicking on the "reply" button for a diff line.
@@ -478,9 +495,6 @@ class @Notes
     form = $(e.target).closest(".js-discussion-note-form")
     @removeDiscussionNoteForm(form)
 
-  updateVotes: ->
-    true
-
   ###
   Called after an attachment file has been selected.
 
@@ -499,17 +513,6 @@ class @Notes
   visibilityChange: =>
     @refresh()
 
-  targetReopen: (e) =>
-    @submitNoteForm($(e.target).parents('form'))
-
-  targetClose: (e) =>
-    @submitNoteForm($(e.target).parents('form'))
-
-  submitNoteForm: (form) =>
-    noteText = form.find(".js-note-text").val()
-    if noteText.trim().length > 0
-      form.submit()
-
   updateCloseButton: (e) =>
     textarea = $(e.target)
     form = textarea.parents('form')
@@ -518,13 +521,16 @@ class @Notes
   updateTargetButtons: (e) =>
     textarea = $(e.target)
     form = textarea.parents('form')
-
     if textarea.val().trim().length > 0
       form.find('.js-note-target-reopen').text('Comment & reopen')
       form.find('.js-note-target-close').text('Comment & close')
+      form.find('.js-note-target-reopen').addClass('btn-comment-and-reopen')
+      form.find('.js-note-target-close').addClass('btn-comment-and-close')
     else
       form.find('.js-note-target-reopen').text('Reopen')
       form.find('.js-note-target-close').text('Close')
+      form.find('.js-note-target-reopen').removeClass('btn-comment-and-reopen')
+      form.find('.js-note-target-close').removeClass('btn-comment-and-close')
 
   initTaskList: ->
     @enableTaskList()

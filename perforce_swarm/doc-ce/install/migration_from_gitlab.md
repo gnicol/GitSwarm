@@ -21,7 +21,7 @@ master for all assets.
     |---|---|
     |8.0.5|15.4|
 
-    **Important Notes:**
+    **Important Notes**:
     * GitLab to GitSwarm migration is not supported on GitSwarm versions less
       than 15.4 (GitLab 8.0.5).
     * Migration is supported across differing operating systems (e.g. migration
@@ -37,7 +37,7 @@ master for all assets.
 1.  **A new, up-to-date GitSwarm install**
 
     If the GitSwarm instance you're looking to migrate to is not on the above
-    list, you will need to follow [these instructions](/help/update/README.md)
+    list, you will need to follow [these instructions](../update/README.md)
     to upgrade as necessary to a supported version.
 
     Migrating GitLab to an existing GitSwarm (one that has existing users,
@@ -56,7 +56,7 @@ master for all assets.
     the most up-to-date combination (GitLab 8.0.5 and GitSwarm 15.4). Upgrading
     to GitSwarm 15.4 (and GitLab 8.0.5) is an absolute requirement for GitSwarm,
     since migration is not supported in earlier versions. See
-    [these instructions](/help/update/README.md) for how to upgrade.
+    [these instructions](../update/README.md) for how to upgrade.
 
     It is also recommended that the same hostname be used for both the GitLab
     and GitSwarm instances, since this will ensure that attachments on
@@ -111,7 +111,7 @@ master for all assets.
     [following note](#additional-help), since a workaround regarding attachments
     may apply to your migration.
 
-    Follow [these instructions](/help/raketasks/backup_restore.md#omnibus-installations)
+    Follow [these instructions](../raketasks/backup_restore.md#omnibus-installations)
     for restoring the backup on your GitSwarm instance, ensuring that you use
     the correct `TIMESTAMP` value that you made note of in step 1 of the
     migration process.
@@ -120,7 +120,7 @@ master for all assets.
     schema, and then restore any backed-up repositories to your GitSwarm
     instance. Once the backup process is complete and your GitSwarm instance has
     been (re)started, you can then continue with enabling
-    [mirroring for your existing projects](/help/workflow/importing/import_from_gitfusion.md),
+    [mirroring for your existing projects](../workflow/importing/import_from_gitfusion.md),
     to gain the full benefit of using GitSwarm.
 
     As a final step, if you are using the same FQDN (fully-qualified domain
@@ -182,6 +182,6 @@ master for all assets.
     psql:/var/opt/gitlab/backups/db/database.sql:2931: WARNING:  no privileges could be revoked for "public" (two occurences)
     psql:/var/opt/gitlab/backups/db/database.sql:2933: WARNING:  no privileges were granted for "public" (two occurences)
     ```
-    Please see [this document](/help/raketasks/backup_restore.md#restoring-database-backup-using-omnibus-packages-outputs-warnings)
+    Please see [this document](../raketasks/backup_restore.md#restoring-database-backup-using-omnibus-packages-outputs-warnings)
 
 

@@ -28,6 +28,8 @@ class Dispatcher
       when 'projects:milestones:new', 'projects:milestones:edit'
         new ZenMode()
         new DropzoneInput($('.milestone-form'))
+      when 'groups:milestones:new'
+        new ZenMode()
       when 'projects:compare:show'
         new Diff()
       when 'projects:issues:new','projects:issues:edit'
@@ -39,9 +41,15 @@ class Dispatcher
         shortcut_handler = new ShortcutsNavigation()
         new DropzoneInput($('.merge-request-form'))
         new IssuableForm($('.merge-request-form'))
+      when 'projects:tags:new'
+        new ZenMode()
+        new DropzoneInput($('.tag-form'))
+      when 'projects:releases:edit'
+        new ZenMode()
+        new DropzoneInput($('.release-form'))
       when 'projects:merge_requests:show'
         new Diff()
-        shortcut_handler = new ShortcutsIssuable()
+        shortcut_handler = new ShortcutsIssuable(true)
         new ZenMode()
       when "projects:merge_requests:diffs"
         new Diff()
@@ -75,11 +83,12 @@ class Dispatcher
       when 'projects:project_members:index'
         new ProjectMembers()
         new UsersSelect()
-      when 'groups:new', 'groups:edit', 'admin:groups:edit'
+      when 'groups:new', 'groups:edit', 'admin:groups:edit', 'admin:groups:new'
         new GroupAvatar()
       when 'projects:tree:show'
         new TreeView()
-        shortcut_handler = new ShortcutsNavigation()
+      when 'projects:find_file:show'
+        shortcut_handler = true
       when 'projects:blob:show'
         new LineHighlighter()
         shortcut_handler = new ShortcutsNavigation()
@@ -91,6 +100,8 @@ class Dispatcher
         shortcut_handler = true
       when 'projects:forks:new'
         new ProjectFork()
+      when 'projects:artifacts:browse'
+        new BuildArtifacts()
       when 'users:show'
         new User()
         new Activities()

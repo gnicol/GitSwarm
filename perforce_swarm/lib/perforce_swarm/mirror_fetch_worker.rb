@@ -1,13 +1,14 @@
 require 'rubygems'
 require 'sidekiq'
-require 'sidetiq'
 
 module PerforceSwarm
   class MirrorFetchWorker
     include Sidekiq::Worker
-    include Sidetiq::Schedulable
 
-    # Once a minute we'll scan all the repos to:
+    # We are scheduled for every minute, so don't bother throwing in the retry queue
+    sidekiq_options retry: false
+
+    # We'll scan all the repos to:
     #  - clean up any hung git-fusion imports
     #  - fetch outdated repos to freshen them
     # Note we'll limit the number of active fetches to be ongoing via the
@@ -19,8 +20,6 @@ module PerforceSwarm
     #
     # If we assume you have 20 repos that are fairly inactive in perforce (so generally we're pulling
     # down no or only small changes) this approach will keep you within ~10 minutes of up to date.
-    recurrence { minutely(1) }
-
     def perform
       # bail completely if the feature isn't enabled
       config = PerforceSwarm::GitlabConfig.new
@@ -34,6 +33,17 @@ module PerforceSwarm
       repo_stats.import_hung.each do |stat|
         stat[:project].import_finish
         stat[:project].save
+      end
+
+      # ensure any projects that are in an inconsistent re-enable state have:
+      #  * mirroring turned off if an error is present
+      #  * mirroring turned on (flag set to true) if no error is present
+      repo_stats.reenabled_hung.each do |stat|
+        if stat[:reenable_error]
+          PerforceSwarm::Repo.new(stat[:project].repository.path_to_repo).mirror_url = nil
+        else
+          stat[:project].update_attribute(:git_fusion_mirrored, true)
+        end
       end
 
       # locate the gitlab-shell mirror script we'll be calling
@@ -66,10 +76,12 @@ module PerforceSwarm
 
           repo_path = project.repository.path_to_repo
           active    = PerforceSwarm::Mirror.fetch_locked?(repo_path) || PerforceSwarm::Mirror.write_locked?(repo_path)
-          stats.push(project:       project,
-                     last_fetched:  PerforceSwarm::Mirror.last_fetched(repo_path),
-                     active:        active
-          )
+          stats.push(project:        project,
+                     last_fetched:   PerforceSwarm::Mirror.last_fetched(repo_path),
+                     active:         active,
+                     reenabling:     PerforceSwarm::Mirror.reenabling?(repo_path),
+                     reenable_error: project.git_fusion_reenable_error
+                    )
         end
 
         # return sorted stats based on last_fetched time, oldest (smaller value) first
@@ -102,7 +114,16 @@ module PerforceSwarm
       # returns only entries that represent git-fusion imports that are finished but marked as in progress
       def import_hung
         stats.select do |stat|
-          stat[:project].import_in_progress? && stat[:project].git_fusion_import? && stat[:last_fetched]
+          stat[:project].import_in_progress? && stat[:project].git_fusion_mirrored? && stat[:last_fetched]
+        end
+      end
+
+      # returns only entries that represent projects that:
+      #  * are currently not being re-enabled
+      #  * are eligible for re-enabling
+      def reenabled_hung
+        stats.select do |stat|
+          !stat[:project].git_fusion_mirrored? && !stat[:reenabling]
         end
       end
     end

@@ -23,10 +23,6 @@ module ProjectsHelper
     end
   end
 
-  def mirrored?(project)
-    project.git_fusion_repo.present?
-  end
-
   def mirroring_errors(project, user)
     # Git Fusion integration is explicitly disabled
     tooltip = <<-EOM
@@ -50,7 +46,7 @@ module ProjectsHelper
     return tooltip.html_safe if git_fusion_server_error
 
     # this project is already mirrored
-    return '' if mirrored?(project)
+    return '' if project.git_fusion_mirrored?
 
     # no Git Fusion config entries have auto create enabled, or it is mis-configured
     tooltip = <<-EOM
@@ -75,7 +71,56 @@ module ProjectsHelper
 
     # all good in the 'hood - tooltip is slightly different for the button vs the text below the clone URL
     return 'Click to get mirroring!' if for_button
-    'Click "Mirror in Helix" above to get mirroring!'
+    'Click "Helix Mirroring" above to get mirroring!'
+  end
+
+  def helix_reenable_mirroring_tooltip(project)
+    tooltip = <<-EOM
+      GitSwarm is configured for Helix mirroring, but you lack permissions to enable it for this project.<br />
+      To enable Helix mirroring, you must be a project 'master' or an 'admin'.
+    EOM
+    return tooltip.html_safe unless mirroring_permitted?(project, current_user)
+
+    begin
+      gitlab_shell_config.git_fusion.entry(project.git_fusion_server_id)
+    rescue
+      tooltip = <<-EOM
+        Configuration for the Helix Git Fusion server '#{ERB::Util.html_escape(project.git_fusion_server_id)}'
+        is either missing, or is not properly configured in GitSwarm.
+      EOM
+      return tooltip.html_safe unless mirroring_configured?
+    end
+
+    git_fusion_url = git_fusion_url(project)
+    tooltip        = 'This project has no record of being previously mirrored.'
+    return tooltip.html_safe unless git_fusion_url && !git_fusion_url.empty?
+
+    nil
+  end
+
+  # time (as a string) of the last successful fetch from Git Fusion, or false if no timestamp is present
+  def git_fusion_last_fetched(project)
+    PerforceSwarm::Mirror.last_fetched(project.repository.path_to_repo).strftime('%F %T %z')
+  rescue
+    return false
+  end
+
+  # the error being reported by Git Fusion mirroring, or false if there are no errors
+  def git_fusion_last_fetch_error(project)
+    PerforceSwarm::Mirror.last_fetch_error(project.repository.path_to_repo)
+  end
+
+  # returns the rendered (sans password) URL for a currently or previously mirrored project
+  def git_fusion_url(project)
+    if project.git_fusion_mirrored?
+      return PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url
+    elsif project.git_fusion_repo.present?
+      return PerforceSwarm::GitFusionRepo.resolve_url(project.git_fusion_repo).to_s
+    else
+      return ''
+    end
+  rescue
+    return false
   end
 
   # boolean as to whether there are configured Git Fusion instances in the config
@@ -118,7 +163,7 @@ module ProjectsHelper
     return nil unless git_fusion_enabled?
 
     # Call the url method on each server to validate the config
-    gitlab_shell_config.git_fusion.entries.each { | _id, config | config.url }
+    gitlab_shell_config.git_fusion.entries.each { |_id, config| config.url }
     nil
   rescue => e
     return e.message
@@ -152,5 +197,24 @@ module ProjectsHelper
   # note we can't call this gitlab_config as there is already a helper for gitlab-ce's config with that name
   def gitlab_shell_config
     @gitlab_shell_config ||= PerforceSwarm::GitlabConfig.new
+  end
+
+  def helix_mirroring_button(project, user)
+    # wrapper for tooltip
+    haml_tag(:span,
+             data:  { title: mirroring_tooltip(project, user, true), html: 'true' },
+             class: 'has_tooltip mirror-button-wrapper') do
+      # parameters for an enable button
+      can_mirror = mirroring_permitted?(@project, current_user) && mirroring_configured?
+      attributes = { class: 'btn btn-save' + (can_mirror ? '' : ' disabled') }
+
+      # add the button at the appropriate haml indent level
+      haml_concat(
+        link_to(configure_helix_mirroring_namespace_project_path(project.namespace, project), attributes) do
+          haml_concat(icon('helix-icon-white'))
+          haml_concat('Helix Mirroring')
+        end
+      )
+    end
   end
 end

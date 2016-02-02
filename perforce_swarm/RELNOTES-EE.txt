@@ -1,7 +1,7 @@
                              Release Notes for
                       Helix GitSwarm Enterprise Edition
 
-                              Version 2015.4
+                              Version 2016.1
 
 Introduction
 
@@ -25,7 +25,7 @@ Introduction
 
 Documentation
 
-    GitSwarm EE Release 2015.4 documentation is included in the distribution
+    GitSwarm EE Release 2016.1 documentation is included in the distribution
     and can be accessed from within GitSwarm EE from the "?" menu on the top
     toolbar. The latest GitSwarm EE Release documentation can be found online
     at: https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/

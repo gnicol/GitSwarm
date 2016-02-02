@@ -8,11 +8,11 @@ module SharedMirroring
   def default_config
     entry = default_entry
     entry['id'] = nil
-    configify('enabled' => true, 'default' => entry)
+    configify('enabled' => true, 'local' => entry)
   end
 
   def default_entry
-    { id:      'default',
+    { id:  'local',
       url: 'http://user@foo',
       password: 'bar',
       git_config_params: 'http.sslVerify=false'
@@ -28,7 +28,7 @@ module SharedMirroring
   end
 
   step 'Git Fusion is enabled but is otherwise not configured' do
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify('enabled' => true, 'default' => {}))
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify('enabled' => true, 'local' => {}))
   end
 
   step 'Git Fusion returns an empty list of managed repos' do
@@ -55,8 +55,8 @@ module SharedMirroring
                                   url: 'http://user@whatever2',
                                   password: 'foo2'
                                }.stringify_keys
-    config['default']['auto_create'] = { 'path_template' => '//gitswarm/{namespace}/{project-path}',
-                                         'repo_name_template' => '{namespace}-{project-path}'
+    config['local']['auto_create'] = { 'path_template' => '//gitswarm/{namespace}/{project-path}',
+                                       'repo_name_template' => '{namespace}-{project-path}'
                                      }
     config['no_auto_create'] = { id:  'no_auto_create',
                                  url: 'http://user@whatever',

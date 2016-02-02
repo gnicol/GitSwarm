@@ -1,4 +1,4 @@
-Gitlab::Application.configure do
+Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
   # In the development environment your application's code is reloaded on
@@ -24,7 +24,7 @@ Gitlab::Application.configure do
 
   # Expands the lines which load the assets
   # config.assets.debug = true
-  
+
   # Adds additional error checking when serving assets at runtime.
   # Checks for improperly declared sprockets dependencies.
   # Raises helpful error messages.
@@ -34,6 +34,8 @@ Gitlab::Application.configure do
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   # Open sent mails in browser
   config.action_mailer.delivery_method = :letter_opener
+  # Don't make a mess when bootstrapping a development environment
+  config.action_mailer.perform_deliveries = (ENV['BOOTSTRAP'] != '1')
 
   config.eager_load = false
 end

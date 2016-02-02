@@ -21,10 +21,11 @@ class Projects::SnippetsController < Projects::ApplicationController
       filter: :by_project,
       project: @project
     })
+    @snippets = @snippets.page(params[:page]).per(PER_PAGE)
   end
 
   def new
-    @snippet = @project.snippets.build
+    @snippet = @noteable = @project.snippets.build
   end
 
   def create

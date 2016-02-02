@@ -18,7 +18,7 @@ ul.notes {
     font-size: 14px;
     padding-top: 10px;
     padding-bottom: 10px;
-    background: #f8fafc;
+    background: #FDFDFD;
 
     .timeline-icon {
       .avatar {
@@ -30,7 +30,6 @@ ul.notes {
   .discussion-header,
   .note-header {
     @extend .cgray;
-    padding-bottom: 15px;
 
     a:hover {
       text-decoration: none;
@@ -75,6 +74,10 @@ ul.notes {
     }
   }
 
+  .discussion-body {
+    padding-top: 15px;
+  }
+
   .discussion {
     overflow: hidden;
     display: block;
@@ -106,13 +109,9 @@ ul.notes {
           }
         }
 
-        // Reduce left padding of first task list ul element
-        ul.task-list:first-child {
-          padding-left: 10px;
-
-          // sub-tasks should be padded normally
-          ul {
-            padding-left: 20px;
+        ul.task-list {
+          ul:not(.task-list) {
+            padding-left: 1.3em;
           }
         }
 
@@ -129,7 +128,7 @@ ul.notes {
     }
 
     &:last-child {
-      border-bottom: none;
+      border-bottom: 1px solid $border-color;
     }
   }
 }
@@ -155,6 +154,7 @@ ul.notes {
       text-align: center;
       padding: 10px 0;
       background: #FFF;
+      color: $text-color;
     }
     &.notes_line2 {
       text-align: center;
@@ -243,11 +243,8 @@ ul.notes {
 
   // "show" the icon also if we just hover somewhere over the line
   &:hover > td {
-    background: $hover !important;
-
     .add-diff-note {
       @include show-add-diff-note;
     }
   }
 }
-

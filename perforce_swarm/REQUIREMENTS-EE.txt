@@ -1,12 +1,12 @@
                          Hardware Requirements for
                      Helix GitSwarm Enterprise Edition
 
-                              Version 2015.4
+                              Version 2016.1
 
 Introduction
 
     This document describes the hardware requirements for Helix GitSwarm EE
-    release 2015.4.
+    release 2016.1.
 
 Supported Operating System Platforms
 

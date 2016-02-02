@@ -28,28 +28,30 @@
           %li.hidden-sm.hidden-xs
             = render 'layouts/search'
         %li.visible-sm.visible-xs
-          = link_to search_path, title: 'Search', data: {toggle: 'tooltip', placement: 'bottom'} do
+          = link_to search_path, title: 'Search', data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do
             = icon('search')
+        - if session[:impersonator_id]
+          %li.impersonation
+            = link_to stop_impersonation_admin_users_path, method: :delete, title: 'Stop Impersonation', data: { toggle: 'tooltip', placement: 'bottom', container: 'body' } do
+              = icon('user-secret fw')
         - if current_user.is_admin?
-          %li.hidden-xs
-            = link_to admin_root_path, title: 'Admin Area', data: {toggle: 'tooltip', placement: 'bottom'} do
+          %li
+            = link_to admin_root_path, title: 'Admin Area', data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do
               = icon('wrench fw')
-        %li.dropdown.navbar-right.user-menu
-          %a.dropdown-toggle.profile-pic{href: '#', 'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', title: 'User Menu', 'aria-label' => 'User Menu'}
-            = image_tag avatar_icon(current_user.email, 26)
-            %span.caret>
-          %ul.dropdown-menu{role: 'menu', 'aria-label' => 'User Menu'}
-            %li{role: 'menuitem'}
-              = link_to current_user, class: 'profile-link' do
-                Profile
-            %li{role: 'menuitem'}
-              = link_to user_snippets_path(current_user) do
-                My Snippets
-            %li{role: 'menuitem'}
-              = link_to profile_path do
-                My Settings
-            %li{role: 'menuitem'}
-              = link_to destroy_user_session_path, class: 'logout', method: :delete do
-                Log out
+        - if current_user.can_create_project?
+          %li
+            = link_to new_project_path, title: 'New project', data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do
+              = icon('plus fw')
+        - if Gitlab::Sherlock.enabled?
+          %li
+            = link_to sherlock_transactions_path, title: 'Sherlock Transactions',
+              data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do
+              = icon('tachometer fw')
+        %li
+          = link_to destroy_user_session_path, class: 'logout', method: :delete, title: 'Sign out', data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do
+            = icon('sign-out')
 
 = render 'shared/outdated_browser'
+- if @project && !@project.empty_repo?
+  :javascript
+    var findFileURL = "#{namespace_project_find_file_path(@project.namespace, @project, @ref || @project.repository.root_ref)}";

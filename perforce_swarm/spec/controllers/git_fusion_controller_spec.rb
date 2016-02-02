@@ -50,23 +50,36 @@ describe PerforceSwarm::GitFusionController, type: :controller do
     project.team << [user, :master]
   end
 
+  describe 'POST reenable_helix_mirroring' do
+    it 'project remains un-mirrored if the project is already mirrored' do
+      project.git_fusion_repo     = 'mirror://default/bar'
+      project.git_fusion_mirrored = false
+      expect(project.git_fusion_mirrored?).to be false
+      post(:reenable_helix_mirroring,
+           project_id: project)
+      expect(project.git_fusion_mirrored?).to be false
+    end
+  end
+
   describe 'GET existing_project' do
     it 'gives an appropriate error when Git Fusion config is missing' do
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify({}))
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(configify({}))
       get(:existing_project, project_id: project.id)
       expect(response).to be_success
       expect(response.body).to include('No Git Fusion configuration found.')
     end
 
     it 'gives an appropriate error when Git Fusion has no servers' do
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: configify('enabled' => true))
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to(
+        receive(:git_fusion).and_return(configify('enabled' => true))
+      )
       get(:existing_project, project_id: project.id)
       expect(response).to be_success
       expect(response.body).to include('No Git Fusion configuration found.')
     end
 
     it 'gives an appropriate error when Git Fusion is not configured for auto-create' do
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(default_config)
       allow(PerforceSwarm::GitFusion).to receive(:run).and_return('')
       get(:existing_project, project_id: project.id)
       expect(response).to be_success
@@ -76,7 +89,7 @@ describe PerforceSwarm::GitFusionController, type: :controller do
     it 'gives an appropriate error when Git Fusion auto-create is mis-configured' do
       config = default_config.clone
       config['default']['auto_create'] = { 'path_template' => 'yoda' }
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(config)
       allow(PerforceSwarm::GitFusion).to receive(:run).and_return('')
       get(:existing_project, project_id: project.id)
       expect(response).to be_success
@@ -86,7 +99,7 @@ describe PerforceSwarm::GitFusionController, type: :controller do
     it 'gives an appropriate error when the requested project does not exist' do
       config = default_config.clone
       config['default']['auto_create'] = { 'path_template' => 'yoda' }
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(config)
       allow(PerforceSwarm::GitFusion).to receive(:run).and_return('')
       get(:existing_project, project_id: 1000)
       expect(response).to be_success
@@ -101,7 +114,7 @@ describe PerforceSwarm::GitFusionController, type: :controller do
       }
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'depots')
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
-      PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(config)
       allow(PerforceSwarm::GitFusion).to receive(:run).and_return('')
       get(:existing_project, project_id: project.id)
       expect(response).to be_success

@@ -1,23 +1,60 @@
 /* https://github.com/aahan/pygments-github-style */
-pre.code.highlight.white,
 .code.white {
-
-  background-color: #fff;
-  color: #333;
-
-  .line-numbers,
-  .line-numbers a {
-    background-color: $background-color !important;
-    color: $gl-gray !important;
+  // Line numbers
+  .line-numbers, .diff-line-num {
+    background-color: $background-color;
   }
 
-  pre.highlight {
-    background-color: #fff !important;
-    color: #333 !important;
+  .diff-line-num, .diff-line-num a {
+    color: rgba(0, 0, 0, 0.3);
   }
 
-  pre.code {
-    border-left: 1px solid $border-color;
+  // Code itself
+  pre.code, .diff-line-num {
+    border-color: $border-color;
+  }
+
+  &, pre.code, .line_holder .line_content {
+    background-color: #fff;
+    color: #333;
+  }
+
+  // Diff line
+  .line_holder {
+    .diff-line-num {
+      &.old {
+        background: #ffdddd;
+        border-color: #f1c0c0;
+      }
+
+      &.new {
+        background: #dbffdb;
+        border-color: #c1e9c1;
+      }
+    }
+
+    .line_content {
+      &.old {
+        background: #ffecec;
+
+        span.idiff {
+          background-color: #f8cbcb;
+        }
+      }
+
+      &.new {
+        background: #eaffea;
+
+        span.idiff {
+          background-color: #a6f3a6;
+        }
+      }
+
+      &.match {
+        color: rgba(0, 0, 0, 0.3);
+        background: #fafafa;
+      }
+    }
   }
 
   // highlight line via anchor
@@ -27,7 +64,7 @@ pre.code.highlight.white,
 
   // Search result highlight
   span.highlight_word {
-    background: #fafe3d;
+    background-color: #fafe3d !important;
   }
 
   .hll { background-color: #f8f8f8 }

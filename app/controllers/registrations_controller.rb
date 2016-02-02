@@ -1,8 +1,24 @@
 class RegistrationsController < Devise::RegistrationsController
   before_action :signup_enabled?
+  include Recaptcha::Verify
 
   def new
     redirect_to(new_user_session_path)
+  end
+
+  def create
+    if !Gitlab::Recaptcha.load_configurations! || verify_recaptcha
+      if Gitlab::IpCheck.new(request.remote_ip).spam?
+        flash[:alert] = 'Could not create an account. This IP is listed for spam.'
+        return render action: 'new'
+      end
+
+      super
+    else
+      flash[:alert] = "There was an error with the reCAPTCHA code below. Please re-enter the code."
+      flash.delete :recaptcha_error
+      render action: 'new'
+    end
   end
 
   def destroy
@@ -37,5 +53,17 @@ class RegistrationsController < Devise::RegistrationsController
 
   def sign_up_params
     params.require(:user).permit(:username, :email, :name, :password, :password_confirmation)
+  end
+
+  def resource_name
+    :user
+  end
+
+  def resource
+    @resource ||= User.new(sign_up_params)
+  end
+
+  def devise_mapping
+    @devise_mapping ||= Devise.mappings[:user]
   end
 end

@@ -1,12 +1,12 @@
                            Upgrading Instructions for
                                  Helix GitSwarm
 
-                                 Version 2015.4
+                                 Version 2016.1
 
 Introduction
 
     This document describes the upgrade process for upgrading to Helix
-    GitSwarm release 2015.4
+    GitSwarm release 2016.1
 
     * Note, installing and configuring GitSwarm is a System Administrator
       function and requires root access.
@@ -16,17 +16,17 @@ Pre-update Considerations
 ------------------------------------------------------------------------
 
 GitSwarm can only restore backups made on the same version. Hence, a backup of
-GitSwarm 2015.3 can only be restored to an instance running 2015.3, and not on
-2015.4 or higher versions. Although, upgrading GitSwarm should not result in
+GitSwarm 2015.4 can only be restored to an instance running 2015.4, and not on
+2015.1 or higher versions. Although, upgrading GitSwarm should not result in
 data corruption, we recommend taking backups of your existing version before
 you run an upgrade.
 
 
 ------------------------------------------------------------------------
-Updating GitSwarm to 2015.4
+Updating GitSwarm to 2016.1
 ------------------------------------------------------------------------
 
-1. Download the 2015.4 GitSwarm package and install it.
+1. Download the 2016.1 GitSwarm package and install it.
 
     $ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
 

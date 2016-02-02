@@ -7,6 +7,7 @@ class Notify < BaseMailer
   include Emails::Projects
   include Emails::Profile
   include Emails::Groups
+  include Emails::Builds
 
   add_template_helper MergeRequestsHelper
   add_template_helper EmailsHelper
@@ -16,7 +17,7 @@ class Notify < BaseMailer
          subject: subject,
          body: body.html_safe,
          content_type: 'text/html'
-    )
+        )
   end
 
   # Splits "gitlab.corp.company.com" up into "gitlab.corp.company.com",
@@ -33,12 +34,12 @@ class Notify < BaseMailer
     allowed_domains
   end
 
-  private
-
   def can_send_from_user_email?(sender)
     sender_domain = sender.email.split("@").last
     self.class.allowed_email_domains.include?(sender_domain)
   end
+
+  private
 
   # Return an email address that displays the name of the sender.
   # Only the displayed name changes; the actual email address is always the same.
@@ -99,17 +100,11 @@ class Notify < BaseMailer
   end
 
   def mail_thread(model, headers = {})
-    if @project
-      headers['X-GitLab-Project'] = @project.name
-      headers['X-GitLab-Project-Id'] = @project.id
-      headers['X-GitLab-Project-Path'] = @project.path_with_namespace
-    end
-
+    add_project_headers
     headers["X-GitLab-#{model.class.name}-ID"] = model.id
+    headers['X-GitLab-Reply-Key'] = reply_key
 
-    if reply_key
-      headers['X-GitLab-Reply-Key'] = reply_key
-
+    if Gitlab::IncomingEmail.enabled?
       address = Mail::Address.new(Gitlab::IncomingEmail.reply_address(reply_key))
       address.display_name = @project.name_with_namespace
 
@@ -151,5 +146,13 @@ class Notify < BaseMailer
 
   def reply_key
     @reply_key ||= SentNotification.reply_key
+  end
+
+  def add_project_headers
+    return unless @project
+
+    headers['X-GitLab-Project'] = @project.name
+    headers['X-GitLab-Project-Id'] = @project.id
+    headers['X-GitLab-Project-Path'] = @project.path_with_namespace
   end
 end

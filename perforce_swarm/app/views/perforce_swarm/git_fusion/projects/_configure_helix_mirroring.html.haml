@@ -1,0 +1,19 @@
+= render partial: 'perforce_swarm/git_fusion/projects/mirroring_config_errors'
+- error = git_fusion_server_error || mirroring_errors(@project, current_user)
+- if !error || error.empty?
+  .git-fusion-mirroring
+  - servers = git_fusion_servers(default_first_auto_create: true)
+  - if servers.empty?
+    .description.slead
+      This Helix GitSwarm instance is not pointing to any Helix Git Fusion servers. In order to enable mirroring, have an admin
+      = link_to 'see these directions.', help_page_path('workflow', 'importing', 'import_from_gitfusion'), target: '_blank'
+  - else
+    %h3
+      Select a Helix server to mirror the project to
+    .control-group.form-inline
+      .control-label.mirroring-server-select
+        Helix Git Fusion Server:
+        = select_tag(:git_fusion_entry, servers, class: 'form-control')
+      .git-fusion-mirroring-data
+    :javascript
+      var mirror_config = new GitFusionMirror("#{@project.id}");

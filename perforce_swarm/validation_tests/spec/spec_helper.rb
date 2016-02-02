@@ -3,6 +3,7 @@ require 'P4'
 require_relative '../lib/log'
 require_relative '../lib/config'
 require_relative '../lib/git_helper'
+require_relative '../lib/git_fusion_helper'
 require_relative '../lib/git_swarm_api_helper'
 require_relative '../lib/p4_helper'
 require_relative '../lib/browser'
@@ -34,6 +35,7 @@ def unique_string
 end
 
 def create_file(directory, name = unique_string)
+  FileUtils.mkdir_p(directory)
   path = directory+'/'+name
   new_file = File.open(path, 'w+')
   new_file.write 'content'

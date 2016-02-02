@@ -2,13 +2,16 @@
 # with the error "uninitialized constant LoggedInPage (NameError)"
 require_relative 'logged_in_page'
 require_relative '../page'
-require_relative 'fusion_server_dropdown_module'
+require_relative 'select2_module'
 
 class CreateProjectPage < LoggedInPage
-  include FusionServerDropdownModule
+  include Select2Module
 
   def initialize(driver)
     super(driver)
+    @repo_selector = 's2id_git_fusion_repo_name'
+    @server_selector = 's2id_git_fusion_entry'
+    @namespace_selector = 's2id_project_namespace_id'
     wait_for_gf_options_to_load
     verify
   end
@@ -31,6 +34,18 @@ class CreateProjectPage < LoggedInPage
     field = @driver.find_element(:id, 'project_path')
     field.clear
     field.send_keys(name)
+  end
+
+  def namespace(namespace)
+    select2_select(@namespace_selector, namespace)
+  end
+
+  def namespaces
+    select2_options(@namespace_selector)
+  end
+
+  def selected_namespace
+    select2_selected(@namespace_selector)
   end
 
   def create_project_and_wait_for_clone
@@ -64,18 +79,15 @@ class CreateProjectPage < LoggedInPage
 
   def repo_names
     check_servers_exist
-    repo_selector.click
-    container = @driver.find_element(:class, 'select2-drop-active')
-    elements = container.find_elements(:class, 'select2-result-selectable')
-    text_values = []
-    elements.each { |x| text_values << x.text }
-    @driver.find_element(:id, 'select2-drop-mask').click # de-click the menu
+    return [] unless repos_exist?
+    text_values = select2_options(@repo_selector)
     text_values.delete_at(0) if text_values[0] == '<Select repository to enable>'
     text_values
   end
 
   def selected_repo
-    repo_selector.text
+    check_servers_exist
+    select2_selected(@repo_selector)
   end
 
   def select_repo(repo)
@@ -88,22 +100,39 @@ class CreateProjectPage < LoggedInPage
     select_mirrored_auto
     select_mirrored_specific
     # end: For PGL-1255
+    select2_select(@repo_selector, repo)
+  end
 
-    repo_selector.click # open the dropdown
-    container = @driver.find_element(:class, 'select2-drop-active')
-    elements = container.find_elements(:class, 'select2-result-selectable')
-    elements.each do |x|
-      next unless x.text==repo
-      x.click
-      return
-    end
-    fail('Did not find requested repo in available repos dropdown: '+repo)
+  def server_names
+    return [] unless servers_exist?
+    select2_options(@server_selector)
+  end
+
+  def selected_server
+    check_servers_exist
+    select2_selected(@server_selector)
+  end
+
+  def select_server(server)
+    check_servers_exist
+    select2_select(@server_selector, server)
+    wait_for_gf_options_to_load
   end
 
   private
 
-  def repo_selector
-    @driver.find_element(:id, 's2id_git_fusion_repo_name').find_element(:class, 'select2-choice')
+  def servers_exist?
+    wait_for(:id, 'git_fusion_entry')
+    @driver.find_elements(:id, 'git_fusion_entry').length > 0
+  end
+
+  def check_servers_exist
+    fail 'No GF servers have been configured, you cant interact with them' unless servers_exist?
+  end
+
+  def repos_exist?
+    wait_for_gf_options_to_load
+    @driver.find_elements(:id, @repo_selector).length > 0
   end
 
   def wait_for_gf_options_to_load

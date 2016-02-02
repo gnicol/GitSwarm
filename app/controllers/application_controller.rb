@@ -10,9 +10,12 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user_from_token!
   before_action :authenticate_user!
+  before_action :validate_user_service_ticket!
   before_action :reject_blocked!
   before_action :check_password_expiration
+  before_action :check_2fa_requirement
   before_action :ldap_security_check
+  before_action :sentry_user_context
   before_action :default_headers
   before_action :add_gon_variables
   before_action :configure_permitted_parameters, if: :devise_controller?
@@ -22,6 +25,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :abilities, :can?, :current_application_settings
   helper_method :import_sources_enabled?, :github_import_enabled?, :github_import_configured?, :gitlab_import_enabled?, :gitlab_import_configured?, :bitbucket_import_enabled?, :bitbucket_import_configured?, :gitorious_import_enabled?, :google_code_import_enabled?, :fogbugz_import_enabled?, :git_import_enabled?
+  helper_method :repository
 
   rescue_from Encoding::CompatibilityError do |exception|
     log_exception(exception)
@@ -30,10 +34,24 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound do |exception|
     log_exception(exception)
-    render "errors/not_found", layout: "errors", status: 404
+    render_404
+  end
+
+  def redirect_back_or_default(default: root_path, options: {})
+    redirect_to request.referer.present? ? :back : default, options
   end
 
   protected
+
+  def sentry_user_context
+    if Rails.env.production? && current_application_settings.sentry_enabled && current_user
+      Raven.user_context(
+        id: current_user.id,
+        email: current_user.email,
+        username: current_user.username,
+      )
+    end
+  end
 
   # From https://github.com/plataformatec/devise/wiki/How-To:-Simple-Token-Authentication-Example
   # https://gist.github.com/josevalim/fb706b1e933ef01e4fb6
@@ -55,13 +73,8 @@ class ApplicationController < ActionController::Base
   end
 
   def authenticate_user!(*args)
-    # If user is not signed-in and tries to access root_path - redirect him to landing page
-    # Don't redirect to the default URL to prevent endless redirections
-    if current_application_settings.home_page_url.present? &&
-        current_application_settings.home_page_url.chomp('/') != Gitlab.config.gitlab['url'].chomp('/')
-      if current_user.nil? && root_path == request.path
-        redirect_to current_application_settings.home_page_url and return
-      end
+    if redirect_to_home_page_url?
+      redirect_to current_application_settings.home_page_url and return
     end
 
     super(*args)
@@ -114,12 +127,16 @@ class ApplicationController < ActionController::Base
       #   localhost/group/project
       #
       if id =~ /\.git\Z/
-        redirect_to request.original_url.gsub(/\.git\Z/, '') and return
+        redirect_to request.original_url.gsub(/\.git\/?\Z/, '') and return
       end
 
-      @project = Project.find_with_namespace("#{namespace}/#{id}")
+      project_path = "#{namespace}/#{id}"
+      @project = Project.find_with_namespace(project_path)
 
       if @project and can?(current_user, :read_project, @project)
+        if @project.path_with_namespace != project_path
+          redirect_to request.original_url.gsub(project_path, @project.path_with_namespace) and return
+        end
         @project
       elsif current_user.nil?
         @project = nil
@@ -144,12 +161,8 @@ class ApplicationController < ActionController::Base
     render "errors/access_denied", layout: "errors", status: 404
   end
 
-  def not_found!
-    render "errors/not_found", layout: "errors", status: 404
-  end
-
   def git_not_found!
-    render "errors/git_not_found", layout: "errors", status: 404
+    render html: "errors/git_not_found", layout: "errors", status: 404
   end
 
   def method_missing(method_sym, *arguments, &block)
@@ -203,9 +216,29 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def validate_user_service_ticket!
+    return unless signed_in? && session[:service_tickets]
+
+    valid = session[:service_tickets].all? do |provider, ticket|
+      Gitlab::OAuth::Session.valid?(provider, ticket)
+    end
+
+    unless valid
+      session[:service_tickets] = nil
+      sign_out current_user
+      redirect_to new_user_session_path
+    end
+  end
+
   def check_password_expiration
     if current_user && current_user.password_expires_at && current_user.password_expires_at < Time.now  && !current_user.ldap_user?
       redirect_to new_profile_password_path and return
+    end
+  end
+
+  def check_2fa_requirement
+    if two_factor_authentication_required? && current_user && !current_user.two_factor_enabled && !skip_two_factor?
+      redirect_to new_profile_two_factor_auth_path
     end
   end
 
@@ -265,7 +298,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_filters_params
-    params[:sort] ||= 'created_desc'
+    params[:sort] ||= 'id_desc'
     params[:scope] = 'all' if params[:scope].blank?
     params[:state] = 'opened' if params[:state].blank?
 
@@ -341,5 +374,35 @@ class ApplicationController < ActionController::Base
 
   def git_import_enabled?
     current_application_settings.import_sources.include?('git')
+  end
+
+  def two_factor_authentication_required?
+    current_application_settings.require_two_factor_authentication
+  end
+
+  def two_factor_grace_period
+    current_application_settings.two_factor_grace_period
+  end
+
+  def two_factor_grace_period_expired?
+    date = current_user.otp_grace_period_started_at
+    date && (date + two_factor_grace_period.hours) < Time.current
+  end
+
+  def skip_two_factor?
+    session[:skip_tfa] && session[:skip_tfa] > Time.current
+  end
+
+  def redirect_to_home_page_url?
+    # If user is not signed-in and tries to access root_path - redirect him to landing page
+    # Don't redirect to the default URL to prevent endless redirections
+    return false unless current_application_settings.home_page_url.present?
+
+    home_page_url = current_application_settings.home_page_url.chomp('/')
+    root_urls = [Gitlab.config.gitlab['url'].chomp('/'), root_url.chomp('/')]
+
+    return false if root_urls.include?(home_page_url)
+
+    current_user.nil? && root_path == request.path
   end
 end

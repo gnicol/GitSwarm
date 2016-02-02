@@ -20,6 +20,11 @@ Dir["#{Rails.root}/features/steps/shared/*.rb"].each { |file| require file }
 Dir["#{Rails.root}/perforce_swarm/features/steps/shared/*.rb"].each { |file| require file }
 
 WebMock.allow_net_connect!
+
+# stub requests to updates.perforce.com for check for updates
+WebMock.stub_request(:get, %r{https://updates\.perforce\.com/static/GitSwarm/GitSwarm(\-ee)?\.json})
+  .to_return(status: 200, body: '{"versions":[]}', headers: {})
+
 #
 # JS driver
 #
@@ -63,6 +68,15 @@ Spinach.hooks.before_run do
   end
 
   include FactoryGirl::Syntax::Methods
+end
+
+Spinach.hooks.before_scenario do
+  RSpec::Mocks.setup
+end
+
+Spinach.hooks.after_scenario do
+  RSpec::Mocks.verify
+  RSpec::Mocks.teardown
 end
 
 def wait_for_ajax

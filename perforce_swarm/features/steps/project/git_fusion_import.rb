@@ -30,8 +30,8 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
 
   step 'The Git Fusion config block has a malformed URL' do
     PerforceSwarm::GitlabConfig.any_instance.stub(
-        git_fusion: configify('enabled' => true, 'local' => { 'url' => 'invalid' })
-      )
+      git_fusion: configify('enabled' => true, 'local' => { 'url' => 'invalid' })
+    )
   end
 
   step 'Git Fusion is enabled but is otherwise not configured' do

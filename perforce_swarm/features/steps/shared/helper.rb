@@ -6,7 +6,9 @@ module SharedHelper
     datetime = Time.new.to_i.to_s
     screenshot_path = '/tmp/gitswarm-screenshot-' + datetime + '.jpg'
     if ::Capybara.current_driver == :poltergeist
+      # rubocop:disable Lint/Debugger
       save_screenshot(screenshot_path, full: true)
+      # rubocop:enable Lint/Debugger
     end
   end
 end

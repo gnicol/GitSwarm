@@ -64,7 +64,7 @@ module Gitlab
 
         # If a corresponding person exists with same uid in a LDAP server,
         # set up a Gitlab user with dual LDAP and Omniauth identities.
-        if user = Gitlab::LDAP::User.find_by_uid_and_provider(ldap_person.dn.downcase, ldap_person.provider)
+        if user = Gitlab::LDAP::User.find_by_uid_and_provider(ldap_person.dn, ldap_person.provider)
           # Case when a LDAP user already exists in Gitlab. Add the Omniauth identity to existing account.
           user.identities.build(extern_uid: auth_hash.uid, provider: auth_hash.provider)
         else
@@ -111,7 +111,7 @@ module Gitlab
       def block_after_signup?
         if creating_linked_ldap_user?
           ldap_config.block_auto_created_users
-        else 
+        else
           Gitlab.config.omniauth.block_auto_created_users
         end
       end
@@ -135,15 +135,18 @@ module Gitlab
       def user_attributes
         # Give preference to LDAP for sensitive information when creating a linked account
         if creating_linked_ldap_user?
-          username = ldap_person.username
-          email = ldap_person.email.first
-        else
-          username = auth_hash.username
-          email = auth_hash.email
+          username = ldap_person.username.presence
+          email = ldap_person.email.first.presence
         end
-        
+
+        username ||= auth_hash.username
+        email ||= auth_hash.email
+
+        name = auth_hash.name
+        name = ::Namespace.clean_path(username) if name.strip.empty?
+
         {
-          name:                       auth_hash.name,
+          name:                       name,
           username:                   ::Namespace.clean_path(username),
           email:                      email,
           password:                   auth_hash.password,

@@ -10,6 +10,7 @@
 - [Repositories](repositories.md)
 - [Repository Files](repository_files.md)
 - [Commits](commits.md)
+- [Tags](tags.md)
 - [Branches](branches.md)
 - [Merge Requests](merge_requests.md)
 - [Issues](issues.md)
@@ -22,6 +23,9 @@
 - [Namespaces](namespaces.md)
 - [Settings](settings.md)
 - [Keys](keys.md)
+- [Builds](builds.md)
+- [Build triggers](build_triggers.md)
+- [Build Variables](build_variables.md)
 
 ## Clients
 

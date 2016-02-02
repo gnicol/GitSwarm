@@ -8,22 +8,21 @@ module Ci
       builds =
         if current_runner.shared?
           # don't run projects which have not enables shared runners
-          builds.includes(:project).where(ci_projects: { shared_runners_enabled: true })
+          builds.joins(:project).where(projects: { builds_enabled: true, shared_runners_enabled: true })
         else
           # do run projects which are only assigned to this runner
-          builds.where(project_id: current_runner.projects)
+          builds.where(project: current_runner.projects.where(builds_enabled: true))
         end
 
       builds = builds.order('created_at ASC')
 
       build = builds.find do |build|
-        (build.tag_list - current_runner.tag_list).empty?
+        build.can_be_served?(current_runner)
       end
-        
 
       if build
         # In case when 2 runners try to assign the same build, second runner will be declined
-        # with StateMachine::InvalidTransition in run! method.
+        # with StateMachines::InvalidTransition in run! method.
         build.with_lock do
           build.runner_id = current_runner.id
           build.save!
@@ -33,7 +32,7 @@ module Ci
 
       build
 
-    rescue StateMachine::InvalidTransition
+    rescue StateMachines::InvalidTransition
       nil
     end
   end

@@ -42,7 +42,7 @@ describe Notify do
 
   context 'for a project' do
     describe 'project was moved', override: true do
-      subject { Notify.project_was_moved_email(project.id, user.id) }
+      subject { Notify.project_was_moved_email(project.id, user.id, 'gitlab/gitlab') }
 
       it_behaves_like 'an email sent from GitLab'
     end
@@ -68,8 +68,10 @@ describe Notify do
   describe 'confirmation if email changed', override: true do
     let(:user) { create(:user, email: 'old-email@mail.com') }
     before do
-      user.email = 'new-email@mail.com'
-      user.save
+      perform_enqueued_jobs do
+        user.email = 'new-email@mail.com'
+        user.save
+      end
     end
     subject { ActionMailer::Base.deliveries.last }
 
@@ -86,8 +88,8 @@ describe Notify do
 
       it 'is sent as the author' do
         sender = subject.header[:from].addrs[0]
-        sender.display_name.should eq('GitSwarm')
-        sender.address.should eq(gitlab_sender)
+        expect(sender.display_name).to eq('GitSwarm')
+        expect(sender.address).to eq(gitlab_sender)
       end
     end
   end

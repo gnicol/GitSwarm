@@ -11,11 +11,22 @@
 #
 
 class AbuseReport < ActiveRecord::Base
-  belongs_to :reporter, class_name: "User"
+  belongs_to :reporter, class_name: 'User'
   belongs_to :user
 
   validates :reporter, presence: true
   validates :user, presence: true
   validates :message, presence: true
-  validates :user_id, uniqueness: { scope: :reporter_id }
+  validates :user_id, uniqueness: true
+
+  def remove_user
+    user.block
+    user.destroy
+  end
+
+  def notify
+    return unless self.persisted?
+
+    AbuseReportMailer.notify(self.id).deliver_later
+  end
 end

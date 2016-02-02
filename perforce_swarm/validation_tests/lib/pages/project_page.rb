@@ -9,7 +9,7 @@ class ProjectPage < Page
 
   def elements_for_validation
     elems = super
-    elems << [:class, 'git-protocols'] # project name
+    elems << [:class, 'project-home-desc'] # project name
     elems
   end
 
@@ -29,18 +29,18 @@ class ProjectPage < Page
   end
 
   def mirrored_in_helix?
-    !page_has_element(:link_text, 'MIRROR IN HELIX') | page_has_element(:link_text, 'Mirrored in Helix')
+    page_has_element(:link_text, 'Mirrored in Helix')
   end
 
   def click_mirror_in_helix
     fail 'project already mirrored' if mirrored_in_helix?
-    @driver.find_element(:link_text, 'MIRROR IN HELIX').click
+    @driver.find_element(:link_text, 'Helix Mirroring').click
     ConfigureMirroringPage.new(@driver)
   end
 
   private
 
   def wait_for_clone
-    wait_for(:class, 'git-protocols', 45)
+    wait_for(:class, 'project-home-desc', 45)
   end
 end

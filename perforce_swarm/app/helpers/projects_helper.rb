@@ -206,7 +206,7 @@ module ProjectsHelper
              class: 'has_tooltip mirror-button-wrapper') do
       # parameters for an enable button
       can_mirror = mirroring_permitted?(@project, current_user) && mirroring_configured?
-      attributes = { class: 'btn btn-save' + (can_mirror ? '' : ' disabled') }
+      attributes = { class: 'btn btn-save helix-mirroring' + (can_mirror ? '' : ' disabled') }
 
       # add the button at the appropriate haml indent level
       haml_concat(

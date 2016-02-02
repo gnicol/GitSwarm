@@ -10,11 +10,13 @@
 
 1.  **Install the GitSwarm package and necessary dependencies via the OS
     package manager.**
+
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```
 sudo apt-get install helix-gitswarm
         ```
+
     1.  **For CentOS (6 and 7):**
 
         ```
@@ -40,7 +42,7 @@ sudo yum install helix-gitswarm
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```
-sudo apt-get install openssh-server ca-certificates perforce-server helix-git-fusion-base
+sudo apt-get install openssh-server ca-certificates helix-p4d helix-git-fusion-base
         ```
 
 1.  **Download the GitSwarm package and install everything.**

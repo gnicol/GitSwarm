@@ -58,7 +58,7 @@ module ProjectsHelper
     # user does not have adequate permissions to enable mirroring
     tooltip = <<-EOM
       GitSwarm is configured for Helix mirroring, but you lack permissions to enable it for this project.<br />
-      To enable Helix mirroring, you must be a project 'master' or an 'admin'.
+      To enable Helix mirroring, you must be a project 'master' or an 'owner'.
     EOM
     return tooltip.html_safe unless mirroring_permitted?(project, user)
 
@@ -71,7 +71,7 @@ module ProjectsHelper
 
     # all good in the 'hood - tooltip is slightly different for the button vs the text below the clone URL
     return 'Click to get mirroring!' if for_button
-    'Click "Helix Mirroring" above to get mirroring!'
+    'Click "Helix Mirroring" below to get mirroring!'
   end
 
   def helix_reenable_mirroring_tooltip(project)

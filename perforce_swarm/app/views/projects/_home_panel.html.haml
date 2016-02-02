@@ -16,6 +16,12 @@
     .visibility-level-label.has_tooltip{title: project_visibility_level_description(@project.visibility_level), data: { container: 'body' } }
       = visibility_level_icon(@project.visibility_level, fw: false)
       = visibility_level_label(@project.visibility_level)
+    -# gitswarm changes start
+    - mirrored = @project.git_fusion_mirrored?
+    .helix-mirrored-status-label.btn.btn-gray{ data: { container: 'body', toggle: 'tooltip', html: 'true', title: mirroring_tooltip(@project, current_user)}}
+      = (mirrored ? '' : 'Not ') + 'Mirrored in Helix'
+      = icon('fw question-circle') unless mirrored
+    -# gitswarm changes end
 
   .cover-controls
     - if current_user

@@ -9,10 +9,6 @@ GitSwarm project and allow you to do the following:
 - clicking **New issue** on the project dashboard creates a new issue on
   the external tracker
 
-FIXME:DEL:![JIRA screenshot](jira-integration-points.png)
-FIXME:DEL:
-FIXME:DEL:GitSwarm Enterprise Edition contains advanced JIRA support.
-
 ## Configuration
 
 The configuration is done via a project's **Services**.

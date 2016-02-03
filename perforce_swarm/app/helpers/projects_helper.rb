@@ -113,7 +113,9 @@ module ProjectsHelper
   # returns the rendered (sans password) URL for a currently or previously mirrored project
   def git_fusion_url(project)
     if project.git_fusion_mirrored?
-      return PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url
+      url = PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url
+      # remove @foruser=USER if it occurs in this mirror remote
+      url.gsub(/@foruser=.+$/, '')
     elsif project.git_fusion_repo.present?
       return PerforceSwarm::GitFusionRepo.resolve_url(project.git_fusion_repo).to_s
     else

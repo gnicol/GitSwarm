@@ -7,6 +7,8 @@
 - Ubuntu 12.04 or 14.04
 - CentOS 6.7 or 7
 
+> Note: GitSwarm is only available for 64-bit systems.
+
 See the [installation instructions](README.md).
 
 ### Unsupported Unix distributions

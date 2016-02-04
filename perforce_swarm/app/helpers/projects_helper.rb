@@ -91,9 +91,13 @@ module ProjectsHelper
       return tooltip.html_safe unless mirroring_configured?
     end
 
-    git_fusion_url = git_fusion_url(project)
-    tooltip        = 'This project has no record of being previously mirrored.'
-    return tooltip.html_safe unless git_fusion_url && !git_fusion_url.empty?
+    begin
+      url     = git_fusion_url(project, false)
+      tooltip = 'This project has no record of being previously mirrored.'
+      return tooltip.html_safe unless url && !url.empty?
+    rescue => e
+      return ERB::Util.html_escape(e.message).html_safe
+    end
 
     nil
   end
@@ -111,7 +115,7 @@ module ProjectsHelper
   end
 
   # returns the rendered (sans password) URL for a currently or previously mirrored project
-  def git_fusion_url(project)
+  def git_fusion_url(project, ignore_exceptions = true)
     if project.git_fusion_mirrored?
       return PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url
     elsif project.git_fusion_repo.present?
@@ -119,8 +123,9 @@ module ProjectsHelper
     else
       return ''
     end
-  rescue
-    return false
+  rescue => e
+    return false if ignore_exceptions
+    raise e
   end
 
   # boolean as to whether there are configured Git Fusion instances in the config

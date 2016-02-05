@@ -114,6 +114,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
       exec Shellwords.shelljoin(args)
     end
     Process.detach(job)
+    logger.info("Helix Mirroring re-enable started on project '#{@project.name}' by user '#{current_user.username}'")
 
     # we want to return once the above process has started, so we don't return until
     # either the child process is done, the re-enabling process has started, or

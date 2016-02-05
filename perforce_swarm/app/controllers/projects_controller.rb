@@ -29,6 +29,7 @@ module PerforceSwarm
         exec Shellwords.shelljoin([mirror_script, 'push', @project.path_with_namespace + '.git'])
       end
       Process.detach(push_job)
+      logger.info("Helix Mirroring enable started on project '#{@project.name}' by user '#{current_user.username}'")
       redirect_to(project_path(@project), notice: 'Helix mirroring successful!')
     rescue => e
 
@@ -42,8 +43,9 @@ module PerforceSwarm
       fail 'No project specified.' unless @project
       fail 'Project is not mirrored in Helix.' unless @project.git_fusion_mirrored?
 
-      # disable mirroring in GitSwarm, and redirect to project details page
+      # disable mirroring in GitSwarm, log, and redirect to project details page
       @project.disable_git_fusion_mirroring!
+      logger.info("Helix Mirroring disabled on project '#{@project.name}' by user '#{current_user.username}'")
       redirect_to(project_path(@project), notice: 'Helix mirroring successfully disabled!')
     rescue => e
       redirect_to(project_path(@project), alert: e.message)

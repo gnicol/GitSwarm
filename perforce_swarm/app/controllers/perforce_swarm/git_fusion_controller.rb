@@ -91,8 +91,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
     # ensure the repo still exists, and the user re-enabling can see it
     error = nil
     begin
-      server  = project.git_fusion_server_id
-      repo    = project.git_fusion_repo_name
+      server  = @project.git_fusion_server_id
+      repo    = @project.git_fusion_repo_name
       repos   = PerforceSwarm::GitFusionRepo.list(server, current_user.username)
       message = "Either the repo '#{repo}' does not exist, or you do not have permission to access it."
       error   = message unless repos[repo]

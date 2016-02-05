@@ -117,7 +117,7 @@ module ProjectsHelper
   # returns the rendered URL for a currently or previously mirrored project
   def git_fusion_url!(project)
     if project.git_fusion_mirrored?
-      return PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url
+      return PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_url_object.clear_for_user.to_s
     elsif project.git_fusion_repo.present?
       return PerforceSwarm::GitFusionRepo.resolve_url(project.git_fusion_repo).to_s
     else

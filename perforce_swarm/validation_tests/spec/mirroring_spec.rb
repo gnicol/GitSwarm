@@ -193,14 +193,14 @@ describe 'New Mirrored Project', browser: true, Mirroring: true do
       sleep(2) # some time to let the file get into perforce
 
       @p4.connect_and_sync
-      LOG.log('File added to git exists in Perforce before we mirror? = ' + File.exist?(@p4_file_from_git).to_s)
+      LOG.log("File added to git exists in Perforce before we mirror? = #{File.exist?(@p4_file_from_git)}")
       expect(File.exist?(@p4_file_from_git)).to be false
 
       lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
       pp = lp.login(user.name, user.password).goto_project_page(user.name, project.name)
       LOG.log('Project is mirrored? ' + pp.mirrored_in_helix?.to_s)
       expect(pp.mirrored_in_helix?).to be false
-      config_mirroring = pp.click_mirror_in_helix
+      config_mirroring = pp.configure_mirroring
       pp = config_mirroring.mirror_project_and_wait
       LOG.debug('Project is mirrored? ' + pp.mirrored_in_helix?.to_s)
       expect(pp.mirrored_in_helix?).to be true
@@ -211,8 +211,59 @@ describe 'New Mirrored Project', browser: true, Mirroring: true do
         @p4.sync
         File.exist?(@p4_file_from_git)
       end
-      LOG.log('File added to git exists in Perforce after we mirror? = ' + p4_file_exists.to_s)
+      LOG.log("File added to git exists in Perforce after we mirror? = #{p4_file_exists}")
       expect(p4_file_exists).to be true
+    end
+  end
+
+  context 'when I disable mirroring on a project' do
+    it 'files should not be mirrored from git into perforce' do
+      create_new_project
+      clone_project(project, git_dir)
+      git_filename = 'git-file-'+unique_string
+      p4_file_from_git = p4_dir + '/' + git_filename
+      create_file(git_dir, git_filename)
+      LOG.debug 'Creating file in git : ' + git_filename
+      @git.add_commit_push
+
+      # Expect file to appear in perforce
+      @p4.connect
+      p4_file_exists = run_block_with_retry(12, 5) do
+        @p4.sync
+        File.exist?(p4_file_from_git)
+      end
+      LOG.log('File added to git exists in Perforce ? = ' + p4_file_exists.to_s)
+      expect(p4_file_exists).to be true
+
+      # disable mirroring
+      LOG.log('Disabling mirroring')
+
+      lp = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
+      pp = lp.login(user.name, user.password).goto_project_page(user.name, project.name)
+      LOG.log('Project is mirrored? ' + pp.mirrored_in_helix?.to_s)
+      expect(pp.mirrored_in_helix?).to be true
+
+      config_mirroring = pp.configure_mirroring
+      expect(config_mirroring.can_disable?).to be true
+      pp = config_mirroring.disable_mirroring
+      config_mirroring = pp.configure_mirroring
+      expect(config_mirroring.can_disable?).to be false
+      expect(config_mirroring.can_reenable?).to be true
+
+      # push new file in through git
+      git_filename = 'new-git-file-'+unique_string
+      p4_file_from_git = p4_dir + '/' + git_filename
+      create_file(git_dir, git_filename)
+      LOG.debug 'Creating file in git : ' + git_filename
+      @git.add_commit_push
+
+      # Expect file never to appear in perforce
+      p4_file_exists = run_block_with_retry(12, 5) do
+        @p4.sync
+        File.exist?(p4_file_from_git)
+      end
+      LOG.log("File added to git exists in Perforce after disabling mirroring? : #{p4_file_exists}")
+      expect(p4_file_exists).to be false
     end
   end
 

@@ -75,12 +75,6 @@ module ProjectsHelper
   end
 
   def helix_reenable_mirroring_tooltip(project)
-    tooltip = <<-EOM
-      GitSwarm is configured for Helix mirroring, but you lack permissions to enable it for this project.<br />
-      To enable Helix mirroring, you must be a project 'master' or an 'admin'.
-    EOM
-    return tooltip.html_safe unless mirroring_permitted?(project, current_user)
-
     begin
       gitlab_shell_config.git_fusion.entry(project.git_fusion_server_id)
     rescue

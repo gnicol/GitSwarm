@@ -8,6 +8,24 @@ not on 2016.1 or higher versions. Although, upgrading GitSwarm should not
 result in data corruption, we recommend taking backups of your existing
 version before you run an upgrade.
 
+## Update dependencies
+
+If you have any repos mirroring their content into Helix Git Fusion, we
+recommend that you update Helix Git Fusion and the Helix Versioning Engine
+prior to updating GitSwarm.
+
+-   **For Ubuntu:**
+
+    ```bash
+sudo apt-get upgrade helix-git-fusion helix-cli-base helix-p4d-base
+    ```
+
+-   **For CentOS:**
+
+    ```bash
+sudp yum update helix-git-fusion helix-cli-base helix-p4d-base
+    ```
+
 ## Performing the update to 2016.1
 
 1.  **Download the 2016.1 GitSwarm package and install it.**

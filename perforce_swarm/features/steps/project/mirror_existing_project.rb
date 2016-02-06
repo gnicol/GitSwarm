@@ -40,7 +40,7 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I should see an inadequate permissions tooltip' do
-    page.should have_selector('li[data-title*="but you lack permissions to enable it for this project."]')
+    page.should have_selector('li[data-title*="but you lack permissions to manage it for this project."]')
   end
 
   step 'I should see a disabled or mis-configured tooltip' do

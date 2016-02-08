@@ -26,7 +26,6 @@ class ConfigureMirroringPage < LoggedInPage
   end
 
   def mirror_project_and_wait
-    screendump
     click_and_accept(:class, 'btn-create')
     ProjectPage.new(@driver)
   end

@@ -1,4 +1,5 @@
 require 'selenium-webdriver'
+require_relative '../spec/spec_helper'
 
 class Page
   attr_reader :driver
@@ -26,6 +27,7 @@ class Page
     elements = elements_for_validation
     LOG.debug('Verifying elements : ' + elements.inspect)
     elements.each do |(by, value, timeout)|
+      timeout = 10 unless timeout
       unless page_has_element(by, value, timeout)
         ok = false
         LOG.log("Element missing on page:  #{by} #{value}")
@@ -38,15 +40,12 @@ class Page
   end
 
   def page_has_element(by, value, timeout = 10)
-    timeout = 10 unless timeout
-    begin
-      wait_for(by, value, timeout)
-      true
-    rescue Selenium::WebDriver::Error::NoSuchElementError
-      false
-    rescue Selenium::WebDriver::Error::TimeOutError
-      false
-    end
+    wait_for(by, value, timeout)
+    true
+  rescue Selenium::WebDriver::Error::NoSuchElementError
+    false
+  rescue Selenium::WebDriver::Error::TimeOutError
+    false
   end
 
   def page_has_text(text)
@@ -79,13 +78,13 @@ class Page
   def screendump
     uid = unique_string
     begin
-      source_dumpfile = File.join(__dir__, '..', 'tmp-clients', "#{uid}.html")
+      source_dumpfile = File.join(tmp_screenshot_dir, "#{uid}.html")
       File.write(source_dumpfile, @driver.page_source)
       LOG.log("Writing page source to #{source_dumpfile}")
     rescue Selenium::WebDriver::Error::UnhandledAlertError => error
       LOG.log("Failed writing page source due to #{error.message}")
     end
-    image_dumpfile = File.join(__dir__, '..', 'tmp-clients', "#{uid}.png")
+    image_dumpfile = File.join(tmp_screenshot_dir, "#{uid}.png")
     if @driver.respond_to?(:save_screenshot)
       LOG.log("Writing screenshot to #{image_dumpfile}")
       @driver.save_screenshot(image_dumpfile)

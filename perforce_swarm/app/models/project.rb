@@ -33,8 +33,10 @@ module PerforceSwarm
     def create_repository
       # Attempt to submit the config for a new GitFusion repo to perforce if
       # git_fusion_import_type was set on this project
-      if git_fusion_entry.present? && git_fusion_import_type
+      if git_fusion_entry.present? &&
+          (git_fusion_import_type == 'auto-create' || git_fusion_import_type == 'file-selector')
         begin
+          # @TODO pass in the mapping from git_fusion_branch_mapping
           creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace.name, path)
           creator.save
           PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: git_fusion_entry)
@@ -103,6 +105,7 @@ class Project < ActiveRecord::Base
 
   attr_accessor :git_fusion_import_type
   attr_accessor :git_fusion_entry
+  attr_accessor :git_fusion_branch_mapping
 
   # The rspec tests use 'allow_any_instance_of' on Project to stub this method out during testing.
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.

@@ -70,15 +70,28 @@
               Map folders and files from the Perforce Depot into a branch
               %br
               From this depot folder
-              %div
-                .git-fusion-tree-holder.col-sm-6
+              .git-fusion-split-tree.clearfix
+                .git-fusion-tree-holder.git-fusion-tree-source.col-sm-7
                   .tree-title.clearfix
                     .depot-type
                       = icon('code-fork')
                       stream
                     = text_field_tag 'branch_name', params[:branch_name], placeholder: "Branch name",
-                      required: true, class: 'form-control new-branch-name js-quick-submit'
+                      required: false, class: 'form-control new-branch-name js-quick-submit'
 
                   .tree-content
                     .git-fusion-tree
-
+                  .clearfix
+                    .current-mapping
+                      %strong
+                        Branch "
+                        %span.current-mapping-branch>
+                        ":
+                      %br
+                      \//
+                      %span.current-mapping-path> ...
+                    .btn.btn-primary.tree-save.disabled{:disabled => 'disabled'} Add
+                  %div
+                    %strong
+                      Saved Branches:
+                      %ul.content-list

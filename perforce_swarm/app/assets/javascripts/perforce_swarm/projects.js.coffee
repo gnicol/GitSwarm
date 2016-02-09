@@ -72,32 +72,8 @@ class @GitFusionProject
 
     if p4d_file_selected
       this.$('.git-fusion-file-selector-wrapper').show()
-      tree_url = '/gitswarm/p4_tree.json'
-      tree_url = gon.relative_url_root + tree_url if gon.relative_url_root?
       fusion_server = this.$(@server_select_selector).val()
-      this.$('.git-fusion-tree').jstree({
-        "core" : {
-          "themes" : {
-            "dots" : false
-          },
-          'data' : {
-            "url" : tree_url,
-            "data" : (node) ->
-              { "path" : node.id, "fusion_server" : fusion_server }
-          }
-        },
-        "checkbox" : {
-          "keep_selected_style" : false,
-          "whole_node" : false,
-          "tie_selection" : false
-        },
-        "contextmenu" : {
-          "items": {
-            "exclude" : {"label": 'Exclude', "action":  -> }
-          }
-        },
-        "plugins" : [ "checkbox", "contextmenu" ]
-      })
+      p4_tree = new P4Tree(this.$('.git-fusion-split-tree'), fusion_server)
     else
       this.$('.git-fusion-file-selector-wrapper').hide()
 

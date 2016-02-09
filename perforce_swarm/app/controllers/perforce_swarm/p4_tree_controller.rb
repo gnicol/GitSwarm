@@ -10,7 +10,6 @@ module PerforceSwarm
       p4 = PerforceSwarm::P4::Connection.new(git_fusion)
       p4.login
 
-
       respond_to do |format|
         format.json do
           render json: get_dirs(p4, params['path'])
@@ -32,7 +31,7 @@ module PerforceSwarm
       else
         connection.run('dirs', "//#{path}/*").each do |dir_info|
           dir_name = File.basename(dir_info['dir'])
-          dirs << { id: "#{path}/#{dir_name}", text: dir_name, type: 'folder', children: true  }
+          dirs << { id: "#{path}/#{dir_name}", text: dir_name, type: 'folder', children: true }
         end
       end
       dirs

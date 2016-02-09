@@ -60,7 +60,7 @@ module PerforceSwarm
       end
 
       super.merge(params.permit(:git_fusion_repo, :git_fusion_import_type,
-                                :git_fusion_entry, :git_fusion_mirrored))
+                                :git_fusion_entry, :git_fusion_mirrored, :git_fusion_branch_mapping))
     end
 
     protected

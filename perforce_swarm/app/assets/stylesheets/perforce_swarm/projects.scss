@@ -108,6 +108,17 @@ span.mirror-button-wrapper {
   // although not dangerous, use this to get the red color for the displayed depot path
   color: $brand-danger;
 }
+.git-fusion-file-selector-wrapper {
+  cursor: default;
+
+  .tree-save {
+    float: right;
+  }
+
+  .current-mapping {
+    float: left;
+  }
+}
 
 .git-fusion-tree-holder {
   border: none;

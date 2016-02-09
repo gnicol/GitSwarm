@@ -54,6 +54,8 @@ class @GitFusionProject
     if ($(@original_settings_selector).length)
       original_auto_create = $(@original_settings_selector).data('auto-create')
       $('input#git_fusion_auto_create_' + original_auto_create).prop('checked', true)
+      original_repo_selection = $(@original_settings_selector).data('repo')
+      this.$(@repo_name_selector).val(original_repo_selection).select2()
 
     if (this.$(@auto_create_selector).length)
       disabled_selector    = this.$(@disabled_selector).is(':checked')

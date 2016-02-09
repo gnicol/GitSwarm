@@ -25,14 +25,25 @@
 /* Include project page tweaks */
 @import "perforce_swarm/projects";
 
-i.fa-helix-icon-white {
+i.fa-helix-icon {
   height: 13px;
   width: 8px;
-  background: image-url('helix-icon-white.png') center center;
   margin-right: 3px;
 }
 
-ul.sidebar-subnav i.fa-helix-icon-white {
+i.fa-helix-icon.fa-white {
+  background: image-url('helix-icon-white.png') center center;
+}
+
+i.fa-helix-icon.fa-black {
+  background: image-url('helix-icon-black.png') center center;
+}
+
+a.btn i.fa-helix-icon.fa-black {
+  margin-right: 5px;
+}
+
+ul.sidebar-subnav i.fa-helix-icon.fa-white {
   width: 8px !important;
   margin-left: 3px;
 }

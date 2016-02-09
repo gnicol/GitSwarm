@@ -76,7 +76,7 @@ module PerforceSwarm
 
         # Allow access if project is not mirrored, or not marked private, or is not in the no_access list
         projects.select do |project|
-          !project.git_fusion_repo || !project.private? || !no_access.include?(project.git_fusion_repo)
+          !project.git_fusion_mirrored? || !project.private? || !no_access.include?(project.git_fusion_repo)
         end
       end
 

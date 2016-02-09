@@ -3,13 +3,12 @@ require_relative '../page'
 class ProjectPage < Page
   def initialize(driver)
     super(driver)
-    wait_for_clone
     verify
   end
 
   def elements_for_validation
     elems = super
-    elems << [:class, 'project-home-desc'] # project name
+    elems << [:class, 'project-home-desc', 45] # project name
     elems
   end
 
@@ -29,18 +28,14 @@ class ProjectPage < Page
   end
 
   def mirrored_in_helix?
+    unless page_has_element(:class, 'project-stats')
+      fail('Project has no branches so the \'Mirrored in Helix\' button wont show')
+    end
     page_has_element(:link_text, 'Mirrored in Helix')
   end
 
-  def click_mirror_in_helix
-    fail 'project already mirrored' if mirrored_in_helix?
+  def configure_mirroring
     @driver.find_element(:link_text, 'Helix Mirroring').click
     ConfigureMirroringPage.new(@driver)
-  end
-
-  private
-
-  def wait_for_clone
-    wait_for(:class, 'project-home-desc', 45)
   end
 end

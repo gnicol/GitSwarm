@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160129135155) do
+ActiveRecord::Schema.define(version: 20160209130428) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -684,6 +684,7 @@ ActiveRecord::Schema.define(version: 20160129135155) do
     t.string   "git_fusion_repo"
     t.boolean  "git_fusion_mirrored",    default: false,    null: false
     t.boolean  "pending_delete",         default: false
+    t.boolean  "public_builds",          default: true,     null: false
   end
 
   add_index "projects", ["builds_enabled", "shared_runners_enabled"], name: "index_projects_on_builds_enabled_and_shared_runners_enabled", using: :btree
@@ -774,6 +775,7 @@ ActiveRecord::Schema.define(version: 20160129135155) do
   add_index "snippets", ["created_at"], name: "index_snippets_on_created_at", using: :btree
   add_index "snippets", ["expires_at"], name: "index_snippets_on_expires_at", using: :btree
   add_index "snippets", ["project_id"], name: "index_snippets_on_project_id", using: :btree
+  add_index "snippets", ["updated_at"], name: "index_snippets_on_updated_at", using: :btree
   add_index "snippets", ["visibility_level"], name: "index_snippets_on_visibility_level", using: :btree
 
   create_table "spam_logs", force: :cascade do |t|

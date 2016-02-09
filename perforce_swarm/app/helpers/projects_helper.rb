@@ -58,7 +58,7 @@ module ProjectsHelper
     # user does not have adequate permissions to enable mirroring
     tooltip = <<-EOM
       GitSwarm is configured for Helix mirroring, but you lack permissions to enable it for this project.<br />
-      To enable Helix mirroring, you must be a project 'master' or an 'admin'.
+      To enable Helix mirroring, you must be a project 'master' or an 'owner'.
     EOM
     return tooltip.html_safe unless mirroring_permitted?(project, user)
 
@@ -71,13 +71,13 @@ module ProjectsHelper
 
     # all good in the 'hood - tooltip is slightly different for the button vs the text below the clone URL
     return 'Click to get mirroring!' if for_button
-    'Click "Helix Mirroring" above to get mirroring!'
+    'Click "Helix Mirroring" below to get mirroring!'
   end
 
   def helix_reenable_mirroring_tooltip(project)
     tooltip = <<-EOM
       GitSwarm is configured for Helix mirroring, but you lack permissions to enable it for this project.<br />
-      To enable Helix mirroring, you must be a project 'master' or an 'admin'.
+      To enable Helix mirroring, you must be a project 'master' or an 'owner'.
     EOM
     return tooltip.html_safe unless mirroring_permitted?(project, current_user)
 
@@ -210,7 +210,7 @@ module ProjectsHelper
     @gitlab_shell_config ||= PerforceSwarm::GitlabConfig.new
   end
 
-  def helix_mirroring_button(project, user)
+  def helix_mirroring_button(project, user, color = 'white')
     # wrapper for tooltip
     haml_tag(:span,
              data:  { title: mirroring_tooltip(project, user, true), html: 'true' },
@@ -222,7 +222,7 @@ module ProjectsHelper
       # add the button at the appropriate haml indent level
       haml_concat(
         link_to(configure_helix_mirroring_namespace_project_path(project.namespace, project), attributes) do
-          haml_concat(icon('helix-icon-white'))
+          haml_concat(icon('helix-icon ' + color))
           haml_concat('Helix Mirroring')
         end
       )

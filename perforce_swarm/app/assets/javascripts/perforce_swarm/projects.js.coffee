@@ -21,13 +21,12 @@ class @GitFusionProject
       @load_content(server.val())
 
     this.$el.on 'change', @repo_name_selector, (e) =>
-      # if the user chooses a repo, also select mirror from existing
-      this.$(@repo_import_selector).prop('checked', true)
-      this.$(@repo_import_selector).trigger('change')
-      @update_ui()
-
-    this.$el.on 'select2-open', @repo_name_selector, (e) =>
-      this.$(@repo_import_selector).prop('checked', true)
+      if this.$(@repo_import_selector).is(':checked')
+        @update_ui()
+      else
+        # if the user chooses a repo, also select mirror from existing
+        this.$(@repo_import_selector).prop('checked', true)
+        this.$(@repo_import_selector).trigger('change')
 
     this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}", (e) =>
       $(@original_settings_selector).remove()

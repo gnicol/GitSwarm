@@ -15,6 +15,7 @@ class EditFilePage < LoggedInPage
     elems << [:class, 'js-commit-message'] #
     elems << [:class, 'commit-btn'] # commit changes button
     elems << [:class, 'btn-cancel'] # cancel button
+    elems << [:class, 'ace_content']
     elems
   end
 
@@ -29,9 +30,8 @@ class EditFilePage < LoggedInPage
   def content=(text)
     # '-'s in the string don't make it into the text field - no clue why.
     fail('I dont know why but this doesnt work if there is a - in the string') if text.include? '-'
-
+    @driver.find_element(:class, 'ace_content').click
     elem = @driver.find_element(:class, 'ace_text-input')
-    elem.click
     elem.send_keys([:control, 'a'], :delete)
     elem.send_keys(text)
   end

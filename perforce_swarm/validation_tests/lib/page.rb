@@ -24,6 +24,13 @@ class Page
   #
   def verify
     ok = true
+    if page_has_text('The page you\'re looking for could not be found.') && page_has_text('404')
+      # fail fast if there is a 404 error
+      msg = "404 error found on #{current_url}"
+      LOG.log(msg)
+      screendump
+      fail(msg)
+    end
     elements = elements_for_validation
     LOG.debug('Verifying elements : ' + elements.inspect)
     elements.each do |(by, value, timeout)|

@@ -1,6 +1,8 @@
-require_relative '../page'
+require_relative 'logged_in_page'
 
-class ProjectPage < Page
+class ProjectPage < LoggedInPage
+  HELIX_MIRRORING = 'Helix Mirroring'
+
   def initialize(driver)
     super(driver)
     verify
@@ -9,6 +11,7 @@ class ProjectPage < Page
   def elements_for_validation
     elems = super
     elems << [:class, 'project-home-desc', 45] # project name
+    elems << [:class, 'helix-mirrored-status-label']
     elems
   end
 
@@ -28,14 +31,26 @@ class ProjectPage < Page
   end
 
   def mirrored_in_helix?
-    unless page_has_element(:class, 'project-stats')
-      fail('Project has no branches so the \'Mirrored in Helix\' button wont show')
-    end
-    page_has_element(:link_text, 'Mirrored in Helix')
+    txt = @driver.find_element(:class, 'helix-mirrored-status-label').text
+    return true  if txt == 'Mirrored in Helix'
+    return false if txt == 'Not Mirrored in Helix'
+    screendump
+    LOG.debug("Text of status label was #{txt}")
+    fail('Cannot determine if project is Mirrored in Helix - check the screendump to work out why not!')
+  end
+
+  def can_configure_mirroring?
+    elem = @driver.find_element(:link_text, HELIX_MIRRORING)
+    !elem.attribute(:class).include?('disabled')
   end
 
   def configure_mirroring
-    @driver.find_element(:link_text, 'Helix Mirroring').click
+    unless can_configure_mirroring?
+      # Not actually failing here as currently even disabled, the link works
+      LOG.debug("WARNING: #{HELIX_MIRRORING} button is not enabled for this user")
+      screendump
+    end
+    @driver.find_element(:link_text, HELIX_MIRRORING).click
     ConfigureMirroringPage.new(@driver)
   end
 end

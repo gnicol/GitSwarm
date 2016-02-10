@@ -5,7 +5,7 @@ class GitSwarmAPIHelper
   attr_accessor :raise_errors
 
   TOKEN_PARAM = 'private_token'
-  APP         = '/api/v3/'
+  APP         = 'api/v3/'
 
   GUEST       = '10'
   REPORTER    = '20'
@@ -18,7 +18,7 @@ class GitSwarmAPIHelper
   #
   def initialize(base_url, admin_username, admin_password)
     @raise_errors = false
-    @base_url    = base_url + APP
+    @base_url    = File.join(base_url, APP)
     response     = RestClient.post(@base_url + 'session', login: admin_username, password: admin_password)
     @admin_token = JSON.parse(response)[TOKEN_PARAM]
   end
@@ -74,12 +74,20 @@ class GitSwarmAPIHelper
                     access_level: access_level)
   end
 
+  def add_user_to_project(user, project, access_level = MASTER)
+    LOG.debug("Adding GS user #{user} to project #{project}")
+    RestClient.post("#{@base_url}projects/#{project_id(project)}/members",
+                    private_token: @admin_token,
+                    user_id: user_id(user),
+                    access_level: access_level)
+  end
+
   def create_project(project, user_or_group)
     LOG.debug 'Creating GS project ' + project + ' for namespace ' + user_or_group
     RestClient.post @base_url+'projects',
                     private_token: @admin_token,
                     name: project,
-                    namespace_id: get_namespace_id(user_or_group)
+                    namespace_id: namespace_id(user_or_group)
   end
 
   def delete_user(user)
@@ -116,10 +124,11 @@ class GitSwarmAPIHelper
 
   def generic_delete(thing, name)
     id = generic_id(thing, name)
-    LOG.debug("Deleting GS #{thing} #{name} (#{id}")
+    LOG.debug("Deleting GS #{thing} #{name} (id=#{id})")
     thing = "#{thing}s" unless thing.end_with?('s')
     RestClient.delete(@base_url + thing + '/' + id, private_token: @admin_token)
   rescue => e
+    LOG.debug("Error rased - ignoring due to @raise_errors setting: #{e.message}") unless @raise_errors
     raise e if @raise_errors
   end
 

@@ -14,7 +14,7 @@ module PerforceSwarm
     class RepoCreator
       VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.-])+\z/
 
-      attr_accessor :description, :branch_mappings, :depot_path, :depot_branch_creation
+      attr_accessor :description, :branch_mappings, :depot_branch_creation
       attr_reader :config
 
       def self.validate_config(config)
@@ -24,8 +24,10 @@ module PerforceSwarm
         end
       end
 
+      # @todo: flesh out more or just ignore and let fusion fail on bunk ones?
       def self.validate_depot_path(path)
         fail 'Empty depot path specified.' unless path && !path.empty?
+        fail "Specified path '#{path}' does not appear to be a valid depot path." unless path.start_with?('//')
       end
 
       def self.validate_branch_mappings(branch_mappings)
@@ -36,17 +38,14 @@ module PerforceSwarm
         # check all the branch mappings
         branch_mappings.each do |name, path|
           fail "Invalid name '#{name}' specified in branch mapping." unless VALID_NAME_REGEX.match(name)
-          fail "Invalid path '#{path}' specified in branch mapping." unless valid_depot_path(path)
+          validate_depot_path(path)
         end
       end
 
-      # @todo: should/can we extract the depot_path from the RHS of the branch_mappings?
-      def initialize(config_entry_id, repo_name = nil, depot_path = nil,
-                     branch_mappings = nil, depot_branch_creation = false)
+      def initialize(config_entry_id, repo_name = nil, branch_mappings = nil, depot_branch_creation = false)
         # config validation happens on assignment
         self.config            = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
         @repo_name             = repo_name
-        @depot_path            = depot_path
         @branch_mappings       = branch_mappings
         @depot_branch_creation = depot_branch_creation
       end
@@ -67,11 +66,6 @@ module PerforceSwarm
           end
         end
         false
-      end
-
-      # returns the depot portion of the  depot_path
-      def project_depot
-        PerforceSwarm::P4::Spec::Depot.id_from_path(depot_path)
       end
 
       # returns the location of the p4gf_config file in Git Fusion's Perforce depot
@@ -98,7 +92,7 @@ module PerforceSwarm
         config << 'ignore-author-permissions = yes'
 
         if depot_branch_creation
-          config << "depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}"
+          config << "depot-branch-creation-depot-path = #{depot_branch_creation}"
           config << 'depot-branch-creation-enable = all'
           config << ''
         end
@@ -113,9 +107,18 @@ module PerforceSwarm
         config.join("\n")
       end
 
-      # ensure the depots exist - both the //.git-fusion one as well as the one the user wants to create their project
+      # ensure the depots exist - both //.git-fusion as well as any depot paths referenced in
+      # depot branch creation or in the given branch mappings
       def ensure_depots_exist(connection)
-        depots  = [project_depot, '.git-fusion']
+        depots = ['.git-fusion']
+        depots << PerforceSwarm::P4::Spec::Depot.id_from_path(depot_branch_creation) if depot_branch_creation
+        if branch_mappings
+          branch_mappings.each do |_name, depot_path|
+            depots << PerforceSwarm::P4::Spec::Depot.id_from_path(depot_path)
+          end
+        end
+        depots.uniq!
+
         missing = depots - PerforceSwarm::P4::Spec::Depot.exists?(connection, depots)
         if missing.length > 0
           fail 'The following depot(s) are required and were found to be missing: ' + missing.join(', ')
@@ -123,14 +126,14 @@ module PerforceSwarm
       end
 
       # run pre-flight checks for:
-      #  * both //.git-fusion and the project depots exist
+      #  * both //.git-fusion and any referenced depots exist
       #  * Git Fusion repo ID is not already in use (no p4gf_config for the specified repo ID)
       # if any of the above conditions are not met, an exception is thrown
       def save_preflight(connection)
         # ensure both //.git-fusion and project's target depots exist
         ensure_depots_exist(connection)
 
-        # ensure there isn't already a Git Fusion repo with our ID or content under the target project location
+        # ensure there isn't already a Git Fusion repo with our ID
         if perforce_path_exists?(perforce_p4gf_config_path, connection)
           fail "A Git Fusion repository already exists with the name (#{repo_name}). " \
                'You can import the existing Git Fusion repository into a new project.'
@@ -182,6 +185,11 @@ module PerforceSwarm
         @config = config
       end
 
+      def branch_mappings=(branch_mappings)
+        RepoCreator.validate_branch_mappings(branch_mappings)
+        @branch_mappings = branch_mappings
+      end
+
       def config(*args)
         if args.length > 0
           self.config = args[0]
@@ -196,14 +204,6 @@ module PerforceSwarm
           return self
         end
         @repo_name
-      end
-
-      def depot_path(*args)
-        if args.length > 0
-          self.depot_path = args[0]
-          return self
-        end
-        @depot_path
       end
 
       def branch_mappings(*args)

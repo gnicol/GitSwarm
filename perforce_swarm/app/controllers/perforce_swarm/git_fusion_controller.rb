@@ -16,8 +16,9 @@ class PerforceSwarm::GitFusionController < ApplicationController
       end
 
       # pre-flight checks against Git Fusion and Perforce
-      creator = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server, @project.namespace.name, @project.path)
-      p4      = PerforceSwarm::P4::Connection.new(creator.config)
+      creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(@fusion_server)
+      creator.namespace(@project.namespace.name).project_path(@project.path)
+      p4 = PerforceSwarm::P4::Connection.new(creator.config)
       p4.login
       creator.save_preflight(p4)
 
@@ -46,7 +47,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     begin
       # attempt to connect to Perforce and ensure the desired project depot exists
       # we do this in its own rescue block so we only grab errors relevant to auto_create
-      creator        = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
+      creator        = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(@fusion_server)
       p4             = PerforceSwarm::P4::Connection.new(creator.config)
       p4.login
       @project_depot = creator.project_depot

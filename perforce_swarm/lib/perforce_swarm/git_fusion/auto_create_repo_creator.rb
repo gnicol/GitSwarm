@@ -11,8 +11,8 @@ module PerforceSwarm
         end
       end
 
-      def initialize(config, namespace = nil, project_path = nil)
-        super(config)
+      def initialize(config_entry_id, namespace = nil, project_path = nil)
+        self.config   = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
         @namespace    = namespace
         @project_path = project_path
       end
@@ -34,9 +34,14 @@ module PerforceSwarm
       # generates the p4gf_config file that should be checked into Perforce under
       # //.git-fusion/repos/repo_name/p4gf_config
       def p4gf_config
-        depot_branch_creation(true)
+        depot_branch_creation("#{depot_path}/{git_branch_name}")
         branch_mappings('master' => depot_path)
         super
+      end
+
+      def ensure_depots_exist(connection)
+        depot_branch_creation("#{depot_path}/{git_branch_name}")
+        super(connection)
       end
 
       # run pre-flight checks for:
@@ -51,7 +56,7 @@ module PerforceSwarm
         end
 
         # ensure that the depots exist and there is not an existing p4gf_config file
-        super(connect)
+        super(connection)
 
         if perforce_path_exists?(depot_path, connection)
           fail "It appears that there is already content in Helix at #{depot_path}."
@@ -64,6 +69,11 @@ module PerforceSwarm
 
       def repo_name_template
         @config.auto_create['repo_name_template']
+      end
+
+      def config=(config)
+        PerforceSwarm::GitFusion::AutoCreateRepoCreator.validate_config(config)
+        @config = config
       end
 
       def namespace(*args)

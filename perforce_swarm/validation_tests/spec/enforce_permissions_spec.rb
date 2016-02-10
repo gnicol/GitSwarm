@@ -490,7 +490,6 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       expect(can_configure_mirroring?(user, @read_all_write_all)).to be true
       expect(can_configure_mirroring?(user, @read_all_write_partial)).to be true
       expect(can_configure_mirroring?(user, @read_all_write_none)).to be true
-      expect(can_configure_mirroring?(user, @read_partial)).to be false
     end
   end
 

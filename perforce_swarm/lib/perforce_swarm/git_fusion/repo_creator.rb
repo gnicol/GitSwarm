@@ -12,9 +12,9 @@ module PerforceSwarm
     end
 
     class RepoCreator
-      VALID_NAME_REGEX = /\A([A-Za-z0-9_.-])+\z/
+      VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.-])+\z/
 
-      attr_accessor :description, :namespace, :project_path
+      attr_accessor :description, :branch_mappings, :depot_path, :depot_branch_creation
       attr_reader :config
 
       def self.validate_config(config)
@@ -22,22 +22,33 @@ module PerforceSwarm
         unless config.is_a?(PerforceSwarm::GitFusion::ConfigEntry)
           fail ConfigValidationError, '"config" must be a PerforceSwarm::GitFusion::ConfigEntry.'
         end
+      end
 
-        unless config.auto_create_configured?
-          fail ConfigValidationError, 'Auto create is not configured properly.'
+      def self.validate_depot_path(path)
+        fail 'Empty depot path specified.' unless path && !path.empty?
+      end
+
+      def self.validate_branch_mappings(branch_mappings)
+        if !branch_mappings || !branch_mappings.is_a?(Hash) || branch_mappings.empty?
+          fail P4GFConfigError, 'No branch mappings specified.'
+        end
+
+        # check all the branch mappings
+        branch_mappings.each do |name, path|
+          fail "Invalid name '#{name}' specified in branch mapping." unless VALID_NAME_REGEX.match(name)
+          fail "Invalid path '#{path}' specified in branch mapping." unless valid_depot_path(path)
         end
       end
 
-      def initialize(config_entry_id, namespace = nil, project_path = nil)
+      # @todo: should/can we extract the depot_path from the RHS of the branch_mappings?
+      def initialize(config_entry_id, repo_name = nil, depot_path = nil,
+                     branch_mappings = nil, depot_branch_creation = false)
         # config validation happens on assignment
-        self.config   = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
-        @namespace    = namespace
-        @project_path = project_path
-      end
-
-      # returns the depot path that Git Fusion should use to store a project's branches and files
-      def depot_path
-        render_template(path_template).chomp('/')
+        self.config            = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
+        @repo_name             = repo_name
+        @depot_path            = depot_path
+        @branch_mappings       = branch_mappings
+        @depot_branch_creation = depot_branch_creation
       end
 
       # returns true if there are any files (even deleted) at the specified depot path, otherwise false
@@ -58,13 +69,9 @@ module PerforceSwarm
         false
       end
 
-      def repo_name
-        render_template(repo_name_template)
-      end
-
-      # returns the depot portion of the generated depot_path
+      # returns the depot portion of the  depot_path
       def project_depot
-        PerforceSwarm::P4::Spec::Depot.id_from_path(path_template)
+        PerforceSwarm::P4::Spec::Depot.id_from_path(depot_path)
       end
 
       # returns the location of the p4gf_config file in Git Fusion's Perforce depot
@@ -82,20 +89,28 @@ module PerforceSwarm
       def p4gf_config
         config_description  = 'Repo automatically created by GitSwarm.'
         config_description += @description ? ' ' + @description.tr("\n", ' ').strip : ''
-        <<eof
-[@repo]
-description = #{config_description}
-enable-git-submodules = yes
-enable-git-merge-commits = yes
-enable-git-branch-creation = yes
-ignore-author-permissions = yes
-depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}
-depot-branch-creation-enable = all
 
-[master]
-view = "#{depot_path}/master/..." ...
-git-branch-name = master
-eof
+        config = ['[@repo]']
+        config << "description = #{config_description}"
+        config << 'enable-git-submodules = yes'
+        config << 'enable-git-merge-commits = yes'
+        config << 'enable-git-branch-creation = yes'
+        config << 'ignore-author-permissions = yes'
+
+        if depot_branch_creation
+          config << "depot-branch-creation-depot-path = #{depot_path}/{git_branch_name}"
+          config << 'depot-branch-creation-enable = all'
+          config << ''
+        end
+
+        branch_mappings.each do |name, path|
+          config << "[#{name}]"
+          config << "view = \"#{path}/#{name}/...\" ..."
+          config << "git-branch-name = #{name}"
+        end
+
+        config << ''
+        config.join("\n")
       end
 
       # ensure the depots exist - both the //.git-fusion one as well as the one the user wants to create their project
@@ -108,16 +123,10 @@ eof
       end
 
       # run pre-flight checks for:
-      #  * project_depot pattern is valid
       #  * both //.git-fusion and the project depots exist
       #  * Git Fusion repo ID is not already in use (no p4gf_config for the specified repo ID)
-      #  * Perforce has no content under the target project location
       # if any of the above conditions are not met, an exception is thrown
       def save_preflight(connection)
-        if project_depot.include?('{namespace}') || project_depot.include?('{project-path}')
-          fail 'Depot names cannot contain substitution variables ({namespace} or {project-path}).'
-        end
-
         # ensure both //.git-fusion and project's target depots exist
         ensure_depots_exist(connection)
 
@@ -125,10 +134,6 @@ eof
         if perforce_path_exists?(perforce_p4gf_config_path, connection)
           fail "A Git Fusion repository already exists with the name (#{repo_name}). " \
                'You can import the existing Git Fusion repository into a new project.'
-        end
-
-        if perforce_path_exists?(depot_path, connection)
-          fail "It appears that there is already content in Helix at #{depot_path}."
         end
       end
 
@@ -172,14 +177,6 @@ eof
         p4.disconnect if p4
       end
 
-      def path_template
-        @config.auto_create['path_template']
-      end
-
-      def repo_name_template
-        @config.auto_create['repo_name_template']
-      end
-
       def config=(config)
         PerforceSwarm::GitFusion::RepoCreator.validate_config(config)
         @config = config
@@ -193,20 +190,36 @@ eof
         @config
       end
 
-      def namespace(*args)
+      def repo_name(*args)
         if args.length > 0
-          self.namespace = args[0]
+          self.repo_name = args[0]
           return self
         end
-        @namespace
+        @repo_name
       end
 
-      def project_path(*args)
+      def depot_path(*args)
         if args.length > 0
-          self.project_path = args[0]
+          self.depot_path = args[0]
           return self
         end
-        @project_path
+        @depot_path
+      end
+
+      def branch_mappings(*args)
+        if args.length > 0
+          self.branch_mappings = args[0]
+          return self
+        end
+        @branch_mappings
+      end
+
+      def depot_branch_creation(*args)
+        if args.length > 0
+          self.depot_branch_creation = args[0]
+          return self
+        end
+        @depot_branch_creation
       end
 
       def description(*args)
@@ -215,28 +228,6 @@ eof
           return self
         end
         @description
-      end
-
-      # validates substitutions are valid and renders the given template
-      def render_template(template)
-        unless project_path && project_path.is_a?(String) && !project_path.empty?
-          fail PerforceSwarm::GitFusion::RepoCreatorError, 'Project-path must be non-empty.'
-        end
-
-        unless namespace && namespace.is_a?(String) && !namespace.empty?
-          fail PerforceSwarm::GitFusion::RepoCreatorError, 'Namespace must be non-empty.'
-        end
-
-        unless namespace =~ VALID_NAME_REGEX
-          fail PerforceSwarm::GitFusion::RepoCreatorError, "Namespace contains invalid characters: '#{namespace}'."
-        end
-
-        unless project_path =~ VALID_NAME_REGEX
-          fail PerforceSwarm::GitFusion::RepoCreatorError,
-               "Project-path contains invalid characters: '#{project_path}'."
-        end
-
-        template.gsub('{project-path}', project_path).gsub('{namespace}', namespace)
       end
     end
   end

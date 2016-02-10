@@ -32,8 +32,8 @@ module PerforceSwarm
 
     def create_repository
       # Attempt to submit the config for a new GitFusion repo to perforce if
-      # git_fusion_auto_create was set on this project
-      if git_fusion_entry.present? && git_fusion_auto_create
+      # git_fusion_repo_create_type of auto-create was set on this project
+      if git_fusion_entry.present? && git_fusion_repo_create_type == 'auto-create'
         begin
           creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace.name, path)
           creator.save
@@ -101,7 +101,7 @@ class Project < ActiveRecord::Base
             if: ->(project) { project.git_fusion_repo.present? }
   prepend PerforceSwarm::ProjectExtension
 
-  attr_accessor :git_fusion_auto_create
+  attr_accessor :git_fusion_repo_create_type
   attr_accessor :git_fusion_entry
 
   # The rspec tests use 'allow_any_instance_of' on Project to stub this method out during testing.

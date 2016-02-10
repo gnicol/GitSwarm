@@ -3,9 +3,9 @@ class @GitFusionProject
   import_url_selector:        'input#project_import_url'
   repo_name_selector:         'select#git_fusion_repo_name'
   original_settings_selector: '#original-git-fusion-settings'
-  disabled_selector:          'input#git_fusion_auto_create_nil'
-  auto_create_selector:       'input#git_fusion_auto_create_true'
-  repo_import_selector:       'input#git_fusion_auto_create_false'
+  disabled_selector:          'input#git_fusion_repo_create_type_nil'
+  auto_create_selector:       'input#git_fusion_repo_create_type_auto-create'
+  repo_import_selector:       'input#git_fusion_repo_create_type_import-repo'
   repo_contents:               null
 
   constructor: (@opts) ->
@@ -47,8 +47,8 @@ class @GitFusionProject
 
     # re-populate auto create selection and repo name
     if ($(@original_settings_selector).length)
-      original_auto_create = $(@original_settings_selector).data('auto-create')
-      $('input#git_fusion_auto_create_' + original_auto_create).prop('checked', true)
+      original_repo_create_type = $(@original_settings_selector).data('repo-create-type')
+      $('input#git_fusion_repo_create_type_' + original_repo_create_type).prop('checked', true)
       original_repo_selection = $(@original_settings_selector).data('repo')
       this.$(@repo_name_selector).val(original_repo_selection).select2()
 

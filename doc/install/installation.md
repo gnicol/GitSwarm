@@ -238,9 +238,9 @@ sudo usermod -aG redis git
 ### Clone the Source
 
     # Clone GitLab repository
-    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 8-4-stable gitlab
+    sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 8-5-stable gitlab
 
-**Note:** You can change `8-4-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
+**Note:** You can change `8-5-stable` to `master` if you want the *bleeding edge* version, but never install master on a production server!
 
 ### Configure It
 
@@ -483,6 +483,11 @@ Visit YOUR_SERVER in your web browser for your first GitLab login. The setup has
 You can use `sudo service gitlab start` and `sudo service gitlab stop` to start and stop GitLab.
 
 ## Advanced Setup Tips
+
+### Relative URL support
+
+See the [Relative URL documentation](relative_url.md) for more information on
+how to configure GitLab with a relative URL.
 
 ### Using HTTPS
 

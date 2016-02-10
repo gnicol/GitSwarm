@@ -47,6 +47,7 @@ v 8.5.0 (unreleased)
   - Faster snippet search
   - Title for milestones should be unique (Zeger-Jan van de Weg)
   - Validate correctness of maximum attachment size application setting
+  - Replaces "Create merge request" link with one to the "Merge Request" when one exists
 
 v 8.4.4
   - Update omniauth-saml gem to 1.4.2
@@ -389,6 +390,7 @@ v 8.1.0
   - Improved performance of the trending projects page
   - Remove CI migration task
   - Improved performance of finding projects by their namespace
+  - Add assignee data to Issuables' hook_data (Bram Daams)
   - Fix bug where transferring a project would result in stale commit links (Stan Hu)
   - Fix build trace updating
   - Include full path of source and target branch names in New Merge Request page (Stan Hu)

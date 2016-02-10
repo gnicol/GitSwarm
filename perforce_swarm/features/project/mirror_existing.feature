@@ -106,3 +106,21 @@ Feature: Mirror Existing Project
     And I select a Git Fusion repo that does not support auto-create
     And The Git Fusion depot path info is done loading
     Then I should see an error message that says auto-create is not configured properly
+
+  @automated
+  Scenario: On the Helix Mirroring page, for an already-mirrored project, I should see a Disable Helix Mirroring button.
+    Given I sign in as a user
+    And Git Fusion support is enabled with auto-create enabled servers
+    And Helix mirroring is enabled for project "Shop"
+    And I visit project "Shop" page
+    And I click the Helix Mirroring button
+    Then I should see the Disable Helix Mirroring button
+
+  @automated
+  Scenario: On the Helix Mirroring page, for a previously-mirrored project, I should see a Re-enable Helix Mirroring button.
+    Given I sign in as a user
+    And Git Fusion support is enabled with auto-create enabled servers
+    And Helix mirroring is disabled, but was once enabled for project "Shop"
+    And I visit project "Shop" page
+    And I click the Helix Mirroring button
+    Then I should see the Re-enable Helix Mirroring button

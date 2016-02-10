@@ -19,22 +19,37 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
     page.should_not have_content('Helix Mirroring')
   end
 
+  step 'I should see the Disable Helix Mirroring button' do
+    page.should have_selector('a.btn', text: 'Disable Helix Mirroring')
+    page.should_not have_selector('a.btn.disabled', text: 'Disable Helix Mirroring')
+  end
+
+  step 'I should see the Re-enable Helix Mirroring button' do
+    page.should have_selector('a.btn', text: 'Re-enable Helix Mirroring')
+    page.should_not have_selector('a.btn.disabled', text: 'Re-enable Helix Mirroring')
+  end
+
   step 'I should see a no Git Fusion instances configured tooltip' do
-    page.should have_selector('li[data-title*="no Git Fusion instances have been configured."]')
+    page.should have_selector('.helix-mirrored-status-label[data-title*=' \
+                              '"no Git Fusion instances have been configured."]'
+                             )
   end
 
   step 'I should see a no Git Fusion instances configured for auto-create tooltip' do
-    page.should have_selector('li[data-title*="None of the Helix Git Fusion instances GitSwarm knows about ' \
+    page.should have_selector('.helix-mirrored-status-label[data-title*=' \
+                              '"None of the Helix Git Fusion instances GitSwarm knows about ' \
                               'are configured for \'auto create\'."]'
                              )
   end
 
   step 'I should see an inadequate permissions tooltip' do
-    page.should have_selector('li[data-title*="but you lack permissions to enable it for this project."]')
+    page.should have_selector('.helix-mirrored-status-label[data-title*=' \
+                              '"you lack permissions to enable it for this project."]'
+                             )
   end
 
   step 'I should see a disabled or mis-configured tooltip' do
-    page.should have_selector('li[data-title*="Helix Git Fusion integration is disabled."]')
+    page.should have_selector('.helix-mirrored-status-label[data-title*="Helix Git Fusion integration is disabled."]')
   end
 
   step 'Helix mirroring is enabled for project "Shop"' do
@@ -44,6 +59,12 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'Helix mirroring is not enabled for project "Shop"' do
     project = create(:project, name: 'Shop')
+    project.team << [@user, :master]
+  end
+
+  step 'Helix mirroring is disabled, but was once enabled for project "Shop"' do
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('foo' => '')
+    project = create(:project, name: 'Shop', git_fusion_repo: 'mirror://local/foo', git_fusion_mirrored: false)
     project.team << [@user, :master]
   end
 
@@ -66,15 +87,15 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I should see "Not Mirrored in Helix" under the clone URL field' do
-    page.within('.project-stats > ul.nav > li.mirrored-status') do
-      page.should have_link('Not Mirrored in Helix')
+    page.within('.cover-controls .helix-mirrored-status-label') do
+      page.should have_content('Not Mirrored in Helix')
     end
   end
 
   step 'I should see "Mirrored in Helix" under the clone URL field' do
-    page.within('.project-stats > ul.nav > li.mirrored-status') do
-      page.should have_link('Mirrored in Helix')
-      page.should_not have_link('Not Mirrored in Helix')
+    page.within('.cover-controls .helix-mirrored-status-label') do
+      page.should have_content('Mirrored in Helix')
+      page.should_not have_content('Not Mirrored in Helix')
     end
   end
 

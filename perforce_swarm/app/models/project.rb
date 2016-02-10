@@ -2,6 +2,11 @@ require Rails.root.join('app', 'models', 'project')
 
 module PerforceSwarm
   module ProjectExtension
+    GIT_FUSION_REENABLE_IN_PROGRESS = 'in_progress'
+    GIT_FUSION_REENABLE_ERROR       = 'error'
+    GIT_FUSION_REENABLE_MIRRORED    = 'mirrored'
+    GIT_FUSION_REENABLE_UNMIRRORED  = 'unmirrored'
+
     def import_in_progress?
       return true if git_fusion_mirrored? && import_status == 'started'
       super
@@ -48,6 +53,40 @@ module PerforceSwarm
         end
       end
       super
+    end
+
+    def git_fusion_reenable_status
+      repo_path = repository.path_to_repo
+      repo      = PerforceSwarm::Repo.new(repo_path)
+      # we're in progress if we're currently re-enabling or we're waiting for
+      # the redis event to complete
+      if PerforceSwarm::Mirror.reenabling?(repo_path) || (!git_fusion_mirrored? && repo.mirrored?)
+        return GIT_FUSION_REENABLE_IN_PROGRESS
+      elsif git_fusion_mirrored?
+        return GIT_FUSION_REENABLE_MIRRORED
+      else
+        error = git_fusion_reenable_error
+        return error ? GIT_FUSION_REENABLE_ERROR : GIT_FUSION_REENABLE_UNMIRRORED
+      end
+    rescue
+      return GIT_FUSION_REENABLE_ERROR
+    end
+
+    def git_fusion_reenable_error
+      PerforceSwarm::Mirror.reenable_error(repository.path_to_repo)
+    end
+
+    def git_fusion_repo_segments
+      return [] unless git_fusion_repo.present?
+      git_fusion_repo.sub(%r{^mirror://}, '').split('/', 2)
+    end
+
+    def git_fusion_server_id
+      git_fusion_repo_segments[0]
+    end
+
+    def git_fusion_repo_name
+      git_fusion_repo_segments[1]
     end
   end
 end

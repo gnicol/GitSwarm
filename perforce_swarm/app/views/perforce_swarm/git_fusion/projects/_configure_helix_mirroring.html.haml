@@ -1,4 +1,7 @@
-.git-fusion-mirroring
+= render partial: 'perforce_swarm/git_fusion/projects/mirroring_config_errors'
+- error = git_fusion_server_error || mirroring_errors(@project, current_user)
+- if !error || error.empty?
+  .git-fusion-mirroring
   - servers = git_fusion_servers(default_first_auto_create: true)
   - if servers.empty?
     .description.slead

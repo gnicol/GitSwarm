@@ -57,7 +57,7 @@ class Repository
   # This method return true if repository contains some content visible in project page.
   #
   def has_visible_content?
-    !raw_repository.branches.empty?
+    raw_repository.branch_count > 0
   end
 
   def commit(id = 'HEAD')
@@ -589,6 +589,8 @@ class Repository
 
   def merge_base(first_commit_id, second_commit_id)
     rugged.merge_base(first_commit_id, second_commit_id)
+  rescue Rugged::ReferenceError
+    nil
   end
 
   def is_ancestor?(ancestor_id, descendant_id)

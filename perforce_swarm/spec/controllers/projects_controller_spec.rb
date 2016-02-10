@@ -21,6 +21,7 @@ describe ProjectsController, type: :controller do
     @connection.input     = user_spec
     @connection.run('user', '-i')
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return({})
+    allow(PerforceSwarm::Repo).to receive(:mirror_url=).and_return(nil)
   end
 
   after(:each) do

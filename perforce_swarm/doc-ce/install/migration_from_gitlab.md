@@ -21,7 +21,7 @@ master for all assets.
     |---|---|
     |8.0.5|15.4|
 
-    **Important Notes:**
+    **Important Notes**:
     * GitLab to GitSwarm migration is not supported on GitSwarm versions less
       than 15.4 (GitLab 8.0.5).
     * Migration is supported across differing operating systems (e.g. migration

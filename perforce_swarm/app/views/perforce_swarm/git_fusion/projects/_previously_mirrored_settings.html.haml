@@ -1,7 +1,10 @@
 - git_fusion_url   = git_fusion_url(@project)
 - has_fusion_url   = git_fusion_url && !git_fusion_url.empty?
 - can_reenable     = mirroring_permitted?(@project, current_user) && mirroring_configured? && has_fusion_url
-- button_class     = 'btn btn-save' + (can_reenable ? '' : ' disabled')
+- button_class     = 'btn btn-save helix-mirroring' + (can_reenable ? '' : ' disabled')
+- reenable_tooltip = helix_reenable_mirroring_tooltip(@project)
+- error            = git_fusion_server_error || mirroring_errors(@project, current_user)
+- error            = nil unless error && !error.empty?
 %p
   Mirroring for this project has been disabled.
 %p
@@ -14,17 +17,22 @@
     The Git Fusion repo can be reached via the following Git URL:
     = git_fusion_url
   - else
-    = helix_reenable_mirroring_tooltip(@project)
-    %p
-      = link_to '#' do
-        %strong= 'Please fix the configuration'
-      to re-enable mirroring for this project.
-= render partial: 'perforce_swarm/git_fusion/projects/mirroring_config_errors'
+    - if error
+      = render partial: 'perforce_swarm/git_fusion/projects/mirroring_config_errors'
+    - else
+      .helix-error
+        %h4 Error:
+        %p.fixed-width
+          = reenable_tooltip
+        %p
+          = link_to '#' do
+            %strong= 'Please fix the configuration'
+          to re-enable mirroring for this project.
+
 .reenable-mirror-wrapper
-  %span.reenable-mirror-button-wrapper{data: {toggle: 'tooltip', html: 'true', title: helix_reenable_mirroring_tooltip(@project)}}
-    = link_to '#', class: button_class do
-      = icon 'helix-icon white'
-      Re-enable Helix Mirroring
+  = link_to '#', class: button_class do
+    = icon 'helix-icon white'
+    Re-enable Helix Mirroring
   .reenable-status
 - reenable_error = @project.git_fusion_reenable_error
 - params = { reenable_url: reenable_helix_mirroring_perforce_swarm_git_fusion_path(project_id: @project.id) }

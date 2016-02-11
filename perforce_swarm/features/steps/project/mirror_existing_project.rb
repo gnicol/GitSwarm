@@ -44,7 +44,7 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
 
   step 'I should see an inadequate permissions tooltip' do
     page.should have_selector('.helix-mirrored-status-label[data-title*=' \
-                              '"you lack permissions to enable it for this project."]'
+                              '"you lack permissions to manage it for this project."]'
                              )
   end
 

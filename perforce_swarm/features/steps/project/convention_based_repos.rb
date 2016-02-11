@@ -27,7 +27,7 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
 
   step 'Git Fusion returns a list containing repos with a path_template referencing a non-existent Perforce depot' do
     config = default_config.dup
-    config.entry.global['auto_create'] = { 'path_template' => '//depot/gitswarm{namespace}/{project-path}',
+    config.entry.global['auto_create'] = { 'path_template' => '//depot/gitswarm/{namespace}/{project-path}',
                                            'repo_name_template' => 'gitswarm-{namespace}-{project-path}'
     }
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)

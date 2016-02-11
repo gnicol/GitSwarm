@@ -97,15 +97,18 @@ module PerforceSwarm
           config << 'depot-branch-creation-enable = all'
         end
 
-        config << ''
+        unless branch_mappings && branch_mappings.is_a?(Hash) && !branch_mappings.empty?
+          fail PerforceSwarm::GitFusion::RepoCreatorError, 'No branches specified for the Git Fusion repository.'
+        end
+
         branch_mappings.each do |name, path|
           path.gsub!(%r{\/+(\.\.\.)?$}, '')
+          config << ''
           config << "[#{name}]"
           config << "view = \"#{path}/...\" ..."
           config << "git-branch-name = #{name}"
-          config << ''
         end
-        config << '' unless config.last == ''
+        config << ''
 
         config.join("\n")
       end

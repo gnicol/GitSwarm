@@ -72,6 +72,7 @@ describe PerforceSwarm::GitFusion::RepoCreator do
 
       # perform the check
       expect(creator.perforce_path_exists?('//gitswarm/projects/my-project/test-file.txt', @connection)).to be_truthy
+      expect(creator.perforce_path_exists?('//gitswarm/projects/does-not-exist.txt', @connection)).to be_falsey
     end
 
     it 'returns false if there is no content at the specified depot path' do
@@ -105,12 +106,28 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
     end
 
-    it 'returns true if both the depot branch creation depot and Git Fusion depots are present' do
+    it 'does not raise an exception if both the depot branch creation depot and Git Fusion depots are present' do
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'gitswarm')
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
       creator.depot_branch_creation('//gitswarm/foo/{git_branch_name}')
+      expect { creator.ensure_depots_exist(@connection) }.to_not raise_error(RuntimeError)
+    end
+
+    it 'does not raise an exception if the depots specified in the branch mapping exist, raising if they do not' do
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
+      PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'gitswarm')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
+      creator.depot_branch_creation('//gitswarm/foo/{git_branch_name}')
+      creator.branch_mappings('branch1' => '//depot1/foo', 'branch2' => '//depot1/bar')
+
+      # depot1 does not exist yet, but is specified in the branch mapping
+      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
+
+      # create the depot and re-check
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'depot1')
       expect { creator.ensure_depots_exist(@connection) }.to_not raise_error(RuntimeError)
     end
   end
@@ -122,6 +139,11 @@ describe PerforceSwarm::GitFusion::RepoCreator do
 
     before do
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(config)
+    end
+
+    it 'raises an exception if not branch mappings are specified' do
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-awesome-project')
+      expect { creator.p4gf_config }.to raise_error(EXPECTED_EXCEPTION)
     end
 
     it 'can generate a config file with multiple branches and no depot branch creation' do
@@ -180,7 +202,7 @@ eos
     end
 
     it 'generates a config file with multiple branches and a changed description' do
-      branch_mapping = { 'branch1' => '//depot1/foo', 'branch2' => '//depot1/bar', 'branch3' => '//depot2/foo' }
+      branch_mapping = { 'branch1' => '//depot1/foo' }
       creator        = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-awesome-project', branch_mapping)
       creator.description('Extra description parts.')
       expected = <<eos
@@ -194,14 +216,6 @@ ignore-author-permissions = yes
 [branch1]
 view = "//depot1/foo/..." ...
 git-branch-name = branch1
-
-[branch2]
-view = "//depot1/bar/..." ...
-git-branch-name = branch2
-
-[branch3]
-view = "//depot2/foo/..." ...
-git-branch-name = branch3
 eos
       expect(creator.p4gf_config).to eq(expected)
     end

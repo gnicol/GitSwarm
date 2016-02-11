@@ -177,7 +177,7 @@ describe PerforceSwarm::GitFusion::AutoCreateRepoCreator do
       expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
     end
 
-    it 'returns true if both the project and Git Fusion depots are present' do
+    it 'does not raise an exception if both the project and Git Fusion depots are present' do
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@auto_provision_config)
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'gitswarm')

@@ -3,12 +3,16 @@ require Rails.root.join('app', 'controllers', 'projects_controller')
 module PerforceSwarm
   module ProjectsControllerExtension
     def configure_helix_mirroring
+      check_helix_mirroring_permissions
       render 'perforce_swarm/git_fusion/projects/helix_mirroring', layout: 'project_settings'
+    rescue => e
+      redirect_to(project_path(@project), alert: e.message)
     end
 
     # actually performs the task of mirroring on the specified project and repo server
     def enable_helix_mirroring
       fail 'No project specified.' unless @project
+      check_helix_mirroring_permissions
       fail 'Project is already mirrored in Helix.' if @project.git_fusion_mirrored?
       fail 'This project is already associated to a Helix Git Fusion repository.' if @project.git_fusion_repo.present?
 
@@ -29,9 +33,9 @@ module PerforceSwarm
         exec Shellwords.shelljoin([mirror_script, 'push', @project.path_with_namespace + '.git'])
       end
       Process.detach(push_job)
+      logger.info("Helix Mirroring enable started on project '#{@project.name}' by user '#{current_user.username}'")
       redirect_to(project_path(@project), notice: 'Helix mirroring successful!')
     rescue => e
-
       # any errors occurring in the above are shown on the configure mirroring page, but if we've
       # gotten as far as mirroring, this will cause a double redirect, so we hit the project details page instead
       redirect_location = @project && @project.git_fusion_mirrored? ? project_path(@project) : :back
@@ -40,10 +44,12 @@ module PerforceSwarm
 
     def disable_helix_mirroring
       fail 'No project specified.' unless @project
+      check_helix_mirroring_permissions
       fail 'Project is not mirrored in Helix.' unless @project.git_fusion_mirrored?
 
-      # disable mirroring in GitSwarm, and redirect to project details page
+      # disable mirroring in GitSwarm, log, and redirect to project details page
       @project.disable_git_fusion_mirroring!
+      logger.info("Helix Mirroring disabled on project '#{@project.name}' by user '#{current_user.username}'")
       redirect_to(project_path(@project), notice: 'Helix mirroring successfully disabled!')
     rescue => e
       redirect_to(project_path(@project), alert: e.message)
@@ -64,6 +70,13 @@ module PerforceSwarm
     end
 
     protected
+
+    def check_helix_mirroring_permissions
+      # ensure that we have a logged-in user, and that they have permission to re-enable the project
+      if !current_user || !current_user.can?(:admin_project, @project)
+        fail 'You do not have permissions to view or modify Helix mirroring settings on this project.'
+      end
+    end
 
     def param_from_string(str)
       case str

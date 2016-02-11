@@ -97,6 +97,12 @@ class Page
       @driver.save_screenshot(image_dumpfile)
     end
   end
+
+  def reload
+    @driver.navigation.refresh
+    verify
+  end
+
 end
 
 Dir[File.join(__dir__, 'pages/*.rb')].each { |file| require file }

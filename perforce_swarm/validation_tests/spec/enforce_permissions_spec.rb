@@ -504,6 +504,52 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     end
   end
 
+  # If the GF has EnforcePermissions, ensure that P4 permissions on project do not apply if mirroring is disabled,
+  # They get re-applied once mirroring is enabled.
+  # The application/removal of P4 permissions should be immediate, not requiring re-logging in or special manual
+  # cache clearance/refreshing
+  describe 'A user gitswarm access, but no perforce access to a project' do
+    it 'can immediately access the project when mirroring is disabled' do
+      uid = unique_string
+      project = Project.new("#{uid}-enable-disable", @groupname)
+
+      # additional browser to let us interact with GitSwarm as 2 different users at once
+      restricted_user_browser = Browser.driver
+      restricted_user = @user_gs_master_p4_notexist
+
+      begin
+        LOG.debug('Create GitSwarm project for enforce protections disable/enable test')
+        unrestricted_create_proj_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
+          .login(CONFIG.get(CONFIG::GS_USER), CONFIG.get(CONFIG::GS_PASSWORD)).goto_create_project_page
+        unrestricted_create_proj_page.project_name(project.name)
+        unrestricted_create_proj_page.namespace(project.namespace)
+        unrestricted_create_proj_page.select_server(CONFIG.get(CONFIG::SECURE_GF))
+        unrestricted_create_proj_page.select_repo(@read_none.name)
+        unrestricted_create_proj_page.select_private
+        unrestricted_project_page = unrestricted_create_proj_page.create_project_and_wait_for_clone
+        expect(unrestricted_project_page.mirrored_in_helix?).to be true
+
+        LOG.debug('check a restricted user cannot see the project')
+        restricted_projects_page = LoginPage.new(restricted_user_browser, CONFIG.get(CONFIG::GS_URL))
+          .login(restricted_user.name, restricted_user.password).goto_projects_page
+        expect(restricted_projects_page.projects).to_not include project.name
+
+        LOG.debug('now disable mirroring')
+        unrestricted_config_mirroring = unrestricted_project_page.configure_mirroring
+        expect(unrestricted_config_mirroring.can_disable?).to be true
+        unrestricted_project_page = unrestricted_config_mirroring.disable
+        expect(unrestricted_project_page.mirrored_in_helix?).to be false
+
+        LOG.debug('now reload the restricted user\'s page and check they can now see the project')
+        restricted_projects_page.reload
+        expect(restricted_projects_page.projects).to include project.name
+      ensure
+        @gs_api.delete_project(project.name)
+        restricted_user_browser.quit
+      end
+    end
+  end
+
   private
 
   def create_merge_request(user, project, branch, title)

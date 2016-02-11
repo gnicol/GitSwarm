@@ -40,8 +40,10 @@ class ProjectPage < LoggedInPage
   end
 
   def can_configure_mirroring?
+    can_configure = true
     elem = @driver.find_element(:link_text, HELIX_MIRRORING)
-    !elem.attribute(:class).include?('disabled')
+    can_configure &= !elem.attribute(:class).include?('disabled')
+    can_configure &= !elem.enabled
   end
 
   def configure_mirroring

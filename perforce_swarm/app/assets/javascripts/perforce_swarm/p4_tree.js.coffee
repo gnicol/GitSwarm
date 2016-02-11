@@ -92,7 +92,7 @@ class @P4Tree
       <div>#{branchName}<div style="float:right;">
         <a class="edit-branch" href="#">edit</a> | <a class="remove-branch" href="#">delete</a>
       </div></div>
-      <div>//#{nodePath}</div>
+      <div>#{nodePath}</div>
     </li>
     """
     newBranch = $(newBranch)

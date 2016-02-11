@@ -46,8 +46,10 @@ class @P4Tree
     this.$el.on 'click', '.edit-branch', (e) =>
       e.preventDefault()
       e.stopPropagation()
-      mapping = $(e.currentTarget).closest('li').data('mapping')
+      row = $(e.currentTarget).closest('li')
+      mapping = row.data('mapping')
       @populateTreeFromMap(mapping.branchName, mapping.nodePath)
+      row.remove()
 
 
 
@@ -57,8 +59,18 @@ class @P4Tree
 
   populateTreeFromMap: (branchName, nodePath) ->
     this.$('.new-branch-name').val(branchName).trigger('change')
-    # @TODO we need to make sure we load this path
-    this.$('.git-fusion-tree').jstree(true).check_node(nodePath)
+    tree = this.$('.git-fusion-tree').jstree(true)
+
+    # Open and load the path
+    depotMatcher  = /^\/\/[^\/]*/
+    depot         = depotMatcher.exec(nodePath)[0]
+    paths         = nodePath.replace(depotMatcher, '').split('/')
+    paths[0]      = depot
+    index         = 0
+    (open_recurse = -> tree.open_node(paths[index++], open_recurse))()
+
+    # Check the node
+    tree.check_node(nodePath)
 
   clearBranchTree: ->
     this.$('.git-fusion-tree').jstree(true).uncheck_all()

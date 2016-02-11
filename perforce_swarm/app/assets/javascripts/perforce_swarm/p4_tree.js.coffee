@@ -38,9 +38,31 @@ class @P4Tree
 
     this.$el.on 'change input', '.new-branch-name', => @updateMapping()
 
+    this.$el.on 'click', '.remove-branch', (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      $(e.currentTarget).closest('li').remove()
+
+    this.$el.on 'click', '.edit-branch', (e) =>
+      e.preventDefault()
+      e.stopPropagation()
+      mapping = $(e.currentTarget).closest('li').data('mapping')
+      @populateTreeFromMap(mapping.branchName, mapping.nodePath)
+
+
+
   # Local jQuery finder
   $: (selector) ->
     this.$el.find(selector)
+
+  populateTreeFromMap: (branchName, nodePath) ->
+    this.$('.new-branch-name').val(branchName).trigger('change')
+    # @TODO we need to make sure we load this path
+    this.$('.git-fusion-tree').jstree(true).check_node(nodePath)
+
+  clearBranchTree: ->
+    this.$('.git-fusion-tree').jstree(true).uncheck_all()
+    this.$('.new-branch-name').val('').trigger('change')
 
   getNewBranchName: ->
     $.trim(this.$('.new-branch-name').val())
@@ -67,9 +89,15 @@ class @P4Tree
     newBranch = """
     <li>
       <input type="hidden" style="display:none;" name="git_fusion_branch_mapping[#{branchName}]" value="#{nodePath}" />
-      <div>#{branchName}<div style="float:right;">edit | delete</div></div>
+      <div>#{branchName}<div style="float:right;">
+        <a class="edit-branch" href="#">edit</a> | <a class="remove-branch" href="#">delete</a>
+      </div></div>
       <div>//#{nodePath}</div>
     </li>
     """
+    newBranch = $(newBranch)
+    newBranch.data('mapping', {branchName: branchName, nodePath: nodePath})
     this.$('.content-list').append(newBranch)
+    @clearBranchTree()
+
 

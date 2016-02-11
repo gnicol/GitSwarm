@@ -514,7 +514,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       project = Project.new("#{uid}-enable-disable", @groupname)
 
       # additional browser to let us interact with GitSwarm as 2 different users at once
-      restricted_user_browser = Browser.driver
+      restricted_user_browser = Browser.create_new_unmanaged_webdriver
       restricted_user = @user_gs_master_p4_notexist
 
       begin
@@ -537,7 +537,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
         LOG.debug('now disable mirroring')
         unrestricted_config_mirroring = unrestricted_project_page.configure_mirroring
         expect(unrestricted_config_mirroring.can_disable?).to be true
-        unrestricted_project_page = unrestricted_config_mirroring.disable
+        unrestricted_project_page = unrestricted_config_mirroring.disable_mirroring
         expect(unrestricted_project_page.mirrored_in_helix?).to be false
 
         LOG.debug('now reload the restricted user\'s page and check they can now see the project')

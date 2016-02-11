@@ -7,18 +7,7 @@ module Browser
   class << self
     def driver
       unless @driver
-        browser = (CONFIG.get('browser') || 'firefox').to_sym
-
-        case browser
-        when :phantomjs
-          caps = Selenium::WebDriver::Remote::Capabilities.phantomjs
-          caps['phantomjs.cli.args'] = ['--ignore-ssl-errors=true', '--web-security=false', '--ssl-protocol=any']
-          @driver = Selenium::WebDriver.for :phantomjs, desired_capabilities: caps
-          @driver.manage.window.resize_to 1024, 768
-        else
-          @driver = Selenium::WebDriver.for browser
-        end
-
+        @driver = create_new_unmanaged_webdriver
         main = Process.pid
         at_exit do
           # Store the exit status of the test run since it goes away after calling the at_exit proc...
@@ -28,6 +17,21 @@ module Browser
         end
       end
       @driver
+    end
+
+    def create_new_unmanaged_webdriver
+      browser = (CONFIG.get('browser') || 'firefox').to_sym
+      new_driver = nil
+      case browser
+      when :phantomjs
+        caps = Selenium::WebDriver::Remote::Capabilities.phantomjs
+        caps['phantomjs.cli.args'] = ['--ignore-ssl-errors=true', '--web-security=false', '--ssl-protocol=any']
+        new_driver = Selenium::WebDriver.for :phantomjs, desired_capabilities: caps
+      else
+        new_driver = Selenium::WebDriver.for browser
+      end
+      new_driver.manage.window.resize_to 1024, 768
+      new_driver
     end
 
     attr_writer :driver

@@ -99,10 +99,8 @@ class Page
   end
 
   def reload
-    @driver.navigation.refresh
+    @driver.navigate.refresh
     verify
   end
-
 end
-
 Dir[File.join(__dir__, 'pages/*.rb')].each { |file| require file }

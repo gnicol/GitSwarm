@@ -103,8 +103,9 @@ module PerforceSwarm
           config << "[#{name}]"
           config << "view = \"#{path}/...\" ..."
           config << "git-branch-name = #{name}"
+          config << ''
         end
-        config << ''
+        config << '' unless config.last == ''
 
         config.join("\n")
       end

@@ -1,7 +1,7 @@
 class @ReenableHelixMirroring
   constructor: (@opts) ->
     this.$el     = $('.reenable-mirror-wrapper')
-    this.$button = $('.reenable-mirror-button-wrapper a')
+    this.$button = $('.reenable-mirror-wrapper a')
     # perform an initial update based on the status, and start polling if mirroring is in progress
     @updateStatus(@opts.status, @opts.error, @opts.status == 'in_progress')
     this.$button.on 'click', (e) =>

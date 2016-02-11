@@ -57,4 +57,11 @@ class LoggedInPage < Page
     mr_links.first.click
     MergeRequestPage.new(@driver)
   end
+
+  def goto_configure_mirroring_page(namespace, project_name)
+    uri = URI.parse @driver.current_url
+    newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}/configure_helix_mirroring"
+    goto newuri
+    ConfigureMirroringPage.new(@driver)
+  end
 end

@@ -24,14 +24,15 @@ module PerforceSwarm
         end
       end
 
-      # @todo: flesh out more or just ignore and let fusion fail on bunk ones?
       def self.validate_depot_path(path)
         fail 'Empty depot path specified.' unless path && !path.empty?
-        fail "Specified path '#{path}' does not appear to be a valid depot path." unless path.start_with?('//')
+        unless path.start_with?('//') && PerforceSwarm::P4::Spec::Depot.id_from_path(path)
+          fail "Specified path '#{path}' does not appear to be a valid depot path."
+        end
       end
 
       def self.validate_branch_mappings(branch_mappings)
-        if !branch_mappings || !branch_mappings.is_a?(Hash) || branch_mappings.empty?
+        if !branch_mappings || !branch_mappings.is_a?(Hash)
           fail P4GFConfigError, 'No branch mappings specified.'
         end
 
@@ -94,16 +95,17 @@ module PerforceSwarm
         if depot_branch_creation
           config << "depot-branch-creation-depot-path = #{depot_branch_creation}"
           config << 'depot-branch-creation-enable = all'
-          config << ''
-        end
-
-        branch_mappings.each do |name, path|
-          config << "[#{name}]"
-          config << "view = \"#{path}/#{name}/...\" ..."
-          config << "git-branch-name = #{name}"
         end
 
         config << ''
+        branch_mappings.each do |name, path|
+          path.gsub!(%r{\/+(\.\.\.)?$}, '')
+          config << "[#{name}]"
+          config << "view = \"#{path}/...\" ..."
+          config << "git-branch-name = #{name}"
+        end
+        config << ''
+
         config.join("\n")
       end
 
@@ -130,7 +132,7 @@ module PerforceSwarm
       #  * Git Fusion repo ID is not already in use (no p4gf_config for the specified repo ID)
       # if any of the above conditions are not met, an exception is thrown
       def save_preflight(connection)
-        # ensure both //.git-fusion and project's target depots exist
+        # ensure both //.git-fusion and target depots exist
         ensure_depots_exist(connection)
 
         # ensure there isn't already a Git Fusion repo with our ID
@@ -181,12 +183,12 @@ module PerforceSwarm
       end
 
       def config=(config)
-        PerforceSwarm::GitFusion::RepoCreator.validate_config(config)
+        self.class.validate_config(config)
         @config = config
       end
 
       def branch_mappings=(branch_mappings)
-        RepoCreator.validate_branch_mappings(branch_mappings)
+        self.class.validate_branch_mappings(branch_mappings)
         @branch_mappings = branch_mappings
       end
 

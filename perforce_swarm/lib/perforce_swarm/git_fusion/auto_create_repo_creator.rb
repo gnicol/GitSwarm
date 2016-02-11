@@ -12,7 +12,7 @@ module PerforceSwarm
       end
 
       def initialize(config_entry_id, namespace = nil, project_path = nil)
-        self.config   = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
+        super(config_entry_id)
         @namespace    = namespace
         @project_path = project_path
       end
@@ -35,7 +35,7 @@ module PerforceSwarm
       # //.git-fusion/repos/repo_name/p4gf_config
       def p4gf_config
         depot_branch_creation("#{depot_path}/{git_branch_name}")
-        branch_mappings('master' => depot_path)
+        branch_mappings('master' => "#{depot_path}/master")
         super
       end
 
@@ -69,11 +69,6 @@ module PerforceSwarm
 
       def repo_name_template
         @config.auto_create['repo_name_template']
-      end
-
-      def config=(config)
-        PerforceSwarm::GitFusion::AutoCreateRepoCreator.validate_config(config)
-        @config = config
       end
 
       def namespace(*args)

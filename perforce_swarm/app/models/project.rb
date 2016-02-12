@@ -2,10 +2,17 @@ require Rails.root.join('app', 'models', 'project')
 
 module PerforceSwarm
   module ProjectExtension
+    # Git Fusion re-enable constants
     GIT_FUSION_REENABLE_IN_PROGRESS = 'in_progress'
     GIT_FUSION_REENABLE_ERROR       = 'error'
     GIT_FUSION_REENABLE_MIRRORED    = 'mirrored'
     GIT_FUSION_REENABLE_UNMIRRORED  = 'unmirrored'
+
+    # Git Fusion repo creation types
+    GIT_FUSION_REPO_CREATION_DISABLED    = 'disabled'
+    GIT_FUSION_REPO_CREATION_AUTO_CREATE = 'auto-create'
+    GIT_FUSION_REPO_CREATION_IMPORT_REPO = 'import-repo'
+    GIT_FUSION_REPO_CREATION_FILE_SELECT = 'file-selector'
 
     def import_in_progress?
       return true if git_fusion_mirrored? && import_status == 'started'
@@ -32,9 +39,10 @@ module PerforceSwarm
 
     def create_repository
       # Attempt to submit the config for a new GitFusion repo to perforce if
-      # git_fusion_import_type was set on this project
+      # git_fusion_repo_create_type of auto-create was set on this project
       if git_fusion_entry.present? &&
-          (git_fusion_import_type == 'auto-create' || git_fusion_import_type == 'file-selector')
+          (git_fusion_repo_create_type == GIT_FUSION_REPO_CREATION_AUTO_CREATE ||
+          git_fusion_repo_create_type == GIT_FUSION_REPO_CREATION_FILE_SELECT)
         begin
           creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(git_fusion_entry, namespace.name, path)
           creator.save
@@ -102,7 +110,7 @@ class Project < ActiveRecord::Base
             if: ->(project) { project.git_fusion_repo.present? }
   prepend PerforceSwarm::ProjectExtension
 
-  attr_accessor :git_fusion_import_type
+  attr_accessor :git_fusion_repo_create_type
   attr_accessor :git_fusion_entry
   attr_accessor :git_fusion_branch_mapping
 

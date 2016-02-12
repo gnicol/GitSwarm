@@ -4,7 +4,7 @@ module PerforceSwarm
   module CreateServiceExtensions
     def execute
       # Check that you have access to the repo you are importing
-      if params[:git_fusion_mirrored] && params[:git_fusion_import_type] == 'repo-import'
+      if params[:git_fusion_mirrored] && params[:git_fusion_repo_create_type] == 'repo-import'
         repos = []
         error = nil
         begin

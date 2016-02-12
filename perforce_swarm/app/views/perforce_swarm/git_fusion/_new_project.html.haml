@@ -11,7 +11,7 @@
     .git-fusion-radios
       .radio
         = label_tag do
-          = radio_button_tag(:git_fusion_import_type, 'nil', true)
+          = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_DISABLED, true)
           .option-title
             Not mirrored.
           .option-descr
@@ -21,7 +21,7 @@
       - auto_create_enabled = @depot_exists && @auto_create_errors.empty?
       .radio{:class => ("disabled" unless auto_create_enabled)}
         = label_tag do
-          = radio_button_tag(:git_fusion_import_type, 'auto-create', false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
+          = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_AUTO_CREATE, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
           .option-title
             Create a Helix GitSwarm project to mirror.
             - unless auto_create_enabled
@@ -46,7 +46,7 @@
       .radio{:class => ("disabled" if @repos.empty?)}
         = label_tag do
           %div.import-repo-wrapper
-            = radio_button_tag(:git_fusion_import_type, 'import-repo', false, disabled: @repos.empty?, 'data-keep-disabled' => @repos.empty?)
+            = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_IMPORT_REPO, false, disabled: @repos.empty?, 'data-keep-disabled' => @repos.empty?)
             .option-title
               Mirror an existing repository.
             .option-descr
@@ -60,7 +60,7 @@
                   = select_tag(:git_fusion_repo_name, repos_options, class: 'select2 span2', disabled: 'true')
       .radio{:class => ("disabled" unless auto_create_enabled)}
         = label_tag do
-          = radio_button_tag(:git_fusion_import_type, 'file-selector', false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled)
+          = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_FILE_SELECT, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled)
           .option-title
             Select files or folder to mirror.
           .option-descr

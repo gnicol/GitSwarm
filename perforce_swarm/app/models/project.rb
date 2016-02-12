@@ -9,7 +9,7 @@ module PerforceSwarm
     GIT_FUSION_REENABLE_UNMIRRORED  = 'unmirrored'
 
     # Git Fusion repo creation types
-    GIT_FUSION_REPO_CREATION_DISABLED    = 'nil'
+    GIT_FUSION_REPO_CREATION_DISABLED    = 'disabled'
     GIT_FUSION_REPO_CREATION_AUTO_CREATE = 'auto-create'
     GIT_FUSION_REPO_CREATION_IMPORT_REPO = 'import-repo'
 

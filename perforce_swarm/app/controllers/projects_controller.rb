@@ -56,8 +56,6 @@ module PerforceSwarm
     end
 
     def project_params
-      params[:git_fusion_repo_create_type] = param_from_string(params[:git_fusion_repo_create_type])
-
       # if we were given git fusion parameters, incorporate those now
       if params[:git_fusion_entry] && !params[:git_fusion_entry].blank? &&
           params[:git_fusion_repo_name] &&
@@ -76,19 +74,6 @@ module PerforceSwarm
       # ensure that we have a logged-in user, and that they have permission to re-enable the project
       if !current_user || !current_user.can?(:admin_project, @project)
         fail 'You do not have permissions to view or modify Helix mirroring settings on this project.'
-      end
-    end
-
-    def param_from_string(str)
-      case str
-      when 'true'
-        return true
-      when 'false'
-        return false
-      when 'nil'
-        return nil
-      else
-        return str
       end
     end
   end

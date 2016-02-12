@@ -3,7 +3,7 @@ class @GitFusionProject
   import_url_selector:        'input#project_import_url'
   repo_name_selector:         'select#git_fusion_repo_name'
   original_settings_selector: '#original-git-fusion-settings'
-  disabled_selector:          'input#git_fusion_repo_create_type_nil'
+  disabled_selector:          'input#git_fusion_repo_create_type_disabled'
   auto_create_selector:       'input#git_fusion_repo_create_type_auto-create'
   repo_import_selector:       'input#git_fusion_repo_create_type_import-repo'
   repo_contents:               null

@@ -68,7 +68,14 @@ end
 def can_configure_mirroring?(user, project)
   project_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user.name, user.password)
     .goto_project_page(project.namespace, project.name)
-  result = project_page.can_configure_mirroring?
-  project_page.logout
-  result
+  can_config = project_page.can_configure_mirroring?
+  if can_config
+    config_mirroring_page = project_page.configure_mirroring
+    config_mirroring_page.logout
+  else
+    project_page = project_page.goto_configure_mirroring_page_expecting_unauthorized(project.namespace, project.name)
+    LOG.debug('Got expected error message')
+    project_page.logout
+  end
+  can_config
 end

@@ -41,12 +41,11 @@ class ProjectPage < LoggedInPage
 
   def can_configure_mirroring?
     elem = @driver.find_element(:link_text, HELIX_MIRRORING)
-    !elem.attribute(:class).include?('disabled')
+    !elem.attribute(:class).include?('disabled') && !elem.enabled?
   end
 
   def configure_mirroring
     unless can_configure_mirroring?
-      # Not actually failing here as currently even disabled, the link works
       LOG.debug("WARNING: #{HELIX_MIRRORING} button is not enabled for this user")
       screendump
     end

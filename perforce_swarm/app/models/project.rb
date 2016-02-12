@@ -35,7 +35,7 @@ module PerforceSwarm
       # git_fusion_auto_create was set on this project
       if git_fusion_entry.present? && git_fusion_auto_create
         begin
-          creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, namespace.name, path)
+          creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(git_fusion_entry, namespace.name, path)
           creator.save
           PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: git_fusion_entry)
 

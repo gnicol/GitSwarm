@@ -21,13 +21,17 @@ class @GitFusionProject
       @load_content(server.val())
 
     this.$el.on 'change', @repo_name_selector, (e) =>
-      @update_ui()
-
-    this.$el.on 'select2-open', @repo_name_selector, (e) =>
-      this.$(@repo_import_selector).prop('checked', true)
+      if this.$(@repo_import_selector).is(':checked')
+        @update_ui()
+      else
+        # if the user chooses a repo, also select mirror from existing
+        this.$(@repo_import_selector).prop('checked', true)
+        this.$(@repo_import_selector).trigger('change')
 
     this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}", (e) =>
       $(@original_settings_selector).remove()
+      # clear the repo name when we're not mirroring to existing
+      this.$(@repo_name_selector).val('').select2() unless this.$(e.target).is(this.$(@repo_import_selector))
       @update_ui()
 
     $(document).on 'input', @import_url_selector, (e) =>
@@ -55,18 +59,13 @@ class @GitFusionProject
     if (this.$(@auto_create_selector).length)
       disabled_selector    = this.$(@disabled_selector).is(':checked')
       auto_create_selected = this.$(@auto_create_selector).is(':checked')
-      fusion_repo_selected = this.$(@repo_import_selector).is(':checked') &&
-        !!this.$(@repo_name_selector).find('option:selected').val()
+      fusion_repo_selected = this.$(@repo_import_selector).is(':checked')
 
     # disable the external import section and buttons if we're doing mirroring
     @disable('.external-import, .external-import a.btn, ' + @import_url_selector, fusion_repo_selected || auto_create_selected)
 
     # if the user is doing an external import, disable mirroring controls
     @disable('.git-fusion-import, .git-fusion-import select, .git-fusion-import input', has_import_url)
-
-    # clear the repo list when mirror existing is not selected
-    if auto_create_selected || disabled_selector
-      this.$(@repo_name_selector).val('').select2()
 
   load_content: (server_id) ->
     # Clear out pre-existing content right away

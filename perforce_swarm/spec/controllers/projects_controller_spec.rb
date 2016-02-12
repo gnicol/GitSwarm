@@ -50,6 +50,7 @@ describe ProjectsController, type: :controller do
     sign_in(user)
     project.team << [user, :master]
     controller.instance_variable_set(:@project, project)
+    allow(controller).to receive(:current_user).and_return(user)
   end
 
   describe 'POST disable_helix_mirroring' do
@@ -72,6 +73,7 @@ describe ProjectsController, type: :controller do
       expect(project.git_fusion_mirrored?).to be true
 
       # disable mirroring through our controller
+      allow(user).to receive(:can?).and_return(true)
       post(:disable_helix_mirroring,
            namespace_id: project.namespace.name,
            id: project)

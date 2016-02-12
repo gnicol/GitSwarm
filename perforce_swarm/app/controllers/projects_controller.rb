@@ -56,16 +56,15 @@ module PerforceSwarm
     end
 
     def project_params
-      params[:git_fusion_auto_create] = param_from_string(params[:git_fusion_auto_create])
-
       # if we were given git fusion parameters, incorporate those now
       if params[:git_fusion_entry] && !params[:git_fusion_entry].blank? &&
-          params[:git_fusion_repo_name] && params[:git_fusion_auto_create] == false
+          params[:git_fusion_repo_name] &&
+          params[:git_fusion_repo_create_type] == Project::GIT_FUSION_REPO_CREATION_IMPORT_REPO
         params[:git_fusion_repo]     = "mirror://#{params[:git_fusion_entry]}/#{params[:git_fusion_repo_name]}"
         params[:git_fusion_mirrored] = true
       end
 
-      super.merge(params.permit(:git_fusion_repo, :git_fusion_auto_create,
+      super.merge(params.permit(:git_fusion_repo, :git_fusion_repo_create_type,
                                 :git_fusion_entry, :git_fusion_mirrored))
     end
 
@@ -75,19 +74,6 @@ module PerforceSwarm
       # ensure that we have a logged-in user, and that they have permission to re-enable the project
       if !current_user || !current_user.can?(:admin_project, @project)
         fail 'You do not have permissions to view or modify Helix mirroring settings on this project.'
-      end
-    end
-
-    def param_from_string(str)
-      case str
-      when 'true'
-        return true
-      when 'false'
-        return false
-      when 'nil'
-        return nil
-      else
-        return str
       end
     end
   end

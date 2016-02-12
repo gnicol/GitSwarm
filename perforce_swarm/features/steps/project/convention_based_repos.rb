@@ -54,15 +54,15 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   end
 
   step 'I should not see a convention-based mirroring radio button' do
-    page.should_not have_selector('#git_fusion_auto_create_true')
+    page.should_not have_selector('#git_fusion_repo_create_type_auto-create')
   end
 
   step 'I should see a clickable convention-based mirroring radio button' do
-    page.should have_selector('#git_fusion_auto_create_true')
+    page.should have_selector('#git_fusion_repo_create_type_auto-create')
   end
 
   step 'I should see a disabled convention-based mirroring radio button' do
-    page.should have_selector('#git_fusion_auto_create_true[disabled="disabled"]')
+    page.should have_selector('#git_fusion_repo_create_type_auto-create[disabled="disabled"]')
   end
 
   step 'I should see a link to the convention-based mirroring help section' do
@@ -147,7 +147,7 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   end
 
   step 'I choose to import an existing repo' do
-    page.find('#git_fusion_auto_create_false').click
+    page.find('#git_fusion_repo_create_type_import-repo').click
   end
 
   step 'I should see a populated Git Fusion repo dropdown' do

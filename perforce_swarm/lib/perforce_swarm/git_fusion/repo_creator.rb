@@ -12,7 +12,7 @@ module PerforceSwarm
     end
 
     class RepoCreator
-      VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.-])+\z/
+      VALID_NAME_REGEX = /\A([A-Za-z0-9_.-])+\z/
 
       attr_accessor :description, :branch_mappings, :depot_branch_creation
       attr_reader :config

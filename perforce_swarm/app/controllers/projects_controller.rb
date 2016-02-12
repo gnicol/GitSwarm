@@ -60,7 +60,8 @@ module PerforceSwarm
 
       # if we were given git fusion parameters, incorporate those now
       if params[:git_fusion_entry] && !params[:git_fusion_entry].blank? &&
-          params[:git_fusion_repo_name] && params[:git_fusion_repo_create_type] == 'import-repo'
+          params[:git_fusion_repo_name] &&
+          params[:git_fusion_repo_create_type] == Project::GIT_FUSION_REPO_CREATION_IMPORT_REPO
         params[:git_fusion_repo]     = "mirror://#{params[:git_fusion_entry]}/#{params[:git_fusion_repo_name]}"
         params[:git_fusion_mirrored] = true
       end

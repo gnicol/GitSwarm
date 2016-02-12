@@ -7,6 +7,10 @@ require_relative 'select2_module'
 class CreateProjectPage < LoggedInPage
   include Select2Module
 
+  REPO_CREATION_DISABLED_ELEMENT    = 'git_fusion_repo_create_type_' + Project::GIT_FUSION_REPO_CREATION_DISABLED
+  REPO_CREATION_AUTO_CREATE_ELEMENT =  'git_fusion_repo_create_type_' + Project::GIT_FUSION_REPO_CREATION_AUTO_CREATE
+  REPO_CREATION_IMPORT_REPO_ELEMENT =  'git_fusion_repo_create_type_' + Project::GIT_FUSION_REPO_CREATION_IMPORT_REPO
+
   def initialize(driver)
     super(driver)
     @repo_selector = 's2id_git_fusion_repo_name'
@@ -21,9 +25,9 @@ class CreateProjectPage < LoggedInPage
     elems << [:id, 'project_path'] # project name
     elems << [:name, 'commit'] # create project button
     if servers_exist?
-      elems << [:id, 'git_fusion_auto_create_nil'] # Not mirrored
-      elems << [:id, 'git_fusion_auto_create_true'] # auto-create mirrored
-      elems << [:id, 'git_fusion_auto_create_false'] # mirror existing
+      elems << [:id, REPO_CREATION_DISABLED_ELEMENT]
+      elems << [:id, REPO_CREATION_AUTO_CREATE_ELEMENT]
+      elems << [:id, REPO_CREATION_IMPORT_REPO_ELEMENT]
       elems << [:id, 'git_fusion_entry'] # GF server selection dropdown
       # elems << [:id, 'git_fusion_repo_name'] # GF repo selector - there may not be one if no repos exist
     end
@@ -54,15 +58,15 @@ class CreateProjectPage < LoggedInPage
   end
 
   def select_mirrored_none
-    @driver.find_element(:id, 'git_fusion_auto_create_nil').click
+    @driver.find_element(:id, REPO_CREATION_DISABLED_ELEMENT).click
   end
 
   def select_mirrored_auto
-    @driver.find_element(:id, 'git_fusion_auto_create_true').click
+    @driver.find_element(:id, REPO_CREATION_AUTO_CREATE_ELEMENT).click
   end
 
   def select_mirrored_specific
-    @driver.find_element(:id, 'git_fusion_auto_create_false').click
+    @driver.find_element(:id, REPO_CREATION_IMPORT_REPO_ELEMENT).click
   end
 
   def select_private
@@ -136,6 +140,6 @@ class CreateProjectPage < LoggedInPage
   end
 
   def wait_for_gf_options_to_load
-    wait_for(:id, 'git_fusion_auto_create_false') if servers_exist?
+    wait_for(:id, REPO_CREATION_IMPORT_REPO_ELEMENT) if servers_exist?
   end
 end

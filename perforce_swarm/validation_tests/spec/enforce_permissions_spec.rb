@@ -509,7 +509,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
   # The application/removal of P4 permissions should be immediate, not requiring re-logging in or special manual
   # cache clearance/refreshing
   describe 'A user gitswarm access, but no perforce access to a project' do
-    it 'can immediately access the project when mirroring is disabled' do
+    it 'immediately has access restrictions applied/removed when mirroring is disabled/enabled' do
       uid = unique_string
       project = Project.new("#{uid}-enable-disable", @groupname)
 
@@ -543,6 +543,17 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
         LOG.debug('now reload the restricted user\'s page and check they can now see the project')
         restricted_projects_page.reload
         expect(restricted_projects_page.projects).to include project.name
+
+        LOG.debug('now reenable mirroring')
+        unrestricted_config_mirroring = unrestricted_project_page.configure_mirroring
+        expect(unrestricted_config_mirroring.can_reenable?).to be true
+        unrestricted_project_page = unrestricted_config_mirroring.reenable_mirroring
+        expect(unrestricted_project_page.mirrored_in_helix?).to be true
+
+        LOG.debug('now reload the restricted user\'s page and check they cannot see the project')
+        restricted_projects_page.reload
+        expect(restricted_projects_page.projects).to_not include project.name
+
       ensure
         @gs_api.delete_project(project.name)
         restricted_user_browser.quit

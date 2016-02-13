@@ -1,7 +1,7 @@
 require_relative '../../../spec_helper'
 
 describe PerforceSwarm::GitFusion::RepoCreator do
-  EXPECTED_EXCEPTION = PerforceSwarm::GitFusion::RepoCreatorError
+  EXPECTED_EXCEPTION ||= PerforceSwarm::GitFusion::RepoCreatorError
 
   before(:all) do
     @p4d = `PATH=$PATH:/opt/perforce/sbin which p4d`.strip
@@ -82,12 +82,12 @@ describe PerforceSwarm::GitFusion::RepoCreator do
     end
   end
 
-  describe :ensure_depots_exist do
+  describe :validate_depots do
     it 'raises an exception if the depot branch depot and Git Fusion depots are both missing' do
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
       creator.depot_branch_creation('//nonexistent/foo/{git_branch_name}')
-      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
     end
 
     it 'raises an exception if the depot branch creation depot is present, but the Git Fusion depot is missing' do
@@ -95,7 +95,7 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'gitswarm')
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
       creator.depot_branch_creation('//gitswarm/foo/{git_branch_name}')
-      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
     end
 
     it 'raises an exception if the Git Fusion depot is present, but the depot branch creation depot is missing' do
@@ -103,7 +103,7 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
       creator.depot_branch_creation('//gitswarm/foo/{git_branch_name}')
-      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
     end
 
     it 'does not raise an exception if both the depot branch creation depot and Git Fusion depots are present' do
@@ -112,7 +112,7 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'gitswarm')
       creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
       creator.depot_branch_creation('//gitswarm/foo/{git_branch_name}')
-      expect { creator.ensure_depots_exist(@connection) }.to_not raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to_not raise_error
     end
 
     it 'does not raise an exception if the depots specified in the branch mapping exist, raising if they do not' do
@@ -124,11 +124,41 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       creator.branch_mappings('branch1' => '//depot1/foo', 'branch2' => '//depot1/bar')
 
       # depot1 does not exist yet, but is specified in the branch mapping
-      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
 
       # create the depot and re-check
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'depot1')
-      expect { creator.ensure_depots_exist(@connection) }.to_not raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to_not raise_error
+    end
+
+    # streams tests
+    it 'raises an exception if more than one streams depot is referenced in the branch mappings' do
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
+      PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'stream1', 'Type' => 'stream')
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'stream2', 'Type' => 'stream')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
+      creator.branch_mappings('branch1' => '//stream1/foo', 'branch2' => '//stream2/bar')
+      expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
+    end
+
+    it 'raises an exception if a mix of streams and non-streams depots are referenced in the branch mappings' do
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
+      PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'stream1', 'Type' => 'stream')
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'depot2')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
+      creator.branch_mappings('branch1' => '//stream1/foo', 'branch2' => '//depot1/bar')
+      expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
+    end
+
+    it 'does not raise an exception if the same streams depot is used for all branch mappings' do
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
+      PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'stream1', 'Type' => 'stream')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
+      creator.branch_mappings('branch1' => '//stream1/foo', 'branch2' => '//stream1/bar')
+      expect { creator.validate_depots(@connection) }.to_not raise_error
     end
   end
 

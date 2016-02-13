@@ -26,7 +26,7 @@ module PerforceSwarm
       dirs = []
       if path == '#'
         connection.run('depots').each do |depot|
-          dirs << { id: "//#{depot['name']}", text: depot['name'], type: 'depot', children: true }
+          dirs << { id: "//#{depot['name']}", text: depot['name'], type: "depot-#{depot['type']}", children: true }
         end
       else
         connection.run('dirs', "#{path}/*").each do |dir_info|

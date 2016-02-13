@@ -73,11 +73,19 @@
               .git-fusion-split-tree.clearfix
                 .git-fusion-tree-holder.git-fusion-tree-source.col-sm-7
                   .tree-title.clearfix
-                    .depot-type
-                      = icon('code-fork')
-                      stream
-                    = text_field_tag 'branch_name', params[:branch_name], placeholder: "Branch name",
+                    .branch-label Branch Name:
+                    = text_field_tag 'branch_name', params[:branch_name], placeholder: "master",
                       required: false, class: 'form-control new-branch-name js-quick-submit'
+                    .filter-actions
+                      %span.btn.depot-type-filter{:'data-toggle' => 'dropdown', :'data-value' => 'depot-regular'}
+                        = icon('code-fork')
+                        %span.type-text Regular Depots
+                        = icon('angle-down')
+                      %ul.dropdown-menu.dropdown-menu-right
+                        %li
+                          %a.depot-stream{:href => '#depot-stream'} Stream Depots
+                        %li
+                          %a.depot-regular{:href => '#depot-regular'} Regular Depots
 
                   .tree-content
                     .git-fusion-tree

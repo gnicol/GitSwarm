@@ -145,13 +145,12 @@ span.mirror-button-wrapper {
     padding-bottom: 7px;
   }
 
-  .depot-type {
-    background: $background-color;
+  .branch-label {
     padding-right: $gl-padding;
-    border-right: 1px solid $border-color;
     display: block;
     float: left;
     margin-right: 10px;
+    position: relative;
   }
 
   .new-branch-name {
@@ -166,9 +165,9 @@ span.mirror-button-wrapper {
     border-bottom: 1px solid $border-color;
     margin: 0;
     text-align: left;
-    padding: 10px $gl-padding;
+    padding: 0 $gl-padding;
 
-    .file-actions {
+    .filter-actions {
       float: right;
       position: absolute;
       top: 5px;

@@ -114,20 +114,36 @@ module PerforceSwarm
       end
 
       # ensure the depots exist - both //.git-fusion as well as any depot paths referenced in
-      # depot branch creation or in the given branch mappings
-      def ensure_depots_exist(connection)
-        depots = ['.git-fusion']
+      # depot branch creation or in the given branch mappings, and that if a branch is mapped to
+      # a streams depot, all branches are mapped to the same depot
+      def validate_depots(connection)
+        # build a list of depot names we need to check
+        branch_depots = []
+        depots        = ['.git-fusion']
         depots << PerforceSwarm::P4::Spec::Depot.id_from_path(depot_branch_creation) if depot_branch_creation
         if branch_mappings
           branch_mappings.each do |_name, depot_path|
-            depots << PerforceSwarm::P4::Spec::Depot.id_from_path(depot_path)
+            branch_depots << PerforceSwarm::P4::Spec::Depot.id_from_path(depot_path)
           end
         end
-        depots.uniq!
+        branch_depots.uniq!
+        depots.push(*branch_depots).uniq!
 
-        missing = depots - PerforceSwarm::P4::Spec::Depot.exists?(connection, depots)
+        # check for any outright missing depots
+        all_depots = PerforceSwarm::P4::Spec::Depot.all(connection)
+        missing    = depots - all_depots.keys
         if missing.length > 0
           fail 'The following depot(s) are required and were found to be missing: ' + missing.join(', ')
+        end
+
+        # find all referenced branch depots that are streams depots
+        streams_depots = all_depots.select do |name, depot|
+          depot['type'] == 'stream' && branch_depots.include?(name)
+        end
+
+        # we expect either no streams depots, or one streams depot as the only branch depot
+        unless streams_depots.length == 0 || (streams_depots.length == 1 && branch_depots.length == 1)
+          fail 'Branch depots must either all be non-streams, or all use the same stream.'
         end
       end
 
@@ -137,7 +153,7 @@ module PerforceSwarm
       # if any of the above conditions are not met, an exception is thrown
       def save_preflight(connection)
         # ensure both //.git-fusion and target depots exist
-        ensure_depots_exist(connection)
+        validate_depots(connection)
 
         # ensure there isn't already a Git Fusion repo with our ID
         if perforce_path_exists?(perforce_p4gf_config_path, connection)

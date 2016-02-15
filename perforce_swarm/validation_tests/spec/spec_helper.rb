@@ -74,7 +74,6 @@ def can_configure_mirroring?(user, project)
     config_mirroring_page.logout
   else
     project_page = project_page.goto_configure_mirroring_page_expecting_unauthorized(project.namespace, project.name)
-    LOG.debug('Got expected error message')
     project_page.logout
   end
   can_config

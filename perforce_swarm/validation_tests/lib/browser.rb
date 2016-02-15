@@ -19,6 +19,10 @@ module Browser
       @driver
     end
 
+    # 'driver' method will create/return a singleton driver that is managed to some extent by the test code.
+    # Some tests may need more than one driver (e.g. if you need 2 users logged in at once).  That test code
+    # can call this method to get hold of an appropriate driver but will have to be responsible for 'ensure'ing
+    # that the driver is terminated and tidied up, regardless of any test failures.
     def create_new_unmanaged_webdriver
       browser = (CONFIG.get('browser') || 'firefox').to_sym
       new_driver = nil
@@ -30,6 +34,8 @@ module Browser
       else
         new_driver = Selenium::WebDriver.for browser
       end
+      # make all drivers the same standard size, regardless of browser. Help to prevent browser specific size
+      # related issues in the tests that would be difficult to debug.
       new_driver.manage.window.resize_to 1024, 768
       new_driver
     end

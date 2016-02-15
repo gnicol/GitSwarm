@@ -2,7 +2,7 @@ require 'rest-client'
 require 'json'
 
 class GitSwarmAPIHelper
-  attr_accessor :raise_errors
+  attr_accessor :raise_errors_on_delete
 
   TOKEN_PARAM = 'private_token'
   APP         = 'api/v3/'
@@ -17,10 +17,10 @@ class GitSwarmAPIHelper
   # Log in as the admin user and get and hold onto the Admin user's security token
   #
   def initialize(base_url, admin_username, admin_password)
-    @raise_errors = false
-    @base_url    = File.join(base_url, APP)
-    response     = RestClient.post(@base_url + 'session', login: admin_username, password: admin_password)
-    @admin_token = JSON.parse(response)[TOKEN_PARAM]
+    @raise_errors_on_delete = false
+    @base_url               = File.join(base_url, APP)
+    response                = RestClient.post(@base_url + 'session', login: admin_username, password: admin_password)
+    @admin_token            = JSON.parse(response)[TOKEN_PARAM]
   end
 
   #
@@ -128,8 +128,8 @@ class GitSwarmAPIHelper
     thing = "#{thing}s" unless thing.end_with?('s')
     RestClient.delete(@base_url + thing + '/' + id, private_token: @admin_token)
   rescue => e
-    LOG.debug("Error rased - ignoring due to @raise_errors setting: #{e.message}") unless @raise_errors
-    raise e if @raise_errors
+    LOG.debug("Error rased - ignoring due to @raise_errors setting: #{e.message}") unless @raise_errors_on_delete
+    raise e if @raise_errors_on_delete
   end
 
   def generic_id(data_type, name)

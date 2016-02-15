@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    childprocess (0.5.8)
+    childprocess (0.5.9)
       ffi (~> 1.0, >= 1.0.11)
     diff-lcs (1.2.5)
     domain_name (0.5.25)
@@ -36,7 +36,7 @@ GEM
     rugged (0.23.3)
     selenium-phantomjs (0.0.3)
       selenium-webdriver
-    selenium-webdriver (2.48.1)
+    selenium-webdriver (2.50.0)
       childprocess (~> 0.5)
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
@@ -60,3 +60,6 @@ DEPENDENCIES
   selenium-phantomjs
   selenium-webdriver
   sshkey
+
+BUNDLED WITH
+   1.11.2

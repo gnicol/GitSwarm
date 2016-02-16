@@ -25,6 +25,10 @@
 /* Include project page tweaks */
 @import "perforce_swarm/projects";
 
+.project-home-panel .helix-mirrored-status-label {
+  cursor: default;
+}
+
 i.fa-helix-icon {
   height: 13px;
   width: 8px;

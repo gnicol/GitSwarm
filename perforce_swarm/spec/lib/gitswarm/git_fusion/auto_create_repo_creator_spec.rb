@@ -156,25 +156,25 @@ describe PerforceSwarm::GitFusion::AutoCreateRepoCreator do
     end
   end
 
-  describe :ensure_depots_exist do
+  describe :validate_depots do
     it 'raises an exception if the project and Git Fusion depots are both missing' do
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@auto_provision_config)
       creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new('foo', 'root', 'my-project')
-      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
     end
 
     it 'raises an exception if the project depot is present, but the Git Fusion depot is missing' do
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@auto_provision_config)
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'gitswarm')
       creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new('foo', 'root', 'my-project')
-      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
     end
 
     it 'raises an exception if the Git Fusion depot is present, but the project depot is missing' do
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@auto_provision_config)
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new('foo', 'root', 'my-project')
-      expect { creator.ensure_depots_exist(@connection) }.to raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
     end
 
     it 'does not raise an exception if both the project and Git Fusion depots are present' do
@@ -182,7 +182,7 @@ describe PerforceSwarm::GitFusion::AutoCreateRepoCreator do
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'gitswarm')
       creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new('foo', 'root', 'my-project')
-      expect { creator.ensure_depots_exist(@connection) }.to_not raise_error(RuntimeError)
+      expect { creator.validate_depots(@connection) }.to_not raise_error
     end
   end
 

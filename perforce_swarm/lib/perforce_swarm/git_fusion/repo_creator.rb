@@ -12,7 +12,7 @@ module PerforceSwarm
     end
 
     class RepoCreator
-      VALID_NAME_REGEX = /\A([A-Za-z0-9_.-])+\z/
+      VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.-])+\z/
 
       attr_accessor :description, :branch_mappings, :depot_branch_creation
       attr_reader :config
@@ -33,7 +33,7 @@ module PerforceSwarm
 
       def self.validate_branch_mappings(branch_mappings)
         if !branch_mappings || !branch_mappings.is_a?(Hash)
-          fail P4GFConfigError, 'No branch mappings specified.'
+          fail RepoCreatorError, 'No branch mappings specified.'
         end
 
         # check all the branch mappings

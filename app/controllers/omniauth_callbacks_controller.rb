@@ -30,12 +30,8 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     # Do additional LDAP checks for the user filter and EE features
     if ldap_user.allowed?
-      if @user.two_factor_enabled?
-        prompt_for_two_factor(@user)
-      else
-        log_audit_event(@user, with: :ldap)
-        sign_in_and_redirect(@user)
-      end
+      log_audit_event(@user, with: :ldap)
+      sign_in_and_redirect(@user)
     else
       flash[:alert] = "Access denied for your LDAP account."
       redirect_to new_user_session_path

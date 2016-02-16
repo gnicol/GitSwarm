@@ -1,7 +1,13 @@
 - page_title "Builds"
 = render "header_title"
 
-.top-area
+.project-issuable-filter
+  .controls
+    - if can?(current_user, :update_build, @project)
+      .pull-left.hidden-xs
+        - if @all_builds.running_or_pending.any?
+          = link_to 'Cancel running', cancel_all_namespace_project_builds_path(@project.namespace, @project), data: { confirm: 'Are you sure?' }, class: 'btn btn-danger', method: :post
+
   %ul.nav-links
     %li{class: ('active' if @scope.nil?)}
       = link_to project_builds_path(@project) do

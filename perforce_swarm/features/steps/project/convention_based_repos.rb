@@ -26,9 +26,14 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   end
 
   step 'Git Fusion returns a list containing repos with a path_template referencing a non-existent Perforce depot' do
-    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
-    allow(PerforceSwarm::P4::Spec::Depot).to receive(:exists?).and_return(false)
+    config = default_config.dup
+    config.entry.global['auto_create'] = { 'path_template' => '//depot/gitswarm/{namespace}/{project-path}',
+                                           'repo_name_template' => 'gitswarm-{namespace}-{project-path}'
+    }
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
     allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return('RepoA' => '', 'RepoB' => '')
+    allow(PerforceSwarm::P4::Connection).to receive(:login).and_return(true)
+    allow(PerforceSwarm::P4::Spec::Depot).to receive(:exists?).and_return(false)
   end
 
   step 'Git Fusion returns a list containing repos that have incorrect Perforce credentials' do
@@ -49,15 +54,15 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   end
 
   step 'I should not see a convention-based mirroring radio button' do
-    page.should_not have_selector('#git_fusion_auto_create_true')
+    page.should_not have_selector('#git_fusion_repo_create_type_auto-create')
   end
 
   step 'I should see a clickable convention-based mirroring radio button' do
-    page.should have_selector('#git_fusion_auto_create_true')
+    page.should have_selector('#git_fusion_repo_create_type_auto-create')
   end
 
   step 'I should see a disabled convention-based mirroring radio button' do
-    page.should have_selector('#git_fusion_auto_create_true[disabled="disabled"]')
+    page.should have_selector('#git_fusion_repo_create_type_auto-create[disabled="disabled"]')
   end
 
   step 'I should see a link to the convention-based mirroring help section' do
@@ -142,7 +147,7 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   end
 
   step 'I choose to import an existing repo' do
-    page.find('#git_fusion_auto_create_false').click
+    page.find('#git_fusion_repo_create_type_import-repo').click
   end
 
   step 'I should see a populated Git Fusion repo dropdown' do

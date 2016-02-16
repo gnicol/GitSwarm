@@ -69,10 +69,10 @@ Known Issues
 
 Major new functionality in 2015.4
 
-    #d1e79253, #a6b4510f (PGL-1236)
+    #d1e79253, #a6b4510f (Bug #81120)
        Mirror existing GitSwarm EE project into Helix
 
-    #e0d6ed64 (PGL-1201)
+    #e0d6ed64 (Bug #80866)
        Support restoring GitLab EE 8.0 backups into GitSwarm EE 2015.4
 
     GitLab 8.0
@@ -99,19 +99,19 @@ Major new functionality in 2015.4
 
 Minor new functionality in 2015.4
 
-    #fc65efd2 (PGL-1364)
+    #fc65efd2 (Bug #83592)
        Install GitSwarm EE via bootstrap shell script
 
-    #33aae928 (PGL-1270)
+    #33aae928 (Bug #81336)
         Cleanse removes the p4dctl config file
 
-    #3d53a333 (PGL-1241)
+    #3d53a333 (Bug #81135)
         Update GitSwarm EE logo and favicon
 
-    #1651e961, #2e87e04a (PGL-1235, PGL-1234)
+    #1651e961, #2e87e04a (Bug #81119, Bug #81118)
         Add Mirror in Helix button to project details
 
-    #1d9d67b5, #798e27d7 (PGL-1067)
+    #1d9d67b5, #798e27d7 (Bug #80359)
         Renamed the misleading "default" git fusion config block to "local"
 
     GitLab 8.0
@@ -190,34 +190,34 @@ Minor new functionality in 2015.4
 
 Bugs fixed in 2015.4
 
-    #2f267684 (PGL-1286)
+    #2f267684 (Bug #81413)
         Helix Git Fusion Server dropdown blows out page with long URLs
 
-    #d6df3abc (PGL-1229)
+    #d6df3abc (Bug #81056)
         Prevent installing GitSwarm EE overtop of GitLab
 
-    #04944d0d (PGL-1213)
+    #04944d0d (Bug #80979)
         Fixes WRITE_LOCK_SOCKET is not a valid socket error when group or
         project name is long
 
-    #440103c3 (PGL-1182)
+    #440103c3 (Bug #80780)
         Set LANG before connecting to git fusion to reduce chance of errors when
         communicating with Helix Git Fusion
 
-    #6967d6ba (PGL-1122)
+    #6967d6ba (Bug #80571)
         Only update the p4d root user when GitSwarm EE's root user password changes
         if GitSwarm EE's root user is still and admin.
 
-    #17386be8 (PGL-1073)
+    #17386be8 (Bug #80382)
         Improve error message when there is a problem reading gitswarm.rb
 
-    #3a25f71b, #9bc23c5d (PGL-1058)
+    #3a25f71b, #9bc23c5d (Bug #80340)
         Reinstalling gitswarm after an uninstall results in a fatal error during reconfigure
 
-    #02b39207 (PGL-1051)
+    #02b39207 (Bug #80323)
         Make sure the P4 client name is not initially set as the hostname
 
-    #4cc7824c, #a3e13281, #cde228c3 (PGL-1044)
+    #4cc7824c, #a3e13281, #cde228c3 (Bug #80302)
         Fixed issue where too many piled up mirror processes caused a failover
         of the gitswarm server
 
@@ -312,13 +312,13 @@ Bugs fixed in 2015.4
 
 Major new functionality in 2015.3
 
-    #8491fa96, #d307adc4, #eb9349ae, #fc04a46a (PGL-841, PGL-842, PGL-849, PGL-859, PGL-860, PGL-861)
+    #8491fa96, #d307adc4, #eb9349ae, #fc04a46a (Bug #79375, Bug #79376, Bug #79406, Bug #79464, Bug #79466, Bug #79468)
         Introduced a new all-in-one package that includes a default Helix Server for trying out the product
 
-    #a8940a55, #5fe7603f (PGL-993, PGL-997, PGL-1043)
+    #a8940a55, #5fe7603f (Bug #79900, Bug #79904, Bug #80301)
         Add configuration options for connecting to multiple Git Fusion Servers
 
-    #61ff0890, #93bd4d8a, #cf5ff0c8 (PGL-995, PGL-996, PGL-998, PGL-999, PGL-1050)
+    #61ff0890, #93bd4d8a, #cf5ff0c8 (Bug #80301, Bug #79903, Bug #79905, Bug #79906, Bug #80314)
         Add support for creating new repos in Git Fusion when creating a new project
 
     GitLab 7.13
@@ -331,19 +331,19 @@ Major new functionality in 2015.3
 
 Minor new functionality in 2015.3
 
-    #2834d83c, #65e0d404 (PGL-992)
+    #2834d83c, #65e0d404 (Bug #79899)
         Added support for a global Git Fusion config section for setting defaults across multiple Git Fusion servers
 
-    #562da480, #3fd23a8b (PGL-1016)
+    #562da480, #3fd23a8b (Bug #80079)
         Provided a check for determining if your connected Git Fusion servers meet our minimum version requirements
 
-    #a4490a66 (PGL-1033)
+    #a4490a66 (Bug #80238)
         When connecting a new Git Fusion server, we add the server to the ssh trust list the first time it is used
 
-    #40b18cb3 (PGL-1034, PGL-1054, PGL-1078)
+    #40b18cb3 (Bug #80239, Bug #80326, Bug #80403)
         Improved error messages in the UI when trying to create a mirrored project
 
-    #f8311f34 (PGL-1096)
+    #f8311f34 (Bug #80495)
         Increased our merge timeout values so mirrored merges have a bit more time
 
     GitLab 7.13
@@ -373,10 +373,10 @@ Bugs fixed in 2015.3
     #b480a7e7
         Fixed a race condition during setup of the database and the database user
 
-    #61336ea4 (PGL-1007)
+    #61336ea4 (Bug #79979)
         Fixed an issue where certain URL parameters broke the version check
 
-    #42546246 (PGL-816, PGL-817)
+    #42546246 (Bug #79204, Bug #79206)
         Fixed an issue where check for updates status changes would cause a page reload
 
     GitLab 7.13

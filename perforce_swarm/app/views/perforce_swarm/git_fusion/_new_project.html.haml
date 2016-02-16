@@ -11,7 +11,7 @@
     .git-fusion-radios
       .radio
         = label_tag do
-          = radio_button_tag(:git_fusion_auto_create, 'nil', true)
+          = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_DISABLED, true)
           .option-title
             Not mirrored.
           .option-descr
@@ -21,7 +21,7 @@
       - auto_create_enabled = @depot_exists && @auto_create_errors.empty?
       .radio{:class => ("disabled" unless auto_create_enabled)}
         = label_tag do
-          = radio_button_tag(:git_fusion_auto_create, true, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
+          = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_AUTO_CREATE, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
           .option-title
             Create a Helix GitSwarm project to mirror.
             - unless auto_create_enabled
@@ -45,7 +45,7 @@
               for help.
       .radio{:class => ("disabled" if @repos.empty?)}
         = label_tag do
-          = radio_button_tag(:git_fusion_auto_create, false, false, disabled: @repos.empty?, 'data-keep-disabled' => @repos.empty?)
+          = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_IMPORT_REPO, false, disabled: @repos.empty?, 'data-keep-disabled' => @repos.empty?)
           .option-title
             Mirror an existing repository.
           .option-descr

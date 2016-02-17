@@ -1,7 +1,7 @@
 require_relative 'logged_in_page'
 
 class ProjectPage < LoggedInPage
-  HELIX_MIRRORING = 'Helix Mirroring'
+  HELIX_MIRRORING = 'helix-mirroring'
 
   def initialize(driver)
     super(driver)
@@ -40,8 +40,8 @@ class ProjectPage < LoggedInPage
   end
 
   def can_configure_mirroring?
-    elem = @driver.find_element(:link_text, HELIX_MIRRORING)
-    !elem.attribute(:class).include?('disabled') && !elem.enabled?
+    elem = @driver.find_element(:class, HELIX_MIRRORING)
+    !elem.attribute(:class).include?('disabled')
   end
 
   def configure_mirroring
@@ -49,7 +49,7 @@ class ProjectPage < LoggedInPage
       LOG.debug("WARNING: #{HELIX_MIRRORING} button is not enabled for this user")
       screendump
     end
-    @driver.find_element(:link_text, HELIX_MIRRORING).click
+    @driver.find_element(:class, HELIX_MIRRORING).click
     ConfigureMirroringPage.new(@driver)
   end
 end

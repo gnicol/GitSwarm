@@ -66,8 +66,8 @@ def run_block_with_retry(retries, seconds_between = 1, &block)
 end
 
 def can_configure_mirroring?(user, project)
-  project_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user.name, user.password)
-    .goto_project_page(project.namespace, project.name)
+  logged_in_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user.name, user.password)
+  project_page = logged_in_page.goto_project_page(project.namespace, project.name)
   can_config = project_page.can_configure_mirroring?
   if can_config
     config_mirroring_page = project_page.configure_mirroring

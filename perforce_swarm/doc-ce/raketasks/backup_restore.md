@@ -51,9 +51,10 @@ a secure offsite location as a disaster prevention measure.
 sudo gitswarm-rake gitswarm:backup:create
 ```
 
-You can choose what should be backed up by adding the environment
-variable `SKIP`. Available options: `db`, `uploads` (attachments), and
-`repositories`. Use a comma to specify several options at the same time.
+You can choose what should be backed up by adding the environment variable
+`SKIP`. Available options: `db`, `uploads` (attachments), `repositories`,
+`builds` (CI build output logs), `artifacts` (CI build artifacts), `lfs` (LFS
+objects). Use a comma to specify several options at the same time.
 
 ```
 sudo gitswarm-rake gitswarm:backup:create SKIP=db,uploads
@@ -293,8 +294,8 @@ During restoration, you might encounter the following warnings:
 
 ```
 psql:/var/opt/gitswarm/backups/db/database.sql:22: ERROR:  must be owner of extension plpgsql
-psql:/var/opt/gitswarm/backups/db/database.sql:2931: WARNING:  no privileges could be revoked for "public" (two occurences)
-psql:/var/opt/gitswarm/backups/db/database.sql:2933: WARNING:  no privileges were granted for "public" (two occurences)
+psql:/var/opt/gitswarm/backups/db/database.sql:2931: WARNING:  no privileges could be revoked for "public" (two occurrences)
+psql:/var/opt/gitswarm/backups/db/database.sql:2933: WARNING:  no privileges were granted for "public" (two occurrences)
 ```
 
 Be advised that, the restoration is successful in spite of these warnings.

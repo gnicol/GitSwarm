@@ -35,7 +35,6 @@ class CreateProjectPage < LoggedInPage
       elems << [:id, ID_MIRRORORING_AUTO_CREATE] # auto-create mirrored
       elems << [:id, ID_MIRRORORING_IMPORT] # mirror existing
       elems << [:id, ID_GF_ENTRY] # GF server selection dropdown
-      # elems << [:id, 'git_fusion_repo_name'] # GF repo selector - there may not be one if no repos exist
     end
     elems
   end

@@ -7,6 +7,8 @@ require_relative '../lib/git_fusion_helper'
 require_relative '../lib/git_swarm_api_helper'
 require_relative '../lib/p4_helper'
 require_relative '../lib/browser'
+require_relative '../lib/user'
+require_relative '../lib/project'
 
 RSpec.configure do |config|
   config.before(:suite) do
@@ -61,4 +63,18 @@ def run_block_with_retry(retries, seconds_between = 1, &block)
     sleep seconds_between
   end
   result
+end
+
+def can_configure_mirroring?(user, project)
+  logged_in_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user.name, user.password)
+  project_page = logged_in_page.goto_project_page(project.namespace, project.name)
+  can_config = project_page.can_configure_mirroring?
+  if can_config
+    config_mirroring_page = project_page.configure_mirroring
+    config_mirroring_page.logout
+  else
+    project_page = project_page.goto_configure_mirroring_page_expecting_unauthorized(project.namespace, project.name)
+    project_page.logout
+  end
+  can_config
 end

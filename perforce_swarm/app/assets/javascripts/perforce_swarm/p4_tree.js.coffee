@@ -1,4 +1,6 @@
 class @P4Tree
+  restrictedDepot: null
+
   constructor: (element, fusion_server) ->
     this.$el = $(element)
 
@@ -44,16 +46,17 @@ class @P4Tree
       @filterDepots($(e.currentTarget).is('.depot-stream'))
 
     this.$el.on 'click', '.tree-save', (e) =>
-      @addSavedMapping(@getNewBranchName(), @getNewPaths()[0]) if @isCurrentMappingValid()
+      @addSavedMapping(@getNewBranchName(), @getTreeLowestChecked()[0]) if @isCurrentMappingValid()
 
     this.$('.git-fusion-tree').on 'check_node.jstree uncheck_node.jstree uncheck_all.jstree check_all.jstree', => @updateMapping()
 
     this.$el.on 'change input', '.new-branch-name', => @updateMapping()
 
-    this.$el.on 'click', '.remove-branch', (e) ->
+    this.$el.on 'click', '.remove-branch', (e) =>
       e.preventDefault()
       e.stopPropagation()
       $(e.currentTarget).closest('li').remove()
+      @runTreeFilters()
 
     this.$el.on 'click', '.edit-branch', (e) =>
       e.preventDefault()
@@ -62,8 +65,7 @@ class @P4Tree
       mapping = row.data('mapping')
       @populateTreeFromMap(mapping.branchName, mapping.nodePath)
       row.remove()
-
-
+      @runTreeFilters()
 
   # Local jQuery finder
   $: (selector) ->
@@ -73,6 +75,15 @@ class @P4Tree
     filter = this.$('.depot-type-filter').data('value')
 
     @filterDepots(filter == 'depot-stream')
+
+  restrictDepotType: (type, options = {}) ->
+    if type
+      @restrictedDepot = {type: type, options: options}
+      this.$('.filter-actions a, .filter-actions .depot-type-filter').disable()
+    else
+      @restrictedDepot = null
+      this.$('.filter-actions a, .filter-actions .depot-type-filter').enable()
+
 
   filterDepots: (stream) ->
     filterLabel = this.$('.filter-actions .depot-type-filter')
@@ -100,6 +111,20 @@ class @P4Tree
     # Check the node
     this.$tree.check_node(nodePath)
 
+  getTreeLowestChecked: (full) ->
+    getNodeLowestChecked = (node) =>
+      for child in node.children
+        child = this.$tree.get_node(child)
+        return getNodeLowestChecked(child) if child.state.checked
+
+      return node
+
+    checked       = this.$tree.get_top_checked(true)
+    lowestChecked = []
+    for node in checked
+      lowestChecked.push(if full then getNodeLowestChecked(node) else getNodeLowestChecked(node).id)
+    return lowestChecked
+
   clearBranchTree: ->
     this.$tree.uncheck_all()
     this.$('.new-branch-name').val('').trigger('change')
@@ -107,23 +132,40 @@ class @P4Tree
   getNewBranchName: ->
     $.trim(this.$('.new-branch-name').val())
 
-  getNewPaths: ->
-    this.$tree.get_bottom_checked()
-
   isCurrentMappingValid: ->
-    !!(@getNewPaths().length && @getNewBranchName())
+    return false unless @getTreeLowestChecked().length > 0 && !!@getNewBranchName()
+
+    if @restrictedDepot
+      switch @restrictedDepot.type
+        when 'depot-stream'
+          for node in @getTreeLowestChecked(true)
+            return false if @getDepotForNode(node).type != 'depot-stream'
+        else
+          for node in @getTreeLowestChecked(true)
+            return false if @getDepotForNode(node).type == 'depot-stream'
+
+    return true
+
+  getDepotForNode: (node) ->
+    node  = this.$tree.get_node(node) if $.type(node) == 'string'
+    depot = if node.parents.length then node.parents[0] else node
+    this.$tree.get_node(depot)
 
   updateMapping: ->
-    branchName = @getNewBranchName()
-    newPaths   = @getNewPaths()
-
     if @isCurrentMappingValid()
       this.$('.tree-save').enable()
     else
       this.$('.tree-save').disable()
 
     this.$('.current-mapping-branch').text(@getNewBranchName() || '')
-    this.$('.current-mapping-path').text(@getNewPaths()[0] || '...')
+    this.$('.current-mapping-path').text(@getTreeLowestChecked()[0] || '...')
+
+  runTreeFilters: ->
+    mappingFormInputs = this.$('.content-list input')
+    if mappingFormInputs.length
+      @restrictDepotType(@getDepotForNode(mappingFormInputs[0].value).type)
+    else
+      @restrictDepotType(null)
 
   addSavedMapping: (branchName, nodePath) ->
     newBranch = """
@@ -139,5 +181,6 @@ class @P4Tree
     newBranch.data('mapping', {branchName: branchName, nodePath: nodePath})
     this.$('.content-list').append(newBranch)
     @clearBranchTree()
+    @runTreeFilters()
 
 

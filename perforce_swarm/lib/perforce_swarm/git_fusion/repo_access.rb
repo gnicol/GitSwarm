@@ -56,10 +56,9 @@ module PerforceSwarm
             server_config = nil
           end
 
-          # enforce read permissions if the git-fusion server no longer exists
-          # in the config, or if it exists and has the enforce_permissions
-          # config flag set to true
-          if !server_config || server_config.enforce_permissions?
+          # enforce read permissions if the git-fusion server exists
+          # in the config, and has the enforce_permissions config flag set to true
+          if server_config && server_config.enforce_permissions?
             enforced_servers << server
             enforced_repos   << repo
           end
@@ -76,7 +75,7 @@ module PerforceSwarm
 
         # Allow access if project is not mirrored, or not marked private, or is not in the no_access list
         projects.select do |project|
-          !project.git_fusion_repo || !project.private? || !no_access.include?(project.git_fusion_repo)
+          !project.git_fusion_mirrored? || !project.private? || !no_access.include?(project.git_fusion_repo)
         end
       end
 

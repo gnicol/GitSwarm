@@ -7,18 +7,7 @@ module Browser
   class << self
     def driver
       unless @driver
-        browser = (CONFIG.get('browser') || 'firefox').to_sym
-
-        case browser
-        when :phantomjs
-          caps = Selenium::WebDriver::Remote::Capabilities.phantomjs
-          caps['phantomjs.cli.args'] = ['--ignore-ssl-errors=true', '--web-security=false', '--ssl-protocol=any']
-          @driver = Selenium::WebDriver.for :phantomjs, desired_capabilities: caps
-          @driver.manage.window.resize_to 1024, 768
-        else
-          @driver = Selenium::WebDriver.for browser
-        end
-
+        @driver = create_new_unmanaged_webdriver
         main = Process.pid
         at_exit do
           # Store the exit status of the test run since it goes away after calling the at_exit proc...
@@ -28,6 +17,27 @@ module Browser
         end
       end
       @driver
+    end
+
+    # 'driver' method will create/return a singleton driver that is managed to some extent by the test code.
+    # Some tests may need more than one driver (e.g. if you need 2 users logged in at once).  That test code
+    # can call this method to get hold of an appropriate driver but will have to be responsible for 'ensure'ing
+    # that the driver is terminated and tidied up, regardless of any test failures.
+    def create_new_unmanaged_webdriver
+      browser = (CONFIG.get('browser') || 'firefox').to_sym
+      new_driver = nil
+      case browser
+      when :phantomjs
+        caps = Selenium::WebDriver::Remote::Capabilities.phantomjs
+        caps['phantomjs.cli.args'] = ['--ignore-ssl-errors=true', '--web-security=false', '--ssl-protocol=any']
+        new_driver = Selenium::WebDriver.for :phantomjs, desired_capabilities: caps
+      else
+        new_driver = Selenium::WebDriver.for browser
+      end
+      # make all drivers the same standard size, regardless of browser. Help to prevent browser specific size
+      # related issues in the tests that would be difficult to debug.
+      new_driver.manage.window.resize_to 1024, 768
+      new_driver
     end
 
     attr_writer :driver

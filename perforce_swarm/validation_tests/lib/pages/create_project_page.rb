@@ -136,7 +136,7 @@ class CreateProjectPage < LoggedInPage
   end
 
   def check_servers_exist
-    fail 'No GF servers have been configured, you cant interact with them' unless servers_exist?
+    fail 'No GF servers have been configured, you can\'t interact with them' unless servers_exist?
   end
 
   def repos_exist?

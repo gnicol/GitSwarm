@@ -17,6 +17,20 @@ RSpec.configure do |config|
     # location on the host machine, while allowing for multiple test runs to remain isolated
     cleanup_dirs(tmp_client_dir)
     cleanup_dirs(tmp_screenshot_dir)
+
+    # ensure that if we're running tests via phantomjs, we have version 2
+    current_driver = @driver || Browser.driver
+    if current_driver && current_driver.browser == :phantomjs
+      version = current_driver.capabilities[:version]
+      next unless version
+
+      if Gem::Version.new(version) < Gem::Version.new('2.0.0')
+        LOG.info("Validation tests require PhantomJS version 2, and '#{version}' " \
+                 'is what is being reported. Please either upgrade PhantomJS, or ' \
+                 'switch to a different browser such as firefox.')
+        exit(0)
+      end
+    end
   end
 
   config.before(:each, browser: true) do

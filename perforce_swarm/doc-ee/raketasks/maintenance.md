@@ -1,10 +1,10 @@
 # Maintenance
 
-## Gather information about GitSwarm and the system it runs on
+## Gather information about GitSwarm EE and the system it runs on
 
-This command gathers information about your GitSwarm installation and the
-System it runs on. These may be useful when asking for help or reporting
-issues.
+This command gathers information about your GitSwarm EE installation and
+the System it runs on. These may be useful when asking for help or
+reporting issues.
 
 ```
 sudo gitswarm-rake gitswarm:env:info
@@ -42,7 +42,7 @@ Hooks:            /opt/gitswarm/embedded/service/gitlab-shell/hooks/
 Git:              /usr/bin/git
 ```
 
-## Check GitSwarm configuration
+## Check GitSwarm EE configuration
 
 Runs the following rake tasks:
 

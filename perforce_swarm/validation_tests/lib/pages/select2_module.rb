@@ -6,12 +6,16 @@ module Select2Module
   # The id is a string like 's2id_git_fusion_entry'
   def select2_options(select2_id)
     @driver.find_element(:id, select2_id).find_element(:class, 'select2-choice').click
+    unless page_has_element(:id, 'select2-drop-mask')
+      fail("The dropdown didn't open - if using phantomJS  make sure you have at least v2 (phantomjs -v)")
+    end
     text_values = []
     elements = @driver.find_elements(:class, 'select2-result-selectable')
     elements.each do |x|
       text_values << x.text
     end
-    @driver.find_element(:id, 'select2-drop-mask').click # de-click the menu
+    # de-click the menu
+    @driver.find_element(:id, 'select2-drop-mask').click
     text_values
   end
 

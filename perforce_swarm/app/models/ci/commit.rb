@@ -4,7 +4,7 @@ module PerforceSwarm
   module Ci
     module CommitExtension
       def skip_ci?
-        return true if Gitlab.config.skip_ci
+        return true if Gitlab.config.gitlab_ci['skip_ci']
         super
       end
     end

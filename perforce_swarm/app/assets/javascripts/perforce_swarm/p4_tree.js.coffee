@@ -3,29 +3,27 @@ class @P4Tree
 
   constructor: (element, fusion_server) ->
     this.$el = $(element)
-
     tree_url = '/gitswarm/p4_tree.json'
     tree_url = gon.relative_url_root + tree_url if gon.relative_url_root?
 
+    # Initialize the tree UI component
     this.$('.git-fusion-tree').on 'loaded.jstree', => @treeLoad()
-
     this.$('.git-fusion-tree').jstree({
-      "core" : {
-        "themes" : {
-          "dots" : false
-        },
-        'data' : {
-          "url" : tree_url,
-          "data" : (node) ->
-            { "path" : node.id, "fusion_server" : fusion_server }
+      'core' : {
+        'themes' : { 'dots' : false },
+        'data'   : {
+          'url'  : tree_url,
+          'data' : (node) ->
+            # Return the $.ajax params to use in the request to the server for lazy loading
+            { 'path' : node.id, 'fusion_server' : fusion_server }
         }
       },
-      "checkbox" : {
-        'cascade' : 'up+undetermined',
-        'three_state': false,
-        "keep_selected_style" : false,
-        "whole_node" : false,
-        "tie_selection" : false
+      'checkbox' : {
+        'cascade'             : 'up+undetermined', # we don't cascade checking down
+        'three_state'         : false, # off for now, as it enforces other behavour, @TODO bring this visual style back
+        'keep_selected_style' : false, # Don't style nodes that are 'selected' (different than checked)
+        'whole_node'          : false, # Don't check the node if you click it's label
+        'tie_selection'       : false  # Do our own management of the selected nodes
       },
       'types' : {
         'depot-stream' : {}
@@ -39,31 +37,40 @@ class @P4Tree
     })
     this.$tree = this.$('.git-fusion-tree').jstree(true)
 
+    # Wire up selection change events
+    this.$el.on 'change input', '.new-branch-name', => @updateMapping()
+    this.$('.git-fusion-tree').on 'check_node.jstree uncheck_node.jstree uncheck_all.jstree check_all.jstree', =>
+      @updateMapping()
+
+    # Filter by depot-type
     this.$el.on 'click', '.filter-actions a', (e) =>
       e.preventDefault()
       this.$tree.show_all()
       this.$tree.uncheck_all()
-      @filterDepots($(e.currentTarget).is('.depot-stream'))
+      isStream = $(e.currentTarget).is('.depot-stream')
+      filterLabel = this.$('.filter-actions .depot-type-filter')
+      filterLabel.data('value', if isStream then 'depot-stream' else 'depot-regular')
+      filterLabel.find('.type-text').text(if isStream then 'Stream Depots' else 'Regular Depots')
+      @filterDepots(isStream)
 
+    # Use selected tree mapping in project
     this.$el.on 'click', '.tree-save', (e) =>
       @addSavedMapping(@getNewBranchName(), @getTreeLowestChecked()[0]) if @isCurrentMappingValid()
 
-    this.$('.git-fusion-tree').on 'check_node.jstree uncheck_node.jstree uncheck_all.jstree check_all.jstree', => @updateMapping()
-
-    this.$el.on 'change input', '.new-branch-name', => @updateMapping()
-
+    # Remove a branch from the project mapping
     this.$el.on 'click', '.remove-branch', (e) =>
       e.preventDefault()
       e.stopPropagation()
       $(e.currentTarget).closest('li').remove()
       @runTreeFilters()
 
+    # Edit a branch in the project mapping
     this.$el.on 'click', '.edit-branch', (e) =>
       e.preventDefault()
       e.stopPropagation()
       row = $(e.currentTarget).closest('li')
       mapping = row.data('mapping')
-      @populateTreeFromMap(mapping.branchName, mapping.nodePath)
+      @loadEditMapping(mapping.branchName, mapping.nodePath)
       row.remove()
       @runTreeFilters()
 
@@ -71,24 +78,23 @@ class @P4Tree
   $: (selector) ->
     this.$el.find(selector)
 
+  # Setup default tree state
   treeLoad: ->
-    filter = this.$('.depot-type-filter').data('value')
+    @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
-    @filterDepots(filter == 'depot-stream')
-
+  # Locks down the valid selections, and disables the
+  # filter button in the tree based on depot type
   restrictDepotType: (type, options = {}) ->
+    filterButton = this.$('.filter-actions a, .filter-actions .depot-type-filter')
     if type
-      @restrictedDepot = {type: type, options: options}
-      this.$('.filter-actions a, .filter-actions .depot-type-filter').disable()
+      @restrictedDepot = { type: type, options: options }
+      filterButton.disable()
     else
       @restrictedDepot = null
-      this.$('.filter-actions a, .filter-actions .depot-type-filter').enable()
+      filterButton.enable()
 
-
+  # Filter the depots shown in the tree either by streams or regular depots
   filterDepots: (stream) ->
-    filterLabel = this.$('.filter-actions .depot-type-filter')
-    filterLabel.data('value', if stream then 'depot-stream' else 'depot-regular')
-    filterLabel.find('.type-text').text(if stream then 'Stream Depots' else 'Regular Depots')
     depots = this.$tree.get_node('#').children
     for depot in depots
       node = this.$tree.get_node(depot)
@@ -97,11 +103,18 @@ class @P4Tree
       else
         this.$tree.hide_node(node) if node.type == 'depot-stream'
 
-  populateTreeFromMap: (branchName, nodePath) ->
+  # Expand and select a node
+  loadEditMapping: (branchName, nodePath) ->
     this.$('.new-branch-name').val(branchName).trigger('change')
+    @openAndSelectDeepNode(nodePath)
 
+  # Recurse through nodes to reach the passed node pass, waiting for them to be
+  # loaded from the server, and then check the passed nodePath once it's loaded
+  openAndSelectDeepNode: (nodePath) ->
     # Open and load the path
     depotMatcher  = /^\/\/[^\/]*/
+    # create an array of the nodes by splitting the path, but
+    # we need special consideration for the depot path
     depot         = depotMatcher.exec(nodePath)[0]
     paths         = nodePath.replace(depotMatcher, '').split('/')
     paths[0]      = depot
@@ -111,7 +124,10 @@ class @P4Tree
     # Check the node
     this.$tree.check_node(nodePath)
 
+  # Our own version of tree.get_bottom_checked that returns not the bottom
+  # checked nodes, but instead, the lowest checked nodes.
   getTreeLowestChecked: (full) ->
+    # recursive function for finding the lowest checked node of a passed node
     getNodeLowestChecked = (node) =>
       for child in node.children
         child = this.$tree.get_node(child)
@@ -121,6 +137,8 @@ class @P4Tree
 
     checked       = this.$tree.get_top_checked(true)
     lowestChecked = []
+
+    # Iterate over the checked depot nodes, then traverse down into them
     for node in checked
       lowestChecked.push(if full then getNodeLowestChecked(node) else getNodeLowestChecked(node).id)
     return lowestChecked
@@ -133,16 +151,16 @@ class @P4Tree
     $.trim(this.$('.new-branch-name').val())
 
   isCurrentMappingValid: ->
+    # mapping must have a path and branch name
     return false unless @getTreeLowestChecked().length > 0 && !!@getNewBranchName()
 
+    # If we are restricted to a particular depot type, we enforce that as well
     if @restrictedDepot
-      switch @restrictedDepot.type
-        when 'depot-stream'
-          for node in @getTreeLowestChecked(true)
-            return false if @getDepotForNode(node).type != 'depot-stream'
+      for node in @getTreeLowestChecked(true)
+        if @restrictedDepot.type == 'depot-stream'
+          return false if @getDepotForNode(node).type != 'depot-stream'
         else
-          for node in @getTreeLowestChecked(true)
-            return false if @getDepotForNode(node).type == 'depot-stream'
+          return false if @getDepotForNode(node).type == 'depot-stream'
 
     return true
 
@@ -151,6 +169,7 @@ class @P4Tree
     depot = if node.parents.length then node.parents[0] else node
     this.$tree.get_node(depot)
 
+  # updates the area that displays your current tree selection
   updateMapping: ->
     if @isCurrentMappingValid()
       this.$('.tree-save').enable()
@@ -160,6 +179,7 @@ class @P4Tree
     this.$('.current-mapping-branch').text(@getNewBranchName() || '')
     this.$('.current-mapping-path').text(@getTreeLowestChecked()[0] || '...')
 
+  # enforce tree restrictions based on the mappings you already have
   runTreeFilters: ->
     mappingFormInputs = this.$('.content-list input')
     if mappingFormInputs.length
@@ -167,6 +187,7 @@ class @P4Tree
     else
       @restrictDepotType(null)
 
+  # set the current tree selected mapping as field in the form to submit during project creation
   addSavedMapping: (branchName, nodePath) ->
     newBranch = """
     <li>

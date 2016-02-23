@@ -1,18 +1,18 @@
 # Facebook OAuth2 OmniAuth Provider
 
-To enable the Facebook OmniAuth provider, you must register your application
+To enable the Facebook OmniAuth provider you must register your application
 with Facebook. Facebook generates an app ID and secret key for you to use.
 
 1.  Sign in to the [Facebook Developer
     Platform](https://developers.facebook.com/).
 
-1.  Choose "My Apps" &gt; "Add a New App".
+1.  Choose "My Apps" \> "Add a New App".
 
 1.  Select the type "Website".
 
 1.  Enter a name for your app. This can be anything. Consider something
-    like "\<Organization\>'s GitSwarm" or "\<Your Name\>'s GitSwarm" or
-    something else descriptive.
+    like "\<Organization\>'s GitSwarm EE" or "\<Your Name\>'s GitSwarm EE"
+    or something else descriptive.
 
 1.  Choose "Create New Facebook App ID".
 
@@ -20,7 +20,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
 1.  Choose "Create App ID".
 
-1.  Enter the address of your GitSwarm installation at the bottom of the
+1.  Enter the address of your GitLab installation at the bottom of the
     package:
 
     ![Facebook Website URL](facebook_website_url.png)
@@ -35,11 +35,11 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
     ![Facebook App Settings](facebook_app_settings.png)
 
-1.  Choose "Save Changes".
+1.  Choose "Save Changes":
 
 1.  Choose "Status & Review" in the menu on the left.
 
-1.  Change the switch on the right from "No" to "Yes".
+1.  Change the switch on the right from `No` to `Yes`.
 
 1.  Choose "Confirm" when prompted to make the app public.
 
@@ -52,10 +52,10 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
     ![Facebook API Keys](facebook_api_keys.png)
 
-1.  On your GitSwarm server, open the configuration file.
+1.  On your GitSwarm EE server, open the configuration file.
 
-    ```sh
-sudo editor /etc/gitswarm/gitswarm.rb
+    ```bash
+    sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
 1.  See [Initial OmniAuth
@@ -81,9 +81,9 @@ sudo editor /etc/gitswarm/gitswarm.rb
 
 1.  Save the configuration file.
 
-1.  Restart GitSwarm for the changes to take effect.
+1.  Restart GitSwarm EE for the changes to take effect.
 
 On the sign in page there should now be a Facebook icon below the regular
 sign in form. Click the icon to begin the authentication process. Facebook
-asks the user to sign in and authorize GitSwarm. If everything goes well,
-the user is returned to GitSwarm and is signed in.
+asks the user to sign in and authorize the GitSwarm EE application. If
+everything goes well the user is returned to GitSwarm EE and is signed in.

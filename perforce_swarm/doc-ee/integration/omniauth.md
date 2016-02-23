@@ -19,18 +19,18 @@ settings that are in common for all providers that we need to consider.
 
 - Omniauth needs to be enabled, see details below for example.
 - `allow_single_sign_on` defaults to `false`. If `false` users must be
-  created manually or they will not be able to sign in via OmniAuth.
+  created manually or they cannot sign in via OmniAuth.
 - `block_auto_created_users` defaults to `true`. If `true` auto created
-  users will be blocked by default and will have to be unblocked by an
-  administrator before they are able to sign in.
+  users are blocked by default and have to be unblocked by an administrator
+  before they are able to sign in.
 - **Note:** If you set `allow_single_sign_on` to `true` and
   `block_auto_created_users` to `false` please be aware that any user on
-  the Internet will be able to successfully sign in to your GitSwarm EE
-  without administrative approval.
+  the Internet could successfully sign in to your GitSwarm EE without
+  administrative approval.
 
 If you want to change these settings, open the configuration file:
 
-```sh
+```bash
 sudo editor /etc/gitswarm/gitswarm.rb
 ```
 
@@ -71,8 +71,8 @@ enable an OmniAuth provider for an existing user.
 1. Select the "Account" tab.
 1. Under "Connected Accounts" select the desired OmniAuth provider, such as
    Twitter.
-1. The user will be redirected to the provider. Once the user authorized
-   GitSwarm EE, they will be redirected back to GitSwarm EE.
+1. The user is redirected to the provider. Once the user authorized
+   GitSwarm EE, they are be redirected back to GitSwarm EE.
 
 The chosen OmniAuth provider is now active and can be used to sign in to
 GitSwarm EE from then on.
@@ -87,8 +87,8 @@ provider.
 
 ### Steps
 
-These steps are fairly general and you will need to figure out the exact
-details from the Omniauth provider's documentation.
+These steps are fairly general and you must figure out the exact details
+from the Omniauth provider's documentation.
 
 - Stop GitSwarm:
 

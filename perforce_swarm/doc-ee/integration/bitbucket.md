@@ -4,7 +4,7 @@ Import projects from Bitbucket and login to your GitSwarm EE instance with
 your Bitbucket account.
 
 To enable the Bitbucket OmniAuth provider you must register your
-application with Bitbucket. Bitbucket will generate an application ID and
+application with Bitbucket. Bitbucket generates an application ID and
 secret key for you to use.
 
 1.  Sign in to Bitbucket.
@@ -25,7 +25,7 @@ secret key for you to use.
       something else descriptive.
     - Application description: Fill this in if you wish.
     - URL: The URL to your GitSwarm EE installation.
-      'https://gitswarm.company.com'
+      `https://gitswarm.company.com`
 
 1.  Select "Save".
 
@@ -35,7 +35,7 @@ secret key for you to use.
 1.  On your GitSwarm EE server, open the configuration file.
 
     ```bash
-      sudo editor /etc/gitswarm/gitswarm.rb
+    sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
 1.  See [Initial OmniAuth
@@ -43,8 +43,6 @@ secret key for you to use.
     settings.
 
 1.  Add the provider configuration:
-
-    For omnibus package:
 
     ```ruby
       gitlab_rails['omniauth_providers'] = [
@@ -65,15 +63,15 @@ secret key for you to use.
 
 1.  Save the configuration file.
 
-1.  Reconfigure GitSwarm EE (`gitlab-ctl reconfigure`).
+1.  Reconfigure GitSwarm EE (`gitswarm-ctl reconfigure`).
 
 1.  Restart GitSwarm EE for the changes to take effect.
 
 On the sign in page there should now be a Bitbucket icon below the regular
 sign in form. Click the icon to begin the authentication process.
-Bitbucket will ask the user to sign in and authorize the GitSwarm EE
-application. If everything goes well the user will be returned to GitSwarm
-EE and will be signed in.
+Bitbucket asks the user to sign in and authorize the GitSwarm EE
+application. If everything goes well the user is returned to GitSwarm EE
+and is signed in.
 
 ## Bitbucket project import
 
@@ -89,7 +87,7 @@ using your GitSwarm EE server's SSH key.
 To be able to access repositories on Bitbucket, GitSwarm EE automatically
 registers your public key with Bitbucket as a deploy key for the
 repositories to be imported. Your public key needs to be at
-`~/.ssh/bitbucket_rsa.pub`, which will expand to
+`~/.ssh/bitbucket_rsa.pub`, which expands to
 `/home/git/.ssh/bitbucket_rsa.pub` in most configurations.
 
 If you have that file in place, you're all set and should see the "Import
@@ -97,8 +95,8 @@ projects from Bitbucket" option enabled. If you don't, do the following:
 
 1.  Create a new SSH key:
 
-    ```sh
-sudo -u git -H ssh-keygen
+    ```bash
+    sudo -u git -H ssh-keygen
     ```
 
     When asked `Enter file in which to save the key` specify the correct
@@ -110,15 +108,15 @@ sudo -u git -H ssh-keygen
     Open the SSH configuration file of the git user.
 
     ```bash
-sudo editor /home/git/.ssh/config
+    sudo editor /home/git/.ssh/config
     ```
 
     Add a host configuration for `bitbucket.org`.
 
     ```bash
-Host bitbucket.org
-    IdentityFile ~/.ssh/bitbucket_rsa
-    User git
+    Host bitbucket.org
+        IdentityFile ~/.ssh/bitbucket_rsa
+        User git
     ```
 
 ### Step 2: Known hosts
@@ -128,10 +126,10 @@ To allow GitSwarm EE to connect to Bitbucket over SSH, you need to add
 following steps to do so:
 
 1.  Manually connect to 'bitbucket.org' over SSH, while logged in as the
-    `git` account that GitSwarm EE will use:
+    `git` account that GitSwarm EE uses:
 
     ```bash
-sudo -u git -H ssh bitbucket.org
+    sudo -u git -H ssh bitbucket.org
     ```
 
 1.  Verify the RSA key fingerprint you'll see in the response matches the

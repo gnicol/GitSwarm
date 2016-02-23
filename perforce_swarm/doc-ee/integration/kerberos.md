@@ -9,12 +9,8 @@ EE. You only need to specify the provider name. For example:
 { name: 'kerberos'}
 ```
 
-> Note: for source installations, make sure the `kerberos` gem group
-  [has been installed](../install/installation.md#install-gems).
-
 You still need to configure your system for Kerberos usage, such as
-specifying realms. GitSwarm EE will make use of the system's Kerberos
-settings.
+specifying realms. GitSwarm EE makes use of the system's Kerberos settings.
 
 Existing GitSwarm EE users can go to profile > account and attach a
 Kerberos account. if you want to allow users without a GitSwarm EE account
@@ -22,7 +18,7 @@ to login you should enable the option `omniauth_allow_single_sign_on` in
 config file (default: `false`). Then, the first time a user signs in with
 Kerberos credentials, GitSwarm EE creates a new GitSwarm EE user associated
 with the email, which is built from the kerberos username and realm. User
-accounts will be created automatically when authentication was successful.
+accounts are created automatically when authentication was successful.
 
 ### HTTP git access
 
@@ -77,7 +73,7 @@ authentication if Kerberos authentication fails.
 For GitSwarm EE users to be able to use either `basic` or `negotiate`
 authentication with older git versions, it is possible to offer Kerberos
 ticket-based authentication on a different port (e.g. 8443) while the
-standard port will keep offering only `basic` authentication.
+standard port continues offering only `basic` authentication.
 
 
 * Edit `/etc/gitswarm/gitswarm.rb`:
@@ -90,7 +86,7 @@ gitlab_rails['kerberos_https'] = true
 
 and run `sudo gitswarm-ctl reconfigure` for changes to take effect.
 
-Git remote URLs will have to be updated to
+Git remote URLs have to be updated to
 `https://gitswarm.example.com:8443/mygroup/myproject.git` in order to use
 Kerberos ticket-based authentication.
 

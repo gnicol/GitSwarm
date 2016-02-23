@@ -13,7 +13,7 @@ commits status API.
 
 As of GitSwarm 2015.4, GitLab CI is mainly exposed via the `/builds` page
 of a project. Disabling GitLab CI in a project does not delete any previous
-builds. In fact, the `/builds` page can still be accessed, although it's
+builds.  In fact, the `/builds` page can still be accessed, although it's
 hidden from the left sidebar menu.
 
 GitLab CI is enabled by default on new installations and can be disabled
@@ -38,9 +38,9 @@ You can disable GitLab CI site-wide, by modifying the settings in
 
 Two things to note:
 
-1. Disabling GitLab CI affects only newly-created projects. Projects that
-   had it enabled prior to this modification, continue to work as before.
-1. Even if you disable GitLab CI, users are still able to enable it in
+1. Disabling GitLab CI, will affect only newly-created projects. Projects
+   that had it enabled prior to this modification, will work as before.
+1. Even if you disable GitLab CI, users will still be able to enable it in
    the project's settings.
 
 ---
@@ -51,4 +51,4 @@ Edit `/etc/gitswarm/gitswarm.rb` and add the line:
 gitlab-rails['gitlab_default_projects_features_builds'] = false
 ```
 
-Save the file and reconfigure GitSwarm: `sudo gitswarm-ctl reconfigure`.
+Save the file and reconfigure GitSwarm EE: `sudo gitswarm-ctl reconfigure`.

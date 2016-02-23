@@ -1,8 +1,7 @@
 # Twitter OAuth2 OmniAuth Provider
 
 To enable the Twitter OmniAuth provider you must register your application
-with Twitter. Twitter will generate a client ID and secret key for you to
-use.
+with Twitter. Twitter generates a client ID and secret key for you to use.
 
 1.  Sign in to [Twitter Application Management](https://apps.twitter.com/).
 
@@ -71,6 +70,5 @@ sudo editor /etc/gitswarm/gitlswarm.rb
 
 On the sign in page there should now be a Twitter icon below the regular
 sign in form. Click the icon to begin the authentication process. Twitter
-will ask the user to sign in and authorize the GitSwarm EE application. If
-everything goes well the user will be returned to GitSwarm EE and will be
-signed in.
+asks the user to sign in and authorize the GitSwarm EE application. If
+everything goes well the user is returned to GitSwarm EE and is signed in.

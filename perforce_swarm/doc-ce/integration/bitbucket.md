@@ -4,7 +4,7 @@ Import projects from Bitbucket and login to your GitSwarm instance with
 your Bitbucket account.
 
 To enable the Bitbucket OmniAuth provider, you must register your
-application with Bitbucket. Bitbucket will generate an application ID and
+application with Bitbucket. Bitbucket generates an application ID and
 secret key for you to use.
 
 1.  Sign in to Bitbucket.
@@ -85,7 +85,7 @@ your GitSwarm server's SSH key.
 To be able to access repositories on Bitbucket, GitSwarm automatically
 registers your public key with Bitbucket as a deploy key for the
 repositories to be imported. Your public key needs to be at
-`~/.ssh/bitbucket_rsa.pub`, which will expand to
+`~/.ssh/bitbucket_rsa.pub`, which expands to
 `/home/git/.ssh/bitbucket_rsa.pub` in most configurations.
 
 If you have that file in place, you're all set and should see the "Import

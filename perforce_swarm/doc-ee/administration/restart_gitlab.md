@@ -1,15 +1,15 @@
-# How to restart GitSwarm
+# How to restart GitSwarm EE
 
 Depending on how you installed GitSwarm, there are different methods to
 restart its service(s).
 
 If you want the TL;DR versions, jump to:
 
-- [GitSwarm restart](#gitswarm-restart)
-- [GitSwarm reconfigure](#gitswarm-reconfigure)
+- [Omnibus GitLab restart](#omnibus-gitlab-restart)
+- [Omnibus GitLab reconfigure](#omnibus-gitlab-reconfigure)
 
-`gitlab-ctl` can be used to restart the GitSwarm application (Unicorn) as
-well as the other components, like:
+`gitswarm-ctl` can be used to restart the GitSwarm EE application (Unicorn)
+as well as the other components, like:
 
 - GitLab Workhorse
 - Sidekiq
@@ -19,10 +19,10 @@ well as the other components, like:
 - [Mailroom]
 - Logrotate
 
-## GitSwarm restart
+## GitSwarm EE restart
 
 There may be times in the documentation where you are asked to _restart_
-GitSwarm. In that case, you need to run the following command:
+GitSwarm EE. In that case, you need to run the following command:
 
 ```bash
 sudo gitswarm-ctl restart
@@ -48,7 +48,7 @@ To restart a component separately, you can append its service name to the
 sudo gitswarm-ctl restart nginx
 ```
 
-To check the status of GitSwarm services, run:
+To check the status of GitSwarm EE services, run:
 
 ```bash
 sudo gitswarm-ctl status
@@ -62,28 +62,28 @@ stuck. In that case, you can use `gitswarm-ctl kill <service>` to send the
 restart should perform fine.
 
 As a last resort, you can try to
-[reconfigure GitSwarm](#gitswarm-reconfigure) instead.
+[reconfigure GitSwarm](#omnibus-gitlab-reconfigure) instead.
 
-## GitSwarm reconfigure
+## GitSwarm EE reconfigure
 
 There may be times in the documentation where you are asked to
-_reconfigure_ GitSwarm.
+_reconfigure_ GitSwarm EE.
 
-Reconfigure GitSwarm with:
+Reconfigure GitSwarm EE with:
 
 ```bash
 sudo gitswarm-ctl reconfigure
 ```
 
-Reconfiguring GitSwarm should occur in the event that something in its
-configuration (`/etc/gitswarm/gitlab.rb`) has changed.
+Reconfiguring GitSwarm EE should occur in the event that something in its
+configuration (`/etc/gitswarm/gitswarm.rb`) has changed.
 
 When you run this command, [Chef], the underlying configuration management
-application that powers GitSwarm, ensures that all directories,
+application that powers GitSwarm EE, ensures that all directories,
 permissions, services, etc., are in place and in the same shape that they
 were initially shipped.
 
-It also restarts GitSwarm components where needed, if any of their
+It also restarts GitSwarm EE components where needed, if any of their
 configuration files have changed.
 
 If you manually edit any files in `/var/opt/gitswarm` that are managed by
@@ -91,7 +91,5 @@ Chef, running reconfigure reverts the changes AND restarts the services
 that depend on those files.
 
 [omnibus-dl]: https://about.gitlab.com/downloads/ "Download the Omnibus packages"
-[mailroom]: ../incoming_email/README.md "Used for replying by email in GitSwarm issues and merge requests"
+[mailroom]: ../incoming_email/README.md "Used for replying by email in GitSwarm EE issues and merge requests"
 [chef]: https://www.chef.io/chef/ "Chef official website"
-[src-service]: https://gitlab.com/gitlab-org/gitlab-ce/blob/master/lib/support/init.d/gitlab "GitLab init service file"
-[gl-recipes]: https://gitlab.com/gitlab-org/gitlab-recipes/tree/master/init "GitLab Recipes repository"

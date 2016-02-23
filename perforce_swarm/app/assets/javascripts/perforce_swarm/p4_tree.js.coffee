@@ -21,7 +21,7 @@ class @P4Tree
       },
       'checkbox' : {
         'cascade'             : 'up+undetermined', # we don't cascade checking down
-        'three_state'         : false, # off for now, as it enforces other behavour, @TODO bring this visual style back
+        'three_state'         : false, # off for now, as it enforces other behaviour, @TODO bring this visual style back
         'keep_selected_style' : false, # Don't style nodes that are 'selected' (different than checked)
         'whole_node'          : false, # Don't check the node if you click it's label
         'tie_selection'       : false  # Do our own management of the selected nodes

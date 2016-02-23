@@ -100,3 +100,7 @@ span.mirror-button-wrapper {
   // although not dangerous, use this to get the red color for the displayed depot path
   color: $brand-danger;
 }
+
+.btn.helix-mirroring.disabled {
+  pointer-events: none !important;
+}

@@ -74,7 +74,7 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
   end
 
   step 'I choose to import an existing repo' do
-    page.find('#git_fusion_auto_create_false').click
+    page.find('#git_fusion_repo_create_type_import-repo').click
   end
 
   step 'I should see a populated Git Fusion repo dropdown' do

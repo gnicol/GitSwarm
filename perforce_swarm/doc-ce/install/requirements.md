@@ -155,9 +155,5 @@ can use 1GB+ of memory.
   version](https://www.mozilla.org/en-US/firefox/organizations/))
 - Safari 7+ (known problem: required fields in html5 do not work)
 - Opera (Latest released version)
-- IE 10+
-
-### Common UI problems with IE
-
-If you experience UI issues with Internet Explorer, please make sure that
-you have the `Compatibility View` mode disabled.
+- Internet Explorer (IE) 10+, but please make sure that you have the
+  `Compatibility View` mode disabled.

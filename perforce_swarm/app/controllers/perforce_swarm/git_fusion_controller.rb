@@ -16,8 +16,9 @@ class PerforceSwarm::GitFusionController < ApplicationController
       end
 
       # pre-flight checks against Git Fusion and Perforce
-      creator = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server, @project.namespace.name, @project.path)
-      p4      = PerforceSwarm::P4::Connection.new(creator.config)
+      creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(@fusion_server)
+      creator.namespace(@project.namespace.name).project_path(@project.path)
+      p4 = PerforceSwarm::P4::Connection.new(creator.config)
       p4.login
       creator.save_preflight(p4)
 
@@ -46,7 +47,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     begin
       # attempt to connect to Perforce and ensure the desired project depot exists
       # we do this in its own rescue block so we only grab errors relevant to auto_create
-      creator        = PerforceSwarm::GitFusion::RepoCreator.new(@fusion_server)
+      creator        = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(@fusion_server)
       p4             = PerforceSwarm::P4::Connection.new(creator.config)
       p4.login
       @project_depot = creator.project_depot
@@ -91,8 +92,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
     # ensure the repo still exists, and the user re-enabling can see it
     error = nil
     begin
-      server  = project.git_fusion_server_id
-      repo    = project.git_fusion_repo_name
+      server  = @project.git_fusion_server_id
+      repo    = @project.git_fusion_repo_name
       repos   = PerforceSwarm::GitFusionRepo.list(server, current_user.username)
       message = "Either the repo '#{repo}' does not exist, or you do not have permission to access it."
       error   = message unless repos[repo]
@@ -114,6 +115,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
       exec Shellwords.shelljoin(args)
     end
     Process.detach(job)
+    logger.info("Helix Mirroring re-enable started on project '#{@project.name_with_namespace}' " \
+                "by user '#{current_user.username}'")
 
     # we want to return once the above process has started, so we don't return until
     # either the child process is done, the re-enabling process has started, or

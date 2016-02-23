@@ -192,7 +192,7 @@ class @P4Tree
   addSavedMapping: (branchName, nodePath) ->
     newBranch = """
     <li>
-      <input type="hidden" style="display:none;" name="git_fusion_branch_mapping[#{branchName}]" value="#{nodePath}" />
+      <input type="hidden" style="display:none;" name="git_fusion_branch_mappings[#{branchName}]" value="#{nodePath}" />
       <div>#{branchName}<div style="float:right;">
         <a class="edit-branch" href="#">edit</a> | <a class="remove-branch" href="#">delete</a>
       </div></div>

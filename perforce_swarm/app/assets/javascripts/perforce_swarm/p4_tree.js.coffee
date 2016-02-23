@@ -8,6 +8,7 @@ class @P4Tree
 
     # Initialize the tree UI component
     this.$('.git-fusion-tree').on 'loaded.jstree', => @treeLoad()
+    this.$('.git-fusion-tree').on 'load_node.jstree', (event, data) => @_treeNodeLoaded(data)
     this.$('.git-fusion-tree').jstree({
       'core' : {
         'themes' : { 'dots' : false },
@@ -166,7 +167,7 @@ class @P4Tree
 
   getDepotForNode: (node) ->
     node  = this.$tree.get_node(node) if $.type(node) == 'string'
-    depot = if node.parents.length then node.parents[0] else node
+    depot = if node.parents.length > 1 then node.parents[node.parents.length - 2] else node
     this.$tree.get_node(depot)
 
   # updates the area that displays your current tree selection
@@ -204,4 +205,18 @@ class @P4Tree
     @clearBranchTree()
     @runTreeFilters()
 
+  restrictStreamSelection: (node) ->
+    node      = this.$tree.get_node(node) if $.type(node) == 'string'
+    depot     = @getDepotForNode(node)
+    nodeDepth = node.parents.length - 1 # Depth of the node we are checking, minus one for the root node
 
+    # Disable node if depot is a stream depot, and the node
+    # isn't a stream (determined by the depots stream depth)
+    if depot.type == 'depot-stream' && depot.data.streamDepth != nodeDepth
+        this.$tree.disable_node(node)
+        this.$tree.disable_checkbox(node)
+
+  # Called each time a node's children are loaded from the backend
+  _treeNodeLoaded: (data) ->
+    if data.status
+      @restrictStreamSelection(child) for child in data.node.children

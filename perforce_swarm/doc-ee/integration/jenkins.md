@@ -1,6 +1,6 @@
 # Jenkins CI integration
 
-Since GitSwarm 2015.4, Jenkins integration using the [GitLab Hook
+Since GitSwarm EE 2015.4, Jenkins integration using the [GitLab Hook
 Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitLab+Hook+Plugin)
 was deprecated in favor of the [GitLab
 Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitLab+Plugin).
@@ -176,4 +176,4 @@ service settings and knowlegde of the CI tool. The response is parsed to
 give a response in GitSwarm EE (success/failed/pending). All this happens
 with AJAX requests on the merge request page. The Jenkins project service
 code is only available in GitSwarm EE. The GitLab CI project service code
-is available in the GitSwarm codebase.
+is available in the GitSwarm EE codebase.

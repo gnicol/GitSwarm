@@ -8,7 +8,7 @@ as an option if you do not have filesystem access.**
 Git natively supports hooks that are executed on different actions.
 Examples of server-side git hooks include pre-receive, post-receive, and
 update. See [Git SCM Server-Side
-Hooks](http://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks#Server-Side-Hooks)
+Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks#Server-Side-Hooks)
 for more information about each hook type.
 
 GitSwarm administrators can add custom git hooks to any GitSwarm project.

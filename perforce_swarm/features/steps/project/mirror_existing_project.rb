@@ -30,21 +30,26 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I should see a no Git Fusion instances configured tooltip' do
-    page.should have_selector('li[data-title*="no Git Fusion instances have been configured."]')
+    page.should have_selector('.helix-mirrored-status-label[data-title*=' \
+                              '"no Git Fusion instances have been configured."]'
+                             )
   end
 
   step 'I should see a no Git Fusion instances configured for auto-create tooltip' do
-    page.should have_selector('li[data-title*="None of the Helix Git Fusion instances GitSwarm knows about ' \
+    page.should have_selector('.helix-mirrored-status-label[data-title*=' \
+                              '"None of the Helix Git Fusion instances GitSwarm knows about ' \
                               'are configured for \'auto create\'."]'
                              )
   end
 
   step 'I should see an inadequate permissions tooltip' do
-    page.should have_selector('li[data-title*="but you lack permissions to enable it for this project."]')
+    page.should have_selector('.helix-mirrored-status-label[data-title*=' \
+                              '"you lack permissions to manage it for this project."]'
+                             )
   end
 
   step 'I should see a disabled or mis-configured tooltip' do
-    page.should have_selector('li[data-title*="Helix Git Fusion integration is disabled."]')
+    page.should have_selector('.helix-mirrored-status-label[data-title*="Helix Git Fusion integration is disabled."]')
   end
 
   step 'Helix mirroring is enabled for project "Shop"' do
@@ -82,15 +87,15 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
   end
 
   step 'I should see "Not Mirrored in Helix" under the clone URL field' do
-    page.within('.project-stats > ul.nav > li.mirrored-status') do
-      page.should have_link('Not Mirrored in Helix')
+    page.within('.cover-controls .helix-mirrored-status-label') do
+      page.should have_content('Not Mirrored in Helix')
     end
   end
 
   step 'I should see "Mirrored in Helix" under the clone URL field' do
-    page.within('.project-stats > ul.nav > li.mirrored-status') do
-      page.should have_link('Mirrored in Helix')
-      page.should_not have_link('Not Mirrored in Helix')
+    page.within('.cover-controls .helix-mirrored-status-label') do
+      page.should have_content('Mirrored in Helix')
+      page.should_not have_content('Not Mirrored in Helix')
     end
   end
 

@@ -17,9 +17,9 @@ be used:
 ((?:[Cc]los(?:e[sd]?|ing)|[Ff]ix(?:e[sd]|ing)?) +(?:(?:issues? +)?%{issue_ref}(?:(?:, *| +and +)?))+)
 ```
 
-Here, `%{issue_ref}` is a complex regular expression defined inside GitLab,
-that matches a reference to a local issue (`#123`), cross-project issue
-(`group/project#123`) or a link to an issue
+Here, `%{issue_ref}` is a complex regular expression defined inside
+GitSwarm EE, that matches a reference to a local issue (`#123`),
+cross-project issue (`group/project#123`) or a link to an issue
 (`https://gitswarm.example.com/group/project/issues/123`).
 
 For example:

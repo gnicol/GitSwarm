@@ -37,7 +37,7 @@ sudo chown -R git:git /var/opt/gitswarm/git-data/repositories/new_group/
 ### Import the repositories
 
 ```bash
-sudo gitswarm-rake gitlab:import:repos
+sudo gitswarm-rake gitswarm:import:repos
 ```
 
 #### Example output

@@ -59,7 +59,7 @@ Also check on your GitSwarm server.
 
 ```
 # On your GitLab server:
-sudo gitswarm-rake gitlab:backup:create SKIP=repositories,uploads
+sudo gitswarm-rake gitswarm:backup:create SKIP=repositories,uploads
 ```
 
 If this fails, you need to fix it before upgrading to 2015.4.
@@ -79,7 +79,7 @@ sudo gitlab-ci-rake env:info
 
 ```
 # On your GitSwarm server:
-sudo gitswarm-rake gitlab:env:info
+sudo gitswarm-rake gitswarm:env:info
 ```
 
 #### 3. Storage planning

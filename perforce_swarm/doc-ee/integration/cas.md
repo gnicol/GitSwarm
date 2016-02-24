@@ -28,7 +28,7 @@ logout.
                 url: 'CAS_SERVER',
                 login_url: '/CAS_PATH/login',
                 service_validate_url: '/CAS_PATH/p3/serviceValidate',
-                logout_url: '/CAS_PATH/logout'} }
+                logout_url: '/CAS_PATH/logout'
         }
       }
     ]

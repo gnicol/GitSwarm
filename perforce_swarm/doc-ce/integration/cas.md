@@ -10,7 +10,7 @@ logout.
 1.  On your GitSwarm server, open the configuration file.
 
     ```sh
-sudo editor /etc/gitswarm/gitswarm.rb
+    sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
 1.  See [Initial OmniAuth
@@ -20,18 +20,18 @@ sudo editor /etc/gitswarm/gitswarm.rb
 1.  Add the provider configuration:
 
     ```ruby
-gitlab_rails['omniauth_providers'] = [
-  {
-    name: "cas3",
-    label: "cas",
-    args: {
-            url: 'CAS_SERVER',
-            login_url: '/CAS_PATH/login',
-            service_validate_url: '/CAS_PATH/p3/serviceValidate',
-            logout_url: '/CAS_PATH/logout'} }
-    }
-  }
-]
+    gitlab_rails['omniauth_providers'] = [
+      {
+        name: "cas3",
+        label: "cas",
+        args: {
+                url: 'CAS_SERVER',
+                login_url: '/CAS_PATH/login',
+                service_validate_url: '/CAS_PATH/p3/serviceValidate',
+                logout_url: '/CAS_PATH/logout'
+        }
+      }
+    ]
     ```
 
 1.  Change 'CAS_PATH' to the root of your CAS instance (ie. `cas`).

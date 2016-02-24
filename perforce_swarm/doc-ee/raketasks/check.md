@@ -39,7 +39,20 @@ This task loops through all repositories on the GitSwarm EE server and runs
 the 3 integrity checks described previously.
 
 ```bash
-sudo gitlab-rake gitlab:repo:check
+sudo gitswarm-rake gitswarm:repo:check
+```
+
+Example output:
+
+```
+Checking repo at
+/var/opt/gitswarm/git-data/repositories/root/prj2-mirror.wiki.git
+Running `git fsck`
+notice: HEAD points to an unborn branch (master)
+Checking object directories: 100% (256/256), done.
+notice: No default references
+'config.lock' file exists? ... no
+No ref lock files exist
 ```
 
 ### Check repositories for a specific user
@@ -52,10 +65,30 @@ If the rake task is executed without brackets at the end, you are prompted
 to enter a username.
 
 ```bash
-sudo gitlab-rake gitlab:user:check_repos
-sudo gitlab-rake gitlab:user:check_repos[<username>]
+sudo gitswarm-rake gitswarm:user:check_repos
+sudo gitswarm-rake gitswarm:user:check_repos[<username>]
 ```
 
 Example output:
 
-![gitlab:user:check_repos output](check_repos_output.png)
+```
+Checking repo at /var/opt/gitswarm/git-data/repositories/root/lfs-test2.git
+Running `git fsck`
+Checking object directories: 100% (256/256), done.
+'config.lock' file exists? ... no
+No ref lock files exist
+
+Checking repo at /var/opt/gitswarm/git-data/repositories/root/lfs-test.git
+Running `git fsck`
+Checking object directories: 100% (256/256), done.
+'config.lock' file exists? ... yes
+No ref lock files exist
+
+Checking repo at /var/opt/gitswarm/git-data/repositories/root/gitlab-recipes.git
+Running `git fsck`
+Checking object directories: 100% (256/256), done.
+Checking objects: 100% (2187/2187), done.
+'config.lock' file exists? ... yes
+Ref lock files exist:
+  /var/opt/gitswarm/git-data/repositories/root/gitlab-recipes.git/refs/heads/master.lock
+```

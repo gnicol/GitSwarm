@@ -40,7 +40,7 @@ work with smaller, high-performing repositories.
 
 ### Requirements
 
-*   Helix Git Fusion 2015.4, or newer.
+*   Helix Git Fusion 2015.2, or newer.
 *   Helix GitSwarm EE 2015.3, or newer.
 *   Helix Versioning Engine (P4D) version 2015.1/1171507, or newer.
     *   A user for GitSwarm EE's use in the Helix Versioning Engine with
@@ -465,24 +465,20 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
     ```
 
     You can work around this error by doing the following steps:
-
     1.  Connect (SSH) to the remote Helix Git Fusion server as a user with
         sudo access.
-
     1.  Determine the default LANG setting for the server.
 
         You can do this by running the command `locale`. It should be
         something like `en_US.UTF-8`. If the system locale is not a UTF8
         locale, please contact support@perforce.com for help on how to
         proceed.
-
     1.  Determine the Git Fusion OS user. This user is normally `git`, but
         may be different.
 
         The username is specified in your gitswarm.rb file under the
         `[git-fusion][xxx][url]` setting. It uses the format
         `username@hostname`.
-
     1.  Using sudo access and an editor of your choice, edit the .bashrc
         file of the Git Fusion OS user.
 
@@ -491,9 +487,7 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 
         Add a line into the .bashrc file exporting the LANG setting you
         determined earlier. e.g. `export LANG=en_US.UTF-8`
-
     1.  Save the file
-
     1.  Refresh the `Create Project` page in GitSwarm EE. The error should
         be resolved.
 

@@ -39,7 +39,7 @@ module PerforceSwarm
         super
       end
 
-      def ensure_depots_exist(connection)
+      def validate_depots(connection)
         depot_branch_creation("#{depot_path}/{git_branch_name}")
         super(connection)
       end

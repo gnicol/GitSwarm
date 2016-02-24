@@ -1,12 +1,22 @@
 require 'spec_helper'
-
 require_relative '../lib/page'
-require_relative '../lib/user'
-require_relative '../lib/project'
 
+# This suite of tests does the following before/after each test:
+# Creates a unique user and a dev_user in gitswarm
+# Defines a unique project, but does not create it yet.
+#   The project can can be created with create_project(true/false)
+#   where true/false will define the projecet as already having mirroring enabled
+#   dev_user will be added as a dev level user for that project. user is the owner/master user
+# defines @gitswarm_api which can be used for admin access to gitswarm
+# defines @p4 which can be userd for admin access to p4d
+#
+# After each test both users will be deleted for you.
+#   Deleting user will delete that user's project.
+#
 describe 'New Mirrored Project', browser: true, Mirroring: true do
   let(:run_id)                { unique_string }
-  let(:user)                  { User.new('user-' + run_id) }
+  let(:user)                  { User.new("master-#{run_id}") }
+  let(:dev_user)              { User.new("developer-#{run_id}") }
   let(:project)               { Project.new('project-' + run_id, user.name) }
   let(:expected_gf_repo_name) { "gitswarm-#{user.name}-#{project.name}" }
   let(:git_dir)               { Dir.mktmpdir('Git-', tmp_client_dir) }
@@ -19,7 +29,15 @@ describe 'New Mirrored Project', browser: true, Mirroring: true do
     @p4 = P4Helper.new(CONFIG.get(CONFIG::P4_PORT),
                        CONFIG.get(CONFIG::P4_USER),
                        CONFIG.get(CONFIG::P4_PASSWORD), p4_dir, p4_depot_path)
-    create_user
+
+    @gitswarm_api = GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
+                                          CONFIG.get(CONFIG::GS_USER),
+                                          CONFIG.get(CONFIG::GS_PASSWORD))
+    create_users
+  end
+
+  after do
+    delete_users
   end
 
   context 'when I push in a file to the gitswarm repo' do
@@ -269,18 +287,44 @@ describe 'New Mirrored Project', browser: true, Mirroring: true do
     end
   end
 
-  def create_user
-    GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
-                          CONFIG.get(CONFIG::GS_USER),
-                          CONFIG.get(CONFIG::GS_PASSWORD)
-                         ).create_user(user.name, user.password, user.email, nil)
+  context 'When a user with dev access to a mirrored project tries to configure mirroring' do
+    it 'they are not allowed to' do
+      create_new_project(true)
+      expect(can_configure_mirroring?(dev_user, project)).to be false
+    end
   end
 
-  def delete_user
-    GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
-                          CONFIG.get(CONFIG::GS_USER),
-                          CONFIG.get(CONFIG::GS_PASSWORD)
-                         ).delete_user(user.name)
+  context 'When a user with dev access to an un-project tries to configure mirroring' do
+    it 'they are not allowed to' do
+      create_new_project(false)
+      expect(can_configure_mirroring?(dev_user, project)).to be false
+    end
+  end
+
+  context 'When a user with master access to a mirrored project tries to configure mirroring' do
+    it 'they are allowed to' do
+      create_new_project(true)
+      expect(can_configure_mirroring?(user, project)).to be true
+    end
+  end
+
+  context 'When a user with master access to an un-mirrored project tries to configure mirroring' do
+    it 'they are allowed to' do
+      create_new_project(false)
+      expect(can_configure_mirroring?(user, project)).to be true
+    end
+  end
+
+  private
+
+  def create_users
+    @gitswarm_api.create_user(user.name, user.password, user.email, nil)
+    @gitswarm_api.create_user(dev_user.name, dev_user.password, dev_user.email, nil)
+  end
+
+  def delete_users
+    @gitswarm_api.delete_user(dev_user.name)
+    @gitswarm_api.delete_user(user.name)
   end
 
   def create_new_project(mirrored = true, public_project = false)
@@ -291,13 +335,12 @@ describe 'New Mirrored Project', browser: true, Mirroring: true do
     create_project_page.select_public if public_project
     create_project_page.create_project_and_wait_for_clone
     create_project_page.logout
+    GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL), user.name, user.password)
+      .add_user_to_project(dev_user.name, project.name, GitSwarmAPIHelper::DEVELOPER)
   end
 
   def delete_project(project)
-    GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL),
-                          CONFIG.get(CONFIG::GS_USER),
-                          CONFIG.get(CONFIG::GS_PASSWORD)
-                         ).delete_project(project.name)
+    @gitswarm_api.delete_project(project.name)
   end
 
   def clone_project(project, dir)

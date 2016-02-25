@@ -1,7 +1,7 @@
 module PerforceSwarm
   module GitFusion
     class AutoCreateRepoCreator < RepoCreator
-      attr_accessor :namespace, :project_path
+      include AutoCreateTemplates
 
       def self.validate_config(config)
         super(config)
@@ -15,15 +15,6 @@ module PerforceSwarm
         super(config_entry_id)
         @namespace    = namespace
         @project_path = project_path
-      end
-
-      # returns the depot path that Git Fusion should use to store a project's branches and files
-      def depot_path
-        render_template(path_template).chomp('/')
-      end
-
-      def repo_name
-        render_template(repo_name_template)
       end
 
       # returns the depot portion of the generated depot_path
@@ -61,52 +52,6 @@ module PerforceSwarm
         if perforce_path_exists?(depot_path, connection)
           fail "It appears that there is already content in Helix at #{depot_path}."
         end
-      end
-
-      def path_template
-        @config.auto_create['path_template']
-      end
-
-      def repo_name_template
-        @config.auto_create['repo_name_template']
-      end
-
-      def namespace(*args)
-        if args.length > 0
-          self.namespace = args[0]
-          return self
-        end
-        @namespace
-      end
-
-      def project_path(*args)
-        if args.length > 0
-          self.project_path = args[0]
-          return self
-        end
-        @project_path
-      end
-
-      # validates substitutions are valid and renders the given template
-      def render_template(template)
-        unless project_path && project_path.is_a?(String) && !project_path.empty?
-          fail PerforceSwarm::GitFusion::RepoCreatorError, 'Project-path must be non-empty.'
-        end
-
-        unless namespace && namespace.is_a?(String) && !namespace.empty?
-          fail PerforceSwarm::GitFusion::RepoCreatorError, 'Namespace must be non-empty.'
-        end
-
-        unless namespace =~ VALID_NAME_REGEX
-          fail PerforceSwarm::GitFusion::RepoCreatorError, "Namespace contains invalid characters: '#{namespace}'."
-        end
-
-        unless project_path =~ VALID_NAME_REGEX
-          fail PerforceSwarm::GitFusion::RepoCreatorError,
-               "Project-path contains invalid characters: '#{project_path}'."
-        end
-
-        template.gsub('{project-path}', project_path).gsub('{namespace}', namespace)
       end
     end
   end

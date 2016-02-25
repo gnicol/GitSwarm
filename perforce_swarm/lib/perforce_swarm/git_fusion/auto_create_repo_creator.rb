@@ -1,7 +1,6 @@
 module PerforceSwarm
   module GitFusion
     class AutoCreateRepoCreator < RepoCreator
-
       def self.validate_config(config)
         super(config)
 

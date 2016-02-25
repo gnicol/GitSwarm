@@ -263,12 +263,4 @@ eos
       expect(creator.p4gf_config).to eq(expected)
     end
   end
-
-  describe :save_preflight do
-    it 'throws an exception when a repo_name is not specified' do
-      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
-      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo')
-      expect { creator.save_preflight(@connection) }.to raise_error(RuntimeError, /Repo name was not specified/)
-    end
-  end
 end

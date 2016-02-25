@@ -14,7 +14,11 @@ module PerforceSwarm
         @depot_path ||= render_template(path_template).chomp('/')
       end
 
-      def repo_name
+      def repo_name(*args)
+        if args.length > 0
+          @repo_name = args[0]
+          return self
+        end
         @repo_name ||= render_template(repo_name_template)
       end
 

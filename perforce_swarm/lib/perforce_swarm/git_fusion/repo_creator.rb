@@ -155,7 +155,7 @@ module PerforceSwarm
       # if any of the above conditions are not met, an exception is thrown
       def save_preflight(connection)
         # ensure we have a repo_name
-        fail 'Repo name was not specified.' if repo_name.nil?
+        fail 'Repo name was not specified.' unless repo_name
 
         # ensure both //.git-fusion and target depots exist
         validate_depots(connection)
@@ -223,14 +223,6 @@ module PerforceSwarm
           return self
         end
         @config
-      end
-
-      def repo_name(*args)
-        if args.length > 0
-          self.repo_name = args[0]
-          return self
-        end
-        @repo_name
       end
 
       def branch_mappings(*args)

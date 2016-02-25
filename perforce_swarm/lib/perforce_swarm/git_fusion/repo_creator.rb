@@ -12,6 +12,8 @@ module PerforceSwarm
     end
 
     class RepoCreator
+      include AutoCreateTemplates
+
       VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.-])+\z/
 
       attr_accessor :description, :branch_mappings, :depot_branch_creation
@@ -152,6 +154,9 @@ module PerforceSwarm
       #  * Git Fusion repo ID is not already in use (no p4gf_config for the specified repo ID)
       # if any of the above conditions are not met, an exception is thrown
       def save_preflight(connection)
+        # ensure we have a repo_name
+        fail 'Repo name was not specified.' unless repo_name
+
         # ensure both //.git-fusion and target depots exist
         validate_depots(connection)
 
@@ -218,14 +223,6 @@ module PerforceSwarm
           return self
         end
         @config
-      end
-
-      def repo_name(*args)
-        if args.length > 0
-          self.repo_name = args[0]
-          return self
-        end
-        @repo_name
       end
 
       def branch_mappings(*args)

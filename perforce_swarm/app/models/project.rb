@@ -47,9 +47,8 @@ module PerforceSwarm
           if git_fusion_repo_create_type == GIT_FUSION_REPO_CREATION_AUTO_CREATE
             creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(git_fusion_entry, namespace.name, path)
           else
-            repo_name = ['gitswarm', namespace.name, path].join('-')
-            creator   = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, repo_name)
-            creator.branch_mappings = git_fusion_branch_mappings
+            creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, nil, git_fusion_branch_mappings)
+              .namespace(namespace.name).project_path(path)
           end
 
           creator.save

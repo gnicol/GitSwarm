@@ -154,6 +154,9 @@ module PerforceSwarm
       #  * Git Fusion repo ID is not already in use (no p4gf_config for the specified repo ID)
       # if any of the above conditions are not met, an exception is thrown
       def save_preflight(connection)
+        # ensure we have a repo_name
+        fail 'Repo name was not specified.' if repo_name.nil?
+
         # ensure both //.git-fusion and target depots exist
         validate_depots(connection)
 

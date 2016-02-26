@@ -5,10 +5,10 @@ restart its service(s).
 
 If you want the TL;DR versions, jump to:
 
-- [GitSwarm restart](#gitswarm-restart)
-- [GitSwarm reconfigure](#gitswarm-reconfigure)
+- [Restart](#restart)
+- [Reconfigure](#reconfigure)
 
-`gitlab-ctl` can be used to restart the GitSwarm application (Unicorn) as
+`gitswarm-ctl` can be used to restart the GitSwarm application (Unicorn) as
 well as the other components, like:
 
 - GitLab Workhorse
@@ -19,7 +19,7 @@ well as the other components, like:
 - [Mailroom]
 - Logrotate
 
-## GitSwarm restart
+## Restart
 
 There may be times in the documentation where you are asked to _restart_
 GitSwarm. In that case, you need to run the following command:
@@ -61,10 +61,9 @@ stuck. In that case, you can use `gitswarm-ctl kill <service>` to send the
 `SIGKILL` signal to the service, for example `sidekiq`. After that, a
 restart should perform fine.
 
-As a last resort, you can try to
-[reconfigure GitSwarm](#gitswarm-reconfigure) instead.
+As a last resort, you can try to [reconfigure](#reconfigure) instead.
 
-## GitSwarm reconfigure
+## Reconfigure
 
 There may be times in the documentation where you are asked to
 _reconfigure_ GitSwarm.
@@ -76,7 +75,7 @@ sudo gitswarm-ctl reconfigure
 ```
 
 Reconfiguring GitSwarm should occur in the event that something in its
-configuration (`/etc/gitswarm/gitlab.rb`) has changed.
+configuration (`/etc/gitswarm/gitswarm.rb`) has changed.
 
 When you run this command, [Chef], the underlying configuration management
 application that powers GitSwarm, ensures that all directories,

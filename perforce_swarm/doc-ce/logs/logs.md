@@ -97,7 +97,7 @@ This file lives in `/var/log/gitswarm/unicorn/unicorn_stderr.log`.
 
 Unicorn is a high-performance forking Web server which is used for serving
 the GitSwarm application. You can look at this log, for example, if your
-application does not respond. This log cantains all information about the
+application does not respond. This log contains all information about the
 state of unicorn processes at any given time.
 
 ```

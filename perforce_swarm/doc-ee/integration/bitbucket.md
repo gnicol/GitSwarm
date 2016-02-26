@@ -63,7 +63,7 @@ secret key for you to use.
 
 1.  Save the configuration file.
 
-1.  Reconfigure GitSwarm EE (`gitswarm-ctl reconfigure`).
+1.  Reconfigure GitSwarm EE (`sudo gitswarm-ctl reconfigure`).
 
 1.  Restart GitSwarm EE for the changes to take effect.
 

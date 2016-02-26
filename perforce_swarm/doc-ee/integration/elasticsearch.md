@@ -51,7 +51,7 @@ The following three parameters are needed to enable Elasticsearch:
 | `host`    | The host where Elasticsearch is installed on. Can be either an IP or a domain name which correctly resolves to an IP. It can be changed in the [Elasticsearch configuration settings][elastic-settings]. The default value is `localhost` |
 | `port`    | The TCP port that Elasticsearch listens to. It can be changed in the [Elasticsearch configuration settings][elastic-settings]. The default value is `9200`  |
 
-### Enable Elasticsearch in Omnibus installations
+### Enable Elasticsearch
 
 Edit `/etc/gitswarm/gitswarm.rb` and add the following lines:
 

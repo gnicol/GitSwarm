@@ -72,7 +72,7 @@ _The artifacts are stored by default in
 `/var/opt/gitswarm/gitlab-rails/shared/artifacts`._
 
 1.  To change the storage path for example to `/mnt/storage/artifacts`,
-    edit `/etc/gitswarm/gitlab.rb` and add the following line:
+    edit `/etc/gitswarm/gitswarm.rb` and add the following line:
 
     ```ruby
     gitlab_rails['artifacts_path'] = "/mnt/storage/artifacts"

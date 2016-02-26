@@ -5,8 +5,8 @@ restart its service(s).
 
 If you want the TL;DR versions, jump to:
 
-- [Omnibus GitLab restart](#omnibus-gitlab-restart)
-- [Omnibus GitLab reconfigure](#omnibus-gitlab-reconfigure)
+- [Restart](#restart)
+- [Reconfigure](#reconfigure)
 
 `gitswarm-ctl` can be used to restart the GitSwarm EE application (Unicorn)
 as well as the other components, like:
@@ -19,7 +19,7 @@ as well as the other components, like:
 - [Mailroom]
 - Logrotate
 
-## GitSwarm EE restart
+## Restart
 
 There may be times in the documentation where you are asked to _restart_
 GitSwarm EE. In that case, you need to run the following command:
@@ -61,10 +61,9 @@ stuck. In that case, you can use `gitswarm-ctl kill <service>` to send the
 `SIGKILL` signal to the service, for example `sidekiq`. After that, a
 restart should perform fine.
 
-As a last resort, you can try to
-[reconfigure GitSwarm](#omnibus-gitlab-reconfigure) instead.
+As a last resort, you can try to [reconfigure](#reconfigure) instead.
 
-## GitSwarm EE reconfigure
+## Reconfigure
 
 There may be times in the documentation where you are asked to
 _reconfigure_ GitSwarm EE.

@@ -58,7 +58,7 @@ sudo gitlab-ci-rake backup:create
 Also check on your GitSwarm server.
 
 ```
-# On your GitLab server:
+# On your GitSwarm server:
 sudo gitswarm-rake gitswarm:backup:create SKIP=repositories,uploads
 ```
 
@@ -165,7 +165,7 @@ server to your laptop and then from your laptop to the GitSwarm server.
 # Start from your laptop
 ssh -A ci_admin@ci_server.example
 # Now on the CI server
-scp /path/to/12345_gitlab_ci_backup.tar gitlab_admin@gitswarm_server.example:~
+scp /path/to/12345_gitlab_ci_backup.tar gitswarm_admin@gitswarm_server.example:~
 ```
 
 #### 4. Move data to the GitSwarm backups folder
@@ -174,7 +174,7 @@ Make the CI data archive discoverable for GitSwarm. We assume below that
 you store backups in the default path, adjust the command if necessary.
 
 ```
-# On your GitLab server:
+# On your GitSwarm server:
 sudo mv /path/to/12345_gitlab_ci_backup.tar /var/opt/gitswarm/backups/
 ```
 
@@ -185,7 +185,7 @@ should be no CI data yet because you turned CI on the GitSwarm server off
 earlier.
 
 ```
-# On your GitLab server:
+# On your GitSwarm server:
 sudo chown git:git /var/opt/gitswarm/gitlab-ci/builds
 sudo gitswarm-rake ci:migrate
 ```
@@ -193,7 +193,7 @@ sudo gitswarm-rake ci:migrate
 #### 6. Restart GitSwarm
 
 ```
-# On your GitLab server:
+# On your GitSwarm server:
 sudo gitswarm-ctl hup unicorn
 sudo gitswarm-ctl restart sidekiq
 ```
@@ -234,7 +234,7 @@ server {
     proxy_redirect        off;
     proxy_set_header      X-Real-IP $remote_addr;
 
-    # You need to specify your DNS servers that are able to resolve YOUR_GITLAB_SERVER_FQDN
+    # You need to specify your DNS servers that are able to resolve YOUR_GITSWARM_SERVER_FQDN
     resolver 8.8.8.8 8.8.4.4;
     proxy_pass $scheme://YOUR_GITSWARM_SERVER_FQDN/ci$request_uri;
   }
@@ -282,7 +282,7 @@ If something went wrong and you need to restore a backup, consult the
 
 ### Troubleshooting
 
-#### show:secrets problem (Omnibus-only)
+#### show:secrets problem
 
 If you see errors like this:
 
@@ -293,8 +293,8 @@ Errno::EACCES: Permission denied @ rb_sysopen - config/secrets.yml
 ```
 
 This can happen if you are updating from versions prior to 2015.3 straight
-to 2015.4. The fix for this is to update to Omnibus 2015.3 first and then
-update it to 2015.4.
+to 2015.4. The fix for this is to update to 2015.3 first and then update
+GitSwarm to 2015.4.
 
 #### Permission denied when accessing /var/opt/gitswarm/gitlab-ci/builds
 
@@ -311,7 +311,7 @@ Then before executing `ci:migrate` you need to fix builds folder permission:
 sudo chown git:git /var/opt/gitswarm/gitlab-ci/builds
 ```
 
-#### Problems when importing CI database to GitcwSwarm
+#### Problems when importing CI database to GitSwarm
 
 If you were migrating CI database from MySQL to PostgreSQL manually you can
 see errors during import about missing sequences:

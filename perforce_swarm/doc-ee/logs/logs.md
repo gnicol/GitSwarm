@@ -75,7 +75,7 @@ error: failed to push some refs to '/Users/vsizov/gitlab-development-kit/reposit
 
 #### sidekiq.log
 
-This file lives in `/var/log/gitlab/gitlab-rails/sidekiq.log`.
+This file lives in `/var/log/gitswarm/gitlab-rails/sidekiq.log`.
 
 GitSwarm EE uses background jobs for processing tasks which can take a long
 time. All information about processing these jobs are recorded to this
@@ -104,7 +104,7 @@ This file lives in `/var/log/gitswarm/unicorn/unicorn_stderr.log`.
 
 Unicorn is a high-performance forking Web server which is used for serving
 GitLab application. You can look at this log, for example, if your
-application does not respond. This log cantains all information about state
+application does not respond. This log contains all information about state
 of unicorn processes at any given time.
 
 ```

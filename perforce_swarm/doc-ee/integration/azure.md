@@ -24,7 +24,7 @@ you to use.
     - SIGN-IN URL: Enter the URL of your GitSwarm EE installation (e.g
       `https://gitswarm.mycompany.com/`)
     - APP ID URI: Enter the endpoint URL for Microsoft to use, just has to
-      be unique (e.g 'https://mycompany.onmicrosoft.com/gitswarm')
+      be unique (e.g `https://mycompany.onmicrosoft.com/gitswarm`)
 
 1.  Select "Configure" in the top menu.
 
@@ -40,7 +40,7 @@ you to use.
 1.  Select "View endpoints" from the bottom menu.
 
 1.  Many endpoint URLs are displayed, in the form
-    'https://login.microsoftonline.com/TENANT ID/...'. Note down the TENANT
+    `https://login.microsoftonline.com/TENANT ID/...`. Note down the TENANT
     ID part of one of those endpoints.
 
 1.  On your GitSwarm EE server, open the configuration file.
@@ -78,4 +78,4 @@ you to use.
 On the sign in page there should now be a Microsoft icon below the regular
 sign in form. Click the icon to begin the authentication process. Microsoft
 asks the user to sign in and authorize the GitSwarm EE application. If
-everything goes well the user is returned to GitSwarm EE and is signed in.
+everything goes well, the user is returned to GitSwarm EE and is signed in.

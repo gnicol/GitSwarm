@@ -44,7 +44,13 @@ module PerforceSwarm
           (git_fusion_repo_create_type == GIT_FUSION_REPO_CREATION_AUTO_CREATE ||
           git_fusion_repo_create_type == GIT_FUSION_REPO_CREATION_FILE_SELECT)
         begin
-          creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(git_fusion_entry, namespace.name, path)
+          if git_fusion_repo_create_type == GIT_FUSION_REPO_CREATION_AUTO_CREATE
+            creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(git_fusion_entry, namespace.name, path)
+          else
+            creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, nil, git_fusion_branch_mappings)
+              .namespace(namespace.name).project_path(path)
+          end
+
           creator.save
           PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: git_fusion_entry)
 

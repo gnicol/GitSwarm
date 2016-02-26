@@ -66,8 +66,9 @@ module PerforceSwarm
         params[:git_fusion_mirrored] = true
       end
 
+      branches = (params[:git_fusion_branch_mappings] || {}).keys
       super.merge(params.permit(:git_fusion_repo, :git_fusion_repo_create_type,
-                                :git_fusion_entry, :git_fusion_mirrored, :git_fusion_branch_mappings))
+                                :git_fusion_entry, :git_fusion_mirrored, git_fusion_branch_mappings: branches))
     end
 
     protected

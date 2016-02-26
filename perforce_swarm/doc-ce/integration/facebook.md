@@ -6,7 +6,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 1.  Sign in to the [Facebook Developer
     Platform](https://developers.facebook.com/).
 
-1.  Choose "My Apps" &gt; "Add a New App".
+1.  Choose "My Apps" \> "Add a New App".
 
 1.  Select the type "Website".
 
@@ -39,7 +39,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
 1.  Choose "Status & Review" in the menu on the left.
 
-1.  Change the switch on the right from "No" to "Yes".
+1.  Change the switch on the right from `No` to `Yes`.
 
 1.  Choose "Confirm" when prompted to make the app public.
 
@@ -54,7 +54,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
 1.  On your GitSwarm server, open the configuration file.
 
-    ```sh
+    ```bash
 sudo editor /etc/gitswarm/gitswarm.rb
     ```
 

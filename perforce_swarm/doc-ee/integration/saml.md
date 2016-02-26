@@ -67,7 +67,7 @@ https://gitswarm.example.com/users/auth/saml/metadata
 
 At a minimum the IdP *must* provide a claim containing the user's email
 address, using claim name 'email' or 'mail'. The email is used to
-automatically generate the GitSwarm EE username. GitLab also uses
+automatically generate the GitSwarm EE username. GitSwarm EE also uses
 claims with name 'name', 'first_name', 'last_name' (see [the omniauth-saml
 gem](https://github.com/PracticallyGreen/omniauth-saml/blob/master/lib/omniauth/strategies/saml.rb)
 for supported claims).
@@ -79,8 +79,8 @@ everything goes well the user is returned to GitSwarm EE and is signed in.
 ## Troubleshooting
 
 If you see a "500 error" in GitSwarm EE when you are redirected back from
-the SAML sign in page, this likely indicates that GitLab could not get the
-email address for the SAML user.
+the SAML sign in page, this likely indicates that GitSwarm could not get
+the email address for the SAML user.
 
 Make sure the IdP provides a claim containing the user's email address,
 using claim name 'email' or 'mail'. The email is used to automatically

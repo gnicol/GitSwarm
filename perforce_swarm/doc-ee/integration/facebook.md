@@ -20,7 +20,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
 1.  Choose "Create App ID".
 
-1.  Enter the address of your GitLab installation at the bottom of the
+1.  Enter the address of your GitSwarm EE installation at the bottom of the
     package:
 
     ![Facebook Website URL](facebook_website_url.png)
@@ -35,7 +35,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
     ![Facebook App Settings](facebook_app_settings.png)
 
-1.  Choose "Save Changes":
+1.  Choose "Save Changes".
 
 1.  Choose "Status & Review" in the menu on the left.
 
@@ -85,5 +85,5 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
 On the sign in page there should now be a Facebook icon below the regular
 sign in form. Click the icon to begin the authentication process. Facebook
-asks the user to sign in and authorize the GitSwarm EE application. If
-everything goes well the user is returned to GitSwarm EE and is signed in.
+asks the user to sign in and authorize GitSwarm EE. If everything goes well
+the user is returned to GitSwarm EE and is signed in.

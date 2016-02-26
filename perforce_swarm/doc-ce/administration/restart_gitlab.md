@@ -92,5 +92,3 @@ that depend on those files.
 [omnibus-dl]: https://about.gitlab.com/downloads/ "Download the Omnibus packages"
 [mailroom]: ../incoming_email/README.md "Used for replying by email in GitSwarm issues and merge requests"
 [chef]: https://www.chef.io/chef/ "Chef official website"
-[src-service]: https://gitlab.com/gitlab-org/gitlab-ce/blob/master/lib/support/init.d/gitlab "GitLab init service file"
-[gl-recipes]: https://gitlab.com/gitlab-org/gitlab-recipes/tree/master/init "GitLab Recipes repository"

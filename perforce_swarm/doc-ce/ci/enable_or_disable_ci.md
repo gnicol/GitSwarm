@@ -39,7 +39,7 @@ You can disable GitLab CI site-wide, by modifying the settings in
 Two things to note:
 
 1. Disabling GitLab CI affects only newly-created projects. Projects that
-   had it enabled prior to this modification, continue to work as before.
+   had it enabled prior to this modification continue to work as before.
 1. Even if you disable GitLab CI, users are still able to enable it in
    the project's settings.
 

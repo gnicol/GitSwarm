@@ -1,11 +1,11 @@
-## Migrate GitLab CI to GitSwarm
+## Migrate GitLab CI to GitSwarm EE
 
-Beginning with GitSwarm 2015.4, GitLab CI is no longer its own application,
-but is instead built into GitSwarm.
+Beginning with GitSwarm EE 2015.4, GitLab CI is no longer its own
+application, but is instead built into GitSwarm.
 
 This guide will detail the process of migrating your CI installation and
-data into your GitSwarm installation. **You can only migrate CI data
-from GitLab CI 8.0 to GitSwarm 2015.4; migrating between other versions
+data into your GitSwarm EE installation. **You can only migrate CI data
+from GitLab CI 8.0 to GitSwarm EE 2015.4; migrating between other versions
 (e.g. 7.14 to 2016.1) is not possible.**
 
 We recommend that you read through the entire migration process in this
@@ -13,18 +13,18 @@ document before beginning.
 
 ### Overview
 
-In this document we assume you have a GitSwarm server and a GitLab CI
+In this document we assume you have a GitSwarm EE server and a GitLab CI
 server. It does not matter if these are the same machine.
 
-The migration consists of three parts: updating GitSwarm and GitLab CI,
+The migration consists of three parts: updating GitSwarm EE and GitLab CI,
 moving data, and redirecting traffic.
 
-Please note that CI builds triggered on your GitSwarm server in the time
-between updating GitSwarm and finishing the migration will be lost. Your
-GitSwarm server can be online for most of the procedure; the only GitSwarm
-downtime (if any) is during the upgrade to 2015.4. Your CI service will be
-offline from the moment you upgrade to 2015.4 until you finish the
-migration procedure.
+Please note that CI builds triggered on your GitSwarm EE server in the time
+between updating GitSwarm EE and finishing the migration will be lost. Your
+GitSwarm EE server can be online for most of the procedure; the only
+GitSwarm EE downtime (if any) is during the upgrade to 2015.4. Your CI
+service will be offline from the moment you upgrade to 2015.4 until you
+finish the migration procedure.
 
 ### Before upgrading
 
@@ -55,10 +55,10 @@ sudo chown gitlab-ci:gitlab-ci /var/opt/gitswarm/gitlab-ci/builds
 sudo gitlab-ci-rake backup:create
 ```
 
-Also check on your GitSwarm server.
+Also check on your GitSwarm EE server.
 
 ```
-# On your GitSwarm server:
+# On your GitSwarm EE server:
 sudo gitswarm-rake gitswarm:backup:create SKIP=repositories,uploads
 ```
 
@@ -66,11 +66,10 @@ If this fails, you need to fix it before upgrading to 2015.4.
 
 #### 2. Check source and target database types
 
-Check what databases you use on your GitSwarm server and your CI server.
-Look for the 'adapter:' line. If your CI server and your GitSwarm server
-both use PostgreSQL, no special care is needed. If your CI server
-uses MySQL, you need to pass a special option during the 'Moving data'
-part.
+Check what databases you use on your GitSwarm EE server and your CI server.
+Look for the 'adapter:' line. If your CI server and your GitSwarm EE server
+both use PostgreSQL, no special care is needed. If your CI server uses
+MySQL, you need to pass a special option during the 'Moving data' part.
 
 ```
 # On your CI server:
@@ -78,13 +77,13 @@ sudo gitlab-ci-rake env:info
 ```
 
 ```
-# On your GitSwarm server:
+# On your GitSwarm EE server:
 sudo gitswarm-rake gitswarm:env:info
 ```
 
 #### 3. Storage planning
 
-Decide where to store CI build traces on GitSwarm server. GitLab CI uses
+Decide where to store CI build traces on GitSwarm EE server. GitLab CI uses
 files on disk to store CI build traces. The default path for these build
 traces is `/var/opt/gitswarm/gitlab-ci/builds`. If you are storing your
 repository data in a special location, or if you are using NFS, you should
@@ -95,18 +94,18 @@ repositories.
 
 From this point on, GitLab CI will be unavailable for your end users.
 
-#### 1. Upgrade GitSwarm to 2015.4.
+#### 1. Upgrade GitSwarm EE to 2015.4.
 
-First upgrade your GitSwarm server to version 2015.4.
+First upgrade your GitSwarm EE server to version 2015.4.
 
-#### 2. Disable CI on the GitSwarm server during the migration
+#### 2. Disable CI on the GitSwarm EE server during the migration
 
 After you update, go to the admin panel and temporarily disable CI.  As an
 administrator, go to **Admin Area** -> **Settings**, and under **Continuous
 Integration** uncheck **Disable to prevent CI usage until rake ci:migrate
 is run (8.0 only)**.
 
-#### 3. CI settings are now in GitSwarm
+#### 3. CI settings are now in GitSwarm EE
 
 If you want to use custom CI settings (e.g. change where builds are
   stored), please update `/etc/gitswarm/gitswarm.rb`.
@@ -130,9 +129,9 @@ sudo gitswarm-ctl stop ci-sidekiq
 
 #### 1. Database encryption key
 
-Move the database encryption key from your CI server to your GitSwarm
+Move the database encryption key from your CI server to your GitSwarm EE
 server. The command below will show you what you need to copy-paste to
-your GitSwarm server. You have to add a line to
+your GitSwarm EE server. You have to add a line to
 `/etc/gitswarm/gitswarm.rb`.
 
 ```
@@ -151,15 +150,16 @@ sudo chown gitlab-ci:gitlab-ci /var/opt/gitswarm/gitlab-ci/builds
 sudo gitlab-ci-rake backup:create
 ```
 
-#### 3. Copy data to the GitSwarm server
+#### 3. Copy data to the GitSwarm EE server
 
-If you were running GitSwarm and GitLab CI on the same server you can skip
-this step.
+If you were running GitSwarm EE and GitLab CI on the same server you can
+skip this step.
 
-Copy your CI data archive to your GitSwarm server. There are many ways to do
-this, below we use SSH agent forwarding and 'scp', which will be easy and
-fast for most setups. You can also copy the data archive first from the CI
-server to your laptop and then from your laptop to the GitSwarm server.
+Copy your CI data archive to your GitSwarm EE server. There are many ways
+to do this, below we use SSH agent forwarding and 'scp', which will be easy
+and fast for most setups. You can also copy the data archive first from the
+CI server to your laptop and then from your laptop to the GitSwarm EE
+server.
 
 ```
 # Start from your laptop
@@ -168,32 +168,32 @@ ssh -A ci_admin@ci_server.example
 scp /path/to/12345_gitlab_ci_backup.tar gitlab_admin@gitswarm_server.example:~
 ```
 
-#### 4. Move data to the GitSwarm backups folder
+#### 4. Move data to the GitSwarm EE backups folder
 
 Make the CI data archive discoverable for GitSwarm. We assume below that
 you store backups in the default path, adjust the command if necessary.
 
 ```
-# On your GitSwarm server:
+# On your GitSwarm EE server:
 sudo mv /path/to/12345_gitlab_ci_backup.tar /var/opt/gitswarm/backups/
 ```
 
 #### 5. Import the CI data into GitSwarm.
 
-This step will delete any existing CI data on your GitSwarm server. There
-should be no CI data yet because you turned CI on the GitSwarm server off
-earlier.
+This step will delete any existing CI data on your GitSwarm EE server.
+There should be no CI data yet because you turned CI on the GitSwarm EE
+server off earlier.
 
 ```
-# On your GitSwarm server:
+# On your GitSwarm EE server:
 sudo chown git:git /var/opt/gitswarm/gitlab-ci/builds
 sudo gitswarm-rake ci:migrate
 ```
 
-#### 6. Restart GitSwarm
+#### 6. Restart GitSwarm EE
 
 ```
-# On your GitSwarm server:
+# On your GitSwarm EE server:
 sudo gitswarm-ctl hup unicorn
 sudo gitswarm-ctl restart sidekiq
 ```
@@ -256,7 +256,7 @@ Make sure you substitute these placeholder values with your real ones:
    CI install (e.g., `ci.gitlab.com`).
 
 1. `YOUR_GITSWARM_SERVER_FQDN`: The current public-facing address of your
-   GitSwarm install (e.g., `gitswarm.example.com`).
+   GitSwarm EE install (e.g., `gitswarm.example.com`).
 
 **Make sure not to remove the `/ci$request_uri` part. This is required to
 properly forward the requests.**
@@ -265,7 +265,7 @@ You should also make sure that you can:
 
 1. `curl https://YOUR_GITSWARM_SERVER_FQDN/` from your previous GitLab CI
    server.
-1. `curl https://YOUR_CI_SERVER_FQDN/` from your GitSwarm server.
+1. `curl https://YOUR_CI_SERVER_FQDN/` from your GitSwarm EE server.
 
 #### 2. Check NGINX configuration
 
@@ -311,7 +311,7 @@ Then before executing `ci:migrate` you need to fix builds folder permission:
 sudo chown git:git /var/opt/gitswarm/gitlab-ci/builds
 ```
 
-#### Problems when importing CI database to GitSwarm
+#### Problems when importing CI database to GitSwarm EE
 
 If you were migrating CI database from MySQL to PostgreSQL manually you can
 see errors during import about missing sequences:

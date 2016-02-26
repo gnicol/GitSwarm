@@ -94,10 +94,10 @@ provider.
 These steps are fairly general and you must figure out the exact details
 from the Omniauth provider's documentation.
 
-1.  Stop GitLab:
+1.  Stop GitSwarm:
 
     ```bash
-sudo service gitlab stop
+sudo service gitswarm stop
     ```
 
 1.  Add the gem to your

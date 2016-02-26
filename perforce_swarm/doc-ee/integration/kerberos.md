@@ -12,12 +12,12 @@ EE. You only need to specify the provider name. For example:
 You still need to configure your system for Kerberos usage, such as
 specifying realms. GitSwarm EE makes use of the system's Kerberos settings.
 
-Existing GitSwarm EE users can go to profile > account and attach a
-Kerberos account. if you want to allow users without a GitSwarm EE account
+Existing GitSwarm EE users can go to "Profile" \> "Account" and attach a
+Kerberos account. If you want to allow users without a GitSwarm EE account
 to login you should enable the option `omniauth_allow_single_sign_on` in
 config file (default: `false`). Then, the first time a user signs in with
 Kerberos credentials, GitSwarm EE creates a new GitSwarm EE user associated
-with the email, which is built from the kerberos username and realm. User
+with the email, which is built from the Kerberos username and realm. User
 accounts are created automatically when authentication was successful.
 
 ### HTTP git access

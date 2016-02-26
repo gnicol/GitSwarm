@@ -59,7 +59,7 @@ October 07, 2014 11:25: Project "project133" was removed
 
 ### githost.log
 
-This file lives in `/var/log/gitlab/gitlab-rails/githost.log`.
+This file lives in `/var/log/gitswarm/gitlab-rails/githost.log`.
 
 GitSwarm EE has to interact with git repositories. In rare cases,
 something can go wrong; refer to this log file to know what exactly
@@ -94,8 +94,8 @@ gitlab-shell is using by GitSwarm EE for executing git commands and
 providing SSH access to git repositories.
 
 ```
-I, [2015-02-13T06:17:00.671315 #9291]  INFO -- : Adding project root/example.git at </var/opt/gitlab/git-data/repositories/root/dcdcdcdcd.git>.
-I, [2015-02-13T06:17:00.679433 #9291]  INFO -- : Moving existing hooks directory and simlinking global hooks directory for /var/opt/gitlab/git-data/repositories/root/example.git.
+I, [2015-02-13T06:17:00.671315 #9291]  INFO -- : Adding project root/example.git at </var/opt/gitswarm/git-data/repositories/root/dcdcdcdcd.git>.
+I, [2015-02-13T06:17:00.679433 #9291]  INFO -- : Moving existing hooks directory and simlinking global hooks directory for /var/opt/gitswarm/git-data/repositories/root/example.git.
 ```
 
 #### unicorn_stderr.log
@@ -103,14 +103,14 @@ I, [2015-02-13T06:17:00.679433 #9291]  INFO -- : Moving existing hooks directory
 This file lives in `/var/log/gitswarm/unicorn/unicorn_stderr.log`.
 
 Unicorn is a high-performance forking Web server which is used for serving
-GitLab application. You can look at this log, for example, if your
-application does not respond. This log contains all information about state
-of unicorn processes at any given time.
+GitSwarm EE. You can look at this log, for example, if your application
+does not respond. This log contains all information about state of unicorn
+processes at any given time.
 
 ```
 I, [2015-02-13T06:14:46.680381 #9047]  INFO -- : Refreshing Gem list
 I, [2015-02-13T06:14:56.931002 #9047]  INFO -- : listening on addr=127.0.0.1:8080 fd=12
-I, [2015-02-13T06:14:56.931381 #9047]  INFO -- : listening on addr=/var/opt/gitlab/gitlab-rails/sockets/gitlab.socket fd=13
+I, [2015-02-13T06:14:56.931381 #9047]  INFO -- : listening on addr=/var/opt/gitswarm/gitlab-rails/sockets/gitlab.socket fd=13
 I, [2015-02-13T06:14:56.936638 #9047]  INFO -- : master process ready
 I, [2015-02-13T06:14:56.946504 #9092]  INFO -- : worker=0 spawned pid=9092
 I, [2015-02-13T06:14:56.946943 #9092]  INFO -- : worker=0 ready

@@ -13,7 +13,7 @@ This file contains information about all performed requests. You can see
 url and type of request, IP address and what exactly parts of code were
 involved to service this particular request. Also you can see all SQL
 request that have been performed and how much time it took. This task is
-more useful for GitLab contributors and developers. Use part of this log
+more useful for GitSwarm contributors and developers. Use part of this log
 file when you are going to report bug.
 
 ```
@@ -87,8 +87,8 @@ gitlab-shell is used by GitSwarm for executing git commands and provides
 SSH access to git repositories.
 
 ```
-I, [2015-02-13T06:17:00.671315 #9291]  INFO -- : Adding project root/example.git at </var/opt/gitlab/git-data/repositories/root/dcdcdcdcd.git>.
-I, [2015-02-13T06:17:00.679433 #9291]  INFO -- : Moving existing hooks directory and simlinking global hooks directory for /var/opt/gitlab/git-data/repositories/root/example.git.
+I, [2015-02-13T06:17:00.671315 #9291]  INFO -- : Adding project root/example.git at </var/opt/gitswarm/git-data/repositories/root/dcdcdcdcd.git>.
+I, [2015-02-13T06:17:00.679433 #9291]  INFO -- : Moving existing hooks directory and simlinking global hooks directory for /var/opt/gitswarm/git-data/repositories/root/example.git.
 ```
 
 ### unicorn_stderr.log
@@ -103,7 +103,7 @@ state of unicorn processes at any given time.
 ```
 I, [2015-02-13T06:14:46.680381 #9047]  INFO -- : Refreshing Gem list
 I, [2015-02-13T06:14:56.931002 #9047]  INFO -- : listening on addr=127.0.0.1:8080 fd=12
-I, [2015-02-13T06:14:56.931381 #9047]  INFO -- : listening on addr=/var/opt/gitlab/gitlab-rails/sockets/gitlab.socket fd=13
+I, [2015-02-13T06:14:56.931381 #9047]  INFO -- : listening on addr=/var/opt/gitswarm/gitlab-rails/sockets/gitlab.socket fd=13
 I, [2015-02-13T06:14:56.936638 #9047]  INFO -- : master process ready
 I, [2015-02-13T06:14:56.946504 #9092]  INFO -- : worker=0 spawned pid=9092
 I, [2015-02-13T06:14:56.946943 #9092]  INFO -- : worker=0 ready

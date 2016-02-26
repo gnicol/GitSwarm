@@ -25,5 +25,7 @@ Rails.application.routes.draw do
       get :reenable_helix_mirroring_status
       get :reenable_helix_mirroring_redirect
     end
+
+    resource :p4_tree, only: [:show], controller: :p4_tree
   end
 end

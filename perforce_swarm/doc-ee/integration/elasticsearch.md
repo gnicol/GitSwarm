@@ -94,7 +94,6 @@ windows) you can provide the `ID_FROM` and `ID_TO` parameters:
 
 ```bash
 ID_FROM=1001 ID_TO=2000 sudo gitswarm-rake gitlab:elastic:index_repositories
-
 ```
 
 Both parameters are optional. Keep in mind that this task skips

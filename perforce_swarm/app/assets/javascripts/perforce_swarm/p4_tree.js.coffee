@@ -1,10 +1,12 @@
 class @P4Tree
   restrictedDepot: null
+  existing_mappings: null
 
-  constructor: (element, fusion_server) ->
-    this.$el = $(element)
-    tree_url = '/gitswarm/p4_tree.json'
-    tree_url = gon.relative_url_root + tree_url if gon.relative_url_root?
+  constructor: (element, fusion_server, existing_mappings) ->
+    this.$el           = $(element)
+    @existing_mappings = existing_mappings
+    tree_url           = '/gitswarm/p4_tree.json'
+    tree_url           = gon.relative_url_root + tree_url if gon.relative_url_root?
 
     # Initialize the tree UI component
     this.$('.git-fusion-tree').on 'loaded.jstree', => @treeLoad()
@@ -83,6 +85,10 @@ class @P4Tree
   treeLoad: ->
     @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
+    #  Load previous mapping back into page (in case of form error, etc)
+    if @existing_mappings
+      @addSavedMapping(branch, mapping) for branch, mapping of @existing_mappings
+
   # Locks down the valid selections, and disables the
   # filter button in the tree based on depot type
   restrictDepotType: (type, options = {}) ->
@@ -107,23 +113,33 @@ class @P4Tree
   # Expand and select a node
   loadEditMapping: (branchName, nodePath) ->
     this.$('.new-branch-name').val(branchName).trigger('change')
-    @openAndSelectDeepNode(nodePath)
+    # Check the node
+    @openDeepNode(nodePath, => this.$tree.check_node(nodePath))
 
   # Recurse through nodes to reach the passed node pass, waiting for them to be
-  # loaded from the server, and then check the passed nodePath once it's loaded
-  openAndSelectDeepNode: (nodePath) ->
+  # loaded from the server
+  openDeepNode: (nodePath, callback) ->
     # Open and load the path
     depotMatcher  = /^\/\/[^\/]*/
     # create an array of the nodes by splitting the path, but
     # we need special consideration for the depot path
-    depot         = depotMatcher.exec(nodePath)[0]
-    paths         = nodePath.replace(depotMatcher, '').split('/')
-    paths[0]      = depot
-    index         = 0
-    (open_recurse = => this.$tree.open_node(paths[index++], open_recurse))()
+    depot    = depotMatcher.exec(nodePath)[0]
+    paths    = nodePath.replace(depotMatcher, '').split('/')
+    paths[0] = depot
 
-    # Check the node
-    this.$tree.check_node(nodePath)
+    # Rebuild the each path's id from its parent's id
+    # eg. the MAIN node's id is actually //depot/Jam/MAIN
+    for value,i in paths
+      paths[i] = "#{paths[i-1]}/#{value}" if i
+
+    index         = 0
+    open_recurse  = =>
+      if index == paths.length - 1
+        callback() if callback
+      else
+        this.$tree.open_node(paths[index++], open_recurse)
+
+    open_recurse()
 
   # Our own version of tree.get_bottom_checked that returns not the bottom
   # checked nodes, but instead, the lowest checked nodes.
@@ -166,9 +182,8 @@ class @P4Tree
     return true
 
   getDepotForNode: (node) ->
-    node  = this.$tree.get_node(node) if $.type(node) == 'string'
-    depot = if node.parents.length > 1 then node.parents[node.parents.length - 2] else node
-    this.$tree.get_node(depot)
+    nodeId = if $.type(node) == 'string' then node else node.id
+    this.$tree.get_node(nodeId.match('//[^/]+')[0])
 
   # updates the area that displays your current tree selection
   updateMapping: ->

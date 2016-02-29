@@ -13,7 +13,7 @@ version before you run an upgrade.
 1.  **Download the 2016.1 GitSwarm package and install it.**
 
     ```
-curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
+    curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
     ```
 
     The script should add the Perforce package repository, and install the
@@ -23,57 +23,61 @@ curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
 1.  **Check the application status.**
 
     Check if GitSwarm and its environment are configured correctly:
+
     ```
-sudo gitswarm-rake gitswarm:check
+    sudo gitswarm-rake gitswarm:check
     ```
 
 # New configuration options
 
 *  **Discovering new config options**
 
-    GitSwarm doesn't update your `/etc/gitswarm/gitswarm.rb` for you, but we do
-    include an updated example template:
-    `/opt/gitswarm/etc/gitswarm.rb.template`. You can see what sort of config
-    options have been changed since last release by running
+    GitSwarm doesn't update your `/etc/gitswarm/gitswarm.rb` for you, but
+    we do include an updated example template:
+    `/opt/gitswarm/etc/gitswarm.rb.template`. You can see what sort of
+    config options have been changed since last release by running:
+
     ```
-sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
+    sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
     ```
 
 # Upgrading from GitSwarm to GitSwarm EE
 
-Before upgrading from GitSwarm to GitSwarm EE, please ensure you have read and
-understand the [pre-update considerations](#pre-update-considerations).
+Before upgrading from GitSwarm to GitSwarm EE, please ensure you have read
+and understand the [pre-update considerations](#pre-update-considerations).
 
 1.  **Add Perforce's repository to your package configuration.**
 
     See [this document](https://www.perforce.com/perforce-packages) for
-    instructions on adding Perforce's packaging key to your keyring, as well
-    as adding the Perforce package repository to your package configuration.
+    instructions on adding Perforce's packaging key to your keyring, as
+    well as adding the Perforce package repository to your package
+    configuration.
 
 1.  **Upgrade to GitSwarm EE**
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```
-sudo apt-get remove helix-gitswarm
-sudo apt-get clean
-sudo apt-get install helix-gitswarm-ee
-sudo gitswarm-ctl reconfigure
+        sudo apt-get remove helix-gitswarm
+        sudo apt-get clean
+        sudo apt-get install helix-gitswarm-ee
+        sudo gitswarm-ctl reconfigure
         ```
 
-    1.  **For CentOS (6 and 7):**
+    1.  **For CentOS/RHEL (6.x and 7.x):**
 
         ```
-sudo yum remove helix-gitswarm
-sudo yum clean all
-sudo yum install helix-gitswarm-ee
-sudo gitswarm-ctl reconfigure
+        sudo yum remove helix-gitswarm
+        sudo yum clean all
+        sudo yum install helix-gitswarm-ee
+        sudo gitswarm-ctl reconfigure
         ```
 
 1.  **Check the application status.**
 
     Check if GitSwarm EE and its environment are configured correctly:
+
     ```
-sudo gitswarm-rake gitswarm:check
+    sudo gitswarm-rake gitswarm:check
     ```
 
 # For users upgrading FROM 2015.1

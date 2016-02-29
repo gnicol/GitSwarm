@@ -11,7 +11,7 @@
     .git-fusion-radios
       .radio
         = label_tag do
-          = radio_button_tag(:git_fusion_auto_create, 'nil', true)
+          = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_DISABLED, true)
           .option-title
             Not mirrored.
           .option-descr
@@ -21,7 +21,7 @@
       - auto_create_enabled = @depot_exists && @auto_create_errors.empty?
       .radio{:class => ("disabled" unless auto_create_enabled)}
         = label_tag do
-          = radio_button_tag(:git_fusion_auto_create, true, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
+          = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_AUTO_CREATE, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled )
           .option-title
             Create a Helix GitSwarm project to mirror.
             - unless auto_create_enabled
@@ -45,15 +45,60 @@
               for help.
       .radio{:class => ("disabled" if @repos.empty?)}
         = label_tag do
-          = radio_button_tag(:git_fusion_auto_create, false, false, disabled: @repos.empty?, 'data-keep-disabled' => @repos.empty?)
+          %div.import-repo-wrapper
+            = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_IMPORT_REPO, false, disabled: @repos.empty?, 'data-keep-disabled' => @repos.empty?)
+            .option-title
+              Mirror an existing repository.
+            .option-descr
+              - if @repos.empty?
+                .repo-warning.slead
+                  Although Helix Git Fusion is configured, there are no repositories available for import.
+              - else
+                Will mirror an existing Helix project.
+                .repo-select.form-inline.control-group
+                  Repository:
+                  = select_tag(:git_fusion_repo_name, repos_options, class: 'select2 span2', disabled: 'true')
+      .radio{:class => ("disabled" unless auto_create_enabled)}
+        = label_tag do
+          = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_FILE_SELECT, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled)
           .option-title
-            Mirror an existing repository.
+            Select files or folder to mirror.
           .option-descr
-            - if @repos.empty?
-              .repo-warning.slead
-                Although Helix Git Fusion is configured, there are no repositories available for import.
-            - else
-              Will mirror an existing Helix project.
-              .repo-select.form-inline.control-group
-                Repository:
-                = select_tag(:git_fusion_repo_name, repos_options, class: 'select2 span2', disabled: 'true')
+            Select specific files or folders from the Helix Versioning Engine (P4D)
+            %br
+            .git-fusion-file-selector-wrapper.hide
+              Map folders and files from the Perforce Depot into a branch
+              %br
+              From this depot folder
+              .git-fusion-split-tree.clearfix
+                .git-fusion-tree-holder.git-fusion-tree-source.col-sm-7
+                  .tree-title.clearfix
+                    .branch-label Branch Name:
+                    = text_field_tag 'branch_name', params[:branch_name], placeholder: "master",
+                      required: false, class: 'form-control new-branch-name js-quick-submit'
+                    .filter-actions
+                      %span.btn.depot-type-filter{:'data-toggle' => 'dropdown', :'data-value' => 'depot-regular'}
+                        = icon('code-fork')
+                        %span.type-text Regular Depots
+                        = icon('angle-down')
+                      %ul.dropdown-menu.dropdown-menu-right
+                        %li
+                          %a.depot-stream{:href => '#depot-stream'} Stream Depots
+                        %li
+                          %a.depot-regular{:href => '#depot-regular'} Regular Depots
+
+                  .tree-content
+                    .git-fusion-tree
+                  .clearfix
+                    .current-mapping
+                      %strong
+                        Branch "
+                        %span.current-mapping-branch>
+                        ":
+                      %br
+                      %span.current-mapping-path> //...
+                    .btn.btn-primary.tree-save.disabled{:disabled => 'disabled'} Add
+                  %div
+                    %strong
+                      Saved Branches:
+                      %ul.content-list

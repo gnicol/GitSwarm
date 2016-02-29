@@ -7,7 +7,7 @@ To uninstall GitSwarm, follow these steps:
     If you want to **completely remove** all GitSwarm data, run:
 
     ```
-sudo gitswarm-ctl cleanse
+    sudo gitswarm-ctl cleanse
     ```
 
     > **Warning: this permanently removes all GitSwarm-related data.**
@@ -15,7 +15,7 @@ sudo gitswarm-ctl cleanse
 1.  **Uninstall GitSwarm's supervisory processes.**
 
     ```
-sudo gitswarm-ctl uninstall
+    sudo gitswarm-ctl uninstall
     ```
 
 1.  **Uninstall the GitSwarm package.**
@@ -25,13 +25,13 @@ sudo gitswarm-ctl uninstall
         1.  **For Ubuntu:**
 
             ```
-sudo apt-get purge perforce-gitswarm
+            sudo apt-get purge perforce-gitswarm
             ```
 
         1.  **For CentOS:**
 
             ```
-sudo yum remove perforce-gitswarm
+            sudo yum remove perforce-gitswarm
             ```
 
     1.  **For uninstalling 2015.4, or later:**
@@ -39,41 +39,41 @@ sudo yum remove perforce-gitswarm
         1.  **For Ubuntu:**
 
             ```
-sudo apt-get purge helix-gitswarm
+            sudo apt-get purge helix-gitswarm
             ```
 
         1.  **For CentOS:**
 
             ```
-sudo yum remove helix-gitswarm
+            sudo yum remove helix-gitswarm
             ```
 
 1.  Optional: **Remove dependencies.**
 
     1.  **For uninstalling 2015.3, or earlier:**
 
-         1.  **For Ubuntu:**
+        1.  **For Ubuntu:**
 
-             ```
-sudo apt-get remove perforce-cli-base perforce-server-base helix-git-fusion-base
-             ```
+            ```
+            sudo apt-get remove perforce-cli-base perforce-server-base helix-git-fusion-base
+            ```
 
-         1.  **For CentOS:**
+        1.  **For CentOS:**
 
-             ```
-sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base
-             ```
+            ```
+            sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base
+            ```
 
     1.  **For uninstalling 2015.4, or later:**
 
-         1.  **For Ubuntu:**
+        1.  **For Ubuntu:**
 
-             ```
-sudo apt-get remove helix-cli-base helix-p4d-base helix-git-fusion-base
-             ```
-            
-         1.  **For CentOS:**
+            ```
+            sudo apt-get remove helix-cli-base helix-p4d-base helix-git-fusion-base
+            ```
 
-             ```
-sudo yum remove helix-cli-base helix-p4d-base helix-git-fusion-base
-             ```
+        1.  **For CentOS:**
+
+            ```
+            sudo yum remove helix-cli-base helix-p4d-base helix-git-fusion-base
+            ```

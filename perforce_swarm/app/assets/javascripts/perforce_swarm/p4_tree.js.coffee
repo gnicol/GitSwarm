@@ -95,14 +95,22 @@ class @P4Tree
       filterButton.enable()
 
   # Filter the depots shown in the tree either by streams or regular depots
+  # if stream is a string, we are only going to show the passed stream depot,
+  # if it's a boolean, we treat it as a flag for the filtering depots by whether
+  # they are a stream or not
   filterDepots: (stream) ->
     depots = this.$tree.get_node('#').children
     for depot in depots
       node = this.$tree.get_node(depot)
-      if stream
-        this.$tree.hide_node(node) if node.type != 'depot-stream'
+      if !stream && node.type == 'depot-stream'
+        # Hide stream depots when we aren't showing the stream depot type
+        this.$tree.hide_node(node)
+      else if stream && (node.type != 'depot-stream' || ($.type(stream) == 'string' && node.id.search(stream) != 0))
+        # Hide any node that doesn't match the stream filter
+        this.$tree.hide_node(node)
       else
-        this.$tree.hide_node(node) if node.type == 'depot-stream'
+        # Make sure we show any nodes we aren't filtering out
+        this.$tree.show_node(node)
 
   # Expand and select a node
   loadEditMapping: (branchName, nodePath) ->
@@ -157,9 +165,10 @@ class @P4Tree
 
     # If we are restricted to a particular depot type, we enforce that as well
     if @restrictedDepot
-      for node in @getTreeLowestChecked(true)
+      for node in @getTreeLowestChecked()
         if @restrictedDepot.type == 'depot-stream'
-          return false if @getDepotForNode(node).type != 'depot-stream'
+          depot = @getDepotForNode(node)
+          return false if depot.type != 'depot-stream' || node.search(depot.id) != 0
         else
           return false if @getDepotForNode(node).type == 'depot-stream'
 
@@ -184,9 +193,13 @@ class @P4Tree
   runTreeFilters: ->
     mappingFormInputs = this.$('.content-list input')
     if mappingFormInputs.length
-      @restrictDepotType(@getDepotForNode(mappingFormInputs[0].value).type)
+      depot   = @getDepotForNode(mappingFormInputs[0].value)
+      options = {stream: depot.id} if depot.type == 'depot-stream'
+      @restrictDepotType(depot.type, options)
+      @filterDepots(options?.stream)
     else
       @restrictDepotType(null)
+      @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
   # set the current tree selected mapping as field in the form to submit during project creation
   addSavedMapping: (branchName, nodePath) ->

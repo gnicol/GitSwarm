@@ -7,8 +7,14 @@
 @import "bootstrap/variables";
 @import "bootstrap/mixins";
 
+/* Bring in GitLab's variables */
+@import "framework/variables";
+
 /* Our own boostrap style overrides */
 @import "perforce_swarm/bootstrap";
+
+/* Import jstree theme */
+@import "jstree-default";
 
 /* Styles for our navbar */
 @import "perforce_swarm/navbar";

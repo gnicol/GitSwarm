@@ -23,6 +23,17 @@ module ProjectsHelper
     end
   end
 
+  def helix_missing_config_error(project)
+    gitlab_shell_config.git_fusion.entry(project.git_fusion_server_id)
+    return nil
+  rescue
+    tooltip = <<-EOM
+      Configuration for the Helix Git Fusion server '#{ERB::Util.html_escape(project.git_fusion_server_id)}'
+      is either missing, or is not properly configured in GitSwarm.
+    EOM
+    return tooltip.html_safe
+  end
+
   def mirroring_errors(project, user)
     # user does not have adequate permissions to enable mirroring
     tooltip = <<-EOM
@@ -52,6 +63,10 @@ module ProjectsHelper
     EOM
     return tooltip.html_safe if git_fusion_server_error
 
+    # project is a candidate for disabling mirroring, but the config ID no longer exists
+    tooltip = helix_missing_config_error(project)
+    return tooltip.html_safe if project.git_fusion_mirrored? && tooltip
+
     # this project is already mirrored or is a candidate for re-enabling
     return '' if project.git_fusion_repo.present?
 
@@ -75,15 +90,8 @@ module ProjectsHelper
   end
 
   def helix_reenable_mirroring_tooltip(project)
-    begin
-      gitlab_shell_config.git_fusion.entry(project.git_fusion_server_id)
-    rescue
-      tooltip = <<-EOM
-        Configuration for the Helix Git Fusion server '#{ERB::Util.html_escape(project.git_fusion_server_id)}'
-        is either missing, or is not properly configured in GitSwarm.
-      EOM
-      return tooltip.html_safe unless mirroring_configured?
-    end
+    tooltip = helix_missing_config_error(project)
+    return tooltip.html_safe if mirroring_configured? && tooltip
 
     begin
       url     = git_fusion_url!(project)

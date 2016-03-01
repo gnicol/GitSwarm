@@ -76,7 +76,7 @@ disabled for individual users from the admin panel. It is also possible to
 configure GitSwarm so that new users default to not being able to create
 groups:
 
-```
+```ruby
 # Put the following in /etc/gitswarm/gitswarm.rb
 gitlab_rails['gitlab_default_can_create_group'] = false
 ```

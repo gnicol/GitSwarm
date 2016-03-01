@@ -1,10 +1,10 @@
-# GitSwarm Groups
+# GitSwarm EE Groups
 
-GitSwarm groups allow you to group projects into directories and give users
-to several projects at once.
+GitSwarm EE groups allow you to group projects into directories and give
+users to several projects at once.
 
 When you create a new project in GitSwarm, the default namespace for the
-project is the personal namespace associated with your GitSwarm user. In
+project is the personal namespace associated with your GitSwarm EE user. In
 this document we will see how to create groups, put projects in groups and
 manage who can access the projects in a group.
 
@@ -37,8 +37,8 @@ you manage as the new namespace for the group.
 
 ![Transfer a project to a new namespace](groups/transfer_project.png)
 
-GitSwarm administrators can use the admin interface to move any project to
-any namespace if needed.
+GitSwarm EE administrators can use the admin interface to move any project
+to any namespace if needed.
 
 ## Adding users to a group
 
@@ -63,18 +63,18 @@ Source' group.
 If necessary, you can increase the access level of an individual user for a
 specific project, by adding them as a Member to the project.
 
-![Joan Funk effectively has 'Master' access to GitSwarm now](groups/override_access_level.png)
+![Joan Funk effectively has 'Master' access to GitSwarm EE now](groups/override_access_level.png)
 
 ## Managing group memberships via LDAP
 
-It is possible to manage GitSwarm group memberships using LDAP groups. See
-[the LDAP documentation](../integration/ldap.md) for more information.
+It is possible to manage GitSwarm EE group memberships using LDAP groups.
+See [the LDAP documentation](../integration/ldap.md) for more information.
 
 ## Allowing only admins to create groups
 
-By default, any GitSwarm user can create new groups. This ability can be
+By default, any GitSwarm EE user can create new groups. This ability can be
 disabled for individual users from the admin panel. It is also possible to
-configure GitSwarm so that new users default to not being able to create
+configure GitSwarm EE so that new users default to not being able to create
 groups:
 
 ```
@@ -107,6 +107,7 @@ results are paginated.
 
 To get more (up to 100), pass the following as an argument to the API
 call:
+
 ```
 /groups?per_page=100
 ```

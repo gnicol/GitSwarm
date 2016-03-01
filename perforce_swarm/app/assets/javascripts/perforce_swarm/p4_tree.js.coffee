@@ -5,6 +5,7 @@ class @P4Tree
     this.$el = $(element)
     tree_url = '/gitswarm/p4_tree.json'
     tree_url = gon.relative_url_root + tree_url if gon.relative_url_root?
+    @disableFields()
 
     # Initialize the tree UI component
     this.$('.git-fusion-tree').on 'loaded.jstree', => @treeLoad()
@@ -79,9 +80,16 @@ class @P4Tree
   $: (selector) ->
     this.$el.find(selector)
 
+  disableFields: ->
+    this.$('input, .btn').not('.disabled').addClass('field-disabled').disable()
+
+  enableFields: ->
+    this.$('.field-disabled').enable()
+
   # Setup default tree state
   treeLoad: ->
     @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
+    @enableFields()
 
   # Locks down the valid selections, and disables the
   # filter button in the tree based on depot type
@@ -89,7 +97,7 @@ class @P4Tree
     filterButton = this.$('.filter-actions a, .filter-actions .depot-type-filter')
     if type
       @restrictedDepot = { type: type, options: options }
-      filterButton.disable()
+      filterButton.removeClass('field-disabled').disable()
     else
       @restrictedDepot = null
       filterButton.enable()
@@ -184,7 +192,7 @@ class @P4Tree
     if @isCurrentMappingValid()
       this.$('.tree-save').enable()
     else
-      this.$('.tree-save').disable()
+      this.$('.tree-save').removeClass('field-disabled').disable()
 
     this.$('.current-mapping-branch').text(@getNewBranchName() || '')
     this.$('.current-mapping-path').text(@getTreeLowestChecked()[0] || '...')

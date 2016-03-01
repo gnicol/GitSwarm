@@ -48,7 +48,7 @@ Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitLab+Plugin) and
 [Jenkins Git
 Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin).
 
-Go to Manage Jenkins -> Configure System and scroll down to the 'GitLab'
+Go to Manage Jenkins -> Configure System and scroll down to the 'GitSwarm'
 section. Enter the GitSwarm EE server URL in the 'GitLab host URL' field
 and paste the API token copied earlier in the 'API Token' field.
 
@@ -64,14 +64,14 @@ checkbox as described under the 'GitLab Configuration (>= 8.1)'.
 
 ### Configure a GitSwarrm EE project
 
-Create a new GitLab project or choose an existing one. Then, go to
+Create a new GitSwarm EE project or choose an existing one. Then, go to
 **Services -> Jenkins CI**.
 
 Check the 'Active' box. Select whether you want GitSwarm EE to trigger a
 build on push, Merge Request creation, tag push, or any combination of
 these. We recommend unchecking 'Merge Request events' unless you have a
 specific use-case that requires re-building a commit when a merge request
-is created. With 'Push events' selected, GitLab will build the latest
+is created. With 'Push events' selected, GitSwarm EE will build the latest
 commit on each push and the build status will be displayed in the merge
 request.
 
@@ -83,12 +83,13 @@ project.
 Optionally, enter a username and password if your Jenkins server requires
 authentication.
 
-![GitLab service settings](jenkins_gitlab_service_settings.png)
+![GitSwarm EE service settings](jenkins_gitlab_service_settings.png)
 
 # Jenkins CI (Deprecated) Service
 
-This service is deprecated and may be removed in a future version of GitLab.
-Please see documentation for the new Jenkins CI service above.
+This service is deprecated and may be removed in a future version of
+GitSwarm EE. Please see documentation for the new Jenkins CI service
+above.
 
 Integration includes:
 
@@ -109,15 +110,14 @@ Requirements:
 
 ![screen](jenkins_project.png)
 
-
-## GitLab
+## GitSwarm EE
 
 ### Read access to repository
 
-Jenkins needs read access to the GitLab repository. We already specified a
-private key to use in Jenkins, now we need to add a public one to the
-GitSwarm EE project. For that case we will need a Deploy key. Read the
-documentation on [how to setup a Deploy
+Jenkins needs read access to the GitSwarm EE repository. We already
+specified a private key to use in Jenkins, now we need to add a public one
+to the GitSwarm EE project. For that case we will need a Deploy key. Read
+the documentation on [how to setup a Deploy
 key](../../ssh/README.md#deploy-keys).
 
 ### Jenkins service
@@ -151,13 +151,14 @@ enabled?'.
 
 When using some plugins in Jenkins, an unstable build status will result
 when tests are not passing. In these cases the unstable status in Jenkins
-should register as a failure in GitLab on the merge request page. In other
-cases you may not want an unstable status to display as a build failure in
-GitLab. Control this behavior using the 'Should unstable builds be treated
-as passing?' setting in the Jenkins service in GitSwarm EE.
+should register as a failure in GitSwarm EE on the merge request page. In
+other cases you may not want an unstable status to display as a build
+failure in GitSwarm EE. Control this behavior using the 'Should unstable
+builds be treated as passing?' setting in the Jenkins service in GitSwarm
+EE.
 
-When checked, unstable builds will display as green or passing in GitLab.
-By default unstable builds display in GitSwarm EE as red or failed.
+When checked, unstable builds will display as green or passing in GitSwarm
+EE. By default unstable builds display in GitSwarm EE as red or failed.
 
 ![Jenkins Unstable Passing](jenkins_unstable_passing.png)
 

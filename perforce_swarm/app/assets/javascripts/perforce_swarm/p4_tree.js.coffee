@@ -49,12 +49,8 @@ class @P4Tree
     # Filter by depot-type
     this.$el.on 'click', '.filter-actions a', (e) =>
       e.preventDefault()
-      this.$tree.show_all()
       this.$tree.uncheck_all()
       isStream = $(e.currentTarget).is('.depot-stream')
-      filterLabel = this.$('.filter-actions .depot-type-filter')
-      filterLabel.data('value', if isStream then 'depot-stream' else 'depot-regular')
-      filterLabel.find('.type-text').text(if isStream then 'Stream Depots' else 'Regular Depots')
       @filterDepots(isStream)
 
     # Use selected tree mapping in project
@@ -74,9 +70,9 @@ class @P4Tree
       e.stopPropagation()
       row = $(e.currentTarget).closest('li')
       mapping = row.data('mapping')
-      @loadEditMapping(mapping.branchName, mapping.nodePath)
       row.remove()
       @runTreeFilters()
+      @loadEditMapping(mapping.branchName, mapping.nodePath)
 
   # Local jQuery finder
   $: (selector) ->
@@ -90,29 +86,24 @@ class @P4Tree
 
   # Setup default tree state
   treeLoad: ->
-    @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
-    @enableFields()
-
     #  Load previous mapping back into page (in case of form error, etc)
     if @existing_mappings
       @addSavedMapping(branch, mapping) for branch, mapping of @existing_mappings
-
-  # Locks down the valid selections, and disables the
-  # filter button in the tree based on depot type
-  restrictDepotType: (type, options = {}) ->
-    filterButton = this.$('.filter-actions a, .filter-actions .depot-type-filter')
-    if type
-      @restrictedDepot = { type: type, options: options }
-      filterButton.removeClass('field-disabled').disable()
     else
-      @restrictedDepot = null
-      filterButton.enable()
+      @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
+
+    @enableFields()
 
   # Filter the depots shown in the tree either by streams or regular depots
   # if stream is a string, we are only going to show the passed stream depot,
   # if it's a boolean, we treat it as a flag for the filtering depots by whether
   # they are a stream or not
   filterDepots: (stream) ->
+    # Update the filter button
+    filterLabel = this.$('.filter-actions .depot-type-filter')
+    filterLabel.data('value', if stream then 'depot-stream' else 'depot-regular')
+    filterLabel.find('.type-text').text(if stream then 'Stream Depots' else 'Regular Depots')
+
     depots = this.$tree.get_node('#').children
     for depot in depots
       node = this.$tree.get_node(depot)
@@ -214,14 +205,18 @@ class @P4Tree
 
   # enforce tree restrictions based on the mappings you already have
   runTreeFilters: ->
+    filterButton      = this.$('.filter-actions a, .filter-actions .depot-type-filter')
     mappingFormInputs = this.$('.content-list input')
+
     if mappingFormInputs.length
-      depot   = @getDepotForNode(mappingFormInputs[0].value)
-      options = {stream: depot.id} if depot.type == 'depot-stream'
-      @restrictDepotType(depot.type, options)
+      depot            = @getDepotForNode(mappingFormInputs[0].value)
+      options          = {stream: depot.id} if depot.type == 'depot-stream'
+      @restrictedDepot = { type: depot.type, options: options }
+      filterButton.removeClass('field-disabled').disable()
       @filterDepots(options?.stream)
     else
-      @restrictDepotType(null)
+      filterButton.enable()
+      @restrictedDepot = null
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
   # set the current tree selected mapping as field in the form to submit during project creation

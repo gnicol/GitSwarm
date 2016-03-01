@@ -7,6 +7,8 @@
 - Ubuntu 12.04 or 14.04
 - CentOS 6.7 or 7
 
+> Note: GitSwarm is only available for 64-bit systems.
+
 See the [installation instructions](README.md).
 
 ### Unsupported Unix distributions
@@ -26,8 +28,8 @@ Please consider using a virtual machine to run GitSwarm.
 ## Ruby versions
 
 GitSwarm requires Ruby (MRI) 2.1 You will have to use the standard MRI
-implementation of Ruby. We love JRuby and Rubinius but GitSwarm needs several
-Gems that have native extensions.
+implementation of Ruby. We love JRuby and Rubinius but GitSwarm needs
+several Gems that have native extensions.
 
 ## Hardware requirements
 

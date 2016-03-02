@@ -98,9 +98,11 @@ class @P4Tree
     if type
       @restrictedDepot = { type: type, options: options }
       filterButton.removeClass('field-disabled').disable()
+      @enableTooltip('.depot-type-filter')
     else
       @restrictedDepot = null
       filterButton.enable()
+      @disableTooltip('.depot-type-filter')
 
   # Filter the depots shown in the tree either by streams or regular depots
   # if stream is a string, we are only going to show the passed stream depot,
@@ -187,12 +189,20 @@ class @P4Tree
     depot = if node.parents.length > 1 then node.parents[node.parents.length - 2] else node
     this.$tree.get_node(depot)
 
+  enableTooltip: (element) ->
+    this.$(element).closest('.tooltip-wrapper').addClass('has_tooltip').data('toggle', 'tooltip')
+
+  disableTooltip: (element) ->
+    this.$(element).closest('.tooltip-wrapper').removeClass('has_tooltip').removeAttr('data-toggle')
+
   # updates the area that displays your current tree selection
   updateMapping: ->
     if @isCurrentMappingValid()
       this.$('.tree-save').enable()
+      @disableTooltip('.tree-save')
     else
       this.$('.tree-save').removeClass('field-disabled').disable()
+      @enableTooltip('.tree-save')
 
     this.$('.current-mapping-branch').text(@getNewBranchName() || '')
     this.$('.current-mapping-path').text(@getTreeLowestChecked()[0] || '...')

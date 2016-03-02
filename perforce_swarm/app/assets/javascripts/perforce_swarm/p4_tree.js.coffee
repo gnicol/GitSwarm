@@ -30,7 +30,15 @@ class @P4Tree
         'tie_selection'       : false  # Do our own management of the selected nodes
       },
       'types' : {
-        'depot-stream' : {}
+        'depot-stream'  : { icon: 'fa-p4-depot-icon fa-p4-badge fa-p4-stream-badge' },
+        'depot-local'   : { icon: 'fa-p4-depot-icon' },
+        'depot-tangent' : { icon: 'fa-p4-depot-icon' },
+        'depot-spec'    : { icon: 'fa-p4-depot-icon fa-p4-badge fa-p4-spec-badge' },
+        'depot-remote'  : { icon: 'fa-p4-remote-depot-icon' },
+        'depot-archive' : { icon: 'fa-p4-depot-icon fa-p4-badge fa-p4-archive-badge' },
+        'depot-unload'  : { icon: 'fa-p4-depot-icon fa-p4-badge fa-p4-unload-badge' },
+        'folder'        : { icon: 'fa-p4-depot-folder' },
+        'folder-stream' : { icon: 'fa-p4-depot-folder fa-p4-badge fa-p4-stream-badge' }
       },
       "conditionalselect" : (node, event) ->
         # Enforce that only one path is selected
@@ -233,7 +241,7 @@ class @P4Tree
   addSavedMapping: (branchName, nodePath) ->
     # Remove any existing mapping for the same branch name
     this.$('.content-list').find("[name='git_fusion_branch_mappings[#{branchName}]']").closest('li').remove()
-    
+
     newBranch = """
     <li>
       <input type="hidden" style="display:none;" name="git_fusion_branch_mappings[#{branchName}]" value="#{nodePath}" />
@@ -254,9 +262,12 @@ class @P4Tree
     depot     = @getDepotForNode(node)
     nodeDepth = node.parents.length - 1 # Depth of the node we are checking, minus one for the root node
 
-    # Disable node if depot is a stream depot, and the node
-    # isn't a stream (determined by the depots stream depth)
-    if depot.type == 'depot-stream' && depot.data.streamDepth != nodeDepth
+    if depot.type == 'depot-stream'
+      # mark the node as a stream if it's at the right streamDepth
+      # otherwise disable the node
+      if depot.data.streamDepth == nodeDepth
+        this.$tree.set_type(node, 'folder-stream')
+      else
         this.$tree.disable_node(node)
         this.$tree.disable_checkbox(node)
 

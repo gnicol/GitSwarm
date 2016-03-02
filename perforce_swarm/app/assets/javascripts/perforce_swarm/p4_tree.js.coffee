@@ -98,11 +98,11 @@ class @P4Tree
     if type
       @restrictedDepot = { type: type, options: options }
       filterButton.removeClass('field-disabled').disable()
-      @enableTooltip('.depot-type-filter')
+      @enableTooltip(filterButton)
     else
       @restrictedDepot = null
       filterButton.enable()
-      @disableTooltip('.depot-type-filter')
+      @disableTooltip(filterButton)
 
   # Filter the depots shown in the tree either by streams or regular depots
   # if stream is a string, we are only going to show the passed stream depot,

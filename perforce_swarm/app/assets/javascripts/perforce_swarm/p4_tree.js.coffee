@@ -193,12 +193,20 @@ class @P4Tree
     nodeId = if $.type(node) == 'string' then node else node.id
     this.$tree.get_node(nodeId.match('//[^/]+')[0])
 
+  enableTooltip: (element) ->
+    this.$(element).closest('.tooltip-wrapper').addClass('has_tooltip').data('toggle', 'tooltip')
+
+  disableTooltip: (element) ->
+    this.$(element).closest('.tooltip-wrapper').removeClass('has_tooltip').removeAttr('data-toggle')
+
   # updates the area that displays your current tree selection
   updateMapping: ->
     if @isCurrentMappingValid()
       this.$('.tree-save').enable()
+      @disableTooltip('.tree-save')
     else
       this.$('.tree-save').removeClass('field-disabled').disable()
+      @enableTooltip('.tree-save')
 
     this.$('.current-mapping-branch').text(@getNewBranchName() || '')
     this.$('.current-mapping-path').text(@getTreeLowestChecked()[0] || '...')
@@ -213,9 +221,11 @@ class @P4Tree
       options          = {stream: depot.id} if depot.type == 'depot-stream'
       @restrictedDepot = { type: depot.type, options: options }
       filterButton.removeClass('field-disabled').disable()
+      @enableTooltip(filterButton)
       @filterDepots(options?.stream)
     else
       filterButton.enable()
+      @disableTooltip(filterButton)
       @restrictedDepot = null
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 

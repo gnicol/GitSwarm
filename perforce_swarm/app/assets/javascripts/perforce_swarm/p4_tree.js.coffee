@@ -1,10 +1,12 @@
 class @P4Tree
   restrictedDepot: null
+  existing_mappings: null
 
-  constructor: (element, fusion_server) ->
-    this.$el = $(element)
-    tree_url = '/gitswarm/p4_tree.json'
-    tree_url = gon.relative_url_root + tree_url if gon.relative_url_root?
+  constructor: (element, fusion_server, existing_mappings) ->
+    this.$el           = $(element)
+    @existing_mappings = existing_mappings
+    tree_url           = '/gitswarm/p4_tree.json'
+    tree_url           = gon.relative_url_root + tree_url if gon.relative_url_root?
     @disableFields()
 
     # Initialize the tree UI component
@@ -47,12 +49,8 @@ class @P4Tree
     # Filter by depot-type
     this.$el.on 'click', '.filter-actions a', (e) =>
       e.preventDefault()
-      this.$tree.show_all()
       this.$tree.uncheck_all()
       isStream = $(e.currentTarget).is('.depot-stream')
-      filterLabel = this.$('.filter-actions .depot-type-filter')
-      filterLabel.data('value', if isStream then 'depot-stream' else 'depot-regular')
-      filterLabel.find('.type-text').text(if isStream then 'Stream Depots' else 'Regular Depots')
       @filterDepots(isStream)
 
     # Use selected tree mapping in project
@@ -72,9 +70,9 @@ class @P4Tree
       e.stopPropagation()
       row = $(e.currentTarget).closest('li')
       mapping = row.data('mapping')
-      @loadEditMapping(mapping.branchName, mapping.nodePath)
       row.remove()
       @runTreeFilters()
+      @loadEditMapping(mapping.branchName, mapping.nodePath)
 
   # Local jQuery finder
   $: (selector) ->
@@ -88,27 +86,24 @@ class @P4Tree
 
   # Setup default tree state
   treeLoad: ->
-    @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
-    @enableFields()
-
-  # Locks down the valid selections, and disables the
-  # filter button in the tree based on depot type
-  restrictDepotType: (type, options = {}) ->
-    filterButton = this.$('.filter-actions a, .filter-actions .depot-type-filter')
-    if type
-      @restrictedDepot = { type: type, options: options }
-      filterButton.removeClass('field-disabled').disable()
-      @enableTooltip(filterButton)
+    #  Load previous mapping back into page (in case of form error, etc)
+    if @existing_mappings
+      @addSavedMapping(branch, mapping) for branch, mapping of @existing_mappings
     else
-      @restrictedDepot = null
-      filterButton.enable()
-      @disableTooltip(filterButton)
+      @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
+
+    @enableFields()
 
   # Filter the depots shown in the tree either by streams or regular depots
   # if stream is a string, we are only going to show the passed stream depot,
   # if it's a boolean, we treat it as a flag for the filtering depots by whether
   # they are a stream or not
   filterDepots: (stream) ->
+    # Update the filter button
+    filterLabel = this.$('.filter-actions .depot-type-filter')
+    filterLabel.data('value', if stream then 'depot-stream' else 'depot-regular')
+    filterLabel.find('.type-text').text(if stream then 'Stream Depots' else 'Regular Depots')
+
     depots = this.$tree.get_node('#').children
     for depot in depots
       node = this.$tree.get_node(depot)
@@ -125,23 +120,33 @@ class @P4Tree
   # Expand and select a node
   loadEditMapping: (branchName, nodePath) ->
     this.$('.new-branch-name').val(branchName).trigger('change')
-    @openAndSelectDeepNode(nodePath)
+    # Check the node
+    @openDeepNode(nodePath, => this.$tree.check_node(nodePath))
 
   # Recurse through nodes to reach the passed node pass, waiting for them to be
-  # loaded from the server, and then check the passed nodePath once it's loaded
-  openAndSelectDeepNode: (nodePath) ->
+  # loaded from the server
+  openDeepNode: (nodePath, callback) ->
     # Open and load the path
     depotMatcher  = /^\/\/[^\/]*/
     # create an array of the nodes by splitting the path, but
     # we need special consideration for the depot path
-    depot         = depotMatcher.exec(nodePath)[0]
-    paths         = nodePath.replace(depotMatcher, '').split('/')
-    paths[0]      = depot
-    index         = 0
-    (open_recurse = => this.$tree.open_node(paths[index++], open_recurse))()
+    depot    = depotMatcher.exec(nodePath)[0]
+    paths    = nodePath.replace(depotMatcher, '').split('/')
+    paths[0] = depot
 
-    # Check the node
-    this.$tree.check_node(nodePath)
+    # Rebuild the each path's id from its parent's id
+    # eg. the MAIN node's id is actually //depot/Jam/MAIN
+    for value,i in paths
+      paths[i] = "#{paths[i-1]}/#{value}" if i
+
+    index         = 0
+    open_recurse  = =>
+      if index == paths.length - 1
+        callback() if callback
+      else
+        this.$tree.open_node(paths[index++], open_recurse)
+
+    open_recurse()
 
   # Our own version of tree.get_bottom_checked that returns not the bottom
   # checked nodes, but instead, the lowest checked nodes.
@@ -185,9 +190,8 @@ class @P4Tree
     return true
 
   getDepotForNode: (node) ->
-    node  = this.$tree.get_node(node) if $.type(node) == 'string'
-    depot = if node.parents.length > 1 then node.parents[node.parents.length - 2] else node
-    this.$tree.get_node(depot)
+    nodeId = if $.type(node) == 'string' then node else node.id
+    this.$tree.get_node(nodeId.match('//[^/]+')[0])
 
   enableTooltip: (element) ->
     this.$(element).closest('.tooltip-wrapper').addClass('has_tooltip').data('toggle', 'tooltip')
@@ -209,14 +213,20 @@ class @P4Tree
 
   # enforce tree restrictions based on the mappings you already have
   runTreeFilters: ->
+    filterButton      = this.$('.filter-actions a, .filter-actions .depot-type-filter')
     mappingFormInputs = this.$('.content-list input')
+
     if mappingFormInputs.length
-      depot   = @getDepotForNode(mappingFormInputs[0].value)
-      options = {stream: depot.id} if depot.type == 'depot-stream'
-      @restrictDepotType(depot.type, options)
+      depot            = @getDepotForNode(mappingFormInputs[0].value)
+      options          = {stream: depot.id} if depot.type == 'depot-stream'
+      @restrictedDepot = { type: depot.type, options: options }
+      filterButton.removeClass('field-disabled').disable()
+      @enableTooltip(filterButton)
       @filterDepots(options?.stream)
     else
-      @restrictDepotType(null)
+      filterButton.enable()
+      @disableTooltip(filterButton)
+      @restrictedDepot = null
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
   # set the current tree selected mapping as field in the form to submit during project creation

@@ -221,6 +221,9 @@ class @P4Tree
 
   # set the current tree selected mapping as field in the form to submit during project creation
   addSavedMapping: (branchName, nodePath) ->
+    # Remove any existing mapping for the same branch name
+    this.$('.content-list').find("[name='git_fusion_branch_mappings[#{branchName}]']").closest('li').remove()
+    
     newBranch = """
     <li>
       <input type="hidden" style="display:none;" name="git_fusion_branch_mappings[#{branchName}]" value="#{nodePath}" />

@@ -73,6 +73,16 @@ i.fa-p4-spec-badge:after {
   background-position: center center;
 }
 
+i.fa-p4-archive-badge:after {
+  background-image: image-url('p4-archive-badge.png');
+  background-position: center center;
+}
+
+i.fa-p4-unload-badge:after {
+  background-image: image-url('p4-unload-badge.png');
+  background-position: center center;
+}
+
 i.fa-helix-icon {
   height: 13px;
   width: 8px;

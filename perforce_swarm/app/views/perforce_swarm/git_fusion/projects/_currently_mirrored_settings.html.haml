@@ -6,10 +6,14 @@ This project is currently mirrored to the
 = "'#{@project.git_fusion_server_id}'"
 Helix Git Fusion server on the repo
 = "'#{@project.git_fusion_repo_name}'"
+%p
 - if git_fusion_url && git_fusion_url.is_a?(String) && !git_fusion_url.empty?
   %p
-    It can be reached via the following Git URL:
+    Git Fusion URL:
     = git_fusion_url(@project)
+    %br
+    %em Note: This is the URL on which Git Fusion is hosting this repository. If you wish to clone the GitSwarm project, you should use the URL specified on the
+    = link_to('project details page.', project_path(@project))
 - if git_fusion_last_fetched(@project)
   %p
     This project was last updated from Helix Git Fusion

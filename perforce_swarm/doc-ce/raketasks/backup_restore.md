@@ -188,8 +188,8 @@ gitlab_rails['backup_keep_time'] = 604800
              can be restored to a 2015.4 GitSwarm install. Here is a list
              of the GitSwarm releases and their corresponding GitLab
              releases:
-  * Gitlab CE, 8.0.5 = GitSwarm 2015.4
-  * Gitlab CE, 8.4.5 = GitSwarm 2016.1
+  * GitLab CE, 8.0.5 = GitSwarm 2015.4
+  * GitLab CE, 8.4.5 = GitSwarm 2016.1
 
 ### Prerequisites
 

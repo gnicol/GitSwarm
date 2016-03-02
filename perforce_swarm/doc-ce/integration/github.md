@@ -28,8 +28,9 @@ to use.
     - Authorization callback URL: `https://gitswarm.company.com/`
 1.  Select "Register application".
 
-1.  You should now see a Client ID and Client Secret near the top right of the page (see screenshot). 
-    Keep this page open as you continue configuration.
+1.  You should now see a Client ID and Client Secret near the top right of
+    the page (see screenshot). Keep this page open as you continue configuration.
+
     ![GitHub app](github_app.png)
 
 1.  On your GitSwarm server, open the configuration file.

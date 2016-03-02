@@ -35,6 +35,44 @@
   cursor: default;
 }
 
+i.fa-p4-depot-icon, .jstree-icon.fa-p4-depot-icon {
+  background-image: image-url('p4-depot-icon.png');
+  background-position: center center;
+  position: relative;
+}
+
+i.fa-p4-remote-depot-icon, .jstree-icon.fa-p4-remote-depot-icon {
+  background-image: image-url('p4-remote-depot-icon.png');
+  background-position: center center;
+  position: relative;
+}
+
+i.fa-p4-depot-folder, .jstree-icon.fa-p4-depot-folder {
+  background-image: image-url('p4-depot-folder.png');
+  background-position: center center;
+  position: relative;
+}
+
+i.fa-p4-badge:after {
+  content: '';
+  position: absolute;
+  line-height: 24px;
+  width: 18px;
+  height: 18px;
+  right: 3px;
+  bottom: 3px;
+}
+
+i.fa-p4-stream-badge:after {
+  background-image: image-url('p4-stream-badge.png');
+  background-position: center center;
+}
+
+i.fa-p4-spec-badge:after {
+  background-image: image-url('p4-spec-badge.png');
+  background-position: center center;
+}
+
 i.fa-helix-icon {
   height: 13px;
   width: 8px;

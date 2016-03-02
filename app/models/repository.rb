@@ -239,15 +239,10 @@ class Repository
     end
 
     expire_branch_cache(branch_name)
-  end
 
-  # Expires _all_ caches, including those that would normally only be expired
-  # under specific conditions.
-  def expire_all_caches!
-    expire_cache
-    expire_root_ref_cache
-    expire_emptiness_caches
-    expire_has_visible_content_cache
+    # This ensures this particular cache is flushed after the first commit to a
+    # new repository.
+    expire_emptiness_caches if empty?
   end
 
   def expire_branch_cache(branch_name = nil)
@@ -301,6 +296,46 @@ class Repository
 
   def expire_branch_names
     cache.expire(:branch_names)
+  end
+
+  # Runs code just before a repository is deleted.
+  def before_delete
+    expire_cache if exists?
+
+    expire_root_ref_cache
+    expire_emptiness_caches
+  end
+
+  # Runs code just before the HEAD of a repository is changed.
+  def before_change_head
+    # Cached divergent commit counts are based on repository head
+    expire_branch_cache
+    expire_root_ref_cache
+  end
+
+  # Runs code before creating a new tag.
+  def before_create_tag
+    expire_cache
+  end
+
+  # Runs code after a repository has been forked/imported.
+  def after_import
+    expire_emptiness_caches
+  end
+
+  # Runs code after a new commit has been pushed.
+  def after_push_commit(branch_name)
+    expire_cache(branch_name)
+  end
+
+  # Runs code after a new branch has been created.
+  def after_create_branch
+    expire_has_visible_content_cache
+  end
+
+  # Runs code after an existing branch has been removed.
+  def after_remove_branch
+    expire_has_visible_content_cache
   end
 
   def method_missing(m, *args, &block)
@@ -619,6 +654,42 @@ class Repository
     end
   end
 
+  def revert(user, commit, base_branch, revert_tree_id = nil)
+    source_sha = find_branch(base_branch).target
+    revert_tree_id ||= check_revert_content(commit, base_branch)
+
+    return false unless revert_tree_id
+
+    commit_with_hooks(user, base_branch) do |ref|
+      committer = user_to_committer(user)
+      source_sha = Rugged::Commit.create(rugged,
+        message: commit.revert_message,
+        author: committer,
+        committer: committer,
+        tree: revert_tree_id,
+        parents: [rugged.lookup(source_sha)],
+        update_ref: ref)
+    end
+  end
+
+  def check_revert_content(commit, base_branch)
+    source_sha = find_branch(base_branch).target
+    args       = [commit.id, source_sha]
+    args       << { mainline: 1 } if commit.merge_commit?
+
+    revert_index = rugged.revert_commit(*args)
+    return false if revert_index.conflicts?
+
+    tree_id = revert_index.write_tree(rugged)
+    return false unless diff_exists?(source_sha, tree_id)
+
+    tree_id
+  end
+
+  def diff_exists?(sha1, sha2)
+    rugged.diff(sha1, sha2).size > 0
+  end
+
   def merged_to_root_ref?(branch_name)
     branch_commit = commit(branch_name)
     root_ref_commit = commit(root_ref)
@@ -700,10 +771,11 @@ class Repository
 
     oldrev = Gitlab::Git::BLANK_SHA
     ref = Gitlab::Git::BRANCH_REF_PREFIX + branch
+    target_branch = find_branch(branch)
     was_empty = empty?
 
-    unless was_empty
-      oldrev = find_branch(branch).target
+    if !was_empty && target_branch
+      oldrev = target_branch.target
     end
 
     with_tmp_ref(oldrev) do |tmp_ref|
@@ -715,7 +787,7 @@ class Repository
       end
 
       GitHooksService.new.execute(current_user, path_to_repo, oldrev, newrev, ref) do
-        if was_empty
+        if was_empty || !target_branch
           # Create branch
           rugged.references.create(ref, newrev)
         else
@@ -730,6 +802,8 @@ class Repository
           end
         end
       end
+
+      newrev
     end
   end
 

@@ -43,6 +43,8 @@ Rails.application.routes.draw do
   get '/autocomplete/users' => 'autocomplete#users'
   get '/autocomplete/users/:id' => 'autocomplete#user'
 
+  # Emojis
+  resources :emojis, only: :index
 
   # Search
   get 'search' => 'search#show'
@@ -154,6 +156,11 @@ Rails.application.routes.draw do
         to:           "uploads#show",
         constraints:  { model: /note|user|group|project/, mounted_as: /avatar|attachment/, filename: /[^\/]+/ }
 
+    # Appearance
+    get ":model/:mounted_as/:id/:filename",
+        to:           "uploads#show",
+        constraints:  { model: /appearance/, mounted_as: /logo|header_logo/, filename: /.+/ }
+
     # Project markdown uploads
     get ":namespace_id/:project_id/:secret/:filename",
       to:           "projects/uploads#show",
@@ -251,6 +258,14 @@ Rails.application.routes.draw do
       end
     end
 
+    resource :appearances, path: 'appearance' do
+      member do
+        get :preview
+        delete :logo
+        delete :header_logos
+      end
+    end
+
     resource :application_settings, only: [:show, :update] do
       resources :services
       put :reset_runners_token
@@ -333,6 +348,12 @@ Rails.application.routes.draw do
 
       resources :groups, only: [:index]
       resources :snippets, only: [:index]
+
+      resources :todos, only: [:index, :destroy] do
+        collection do
+          delete :destroy_all
+        end
+      end
 
       resources :projects, only: [:index] do
         collection do
@@ -502,6 +523,7 @@ Rails.application.routes.draw do
             get :builds
             post :cancel_builds
             post :retry_builds
+            post :revert
           end
         end
 
@@ -617,6 +639,7 @@ Rails.application.routes.draw do
             get :status
             post :cancel
             post :retry
+            post :erase
           end
 
           resource :artifacts, only: [] do

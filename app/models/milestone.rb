@@ -27,6 +27,7 @@ class Milestone < ActiveRecord::Base
 
   belongs_to :project
   has_many :issues
+  has_many :labels, -> { distinct.reorder('labels.title') },  through: :issues
   has_many :merge_requests
   has_many :participants, through: :issues, source: :assignee
 
@@ -107,6 +108,12 @@ class Milestone < ActiveRecord::Base
     ((closed_items_count * 100) / total_items_count).abs
   rescue ZeroDivisionError
     0
+  end
+
+  def remaining_days
+    return 0 if !due_date || expired?
+
+    (due_date - Date.today).to_i
   end
 
   def expires_at

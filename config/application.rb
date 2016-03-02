@@ -45,22 +45,14 @@ module Gitlab
 
     # Enable the asset pipeline
     config.assets.enabled = true
-    config.assets.paths << Emoji.images_path
-    config.assets.precompile << "emoji/*.png"
+    config.assets.paths << Gemojione.index.images_path
+    config.assets.precompile << "*.png"
     config.assets.precompile << "print.css"
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
     config.action_view.sanitized_allowed_protocols = %w(smb)
-
-    # Relative URL support
-    # WARNING: We recommend using an FQDN to host GitLab in a root path instead
-    # of using a relative URL.
-    # Documentation: http://doc.gitlab.com/ce/install/relative_url.html
-    # Uncomment and customize the following line to run in a non-root path
-    #
-    # config.relative_url_root = "/gitlab"
 
     config.middleware.use Rack::Attack
 

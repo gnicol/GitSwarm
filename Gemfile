@@ -4,15 +4,15 @@ eval_gemfile File.join(File.dirname(__FILE__), 'perforce_swarm/Gemfile')
 
 source "https://rubygems.org"
 
-gem 'rails', '4.2.5.1'
+gem 'rails', '4.2.5.2'
 gem 'rails-deprecated_sanitizer', '~> 1.0.3'
 
 # Responders respond_to and respond_with
 gem 'responders', '~> 2.0'
 
-# Specify a sprockets version due to security issue
-# See https://groups.google.com/forum/#!topic/rubyonrails-security/doAVp0YaTqY
-gem 'sprockets', '~> 2.12.3'
+# Specify a sprockets version due to increased performance
+# See https://gitlab.com/gitlab-org/gitlab-ce/issues/6069
+gem 'sprockets', '~> 3.3.5'
 
 # Default values for AR models
 gem "default_value_for", "~> 3.0.0"
@@ -54,7 +54,7 @@ gem "browser", '~> 1.0.0'
 
 # Extracting information from a git repository
 # Provide access to Gitlab::Git library
-gem "gitlab_git", '~> 7.2.24'
+gem "gitlab_git", '~> 8.2'
 
 # LDAP Auth
 # GitLab fork with several improvements to original library. For full list of changes
@@ -80,6 +80,9 @@ gem "haml-rails", '~> 0.9.0'
 
 # Files attachments
 gem "carrierwave", '~> 0.9.0'
+
+# Image editing
+gem "mini_magick", '~> 4.4.0'
 
 # Drag and Drop UI
 gem 'dropzonejs-rails', '~> 0.7.1'
@@ -208,13 +211,12 @@ gem 'jquery-turbolinks', '~> 2.1.0'
 gem 'addressable',        '~> 2.3.8'
 gem 'bootstrap-sass',     '~> 3.3.0'
 gem 'font-awesome-rails', '~> 4.2'
-gem 'gitlab_emoji',       '~> 0.2.0'
+gem 'gitlab_emoji',       '~> 0.3.0'
 gem 'gon',                '~> 6.0.1'
 gem 'jquery-atwho-rails', '~> 1.3.2'
 gem 'jquery-rails',       '~> 4.0.0'
 gem 'jquery-scrollto-rails', '~> 1.4.3'
 gem 'jquery-ui-rails',    '~> 5.0.0'
-gem 'nprogress-rails',    '~> 0.1.6.7'
 gem 'raphael-rails',      '~> 2.1.2'
 gem 'request_store',      '~> 1.2.0'
 gem 'select2-rails',      '~> 3.5.9'
@@ -222,7 +224,7 @@ gem 'virtus',             '~> 1.0.1'
 gem 'net-ssh',            '~> 3.0.1'
 
 # Sentry integration
-gem 'sentry-raven'
+gem 'sentry-raven', '~> 0.15'
 
 # Metrics
 group :metrics do
@@ -305,10 +307,9 @@ end
 
 group :production do
   gem "gitlab_meta", '7.0'
-
-  # Sentry integration
-  gem 'sentry-raven'
 end
+
+gem "newrelic_rpm", '~> 3.14'
 
 gem 'octokit', '~> 3.8.0'
 

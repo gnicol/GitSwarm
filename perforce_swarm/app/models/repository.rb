@@ -49,4 +49,10 @@ end
 
 class Repository
   prepend PerforceSwarm::RepositoryExtension
+
+  # define directly so we can stub it out in the spec tests (RSpec does not
+  # support stubbing of prepended class methods)
+  def skip_ci?
+    File.exist?(File.join(path_to_repo, '.skip-ci'))
+  end
 end

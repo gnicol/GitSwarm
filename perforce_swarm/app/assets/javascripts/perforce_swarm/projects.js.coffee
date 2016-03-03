@@ -72,7 +72,7 @@ class @GitFusionProject
     if p4d_file_selected
       this.$('.git-fusion-file-selector-wrapper').show()
       fusion_server = this.$(@server_select_selector).val()
-      p4_tree = new P4Tree(this.$('.git-fusion-split-tree'), fusion_server) unless this.$('.jstree').length
+      p4_tree = new P4Tree(this.$('.git-fusion-split-tree'), fusion_server, $(@original_settings_selector).data('branch-mappings')) unless this.$('.jstree').length
     else
       this.$('.git-fusion-file-selector-wrapper').hide()
 

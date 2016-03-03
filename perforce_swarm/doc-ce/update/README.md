@@ -63,7 +63,7 @@ and understand the [pre-update considerations](#pre-update-considerations).
         sudo gitswarm-ctl reconfigure
         ```
 
-    1.  **For CentOS/RHEL (6.x and 7.x):**
+    1.  **For CentOS/RHEL (6.6+ and 7.x):**
 
         ```
         sudo yum remove helix-gitswarm

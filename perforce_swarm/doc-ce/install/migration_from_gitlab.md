@@ -25,7 +25,7 @@ Perforce Helix as the master for all assets.
     * GitLab to GitSwarm migration is not supported on GitSwarm versions
       less than 15.4 (GitLab 8.0.5).
     * Migration is supported across differing operating systems (e.g.
-      migration from GitLab running on CentOS/RHEL 6.x to GitSwarm running
+      migration from GitLab running on CentOS/RHEL 6.6+ to GitSwarm running
       on Ubuntu 14).
 
 1.  **An existing GitLab install**

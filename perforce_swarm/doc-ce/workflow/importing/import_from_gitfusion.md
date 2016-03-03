@@ -443,7 +443,8 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 
 *   The following error can be displayed when Git Swarm is attempting to
     connect to a remote Helix Git Fusion server (running on Centos/RHEL
-    6.x) over SSH, as part of mirroring setup on the `Create Project` page.
+    6.6+) over SSH, as part of mirroring setup on the `Create Project`
+    page.
 
     ```
     Git Fusion Server:

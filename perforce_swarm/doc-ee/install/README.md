@@ -11,7 +11,7 @@ GitSwarm EE:
 
     By default, the CentOS/RHEL firewall rules block HTTP and SSH access.
 
-    1.  **For CentOS/RHEL 6.x:**
+    1.  **For CentOS/RHEL 6.6+:**
 
         ```
 sudo lokkit -s http -s ssh
@@ -37,7 +37,7 @@ sudo apt-get update
 sudo apt-get upgrade
         ```
 
-    1.  **For CentOS/RHEL 6.x and 7:**
+    1.  **For CentOS/RHEL 6.6+ and 7:**
 
         ```
 sudo yum update
@@ -60,7 +60,7 @@ sudo yum update
 sudo apt-get install postfix curl
         ```
 
-    1.  **For CentOS/RHEL 6.x:**
+    1.  **For CentOS/RHEL 6.6+:**
 
         ```
 sudo yum install postfix curl
@@ -163,9 +163,9 @@ Note: For additional troubleshooting and configuration options, please see
 the [Omnibus GitLab
 readme](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md).
 
-*   **error: "X" is an unknown key on CentOS/RHEL 6.x**
+*   **error: "X" is an unknown key on CentOS/RHEL 6.6+**
 
-    This error occurs during install of CentOS/RHEL 6.x, often in a shared
+    This error occurs during install of CentOS/RHEL 6.6+, often in a shared
     VM environment where some of the keys in `/etc/sysctl.conf` don't
     actually apply. The error usually looks something like this:
 

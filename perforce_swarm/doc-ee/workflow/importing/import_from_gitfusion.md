@@ -23,9 +23,9 @@ some team members to learn and use than Git.
 With Helix's exclusive file locking support, teams working with unmergable
 digital assets can collaborate without overwriting each other's work. Git
 Fusion respects these locks and prevents Git pushes from overwriting locked
-files. 
+files.
 
-Additionally, mirroring through Git Fusion allows “narrow cloning,” where
+Additionally, mirroring through Git Fusion allows "narrow cloning," where
 you create small Git repositories that are subsets of the much larger Helix
 Versioning Engine monorepo. Git repositories perform best when the
 repository is at most 1 GB in size, whereas a Helix Versioning Engine can
@@ -40,9 +40,21 @@ work with smaller, high-performing repositories.
 
 ### Requirements
 
-* Helix Git Fusion 2015.2, or newer.
-* Helix GitSwarm EE 2015.3, or newer.
-* Helix Versioning Engine (P4D) version 2015.1/1171507, or newer.
+*   Helix Git Fusion 2015.2, or newer.
+*   Helix GitSwarm EE 2015.3, or newer.
+*   Helix Versioning Engine (P4D) version 2015.1/1171507, or newer.
+    *   A user for GitSwarm EE's use in the Helix Versioning Engine with
+        the following attributes:
+        *   a normal user (not operator or service users)
+        *   a member of the `git-fusion-pull` group
+        *   must have write access via Helix protections to:
+            *   `//.git-fusion/repos/...` (to allow GitSwarm to create
+                `auto_create` repos)
+            *   `//.git-fusion/users/<GitSwarm user>/...` (for SSH access)
+            *   `//<all Git Fusion depot roots accessed by GitSwarm>`
+
+> Note: When you purchase a license for GitSwarm EE, the license includes
+  the required GitSwarm EE user.
 
 ### Recommendations
 
@@ -70,12 +82,12 @@ overrides for usernames, passwords, git configuration parameters, and
 convention-based repository settings.
 
 ```ruby
-gitswarm['git-fusion']['global']['user']     = 'global-user'
-gitswarm['git-fusion']['global']['password'] = '<password for "global-user" user>'
-gitswarm['git-fusion']['local']['url']       = 'http://gitswarm@gitfusion.host/'
-gitswarm['git-fusion']['local']['password']  = '<password for "gitswarm" user>'
-gitswarm['git-fusion']['development']['url'] = 'http://dev-gitfusion.host/'
-gitswarm['git-fusion']['production']['url']  = 'http://prod-gitfusion.host/'
+gitswarm['git-fusion']['global']['user']      = 'global-user'
+gitswarm['git-fusion']['global']['password']  = '<password for "global-user" user>'
+gitswarm['git-fusion']['local']['url']        = 'http://gitswarm@gitfusion.host/'
+gitswarm['git-fusion']['local']['password']   = '<password for "gitswarm" user>'
+gitswarm['git-fusion']['development']['url']  = 'http://dev-gitfusion.host/'
+gitswarm['git-fusion']['production']['url']   = 'http://prod-gitfusion.host/'
 ```
 
 In the above example, the user `global-user` is used to log in to the
@@ -171,7 +183,7 @@ To permit GitSwarm EE to connect to Git Fusion via SSH, follow these steps:
     [Git Fusion
     guide](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/index.html),
     in the section [Authenticating Git Users using
-    SSH](http://www.perforce.com/perforce/r15.1/manuals/git-fusion/appendix.ssh.html).
+    SSH](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/appendix.ssh.html).
 
     > Note: When installing the public key on the Git Fusion service, a
             standard user with read/write access to the `//.git-fusion`
@@ -183,7 +195,7 @@ To permit GitSwarm EE to connect to Git Fusion via SSH, follow these steps:
 In order for GitSwarm EE to automatically create new Git Fusion
 repositories when adding projects, GitSwarm EE needs to connect to the
 Helix Versioning Engine (P4D) directly. GitSwarm EE also needs to be
-configure with a path where it can place the repositories files.
+configured with a path where it can place the repositories files.
 
 At a minimum, GitSwarm EE needs to be configured with a user id and
 password for the connection. When using HTTP(S) this information should
@@ -266,7 +278,7 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 1.  Click "New Project".
 
 1.  Click the "Git Fusion Server" drop-down menu to select an available Git
-    Fusion Server that your project is mirrored to.
+    Fusion Server that your project should be mirrored to.
 
 1.  Click the 'Create a Helix GitSwarm EE project to mirror'
 
@@ -490,5 +502,5 @@ gitswarm['git-fusion']['my_entry']['auto_create']['repo_name_template'] = 'gitsw
 ### Problems?
 
 If you encounter problems with importing projects from Git Fusion, or with
-mirroring between GitSwarm EE and Git Fusion, please contact
-Perforce support <support@perforce.com> for assistance.
+mirroring between GitSwarm EE and Git Fusion, please contact Perforce
+support <support@perforce.com> for assistance.

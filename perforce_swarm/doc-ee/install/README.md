@@ -7,6 +7,13 @@ GitSwarm EE:
 
 1.  **Check if your server meets the [requirements](requirements.md).**
 
+1.  **Acquire a license.**
+
+    GitSwarm EE requires a valid subscription license. Certain features,
+    such as the ability to push to a repository, are not available without
+    a valid license. To request licenses, please contact your Perforce
+    sales representative or email <sales@perforce.com>.
+
 1.  **Adjust default firewall rules.**
 
     By default, the CentOS firewall rules block HTTP and SSH access.

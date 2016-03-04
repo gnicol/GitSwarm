@@ -4,8 +4,8 @@ module PerforceSwarm
   module Ci
     module CommitExtension
       def skip_ci?
-        return true if Gitlab.config.gitlab_ci['skip_ci']
-        super
+        # undoc per-repo CI override
+        super || project.repository.skip_ci?
       end
     end
   end

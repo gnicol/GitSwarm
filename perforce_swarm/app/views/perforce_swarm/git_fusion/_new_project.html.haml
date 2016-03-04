@@ -73,9 +73,9 @@
               .git-fusion-split-tree.clearfix
                 .git-fusion-tree-holder.git-fusion-tree-source.col-sm-7
                   .tree-title.clearfix
-                    .branch-label Branch Name:
-                    = text_field_tag 'branch_name', params[:branch_name], placeholder: "master",
-                      required: false, class: 'form-control new-branch-name js-quick-submit'
+                    .branch-label Branch:
+                    = text_field_tag 'branch_name', params[:branch_name], placeholder: "branch name",
+                      required: false, :'data-keep-disabled' => 'true', class: 'form-control new-branch-name js-quick-submit'
                     .filter-actions
                       .tooltip-wrapper{data: {'original-title' => 'You cannot combine regular and streams depot mappings in the same Git Fusion repository.', placement: 'top'}}
                         %span.btn.depot-type-filter{:'data-toggle' => 'dropdown', :'data-value' => 'depot-regular'}
@@ -91,16 +91,18 @@
                   .tree-content
                     .git-fusion-tree
                   .clearfix
-                    .current-mapping
-                      %strong
-                        Branch "
-                        %span.current-mapping-branch>
-                        ":
-                      %br
-                      %span.current-mapping-path> //...
-                    .tooltip-wrapper.pull-right.has_tooltip{title: 'You must select a depot path, and give a name to the new branch.', data: {toggle: 'tooltip'}}
-                      .btn.btn-primary.tree-save.disabled{:disabled => 'disabled'} Add
-                  %div
+                    .input-group.pull-right.current-mapping.tooltip-wrapper.has_tooltip{title: 'You must select a depot path, and give a name to the new branch.', data: {toggle: 'tooltip'}}
+                      %input.current-mapping-path.form-control.disabled{:disabled => 'disabled', :'data-keep-disabled' => 'true', :placeholder => 'select depot path for branch'}
+                      .input-group-btn
+                        .btn.btn-primary.tree-save.disabled{:disabled => 'disabled'}
+                          %span.action Add Branch
+                          %span.current-mapping-branch
+                  .saved-branches
                     %strong
-                      Saved Branches:
-                      %ul.content-list
+                      Selected Branches:
+                    .panel.panel-default
+                      .nothing-here-block
+                        = icon('warning', class: 'text-warning')
+                        No branches added. Add some using the tree.
+                        %br
+                      %ul.well-list.branch-list

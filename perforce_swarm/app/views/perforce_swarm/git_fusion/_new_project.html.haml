@@ -67,7 +67,7 @@
             Select specific files or folders from the Helix Versioning Engine (P4D)
             %br
             .git-fusion-file-selector-wrapper.hide
-              Map folders and files from the Perforce Depot into a branch
+              Map folders and files from the Helix Depot into a branch
               %br
               From this depot folder
               .git-fusion-split-tree.clearfix
@@ -90,6 +90,7 @@
 
                   .tree-content
                     .git-fusion-tree
+                    .tree-status
                   .clearfix
                     .input-group.pull-right.current-mapping.tooltip-wrapper.has_tooltip{title: 'You must select a depot path, and give a name to the new branch.', data: {toggle: 'tooltip'}}
                       %input.current-mapping-path.form-control.disabled{:disabled => 'disabled', :'data-keep-disabled' => 'true', :placeholder => 'select depot path for branch'}

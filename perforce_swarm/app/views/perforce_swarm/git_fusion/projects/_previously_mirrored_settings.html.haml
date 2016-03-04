@@ -14,8 +14,11 @@
   = "'#{@project.git_fusion_repo_name}'"
 %p
   - if can_reenable
-    The Git Fusion repo can be reached via the following Git URL:
+    Git Fusion URL:
     = git_fusion_url
+    %br
+    %em Note: This is the URL on which Git Fusion is hosting this repository. If you wish to clone the GitSwarm project, you should use the URL specified on the
+    = link_to('project details page.', project_path(@project))
   - else
     - if error
       = render partial: 'perforce_swarm/git_fusion/projects/mirroring_config_errors'

@@ -1,7 +1,7 @@
 # Helix Git Fusion permissions
 
 It is possible to enforce the permissions of Helix Git Fusion users within
-GitSwarm. This feature is available for Helix Git Fusion 2015.4, or
+GitSwarm EE. This feature is available for Helix Git Fusion 2015.4, or
 newer.
 
 > Note: This capability is not enabled by default, nor do we recommend that
@@ -27,9 +27,9 @@ p4 key git-fusion-permission-group-default push
     ```
 
 1.  To ensure that authentication is based solely on userid (ignoring
-    the user's email address, which could be different between GitSwarm and
-    Git Fusion), the `ignore-author-permissions` field must be set to `yes`
-    in the `p4gf_config` file (the global file, or the per-repo
+    the user's email address, which could be different between GitSwarm EE
+    and Git Fusion), the `ignore-author-permissions` field must be set to
+    `yes` in the `p4gf_config` file (the global file, or the per-repo
     file):
 
     ```

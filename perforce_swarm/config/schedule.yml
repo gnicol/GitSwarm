@@ -6,7 +6,7 @@
 # Once a minute we'll scan all the repos to:
 #  - clean up any hung git-fusion imports
 #  - fetch outdated repos to freshen them
-mirror_fetch__worker:
+mirror_fetch_worker:
   cron: "* * * * *"
   class: "PerforceSwarm::MirrorFetchWorker"
   queue: "default"

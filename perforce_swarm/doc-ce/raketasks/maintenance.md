@@ -6,7 +6,7 @@ This command gathers information about your GitSwarm installation and the
 System it runs on. These may be useful when asking for help or reporting
 issues.
 
-```
+```bash
 sudo gitswarm-rake gitswarm:env:info
 ```
 
@@ -55,7 +55,7 @@ installation guide and suggest fixes for issues found.
 
 You may also have a look at GitLab's [Trouble Shooting Guide](https://github.com/gitlabhq/gitlab-public-wiki/wiki/Trouble-Shooting-Guide).
 
-```
+```bash
 sudo gitswarm-rake gitswarm:check
 ```
 
@@ -133,7 +133,7 @@ Checking GitSwarm ... Finished
 
 In some case it is necessary to rebuild the `authorized_keys` file.
 
-```
+```bash
 sudo gitswarm-rake gitswarm:shell:setup
 ```
 
@@ -148,6 +148,6 @@ Do you want to continue (yes/no)? yes
 If for some reason the dashboard shows wrong information you might want to
 clear Redis' cache.
 
-```
+```bash
 sudo gitswarm-rake cache:clear
 ```

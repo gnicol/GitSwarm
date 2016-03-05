@@ -16,8 +16,8 @@ This file contains information about all performed requests. You can see
 URL and type of request, IP address and what exactly parts of code were
 involved to service this particular request. Also you can see all SQL
 request that have been performed and how much time it took. This task is
-more useful for GitSwarm contributors and developers. Use part of this log
-file when you are going to report bug.
+more useful for GitSwarm EE contributors and developers. Use part of this
+log file when you are going to report bug.
 
 ```
 Started GET "/gitlabhq/yaml_db/tree/master" for 168.111.56.1 at 2015-02-12 19:34:53 +0200

@@ -2,10 +2,10 @@
 
 GitSwarm EE has a great issue tracker but you can also use an external
 issue tracker such as JIRA, Bugzilla or Redmine. You can configure issue
-trackers per GitSwarm project. For instance, if you configure JIRA it
+trackers per GitSwarm EE project. For instance, if you configure JIRA it
 allows you to do the following:
 
-- the 'Issues' link on the GitSwarm project pages takes you to the
+- the 'Issues' link on the GitSwarm EE project pages takes you to the
   appropriate JIRA issue index;
 - clicking 'New issue' on the issues page creates a new JIRA issue;
 - To reference JIRA issue PROJECT-1234 in comments, use syntax

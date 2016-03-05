@@ -79,7 +79,7 @@ everything goes well the user is returned to GitSwarm EE and is signed in.
 ## Troubleshooting
 
 If you see a "500 error" in GitSwarm EE when you are redirected back from
-the SAML sign in page, this likely indicates that GitSwarm could not get
+the SAML sign in page, this likely indicates that GitSwarm EE could not get
 the email address for the SAML user.
 
 Make sure the IdP provides a claim containing the user's email address,

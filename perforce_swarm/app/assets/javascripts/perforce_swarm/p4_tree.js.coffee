@@ -189,6 +189,12 @@ class @P4Tree
     # mapping must have a path and branch name
     return false unless @getTreeLowestChecked().length > 0 && !!@getNewBranchName()
 
+    # ensure valid branch name
+    branchValidator = @branchNameValidator(@getNewBranchName())
+    if !branchValidator.valid
+      new Flash("Branch Name #{branchValidator.error}", 'alert').flash.prependTo('.git-fusion-tree-holder')
+      return false
+
     # If we are restricted to a particular depot type, we enforce that as well
     if @restrictedDepot
       for node in @getTreeLowestChecked()
@@ -198,7 +204,34 @@ class @P4Tree
         else
           return false if @getDepotForNode(node).type == 'depot-stream'
 
+    this.$('.flash-alert').remove()
     return true
+
+  branchNameValidator: (branchName) ->
+    error = null
+
+    format = (matches, joinString) ->
+      # warn about each unique match only once
+      results = []
+      for match in matches
+        unless match in results
+          match = switch
+            when /\s/.test match then 'spaces'
+            when /\/{2,}/g.test match then 'consecutive slashes'
+            else "'#{match}'"
+          results.push(match)
+      results.join(joinString)
+
+    # Branch name errors are taken from GitLab's new_branch_form.js.coffee
+    if matched = branchName.match(/^(\/|\.)/g)
+      error = "can't start with #{format(matched, ' or ')}"
+    else if matched = branchName.match(/(\/|\.|\.lock)$/g)
+      error = "can't end in #{format(matched, ' or ')}"
+    else if matched = branchName.match(/(\s|~|\^|:|\?|\*|\[|\\|\.\.|@\{|\/{2,}){1}/g)
+      error = "can't contain #{format(matched, ', ')}"
+    else if matched = branchName.match(/^@+$/g)
+      error = "can't be #{format(matched, ' or ')}"
+    return {valid: !error, error: error }
 
   getDepotForNode: (node) ->
     nodeId = if $.type(node) == 'string' then node else node.id

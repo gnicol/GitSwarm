@@ -40,17 +40,19 @@ module PerforceSwarm
 
         # check all the branch mappings
         branch_mappings.each do |name, path|
-          fail "Invalid name '#{name}' specified in branch mapping." unless VALID_NAME_REGEX.match(name)
+          unless VALID_NAME_REGEX.match(name) && Gitlab::GitRefValidator.validate(name)
+            fail "Invalid name '#{name}' specified in branch mapping."
+          end
           validate_depot_path(path)
         end
       end
 
       def initialize(config_entry_id, repo_name = nil, branch_mappings = nil, depot_branch_creation = false)
-        # config validation happens on assignment
-        self.config            = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
-        @repo_name             = repo_name
-        @branch_mappings       = branch_mappings
-        @depot_branch_creation = depot_branch_creation
+        # validation happens on assignment
+        self.config                = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
+        @repo_name                 = repo_name
+        self.branch_mappings       = branch_mappings if branch_mappings
+        self.depot_branch_creation = depot_branch_creation if depot_branch_creation
       end
 
       # returns true if there are any files (even deleted) at the specified depot path, otherwise false

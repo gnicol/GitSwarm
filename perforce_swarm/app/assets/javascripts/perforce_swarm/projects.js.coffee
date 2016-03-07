@@ -64,10 +64,17 @@ class @GitFusionProject
       p4d_file_selected    = this.$(@p4d_file_selector).is(':checked')
 
     # disable the external import section and buttons if we're doing mirroring
-    @disable('.external-import, .external-import a.btn, ' + @import_url_selector, fusion_repo_selected || auto_create_selected)
-
-    # if the user is doing an external import, disable mirroring controls
-    @disable('.git-fusion-import, .git-fusion-import select, .git-fusion-import input', has_import_url)
+    project_import_selectors = '.project-import, .project-import a.btn, ' + @import_url_selector
+    fusion_import_selectors = '.git-fusion-import, .git-fusion-import select, .git-fusion-import input'
+    if fusion_repo_selected || auto_create_selected || p4d_file_selected
+      @disable(project_import_selectors, true)
+      @disable(fusion_import_selectors, false)
+    else if has_import_url
+      @disable(project_import_selectors, false)
+      @disable(fusion_import_selectors, true)
+    else
+      @disable(project_import_selectors, false)
+      @disable(fusion_import_selectors, false)
 
     if p4d_file_selected
       this.$('.git-fusion-file-selector-wrapper').show()

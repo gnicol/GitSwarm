@@ -2,12 +2,12 @@
 
 ## User documentation
 
-- [API](api/README.md) Automate GitSwarm via a simple and powerful API.
-- [GitSwarm as OAuth2 authentication service
+- [API](api/README.md) Automate GitSwarm EE via a simple and powerful API.
+- [GitSwarm EE as OAuth2 authentication service
   provider](integration/oauth_provider.md). It allows you to login to other
-  applications from GitSwarm.
-- [GitSwarm Basics](gitlab-basics/README.md) Find step-by-step how to start
-  working on your commandline and on GitSwarm.
+  applications from GitSwarm EE.
+- [GitSwarm EE Basics](gitlab-basics/README.md) Find step-by-step how to
+  start working on your commandline and on GitSwarm.
 - [Importing into GitSwarm](workflow/importing/README.md) Prime a GitSwarm
   project from BitBucket, Git Fusion, GitHub, GitLab.com, or Subversion.
 - [Markdown](markdown/markdown.md) GitSwarm's advanced formatting system.
@@ -22,11 +22,11 @@
   public and internal access to projects.
 - [SSH](ssh/README.md) Setup your ssh keys and deploy keys for secure
   access to your projects.
-- [Web hooks](web_hooks/web_hooks.md) Let GitSwarm notify you when new code
-  has been pushed to your project.
-- [Workflow](workflow/README.md) Using GitSwarm functionality and importing
-  projects from GitHub and SVN.
-- [GitSwarm Pages](pages/README.md) Using GitSwarm Pages.
+- [Web hooks](web_hooks/web_hooks.md) Let GitSwarm EE notify you when new
+  code has been pushed to your project.
+- [Workflow](workflow/README.md) Using GitSwarm EE functionality and
+  importing projects from GitHub and SVN.
+- [GitLab Pages](pages/README.md) Using GitLab Pages.
 - [Custom templates for issues and merge
   requests](customization/issue_and_merge_request_template.md) Pre-fill the
   description of issues and merge requests to your liking.
@@ -65,8 +65,8 @@
 - [Test and deploy Python applications to
   Heroku](ci/examples/test-and-deploy-python-application-to-heroku.md)
 - [Test Clojure applications](ci/examples/test-clojure-application.md)
-- Help your favorite programming language and GitSwarm by sending a merge
-  request with a guide for that language.
+- Help your favorite programming language and GitSwarm EE by sending a
+  merge request with a guide for that language.
 
 ## Administrator documentation
 
@@ -76,13 +76,13 @@
   changed in projects and groups.
 - [Changing the appearance of the login
   page](customization/branded_login_page.md) Make the login page branded
-  for your GitSwarm instance.
+  for your GitSwarm EE instance.
 - [Custom git hooks](hooks/custom_hooks.md) Custom git hooks (on the
   filesystem) for when web hooks aren't enough.
-- [Email](tools/email.md) Email GitSwarm users from GitSwarm.
+- [Email](tools/email.md) Email GitSwarm EE users from GitSwarm EE.
 - [Git Hooks](git_hooks/git_hooks.md) Advanced push rules for your project.
 - [Help message](customization/help_message.md) Set information about
-  administrators of your GitSwarm instance.
+  administrators of your GitSwarm EE instance.
 - [Install](install/README.md) Requirements, directory structures and
   installation steps.
 - [Installing your license](license/README.md)
@@ -94,11 +94,11 @@
 - [Log system](logs/logs.md) Log system
 - [Environment Variables](administration/environment_variables.md) to
   configure GitSwarm.
-- [Operations](operations/README.md) Keeping GitSwarm up and running
+- [Operations](operations/README.md) Keeping GitSwarm EE up and running.
 - [Raketasks](raketasks/README.md) Backups, maintenance, automatic web hook
   setup and the importing of projects.
 - [Security](security/README.md) Learn what you can do to further secure
-  your GitSwarm instance.
+  your GitSwarm EE instance.
 - [System hooks](system_hooks/system_hooks.md) Notifications when users,
   projects and keys are changed.
 - [Update](update/README.md) Update guides to upgrade your installation.
@@ -108,13 +108,14 @@
   issues and merge requests by replying to notification emails.
 - [Migrate GitLab CI to CE/EE](migrate_ci_to_ce/README.md) Follow this
   guide to migrate your existing GitLab CI data to GitSwarm EE.
-- [Downgrade back to GitSwarm](downgrade_ee_to_ce/README.md) Follow this guide if
-  you need to downgrade from GitSwarm EE to GitSwarm.
+- [Downgrade back to GitSwarm](downgrade_ee_to_ce/README.md) Follow this
+  guide if you need to downgrade from GitSwarm EE to GitSwarm.
 - [Git LFS configuration](workflow/lfs/lfs_administration.md)
-- [GitSwarm Pages configuration](pages/administration.md)
+- [GitLab Pages configuration](pages/administration.md)
 
 ## Contributor documentation
 
 - [Documentation styleguide](development/doc_styleguide.md) Use this
   styleguide if you are contributing to documentation.
-- [Development](development/contribution.md) Details on contributing back changes.
+- [Development](development/contribution.md) Details on contributing back
+  changes.

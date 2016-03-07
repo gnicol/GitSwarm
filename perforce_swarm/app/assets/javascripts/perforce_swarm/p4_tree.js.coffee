@@ -1,6 +1,7 @@
 class @P4Tree
   restrictedDepot: null
   existing_mappings: null
+  updating_branch: null
 
   constructor: (element, fusion_server, existing_mappings) ->
     this.$el           = $(element)
@@ -80,6 +81,8 @@ class @P4Tree
       mapping = row.data('mapping')
       row.remove()
       @runTreeFilters()
+      @updating_branch = mapping.branchName
+      this.$('.tree-save .action').text('Update Branch')
       @loadEditMapping(mapping.branchName, mapping.nodePath)
 
   # Local jQuery finder
@@ -216,44 +219,59 @@ class @P4Tree
       this.$('.tree-save').removeClass('field-disabled').disable()
       @enableTooltip('.tree-save')
 
+    # If we are updating a branch, but the branch name has changed, switch up the wording
+    if @updating_branch && @updating_branch != @getNewBranchName()
+      @updating_branch = null
+      this.$('.tree-save .action').text('Add Branch')
+
     this.$('.current-mapping-branch').text(@getNewBranchName() || '')
-    this.$('.current-mapping-path').text(@getTreeLowestChecked()[0] || '...')
+    this.$('.current-mapping-path').val(@getTreeLowestChecked()[0] || '')
+    # Ensure we can see the right-hand side of the mapping
+    this.$('.current-mapping-path')[0].scrollLeft = this.$('.current-mapping-path')[0].scrollWidth
 
   # enforce tree restrictions based on the mappings you already have
   runTreeFilters: ->
     filterButton      = this.$('.filter-actions a, .filter-actions .depot-type-filter')
-    mappingFormInputs = this.$('.content-list input')
+    mappingFormInputs = this.$('.branch-list input')
 
     if mappingFormInputs.length
       depot            = @getDepotForNode(mappingFormInputs[0].value)
       options          = {stream: depot.id} if depot.type == 'depot-stream'
       @restrictedDepot = { type: depot.type, options: options }
       filterButton.removeClass('field-disabled').disable()
+      this.$('.saved-branches .nothing-here-block').hide()
       @enableTooltip(filterButton)
       @filterDepots(options?.stream)
     else
       filterButton.enable()
       @disableTooltip(filterButton)
       @restrictedDepot = null
+      this.$('.saved-branches .nothing-here-block').show()
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
   # set the current tree selected mapping as field in the form to submit during project creation
   addSavedMapping: (branchName, nodePath) ->
     # Remove any existing mapping for the same branch name
-    this.$('.content-list').find("[name='git_fusion_branch_mappings[#{branchName}]']").closest('li').remove()
+    this.$('.branch-list').find("[name='git_fusion_branch_mappings[#{branchName}]']").closest('li').remove()
 
     newBranch = """
     <li>
       <input type="hidden" style="display:none;" name="git_fusion_branch_mappings[#{branchName}]" value="#{nodePath}" />
-      <div>#{branchName}<div style="float:right;">
+      <div class="saved-branch-name">#{branchName}<div style="float:right;">
         <a class="edit-branch" href="#">edit</a> | <a class="remove-branch" href="#">delete</a>
       </div></div>
-      <div>#{nodePath}</div>
+      <code class="saved-branch-path">#{nodePath}</code>
     </li>
     """
     newBranch = $(newBranch)
     newBranch.data('mapping', {branchName: branchName, nodePath: nodePath})
-    this.$('.content-list').append(newBranch)
+    this.$('.branch-list').append(newBranch)
+
+    # Clear out any branch update messaging
+    if @updating_branch
+      @updating_branch = null
+      this.$('.tree-save .action').text('Add Branch')
+
     @clearBranchTree()
     @runTreeFilters()
 

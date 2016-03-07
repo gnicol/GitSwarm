@@ -15,35 +15,37 @@ You can only restore a backup to exactly the same version of GitSwarm EE
 it was created on, for example 2015.4. The best way to migrate your
 repositories from one server to another is through backup/restore.
 
-**Note:**
-You need to keep a separate copy of the `/etc/gitswarm` directory, as this
-contains the operational configuration for GitSwarm EE, and encryption keys
-for the database (for users who have two-factor authentication enabled).
-See the [steps for configuration backup](#backup-the-configuration).
+> Note: You need to keep a separate copy of the `/etc/gitswarm` directory,
+        as this contains the operational configuration for GitSwarm EE, and
+        encryption keys for the database (for users who have two-factor
+        authentication enabled). See the [steps for configuration
+        backup](#backup-the-configuration).
 
-**Note:**
-If you have enabled mirroring for any of your projects, you will need to backup
-any associated Helix server instances separately, *after* you have performed the
-GitSwarm EE backup. See the [Backup and
-Recovery](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.backup.html)
-chapter in the [_Helix Versioning Engine Administrator Guide:
-Fundamentals_](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
+> Note: If you have enabled mirroring for any of your projects, you will
+        need to backup any associated Helix server instances separately,
+        *after* you have performed the GitSwarm EE backup. See the [Backup
+        and
+        Recovery](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.backup.html)
+        chapter in the [_Helix Versioning Engine Administrator Guide:
+        Fundamentals_](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
 
-**Note:**
-If you are using the `:auto_provisioned` Helix server instance (which we do not
-recommend for production systems), the following information may be helpful:
+> Note: If you are using the `:auto_provisioned` Helix server instance
+        (which we do not recommend for production systems), the following
+        information may be helpful:
 
-* The auto provisioned Helix Server's 'P4ROOT' is `/var/opt/gitswarm/perforce/data`
-* The 'root' user can log in to the auto_provisioned Helix server with the
-  GitSwarm EE 'root' user's password
-* The auto provisioned Helix Server's 'p4d' binary is located under '/opt/perforce/sbin'
+*   The auto provisioned Helix Server's 'P4ROOT' is
+    `/var/opt/gitswarm/perforce/data`
+*   The 'root' user can log in to the auto_provisioned Helix server with
+    the GitSwarm EE 'root' user's password
+*   The auto provisioned Helix Server's 'p4d' binary is located under
+    '/opt/perforce/sbin'
 
 If you are interested in GitLab CI backup please follow to the [CI backup
 documentation](https://gitlab.com/gitlab-org/gitlab-ci/blob/master/doc/raketasks/backup_restore.md)\*
 
-**Important:**
-We recommend that you store your backup files in a safe location, and at
-a secure offsite location as a disaster prevention measure.
+> Important: We recommend that you store your backup files in a safe
+             location, and at a secure offsite location as a disaster
+             prevention measure.
 
 ## Creating a backup
 
@@ -136,10 +138,10 @@ keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-an
 to avoid man-in-the-middle attack warnings if you have to perform a full
 machine restore.
 
-**Important:**
-**Do not store your GitSwarm EE application backups in the same place as
-your configuration backup.** The configuration backup can contain database
-encryption keys to protect sensitive data in the SQL database:
+> Important: **Do not store your GitSwarm EE application backups in the
+             same place as your configuration backup.** The configuration
+             backup can contain database encryption keys to protect
+             sensitive data in the SQL database:
 
 * GitSwarm EE two-factor authentication (2FA) user secrets ('QR codes')
 * GitLab CI 'secure variables'
@@ -174,23 +176,20 @@ backups using all your disk space. To do this add the following lines to
 gitlab_rails['backup_keep_time'] = 604800
 ```
 
-**Note:**
-This cron job does not [backup your GitSwarm EE
-configuration](#backup-the-configuration) or [SSH host
-keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
+> Note: This cron job does not [backup your GitSwarm EE
+        configuration](#backup-the-configuration) or [SSH host
+        keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
 
 ## Restore a previously created backup
 
-**Important:**
-You can only restore a backup to GitSwarm EE if the backup was created on the
-same version of GitSwarm EE, or the corresponding version of GitLab EE.
-For example, a backup taken on GitLab 8.0.5 can be restored to a 2015.4 GitSwarm
-EE install. Here is a list of the GitSwarm EE releases and their corresponding
-GitLab EE releases:
-
-| **GitLab EE**   | **GitSwarm EE** |
-| --------------- | -------------   |
-| 8.0.5           | 2015.4          |
+> Important: You can only restore a backup to GitSwarm EE if the backup was
+             created on the same version of GitSwarm EE, or the
+             corresponding version of GitLab EE.  For example, a backup
+             taken on GitLab 8.0.5 can be restored to a 2015.4 GitSwarm EE
+             install. Here is a list of the GitSwarm EE releases and their
+             corresponding GitLab EE releases:
+  * GitLab EE, 8.0.5 = GitSwarm EE 2015.4
+  * GitLab EE, 8.4.5 = GitSwarm EE 2016.1
 
 ### Prerequisites
 
@@ -201,13 +200,13 @@ it needs to import data into ('gitlabhq_production'). All existing data
 will be either erased (SQL) or moved to a separate directory (repositories,
 uploads).
 
-If you are also restoring Helix Versioning Engine (P4D) backups, it is better
-to restore Helix Versioning Engine before restoring GitSwarm EE.
+If you are also restoring Helix Versioning Engine (P4D) backups, it is
+better to restore Helix Versioning Engine before restoring GitSwarm EE.
 
 If some or all of your GitLab users are using two-factor authentication
 (2FA) then you must also make sure to restore the backup of the
-configuration from `/etc/gitswarm`. Note that you need to run
-`gitswarm-ctl reconfigure` after changing anything in `/etc/gitswarm`.
+configuration from `/etc/gitswarm`. Note that you need to run `gitswarm-ctl
+reconfigure` after changing anything in `/etc/gitswarm`.
 
 ### Restoration procedure
 
@@ -219,8 +218,8 @@ gitswarm-ctl reconfigure` at least once.
     The backup `.tar` file should appear in `/var/opt/gitswarm/backups` (or
     wherever `gitlab_rails['backup_path']` points to).
 
-    ```
-sudo cp 1393513186_gitswarm_backup.tar /var/opt/gitswarm/backups/
+    ```bash
+    sudo cp 1393513186_gitswarm_backup.tar /var/opt/gitswarm/backups/
     ```
 
 1.  **Restore the backup by running the restore command.**
@@ -229,28 +228,28 @@ sudo cp 1393513186_gitswarm_backup.tar /var/opt/gitswarm/backups/
 
     1.  **Stop GitSwarm EE processes:**
 
-        ```
-sudo gitswarm-ctl stop unicorn
-sudo gitswarm-ctl stop sidekiq
+        ```bash
+        sudo gitswarm-ctl stop unicorn
+        sudo gitswarm-ctl stop sidekiq
         ```
 
     1.  **Run the restoration task:**
 
-        ```
-# This command overwrites the contents of your GitSwarm EE database!
-sudo gitswarm-rake gitswarm:backup:restore BACKUP=1393513186
+        ```bash
+        # This command overwrites the contents of your GitSwarm EE database!
+        sudo gitswarm-rake gitswarm:backup:restore BACKUP=1393513186
         ```
 
     1.  **Restart GitSwarm EE processes:**
 
-        ```
-sudo gitswarm-ctl start
+        ```bash
+        sudo gitswarm-ctl start
         ```
 
     1.  **Check GitSwarm EE:**
 
-        ```
-sudo gitswarm-rake gitswarm:check SANITIZE=true
+        ```bash
+        sudo gitswarm-rake gitswarm:check SANITIZE=true
         ```
 
 If there is a GitSwarm EE version mismatch between your backup tar file and
@@ -306,12 +305,12 @@ user but it will also try to alter the objects it does not have access to.
 Those objects have no influence on the database backup/restore but they
 give this annoying warning.
 
-For more information see similar questions on postgresql issue
-tracker [here](http://www.postgresql.org/message-id/201110220712.30886.adrian.klaver@gmail.com)
+For more information see similar questions on postgresql issue tracker
+[here](http://www.postgresql.org/message-id/201110220712.30886.adrian.klaver@gmail.com)
 and
 [here](http://www.postgresql.org/message-id/2039.1177339749@sss.pgh.pa.us)
-as well as [stack
-overflow](http://stackoverflow.com/questions/4368789/error-must-be-owner-of-language-plpgsql).
+as well as [Stack
+Overflow](http://stackoverflow.com/questions/4368789/error-must-be-owner-of-language-plpgsql).
 
 ### Issue storage
 

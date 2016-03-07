@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160120172143) do
+ActiveRecord::Schema.define(version: 20160202164642) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -448,8 +448,8 @@ ActiveRecord::Schema.define(version: 20160120172143) do
   add_index "labels", ["project_id"], name: "index_labels_on_project_id", using: :btree
 
   create_table "lfs_objects", force: :cascade do |t|
-    t.string   "oid",        null: false
-    t.integer  "size",       null: false
+    t.string   "oid",                  null: false
+    t.integer  "size",       limit: 8, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "file"
@@ -682,6 +682,7 @@ ActiveRecord::Schema.define(version: 20160120172143) do
     t.integer  "build_timeout",          default: 3600,     null: false
     t.string   "git_fusion_repo"
     t.boolean  "git_fusion_mirrored",    default: false,    null: false
+    t.boolean  "public_builds",          default: true,     null: false
   end
 
   add_index "projects", ["builds_enabled", "shared_runners_enabled"], name: "index_projects_on_builds_enabled_and_shared_runners_enabled", using: :btree

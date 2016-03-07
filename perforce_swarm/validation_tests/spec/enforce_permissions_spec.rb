@@ -86,13 +86,14 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     end
 
     @p4_admin.connect
-    # save the initial protects to reset to after
-    @initial_protects = @p4_admin.protects
 
     private_dir = "/master/#{PRIVATE}"
     public_dir = "/master/#{PUBLIC}"
 
     if @setup
+      # save the initial protects to reset to after
+      @initial_protects = @p4_admin.protects
+
       LOG.log('Creating repo structure in p4')
       @projects.each do |dir|
         file = create_file("#{@p4_admin_dir}/#{@run_id}/#{dir.name}#{private_dir}", 'file.txt')
@@ -168,7 +169,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   # after(:all) does the teardown just once after the entire group
   after(:all) do
-    LOG.log('Removing tmp dirs')
+    LOG.log('Removing enforce_permissions_spec tmp dirs')
     FileUtils.rm_r(@p4_admin_dir)
 
     LOG.log('Skipping teardown due to setting') unless @teardown
@@ -178,6 +179,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
         @users.each do |usr|
           @p4_admin.delete_user(usr.name) unless usr == @user_gs_master_p4_notexist
         end
+        @p4_admin.protects =(@initial_protects) if @initial_protects
         @p4_admin.disconnect
 
         @git_fusion_helper.apply_gf_global_config('read-permission-check' => '')
@@ -317,51 +319,51 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
   describe 'A user with full read permissions in perforce' do
     it 'should be allowed to CLONE all GS projects mirrored in perforce' do
-      expect(can_clone(@user_root, @read_all_write_all)).to be true
-      expect(can_clone(@user_root, @read_all_write_partial)).to be true
-      expect(can_clone(@user_root, @read_all_write_none)).to be true
-      expect(can_clone(@user_root, @read_partial)).to be true
-      expect(can_clone(@user_root, @read_none)).to be true
+      expect(can_clone?(@user_root, @read_all_write_all)).to be true
+      expect(can_clone?(@user_root, @read_all_write_partial)).to be true
+      expect(can_clone?(@user_root, @read_all_write_none)).to be true
+      expect(can_clone?(@user_root, @read_partial)).to be true
+      expect(can_clone?(@user_root, @read_none)).to be true
     end
   end
 
   describe 'A user with limited read permissions in perforce' do
     it 'should be allowed to CLONE only GS projects mirrored in perforce where they have read permission in perforce' do
-      expect(can_clone(@user_gs_master_p4_access, @read_all_write_all)).to be true
-      expect(can_clone(@user_gs_master_p4_access, @read_all_write_partial)).to be true
-      expect(can_clone(@user_gs_master_p4_access, @read_all_write_none)).to be true
-      expect(can_clone(@user_gs_master_p4_access, @read_partial)).to be false
-      expect(can_clone(@user_gs_master_p4_access, @read_none)).to be false
+      expect(can_clone?(@user_gs_master_p4_access, @read_all_write_all)).to be true
+      expect(can_clone?(@user_gs_master_p4_access, @read_all_write_partial)).to be true
+      expect(can_clone?(@user_gs_master_p4_access, @read_all_write_none)).to be true
+      expect(can_clone?(@user_gs_master_p4_access, @read_partial)).to be false
+      expect(can_clone?(@user_gs_master_p4_access, @read_none)).to be false
     end
   end
 
   describe 'A user with no read permissions in perforce' do
     it 'should not be allowed to CLONE any GS projects mirrored in perforce' do
-      expect(can_clone(@user_gs_master_p4_noaccess, @read_all_write_all)).to be false
-      expect(can_clone(@user_gs_master_p4_noaccess, @read_all_write_partial)).to be false
-      expect(can_clone(@user_gs_master_p4_noaccess, @read_all_write_none)).to be false
-      expect(can_clone(@user_gs_master_p4_noaccess, @read_partial)).to be false
-      expect(can_clone(@user_gs_master_p4_noaccess, @read_none)).to be false
+      expect(can_clone?(@user_gs_master_p4_noaccess, @read_all_write_all)).to be false
+      expect(can_clone?(@user_gs_master_p4_noaccess, @read_all_write_partial)).to be false
+      expect(can_clone?(@user_gs_master_p4_noaccess, @read_all_write_none)).to be false
+      expect(can_clone?(@user_gs_master_p4_noaccess, @read_partial)).to be false
+      expect(can_clone?(@user_gs_master_p4_noaccess, @read_none)).to be false
     end
   end
 
   describe 'A user not in perforce' do
     it 'should not be allowed to CLONE any GS projects mirrored in perforce' do
-      expect(can_clone(@user_gs_master_p4_notexist, @read_all_write_all)).to be false
-      expect(can_clone(@user_gs_master_p4_notexist, @read_all_write_partial)).to be false
-      expect(can_clone(@user_gs_master_p4_notexist, @read_all_write_none)).to be false
-      expect(can_clone(@user_gs_master_p4_notexist, @read_partial)).to be false
-      expect(can_clone(@user_gs_master_p4_notexist, @read_none)).to be false
+      expect(can_clone?(@user_gs_master_p4_notexist, @read_all_write_all)).to be false
+      expect(can_clone?(@user_gs_master_p4_notexist, @read_all_write_partial)).to be false
+      expect(can_clone?(@user_gs_master_p4_notexist, @read_all_write_none)).to be false
+      expect(can_clone?(@user_gs_master_p4_notexist, @read_partial)).to be false
+      expect(can_clone?(@user_gs_master_p4_notexist, @read_none)).to be false
     end
   end
 
   describe 'A user with no access to the GS project' do
     it 'should not be allowed to CLONE any GS projects even if they have read access in perforce' do
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_all_write_all)).to be false
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_all_write_partial)).to be false
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_all_write_none)).to be false
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_partial)).to be false
-      expect(can_clone(@user_gs_noaccess_p4_access, @read_none)).to be false
+      expect(can_clone?(@user_gs_noaccess_p4_access, @read_all_write_all)).to be false
+      expect(can_clone?(@user_gs_noaccess_p4_access, @read_all_write_partial)).to be false
+      expect(can_clone?(@user_gs_noaccess_p4_access, @read_all_write_none)).to be false
+      expect(can_clone?(@user_gs_noaccess_p4_access, @read_partial)).to be false
+      expect(can_clone?(@user_gs_noaccess_p4_access, @read_none)).to be false
     end
   end
 
@@ -373,8 +375,8 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     it 'should be allowed to PUSH to anywhere in a GS project mirrored in perforce' do
       user = @user_root
       @projects.each do |project|
-        expect(can_push(user, project, PUBLIC)).to be true
-        expect(can_push(user, project, PRIVATE)).to be true
+        expect(can_push?(user, project, PUBLIC)).to be true
+        expect(can_push?(user, project, PRIVATE)).to be true
       end
     end
   end
@@ -382,12 +384,12 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
   describe 'A user with partial write permissions in perforce' do
     it 'should be allowed to PUSH only to areas where they have write access in perforce' do
       user = @user_gs_master_p4_access
-      expect(can_push(user, @read_all_write_all, PRIVATE)).to be true
-      expect(can_push(user, @read_all_write_all, PUBLIC)).to be true
-      expect(can_push(user, @read_all_write_partial, PRIVATE)).to be false
-      expect(can_push(user, @read_all_write_partial, PUBLIC)).to be true
-      expect(can_push(user, @read_all_write_none, PRIVATE)).to be false
-      expect(can_push(user, @read_all_write_none, PUBLIC)).to be false
+      expect(can_push?(user, @read_all_write_all, PRIVATE)).to be true
+      expect(can_push?(user, @read_all_write_all, PUBLIC)).to be true
+      expect(can_push?(user, @read_all_write_partial, PRIVATE)).to be false
+      expect(can_push?(user, @read_all_write_partial, PUBLIC)).to be true
+      expect(can_push?(user, @read_all_write_none, PRIVATE)).to be false
+      expect(can_push?(user, @read_all_write_none, PUBLIC)).to be false
     end
   end
 
@@ -473,6 +475,92 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     end
   end
 
+  describe 'A user with Developer access to a project' do
+    it 'cannot access the Helix Mirroring configuration for the project' do
+      user = @user_gs_dev_p4_access
+      expect(can_configure_mirroring?(user, @read_all_write_all)).to be false
+      expect(can_configure_mirroring?(user, @read_all_write_partial)).to be false
+      expect(can_configure_mirroring?(user, @read_all_write_none)).to be false
+    end
+  end
+
+  describe 'A user with Master access to a project' do
+    it 'can access the Helix Mirroring configuration for the project' do
+      user = @user_gs_master_p4_access
+      expect(can_configure_mirroring?(user, @read_all_write_all)).to be true
+      expect(can_configure_mirroring?(user, @read_all_write_partial)).to be true
+      expect(can_configure_mirroring?(user, @read_all_write_none)).to be true
+    end
+  end
+
+  describe 'A user with root access to a project' do
+    it 'can access the Helix Mirroring configuration for the project' do
+      user = @user_root
+      expect(can_configure_mirroring?(user, @read_all_write_all)).to be true
+      expect(can_configure_mirroring?(user, @read_all_write_partial)).to be true
+      expect(can_configure_mirroring?(user, @read_all_write_none)).to be true
+      expect(can_configure_mirroring?(user, @read_partial)).to be true
+      expect(can_configure_mirroring?(user, @read_none)).to be true
+    end
+  end
+
+  # If the GF has EnforcePermissions, ensure that P4 permissions on project do not apply if mirroring is disabled,
+  # They get re-applied once mirroring is enabled.
+  # The application/removal of P4 permissions should be immediate, not requiring re-logging in or special manual
+  # cache clearance/refreshing
+  describe 'A user gitswarm access, but no perforce access to a project' do
+    it 'immediately has access restrictions applied/removed when mirroring is disabled/enabled' do
+      uid = unique_string
+      project = Project.new("#{uid}-enable-disable", @groupname)
+
+      # additional browser to let us interact with GitSwarm as 2 different users at once
+      restricted_user_browser = Browser.create_new_unmanaged_webdriver
+      restricted_user = @user_gs_master_p4_notexist
+
+      begin
+        LOG.debug('Create GitSwarm project for enforce protections disable/enable test')
+        unrestricted_create_proj_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
+          .login(CONFIG.get(CONFIG::GS_USER), CONFIG.get(CONFIG::GS_PASSWORD)).goto_create_project_page
+        unrestricted_create_proj_page.project_name(project.name)
+        unrestricted_create_proj_page.namespace(project.namespace)
+        unrestricted_create_proj_page.select_server(CONFIG.get(CONFIG::SECURE_GF))
+        unrestricted_create_proj_page.select_repo(@read_none.name)
+        unrestricted_create_proj_page.select_private
+        unrestricted_project_page = unrestricted_create_proj_page.create_project_and_wait_for_clone
+        expect(unrestricted_project_page.mirrored_in_helix?).to be true
+
+        LOG.debug('check a restricted user cannot see the project')
+        restricted_projects_page = LoginPage.new(restricted_user_browser, CONFIG.get(CONFIG::GS_URL))
+          .login(restricted_user.name, restricted_user.password).goto_projects_page
+        expect(restricted_projects_page.projects).to_not include project.name
+
+        LOG.debug('now disable mirroring')
+        unrestricted_config_mirroring = unrestricted_project_page.configure_mirroring
+        expect(unrestricted_config_mirroring.can_disable?).to be true
+        unrestricted_project_page = unrestricted_config_mirroring.disable_mirroring
+        expect(unrestricted_project_page.mirrored_in_helix?).to be false
+
+        LOG.debug('now reload the restricted user\'s page and check they can now see the project')
+        restricted_projects_page.reload
+        expect(restricted_projects_page.projects).to include project.name
+
+        LOG.debug('now reenable mirroring')
+        unrestricted_config_mirroring = unrestricted_project_page.configure_mirroring
+        expect(unrestricted_config_mirroring.can_reenable?).to be true
+        unrestricted_project_page = unrestricted_config_mirroring.reenable_mirroring
+        expect(unrestricted_project_page.mirrored_in_helix?).to be true
+
+        LOG.debug('now reload the restricted user\'s page and check they cannot see the project')
+        restricted_projects_page.reload
+        expect(restricted_projects_page.projects).to_not include project.name
+
+      ensure
+        @gs_api.delete_project(project.name)
+        restricted_user_browser.quit
+      end
+    end
+  end
+
   private
 
   def create_merge_request(user, project, branch, title)
@@ -509,7 +597,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     projects
   end
 
-  def can_clone(user, project)
+  def can_clone?(user, project)
     success = false
     Dir.mktmpdir do |dir|
       git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)
@@ -521,7 +609,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
   end
 
   # path should be either public or private
-  def can_push(user, project, path)
+  def can_push?(user, project, path)
     success = false
     Dir.mktmpdir(nil, tmp_client_dir) do |dir|
       git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)

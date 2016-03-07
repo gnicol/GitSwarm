@@ -12,6 +12,16 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
     configify('enabled' => true, 'local' => entry)
   end
 
+  def auto_create_config
+    config = default_config
+    config['local']['perforce']    = { 'port' => 'localhost:1666' }
+    config['local']['auto_create'] = {
+      'path_template' => '//prefix/{namespace}/{project-path}',
+      'repo_name_template' => 'prefix-{namespace}-{project-path}'
+    }
+    config
+  end
+
   def default_entry
     { id:      'local',
       url: 'http://user@foo',
@@ -74,7 +84,7 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
   end
 
   step 'I choose to import an existing repo' do
-    page.find('#git_fusion_auto_create_false').click
+    page.find('#git_fusion_repo_create_type_import-repo').click
   end
 
   step 'I should see a populated Git Fusion repo dropdown' do
@@ -83,5 +93,30 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
 
   step 'I should not see a Git Fusion repo dropdown' do
     page.should_not have_selector 'select#git_fusion_repo_name'
+  end
+
+  step 'P4D contains regular depots' do
+    mock_auto_create
+    allow_any_instance_of(PerforceSwarm::P4TreeController).to receive(:get_dirs).and_return([
+      { id: '//depot1', text: 'depot1', type: 'depot-regular', data: {}, children: true },
+      { id: '//depot2', text: 'depot2', type: 'depot-regular', data: {}, children: true }
+    ])
+  end
+
+  step 'I choose to populate the repo from P4D paths' do
+    page.find('#git_fusion_repo_create_type_file-selector').click
+    wait_for_ajax
+  end
+
+  step 'I should see regular depots in the tree' do
+    page.should have_selector('.git-fusion-tree li[id="//depot1"]')
+    page.should have_selector('.git-fusion-tree li[id="//depot2"]')
+  end
+
+  def mock_auto_create
+    allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(auto_create_config)
+    allow_any_instance_of(PerforceSwarm::P4::Connection).to receive(:login).and_return(true)
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list).and_return([])
+    allow(PerforceSwarm::P4::Spec::Depot).to receive(:exists?).and_return(true)
   end
 end

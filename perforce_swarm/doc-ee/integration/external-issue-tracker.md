@@ -2,10 +2,10 @@
 
 GitSwarm EE has a great issue tracker but you can also use an external
 issue tracker such as JIRA, Bugzilla or Redmine. You can configure issue
-trackers per GitSwarm project. For instance, if you configure JIRA it
+trackers per GitSwarm EE project. For instance, if you configure JIRA it
 allows you to do the following:
 
-- the 'Issues' link on the GitSwarm project pages takes you to the
+- the 'Issues' link on the GitSwarm EE project pages takes you to the
   appropriate JIRA issue index;
 - clicking 'New issue' on the issues page creates a new JIRA issue;
 - To reference JIRA issue PROJECT-1234 in comments, use syntax
@@ -50,12 +50,12 @@ the service template you want to create:
 
 ![redmine service template](redmine_service_template.png)
 
-After the template is created, the template details will be pre-filled on
+After the template is created, the template details are pre-filled on
 the project service page.
 
-NOTE: For each project, you will still need to configure the issue tracking
-URLs by replacing `:issues_tracker_id` in the above screenshot with the ID
-used by your external issue tracker.
+NOTE: For each project, you still need to configure the issue tracking URLs
+by replacing `:issues_tracker_id` in the above screenshot with the ID used
+by your external issue tracker.
 
 Support to [add your commits to the JIRA ticket automatically](jira.md) is
 available.

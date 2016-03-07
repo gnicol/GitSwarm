@@ -3,9 +3,10 @@ class @GitFusionProject
   import_url_selector:        'input#project_import_url'
   repo_name_selector:         'select#git_fusion_repo_name'
   original_settings_selector: '#original-git-fusion-settings'
-  disabled_selector:          'input#git_fusion_auto_create_nil'
-  auto_create_selector:       'input#git_fusion_auto_create_true'
-  repo_import_selector:       'input#git_fusion_auto_create_false'
+  disabled_selector:          'input#git_fusion_repo_create_type_disabled'
+  auto_create_selector:       'input#git_fusion_repo_create_type_auto-create'
+  repo_import_selector:       'input#git_fusion_repo_create_type_import-repo'
+  p4d_file_selector:          'input#git_fusion_repo_create_type_file-selector'
   repo_contents:               null
 
   constructor: (@opts) ->
@@ -21,13 +22,17 @@ class @GitFusionProject
       @load_content(server.val())
 
     this.$el.on 'change', @repo_name_selector, (e) =>
-      @update_ui()
+      if this.$(@repo_import_selector).is(':checked')
+        @update_ui()
+      else
+        # if the user chooses a repo, also select mirror from existing
+        this.$(@repo_import_selector).prop('checked', true)
+        this.$(@repo_import_selector).trigger('change')
 
-    this.$el.on 'select2-open', @repo_name_selector, (e) =>
-      this.$(@repo_import_selector).prop('checked', true)
-
-    this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}", (e) =>
+    this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}, #{@p4d_file_selector}", (e) =>
       $(@original_settings_selector).remove()
+      # clear the repo name when we're not mirroring to existing
+      this.$(@repo_name_selector).val('').select2() unless this.$(e.target).is(this.$(@repo_import_selector))
       @update_ui()
 
     $(document).on 'input', @import_url_selector, (e) =>
@@ -47,26 +52,36 @@ class @GitFusionProject
 
     # re-populate auto create selection and repo name
     if ($(@original_settings_selector).length)
-      original_auto_create = $(@original_settings_selector).data('auto-create')
-      $('input#git_fusion_auto_create_' + original_auto_create).prop('checked', true)
+      original_repo_create_type = $(@original_settings_selector).data('repo-create-type')
+      $('input#git_fusion_repo_create_type_' + original_repo_create_type).prop('checked', true)
       original_repo_selection = $(@original_settings_selector).data('repo')
       this.$(@repo_name_selector).val(original_repo_selection).select2()
 
     if (this.$(@auto_create_selector).length)
       disabled_selector    = this.$(@disabled_selector).is(':checked')
       auto_create_selected = this.$(@auto_create_selector).is(':checked')
-      fusion_repo_selected = this.$(@repo_import_selector).is(':checked') &&
-        !!this.$(@repo_name_selector).find('option:selected').val()
+      fusion_repo_selected = this.$(@repo_import_selector).is(':checked')
+      p4d_file_selected    = this.$(@p4d_file_selector).is(':checked')
 
     # disable the external import section and buttons if we're doing mirroring
-    @disable('.external-import, .external-import a.btn, ' + @import_url_selector, fusion_repo_selected || auto_create_selected)
+    project_import_selectors = '.project-import, .project-import a.btn, ' + @import_url_selector
+    fusion_import_selectors = '.git-fusion-import, .git-fusion-import select, .git-fusion-import input'
+    if fusion_repo_selected || auto_create_selected || p4d_file_selected
+      @disable(project_import_selectors, true)
+      @disable(fusion_import_selectors, false)
+    else if has_import_url
+      @disable(project_import_selectors, false)
+      @disable(fusion_import_selectors, true)
+    else
+      @disable(project_import_selectors, false)
+      @disable(fusion_import_selectors, false)
 
-    # if the user is doing an external import, disable mirroring controls
-    @disable('.git-fusion-import, .git-fusion-import select, .git-fusion-import input', has_import_url)
-
-    # clear the repo list when mirror existing is not selected
-    if auto_create_selected || disabled_selector
-      this.$(@repo_name_selector).val('').select2()
+    if p4d_file_selected
+      this.$('.git-fusion-file-selector-wrapper').show()
+      fusion_server = this.$(@server_select_selector).val()
+      p4_tree = new P4Tree(this.$('.git-fusion-split-tree'), fusion_server, $(@original_settings_selector).data('branch-mappings')) unless this.$('.jstree').length
+    else
+      this.$('.git-fusion-file-selector-wrapper').hide()
 
   load_content: (server_id) ->
     # Clear out pre-existing content right away

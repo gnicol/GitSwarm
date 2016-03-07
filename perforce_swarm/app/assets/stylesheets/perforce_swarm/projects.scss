@@ -65,6 +65,14 @@
   padding: 5px 0 0 15px;
 }
 
+.git-fusion-import .import-repo-wrapper {
+  display: inline-block;
+}
+
+.git-fusion-import .git-fusion-radios label {
+  width: 100%;
+}
+
 .git-fusion-import .radio {
   margin-bottom: 10px;
 }
@@ -100,3 +108,95 @@ span.mirror-button-wrapper {
   // although not dangerous, use this to get the red color for the displayed depot path
   color: $brand-danger;
 }
+
+.btn.helix-mirroring.disabled {
+  pointer-events: none !important;
+}
+
+.git-fusion-file-selector-wrapper {
+  cursor: default;
+
+  .tree-save {
+    float: right;
+  }
+
+  .current-mapping {
+    float: left;
+  }
+}
+
+.git-fusion-tree-holder {
+  margin-top: 7px;
+  border: none;
+  padding: 0;
+
+  .nothing-here-block {
+    line-height: 26px;
+  }
+
+  .saved-branches {
+    margin-top: 18px;
+
+    .panel {
+      margin-top: 7px;
+    }
+
+    .saved-branch-name {
+      font-weight: bold;
+    }
+
+    .saved-branch-path {
+      color: #5a5a5a;
+    }
+  }
+
+  .tree-save .current-mapping-branch {
+    font-weight: bold;
+  }
+
+  .branch-label {
+    padding-right: $gl-padding;
+    display: block;
+    float: left;
+    margin-right: 10px;
+    position: relative;
+  }
+
+  .new-branch-name {
+    display: inline-block;
+    width: 200px;
+    float: left;
+  }
+
+  .tree-title {
+    font-family: $monospace_font;
+    font-size: 90%;
+    line-height: 42px;
+    padding: 7px 16px 0 16px;
+    position: relative;
+    background: #f7f8fa;
+    border: 1px solid #e7e9ed;
+
+    .filter-actions {
+      float: right;
+      position: absolute;
+      top: 5px;
+      right: 15px;
+
+      .btn {
+        padding: 0px 10px;
+        font-size: 13px;
+        line-height: 28px;
+      }
+    }
+  }
+
+  .tree-content {
+    background: #fff;
+    border: 1px solid #e7e9ed;
+    border-top: none;
+    height: 250px;
+    overflow: auto;
+  }
+}
+

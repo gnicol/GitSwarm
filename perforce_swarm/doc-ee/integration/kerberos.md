@@ -43,8 +43,8 @@ following prerequisites:
 1.  Create a keytab for the above Service Principal, e.g.
     `/etc/http.keytab`.
 
-The keytab is a sensitive file and must be readable by the GitSwarm user.
-Set ownership and protect the file appropriately:
+The keytab is a sensitive file and must be readable by the GitSwarm EE
+user. Set ownership and protect the file appropriately:
 
 ```bash
 $ sudo chown git /etc/http.keytab

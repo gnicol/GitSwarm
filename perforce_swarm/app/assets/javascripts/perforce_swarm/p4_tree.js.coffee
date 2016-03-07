@@ -70,9 +70,10 @@ class @P4Tree
     this.$el.on 'click', '.remove-branch', (e) =>
       e.preventDefault()
       e.stopPropagation()
-      $(e.currentTarget).closest('li').remove()
-      @cancelMappingEdit()
-      @runTreeFilters()
+      if confirm('Are you sure?')
+        $(e.currentTarget).closest('li').remove()
+        @cancelMappingEdit()
+        @runTreeFilters()
 
     # Edit a branch in the project mapping
     this.$el.on 'click', '.edit-branch', (e) =>

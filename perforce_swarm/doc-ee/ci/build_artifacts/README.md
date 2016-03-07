@@ -7,9 +7,9 @@ Since GitSwarm EE 2015.4 and [GitLab Runner] 0.7.0, build artifacts that are
 created by GitLab Runner are uploaded to GitSwarm EE and are downloadable
 as a single archive (`tar.gz`) using GitSwarm EE.
 
-Starting with GitSwarm 2016.1 and GitLab Runner 1.0, the artifacts archive
-format changed to `ZIP`, and it is now possible to browse its contents,
-with the added ability of downloading the files separately.
+Starting with GitSwarm EE 2016.1 and GitLab Runner 1.0, the artifacts
+archive format changed to `ZIP`, and it is now possible to browse its
+contents, with the added ability of downloading the files separately.
 
 ## Enabling build artifacts
 

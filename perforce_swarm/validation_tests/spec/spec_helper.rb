@@ -7,6 +7,8 @@ require_relative '../lib/git_fusion_helper'
 require_relative '../lib/git_swarm_api_helper'
 require_relative '../lib/p4_helper'
 require_relative '../lib/browser'
+require_relative '../lib/user'
+require_relative '../lib/project'
 
 RSpec.configure do |config|
   config.before(:suite) do
@@ -15,6 +17,20 @@ RSpec.configure do |config|
     # location on the host machine, while allowing for multiple test runs to remain isolated
     cleanup_dirs(tmp_client_dir)
     cleanup_dirs(tmp_screenshot_dir)
+
+    # ensure that if we're running tests via phantomjs, we have version 2
+    current_driver = @driver || Browser.driver
+    if current_driver && current_driver.browser == :phantomjs
+      version = current_driver.capabilities[:version]
+      next unless version
+
+      if Gem::Version.new(version) < Gem::Version.new('2.0.0')
+        LOG.info("Validation tests require PhantomJS version 2, and '#{version}' " \
+                 'is what is being reported. Please either upgrade PhantomJS, or ' \
+                 'switch to a different browser such as firefox.')
+        exit(0)
+      end
+    end
   end
 
   config.before(:each, browser: true) do
@@ -61,4 +77,18 @@ def run_block_with_retry(retries, seconds_between = 1, &block)
     sleep seconds_between
   end
   result
+end
+
+def can_configure_mirroring?(user, project)
+  logged_in_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL)).login(user.name, user.password)
+  project_page = logged_in_page.goto_project_page(project.namespace, project.name)
+  can_config = project_page.can_configure_mirroring?
+  if can_config
+    config_mirroring_page = project_page.configure_mirroring
+    config_mirroring_page.logout
+  else
+    project_page = project_page.goto_configure_mirroring_page_expecting_unauthorized(project.namespace, project.name)
+    project_page.logout
+  end
+  can_config
 end

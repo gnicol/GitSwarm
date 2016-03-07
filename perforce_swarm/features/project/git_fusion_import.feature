@@ -66,6 +66,19 @@ Feature: Git Fusion Import
     And I should not see a Git Fusion repo dropdown
 
   #############################
+  # Basic tests with custom repo selector
+  #############################
+
+  @automated @javascript
+  Scenario: With Git Fusion enabled and P4D containing regular depots, the tree selector with show the depots
+    Given I sign in as a user
+    And P4D contains regular depots
+    When I visit new project page
+    Then I should see a populated Git Fusion server dropdown
+    When I choose to populate the repo from P4D paths
+    Then I should see regular depots in the tree
+
+  #############################
   # Import valid GitFusion repo
   #############################
 

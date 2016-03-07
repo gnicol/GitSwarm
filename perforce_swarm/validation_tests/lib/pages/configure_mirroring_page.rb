@@ -42,7 +42,29 @@ class ConfigureMirroringPage < LoggedInPage
     page_has_text(REENABLE_BUTTON_TEXT)
   end
 
+  def enable_mirroring
+    unless can_enable?
+      screendump
+      fail("Enable button text not there : #{ENABLE_BUTTON_TEXT} ")
+    end
+    click_and_accept(:class, 'btn-save')
+    ProjectPage.new(@driver)
+  end
+
+  def reenable_mirroring
+    unless can_reenable?
+      screendump
+      fail("Reenable button text not there : #{REENABLE_BUTTON_TEXT} ")
+    end
+    click_and_accept(:class, 'btn-save')
+    ProjectPage.new(@driver)
+  end
+
   def disable_mirroring
+    unless can_disable?
+      screendump
+      fail("Disable button text not there : #{DISABLE_BUTTON_TEXT} ")
+    end
     click_and_accept(:class, 'btn-save')
     ProjectPage.new(@driver)
   end

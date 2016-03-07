@@ -31,6 +31,19 @@ describe PerforceSwarm::GitFusion::RepoCreator do
     FileUtils.remove_entry_secure @p4root
   end
 
+  it 'throws an exception if you use a template that has not been set' do
+    allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
+    creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
+    expect { creator.render_template(creator.repo_name_template) }.to raise_error(EXPECTED_EXCEPTION)
+  end
+
+  it 'can render the repo_name auto_create template' do
+    @base_config['global']['auto_create'] = { 'repo_name_template' => 'prefix-{namespace}-{project-path}' }
+    allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
+    creator = PerforceSwarm::GitFusion::RepoCreator.new('foo').namespace('my').project_path('project')
+    expect(creator.render_template(creator.repo_name_template)).to eq('prefix-my-project')
+  end
+
   describe :validate_config do
     it 'raises an exception when the config is invalid' do
       [nil,

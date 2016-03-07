@@ -6,6 +6,7 @@ class @GitFusionProject
   disabled_selector:          'input#git_fusion_repo_create_type_disabled'
   auto_create_selector:       'input#git_fusion_repo_create_type_auto-create'
   repo_import_selector:       'input#git_fusion_repo_create_type_import-repo'
+  p4d_file_selector:          'input#git_fusion_repo_create_type_file-selector'
   repo_contents:               null
 
   constructor: (@opts) ->
@@ -28,7 +29,7 @@ class @GitFusionProject
         this.$(@repo_import_selector).prop('checked', true)
         this.$(@repo_import_selector).trigger('change')
 
-    this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}", (e) =>
+    this.$el.on 'change', "#{@disabled_selector}, #{@auto_create_selector}, #{@repo_import_selector}, #{@p4d_file_selector}", (e) =>
       $(@original_settings_selector).remove()
       # clear the repo name when we're not mirroring to existing
       this.$(@repo_name_selector).val('').select2() unless this.$(e.target).is(this.$(@repo_import_selector))
@@ -60,12 +61,27 @@ class @GitFusionProject
       disabled_selector    = this.$(@disabled_selector).is(':checked')
       auto_create_selected = this.$(@auto_create_selector).is(':checked')
       fusion_repo_selected = this.$(@repo_import_selector).is(':checked')
+      p4d_file_selected    = this.$(@p4d_file_selector).is(':checked')
 
     # disable the external import section and buttons if we're doing mirroring
-    @disable('.external-import, .external-import a.btn, ' + @import_url_selector, fusion_repo_selected || auto_create_selected)
+    project_import_selectors = '.project-import, .project-import a.btn, ' + @import_url_selector
+    fusion_import_selectors = '.git-fusion-import, .git-fusion-import select, .git-fusion-import input'
+    if fusion_repo_selected || auto_create_selected || p4d_file_selected
+      @disable(project_import_selectors, true)
+      @disable(fusion_import_selectors, false)
+    else if has_import_url
+      @disable(project_import_selectors, false)
+      @disable(fusion_import_selectors, true)
+    else
+      @disable(project_import_selectors, false)
+      @disable(fusion_import_selectors, false)
 
-    # if the user is doing an external import, disable mirroring controls
-    @disable('.git-fusion-import, .git-fusion-import select, .git-fusion-import input', has_import_url)
+    if p4d_file_selected
+      this.$('.git-fusion-file-selector-wrapper').show()
+      fusion_server = this.$(@server_select_selector).val()
+      p4_tree = new P4Tree(this.$('.git-fusion-split-tree'), fusion_server, $(@original_settings_selector).data('branch-mappings')) unless this.$('.jstree').length
+    else
+      this.$('.git-fusion-file-selector-wrapper').hide()
 
   load_content: (server_id) ->
     # Clear out pre-existing content right away

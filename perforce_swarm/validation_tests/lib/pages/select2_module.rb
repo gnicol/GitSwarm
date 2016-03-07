@@ -11,7 +11,8 @@ module Select2Module
     elements.each do |x|
       text_values << x.text
     end
-    @driver.find_element(:id, 'select2-drop-mask').click # de-click the menu
+    # de-click the menu
+    @driver.find_element(:id, 'select2-drop-mask').click
     text_values
   end
 

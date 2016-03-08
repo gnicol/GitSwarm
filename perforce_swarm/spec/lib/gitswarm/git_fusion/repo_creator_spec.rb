@@ -262,5 +262,24 @@ git-branch-name = branch1
 eos
       expect(creator.p4gf_config).to eq(expected)
     end
+
+    it 'generates an appropriate p4gf_config for streams' do
+      branch_mapping = { 'branch1' => '//depot1/foo' }
+      creator        = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-awesome-project', branch_mapping)
+      creator.description('Extra description parts.')
+      expected = <<eos
+[@repo]
+description = Repo automatically created by GitSwarm. Extra description parts.
+enable-git-submodules = yes
+enable-git-merge-commits = yes
+enable-git-branch-creation = yes
+ignore-author-permissions = yes
+
+[branch1]
+stream = "//depot1/foo"
+git-branch-name = branch1
+eos
+      expect(creator.p4gf_config(true)).to eq(expected)
+    end
   end
 end

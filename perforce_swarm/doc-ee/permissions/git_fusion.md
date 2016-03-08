@@ -67,10 +67,11 @@ To enable permission enforcement via Git Fusion, you need to:
     `/etc/gitswarm/gitswarm.rb` and set:
     
     ```ruby
-    gitswarm['git-fusion']['project_id']['enforce_permissions'] = true
+    gitswarm['git-fusion']['my_identifier']['enforce_permissions'] = true
     ```
 
-    Replace `project_id` with the identifier for your project.
+    Replace `my_identifier` with the common identifier used by your project
+    and Git Fusion.
 
 1.  If you need to enforce read permissions on GitSwarm EE projects, as
     defined in the Helix Versioning Engine's `protect` rules, make sure

@@ -15,7 +15,7 @@
         ```
 sudo apt-get install helix-gitswarm
         ```
-    1.  **For CentOS (6 and 7):**
+    1.  **For CentOS/RHEL (6.6+ and 7.x):**
 
         ```
 sudo yum install helix-gitswarm
@@ -59,14 +59,14 @@ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu14x86_64/helix-gitswarm-
 sudo dpkg -i helix-gitswarm-2016.1.trusty.amd64.deb
         ```
 
-    1.  **For CentOS 6:**
+    1.  **For CentOS/RHEL 6.6+:**
 
         ```
 curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos6x86_64/helix-gitswarm-2016.1.el6.x86_64.rpm
 sudo yum install helix-gitswarm-2016.1.el6.x86_64.rpm
         ```
 
-    1.  **For CentOS 7:**
+    1.  **For CentOS/RHEL 7.x:**
 
         ```
 curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos7x86_64/helix-gitswarm-2016.1.el7.x86_64.rpm

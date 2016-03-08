@@ -134,8 +134,27 @@ span.mirror-button-wrapper {
     line-height: 26px;
   }
 
+  .tree-status {
+    background-color: #f7f8fa;
+    border: 1px dashed #DDD;
+    line-height: 26px;
+    height: 26px;
+    padding: 0 7px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    border-radius: 4px;
+    text-align: right;
+  }
+
   .saved-branches {
     margin-top: 18px;
+
+    .updating {
+      border: 1px solid $border-orange-light;
+      border-left-width: 5px;
+      background: #FAFFBD;
+    }
 
     .panel {
       margin-top: 7px;
@@ -197,6 +216,7 @@ span.mirror-button-wrapper {
     border-top: none;
     height: 250px;
     overflow: auto;
+    position: relative;
   }
 }
 

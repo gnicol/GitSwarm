@@ -31,13 +31,9 @@ class @P4Tree
         'tie_selection'       : false  # Do our own management of the selected nodes
       },
       'types' : {
+        'default'       : { icon: 'fa-p4-depot-icon' },
         'depot-stream'  : { icon: 'fa-p4-depot-icon fa-p4-badge fa-p4-stream-badge' },
         'depot-local'   : { icon: 'fa-p4-depot-icon' },
-        'depot-tangent' : { icon: 'fa-p4-depot-icon' },
-        'depot-spec'    : { icon: 'fa-p4-depot-icon fa-p4-badge fa-p4-spec-badge' },
-        'depot-remote'  : { icon: 'fa-p4-remote-depot-icon' },
-        'depot-archive' : { icon: 'fa-p4-depot-icon fa-p4-badge fa-p4-archive-badge' },
-        'depot-unload'  : { icon: 'fa-p4-depot-icon fa-p4-badge fa-p4-unload-badge' },
         'folder'        : { icon: 'fa-p4-depot-folder' },
         'folder-stream' : { icon: 'fa-p4-depot-folder fa-p4-badge fa-p4-stream-badge' }
       },

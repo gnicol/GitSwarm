@@ -49,13 +49,15 @@ class @GitFusionProject
   update_ui: ->
     auto_create_selected = fusion_repo_selected = disabled_selector = false
     has_import_url       = !!$(@import_url_selector).val()
+    fusion_server        = this.$(@server_select_selector).val()
 
     # re-populate auto create selection and repo name
-    if ($(@original_settings_selector).length)
+    if ($(@original_settings_selector).length && fusion_server == $(@original_settings_selector).data('fusion-server'))
       original_repo_create_type = $(@original_settings_selector).data('repo-create-type')
       $('input#git_fusion_repo_create_type_' + original_repo_create_type).prop('checked', true)
       original_repo_selection = $(@original_settings_selector).data('repo')
       this.$(@repo_name_selector).val(original_repo_selection).select2()
+      existing_mappings = $(@original_settings_selector).data('branch-mappings')
 
     if (this.$(@auto_create_selector).length)
       disabled_selector    = this.$(@disabled_selector).is(':checked')
@@ -78,8 +80,7 @@ class @GitFusionProject
 
     if p4d_file_selected
       this.$('.git-fusion-file-selector-wrapper').show()
-      fusion_server = this.$(@server_select_selector).val()
-      p4_tree = new P4Tree(this.$('.git-fusion-split-tree'), fusion_server, $(@original_settings_selector).data('branch-mappings')) unless this.$('.jstree').length
+      p4_tree = new P4Tree(this.$('.git-fusion-split-tree'), fusion_server, existing_mappings) unless this.$('.jstree').length
     else
       this.$('.git-fusion-file-selector-wrapper').hide()
 

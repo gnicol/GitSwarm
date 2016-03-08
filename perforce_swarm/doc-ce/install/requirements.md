@@ -5,7 +5,8 @@
 ### Supported Unix distributions
 
 - Ubuntu 12.04 or 14.04
-- CentOS 6.7 or 7
+- CentOS 6.6 or higher, or 7.0 or higher
+- Red Hat Enterprise Linux (RHEL) 6.6 or higher, or 7.0 or higher
 
 > Note: GitSwarm is only available for 64-bit systems.
 

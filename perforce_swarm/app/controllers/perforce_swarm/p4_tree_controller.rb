@@ -1,5 +1,8 @@
 module PerforceSwarm
   class P4TreeController < ApplicationController
+    DEPOT_TYPE_WHITELIST ||= %w(local, stream)
+    DEPOT_NAME_BLACKLIST ||= %w(.git-fusion)
+
     def show
       return render_404 unless params['fusion_server'] && params['path']
       gitlab_shell_config = PerforceSwarm::GitlabConfig.new
@@ -26,6 +29,8 @@ module PerforceSwarm
       dirs = []
       if path == '#'
         connection.run('depots').each do |depot|
+          next if DEPOT_NAME_BLACKLIST.include?(depot['name']) || !DEPOT_TYPE_WHITELIST.include?(depot['type'])
+
           depot_dir = {
             id:       "//#{depot['name']}",
             text:     depot['name'],

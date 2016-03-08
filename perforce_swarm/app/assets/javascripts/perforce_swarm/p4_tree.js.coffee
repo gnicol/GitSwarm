@@ -70,20 +70,22 @@ class @P4Tree
     this.$el.on 'click', '.remove-branch', (e) =>
       e.preventDefault()
       e.stopPropagation()
-      $(e.currentTarget).closest('li').remove()
-      @runTreeFilters()
+      if confirm('Are you sure?')
+        $(e.currentTarget).closest('li').remove()
+        @cancelMappingEdit()
+        @runTreeFilters()
 
     # Edit a branch in the project mapping
     this.$el.on 'click', '.edit-branch', (e) =>
       e.preventDefault()
       e.stopPropagation()
-      row = $(e.currentTarget).closest('li')
-      mapping = row.data('mapping')
-      row.remove()
-      @runTreeFilters()
-      @updating_branch = mapping.branchName
-      this.$('.tree-save .action').text('Update Branch')
-      @loadEditMapping(mapping.branchName, mapping.nodePath)
+      @editSavedMapping($(e.currentTarget).closest('li'))
+
+    # Cancel the current branch update
+    this.$el.on 'click', '.cancel-update', (e) =>
+      e.preventDefault()
+      e.stopPropagation()
+      @cancelMappingEdit()
 
   # Local jQuery finder
   $: (selector) ->
@@ -104,6 +106,25 @@ class @P4Tree
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
     @enableFields()
+
+  editSavedMapping: (row) ->
+    @cancelMappingEdit() if @updating_branch
+    mapping = row.data('mapping')
+    row.addClass('updating')
+
+    @clearBranchTree()
+    @runTreeFilters()
+    @updating_branch = { mapping: mapping, row: row }
+    this.$('.tree-save .action').text('Update Branch')
+    @loadEditMapping(mapping.branchName, mapping.nodePath)
+
+  cancelMappingEdit: (remove) ->
+    return unless @updating_branch
+    if remove then @updating_branch.row.remove() else @updating_branch.row.removeClass('updating')
+    @updating_branch = null
+    this.$('.tree-save .action').text('Add Branch')
+    @clearBranchTree()
+    @runTreeFilters()
 
   # Filter the depots shown in the tree either by streams or regular depots
   # if stream is a string, we are only going to show the passed stream depot,
@@ -189,6 +210,12 @@ class @P4Tree
     # mapping must have a path and branch name
     return false unless @getTreeLowestChecked().length > 0 && !!@getNewBranchName()
 
+    # ensure valid branch name
+    branchValidator = @branchNameValidator(@getNewBranchName())
+    if !branchValidator.valid
+      new Flash("Branch Name #{branchValidator.error}", 'alert').flash.prependTo('.git-fusion-tree-holder')
+      return false
+
     # If we are restricted to a particular depot type, we enforce that as well
     if @restrictedDepot
       for node in @getTreeLowestChecked()
@@ -198,7 +225,34 @@ class @P4Tree
         else
           return false if @getDepotForNode(node).type == 'depot-stream'
 
+    this.$('.flash-alert').remove()
     return true
+
+  branchNameValidator: (branchName) ->
+    error = null
+
+    format = (matches, joinString) ->
+      # warn about each unique match only once
+      results = []
+      for match in matches
+        unless match in results
+          match = switch
+            when /\s/.test match then 'spaces'
+            when /\/{2,}/g.test match then 'consecutive slashes'
+            else "'#{match}'"
+          results.push(match)
+      results.join(joinString)
+
+    # Branch name errors are taken from GitLab's new_branch_form.js.coffee
+    if matched = branchName.match(/^(\/|\.)/g)
+      error = "can't start with #{format(matched, ' or ')}"
+    else if matched = branchName.match(/(\/|\.|\.lock)$/g)
+      error = "can't end in #{format(matched, ' or ')}"
+    else if matched = branchName.match(/(\s|~|\^|:|\?|\*|\[|\\|\.\.|@\{|\/{2,}){1}/g)
+      error = "can't contain #{format(matched, ', ')}"
+    else if matched = branchName.match(/^@+$/g)
+      error = "can't be #{format(matched, ' or ')}"
+    return {valid: !error, error: error }
 
   getDepotForNode: (node) ->
     nodeId = if $.type(node) == 'string' then node else node.id
@@ -219,10 +273,16 @@ class @P4Tree
       this.$('.tree-save').removeClass('field-disabled').disable()
       @enableTooltip('.tree-save')
 
-    # If we are updating a branch, but the branch name has changed, switch up the wording
-    if @updating_branch && @updating_branch != @getNewBranchName()
-      @updating_branch = null
-      this.$('.tree-save .action').text('Add Branch')
+    if @updating_branch
+      this.$('.tree-status').html('<a href="#" class="cancel-update">cancel update?</a>').show()
+
+      # If we are updating a branch, but the branch name has changed, switch up the wording
+      if @updating_branch.mapping.branchName != @getNewBranchName()
+        this.$('.tree-save .action').text("Change Branch #{@updating_branch.mapping.branchName} to")
+      else
+        this.$('.tree-save .action').text('Update Branch')
+    else
+      this.$('.tree-status').html('').hide()
 
     this.$('.current-mapping-branch').text(@getNewBranchName() || '')
     this.$('.current-mapping-path').val(@getTreeLowestChecked()[0] || '')
@@ -232,7 +292,7 @@ class @P4Tree
   # enforce tree restrictions based on the mappings you already have
   runTreeFilters: ->
     filterButton      = this.$('.filter-actions a, .filter-actions .depot-type-filter')
-    mappingFormInputs = this.$('.branch-list input')
+    mappingFormInputs = this.$('.branch-list li').not('.updating').find('input')
 
     if mappingFormInputs.length
       depot            = @getDepotForNode(mappingFormInputs[0].value)
@@ -246,14 +306,11 @@ class @P4Tree
       filterButton.enable()
       @disableTooltip(filterButton)
       @restrictedDepot = null
-      this.$('.saved-branches .nothing-here-block').show()
+      this.$('.saved-branches .nothing-here-block').show() unless this.$('.branch-list li.updating input').length
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
   # set the current tree selected mapping as field in the form to submit during project creation
   addSavedMapping: (branchName, nodePath) ->
-    # Remove any existing mapping for the same branch name
-    this.$('.branch-list').find("[name='git_fusion_branch_mappings[#{branchName}]']").closest('li').remove()
-
     newBranch = """
     <li>
       <input type="hidden" style="display:none;" name="git_fusion_branch_mappings[#{branchName}]" value="#{nodePath}" />
@@ -265,13 +322,16 @@ class @P4Tree
     """
     newBranch = $(newBranch)
     newBranch.data('mapping', {branchName: branchName, nodePath: nodePath})
-    this.$('.branch-list').append(newBranch)
 
-    # Clear out any branch update messaging
-    if @updating_branch
-      @updating_branch = null
-      this.$('.tree-save .action').text('Add Branch')
+    # Replace any existing mapping for the same branch name
+    # Or add a new branch mapping
+    existing = (@updating_branch && @updating_branch.row) || this.$('.branch-list').find("[name='git_fusion_branch_mappings[#{branchName}]']")
+    if existing.length
+      existing.closest('li').replaceWith(newBranch)
+    else
+      this.$('.branch-list').append(newBranch)
 
+    @cancelMappingEdit(true)
     @clearBranchTree()
     @runTreeFilters()
 

@@ -85,7 +85,7 @@ module PerforceSwarm
 
       # generates the p4gf_config file that should be checked into Perforce under
       # //.git-fusion/repos/repo_name/p4gf_config
-      def p4gf_config
+      def p4gf_config(stream = false)
         config_description  = 'Repo automatically created by GitSwarm.'
         config_description += @description ? ' ' + @description.tr("\n", ' ').strip : ''
 
@@ -109,7 +109,14 @@ module PerforceSwarm
           path.gsub!(%r{\/+(\.\.\.)?$}, '')
           config << ''
           config << "[#{name}]"
-          config << "view = \"#{path}/...\" ..."
+
+          # add the branch mapping as a 'stream' or a 'view' depending on the depot type
+          if stream
+            config << "stream = \"#{path}\""
+          else
+            config << "view = \"#{path}/...\" ..."
+          end
+
           config << "git-branch-name = #{name}"
         end
         config << ''
@@ -177,11 +184,19 @@ module PerforceSwarm
         # run our pre-flight checks, which raises an exception if we shouldn't continue with the save
         save_preflight(p4)
 
+        # determine if we're using a streams depot
+        branch_mappings.each do |name, depot_path|
+          id           = PerforceSwarm::P4::Spec::Depot.id_from_path(depot_path)
+          # only perform the fetch once per depot
+          depots[name] = PerforceSwarm::P4::Spec::Depot.fetch(connection, id) unless depots[name]
+        end
+        stream = depots.length == 1 && depots.first['type'] == 'stream'
+
         # generate our file and attempt to add it
         p4.with_temp_client do |tmpdir|
           file = local_p4gf_config_path(tmpdir)
           FileUtils.mkdir_p(File.dirname(file))
-          File.write(file, p4gf_config)
+          File.write(file, p4gf_config(stream))
           add_output = p4.run('add', file).shift
           if add_output.is_a?(String) && add_output.end_with?(" - can't add existing file")
             fail FileAlreadyExists, "Looks like #{repo_name} already exists."

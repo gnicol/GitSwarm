@@ -28,7 +28,7 @@ To uninstall GitSwarm EE, follow these steps:
             sudo apt-get purge perforce-gitswarm-ee
             ```
 
-        1.  **For CentOS:**
+        1.  **For CentOS/RHEL:**
 
             ```
             sudo yum remove perforce-gitswarm-ee
@@ -42,7 +42,7 @@ To uninstall GitSwarm EE, follow these steps:
             sudo apt-get purge helix-gitswarm-ee
             ```
 
-        1.  **For CentOS:**
+        1.  **For CentOS/RHEL:**
 
             ```
             sudo yum remove helix-gitswarm-ee
@@ -57,8 +57,7 @@ To uninstall GitSwarm EE, follow these steps:
             ```
             sudo apt-get remove perforce-cli-base perforce-server-base helix-git-fusion-base
             ```
-
-        1.  **For CentOS:**
+         1. **For CentOS/RHEL:**
 
             ```
             sudo yum remove perforce-cli-base perforce-server-base helix-git-fusion-base
@@ -72,7 +71,7 @@ To uninstall GitSwarm EE, follow these steps:
             sudo apt-get remove helix-cli-base helix-p4d-base helix-git-fusion-base
             ```
 
-        1.  **For CentOS:**
+         1.  **For CentOS/RHEL:**
 
             ```
             sudo yum remove helix-cli-base helix-p4d-base helix-git-fusion-base

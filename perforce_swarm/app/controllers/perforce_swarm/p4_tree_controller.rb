@@ -1,6 +1,6 @@
 module PerforceSwarm
   class P4TreeController < ApplicationController
-    DEPOT_TYPE_WHITELIST ||= %w(local, stream)
+    DEPOT_TYPE_WHITELIST ||= %w(local stream)
     DEPOT_NAME_BLACKLIST ||= %w(.git-fusion)
 
     def show

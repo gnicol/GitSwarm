@@ -62,14 +62,14 @@
         = label_tag do
           = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_FILE_SELECT, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled)
           .option-title
-            Select files or folder to mirror.
+            Select directories to mirror.
           .option-descr
-            Select specific files or folders from the Helix Versioning Engine (P4D)
+            Select specific directories from the Helix Versioning Engine (P4D)
             %br
             .git-fusion-file-selector-wrapper.hide
-              Map folders and files from the Helix Depot into a branch
+              Map directories from the Helix Depot into a branch
               %br
-              From this depot folder
+              from this depot directory
               .git-fusion-split-tree.clearfix
                 .git-fusion-tree-holder.git-fusion-tree-source.col-sm-7
                   .tree-title.clearfix

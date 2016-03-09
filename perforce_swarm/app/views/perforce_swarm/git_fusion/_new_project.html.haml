@@ -62,19 +62,17 @@
         = label_tag do
           = radio_button_tag(:git_fusion_repo_create_type, Project::GIT_FUSION_REPO_CREATION_FILE_SELECT, false, disabled: !auto_create_enabled, 'data-keep-disabled' => !auto_create_enabled)
           .option-title
-            Select files or folder to mirror.
+            Select directories to mirror.
           .option-descr
-            Select specific files or folders from the Helix Versioning Engine (P4D)
+            Select specific directories from the Helix Versioning Engine (P4D).
             %br
             .git-fusion-file-selector-wrapper.hide
-              Map folders and files from the Helix Depot into a branch
-              %br
-              From this depot folder
+              Map directories from the Helix Depot into a GitSwarm branch.
               .git-fusion-split-tree.clearfix
                 .git-fusion-tree-holder.git-fusion-tree-source.col-sm-7
                   .tree-title.clearfix
                     .branch-label Branch:
-                    = text_field_tag 'branch_name', params[:branch_name], placeholder: "branch name",
+                    = text_field_tag 'branch_name', params[:branch_name], placeholder: "branch-name",
                       required: false, :'data-keep-disabled' => 'true', class: 'form-control new-branch-name js-quick-submit'
                     .filter-actions
                       .tooltip-wrapper{data: {'original-title' => 'You cannot combine regular and streams depot mappings in the same Git Fusion repository.', placement: 'top'}}

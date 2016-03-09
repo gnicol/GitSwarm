@@ -117,10 +117,9 @@ Feature: Mirror Existing Project
     Then I should see the Disable Helix Mirroring button
 
   @automated
-  Scenario: On the Helix Mirroring page, for a previously-mirrored project, I should see a Re-enable Helix Mirroring button.
+  Scenario: On the project details page, for a previously-mirrored project, I should see a "Click to re-enable mirroring" tooltip.
     Given I sign in as a user
     And Git Fusion support is enabled with auto-create enabled servers
     And Helix mirroring is disabled, but was once enabled for project "Shop"
     And I visit project "Shop" page
-    And I click the Helix Mirroring button
-    Then I should see the Re-enable Helix Mirroring button
+    Then The tooltip should say "Click to re-enable mirroring"

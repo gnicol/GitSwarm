@@ -23,6 +23,13 @@ you must edit that line to read:
 baseurl=http://package.perforce.com/yum/rhel/7/x86_64
 ```
 
+After such an adjustment, we recommend that you run the following command
+to remove any old dependencies:
+
+```bash
+sudo yum clean all
+```
+
 ## Performing the update to 2016.1
 
 1.  **Download the 2016.1 GitSwarm EE package and install it.**

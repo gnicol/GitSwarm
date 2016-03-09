@@ -112,7 +112,7 @@ module PerforceSwarm
 
           # add the branch mapping as a 'stream' or a 'view' depending on the depot type
           if stream
-            config << "stream = \"#{path}\""
+            config << "stream = #{path}"
           else
             config << "view = \"#{path}/...\" ..."
           end

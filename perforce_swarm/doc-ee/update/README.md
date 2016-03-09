@@ -11,19 +11,19 @@ your existing version before you run an upgrade.
 ## Update dependencies
 
 If you have any repos mirroring their content into Helix Git Fusion, we
-recommend that you update Helix Git Fusion and the Helix Versioning Engine
-prior to updating GitSwarm.
+strongly recommend that you update Helix Git Fusion and the Helix
+Versioning Engine prior to updating GitSwarm.
 
 -   **For Ubuntu:**
 
     ```bash
-    sudo apt-get upgrade helix-git-fusion helix-cli-base helix-p4d-base
+    sudo apt-get install helix-git-fusion-base perforce-server
     ```
 
 -   **For CentOS:**
 
     ```bash
-    sudo yum update helix-git-fusion helix-cli-base helix-p4d-base
+    sudo yum install helix-git-fusion-base perforce-server
     ```
 
 ## Performing the update to 2016.1

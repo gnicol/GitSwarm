@@ -10,6 +10,7 @@
 
 1.  **Install the GitSwarm package and necessary dependencies via the OS
     package manager.**
+
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```

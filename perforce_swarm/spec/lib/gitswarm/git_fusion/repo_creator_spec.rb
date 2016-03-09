@@ -276,7 +276,7 @@ enable-git-branch-creation = yes
 ignore-author-permissions = yes
 
 [branch1]
-stream = "//depot1/foo"
+stream = //depot1/foo
 git-branch-name = branch1
 eos
       expect(creator.p4gf_config(true)).to eq(expected)

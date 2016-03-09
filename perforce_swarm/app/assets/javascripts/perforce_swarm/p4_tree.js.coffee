@@ -145,6 +145,23 @@ class @P4Tree
         # Make sure we show any nodes we aren't filtering out
         this.$tree.show_node(node)
 
+  filterStreams: (sampleStream) ->
+    sampleNode = this.$tree.get_node(sampleStream) if sampleStream
+
+    # Run over all the folder-stream nodes in the tree
+    for node in this.$tree.get_json(null, {flat:true})
+      if node.type == 'folder-stream'
+        # Show the node if we aren't filtering, or we are filtering and the mainline matches
+        # else hide the folder-stream node
+        if !sampleNode || @findMainlineForNode(node).id == @findMainlineForNode(sampleNode).id
+          this.$tree.show_node(node)
+        else
+          this.$tree.hide_node(node)
+
+  findMainlineForNode: (node) ->
+    node = this.$tree.get_node(node)
+    if node.data.streamType == 'mainline' then node else @findMainlineForNode(node.data.streamParent)
+
   # Expand and select a node
   loadEditMapping: (branchName, nodePath) ->
     this.$('.new-branch-name').val(branchName).trigger('change')
@@ -218,6 +235,11 @@ class @P4Tree
         if @restrictedDepot.type == 'depot-stream'
           depot = @getDepotForNode(node)
           return false if depot.type != 'depot-stream' || node.search(depot.id) != 0
+
+          # Restrict stream to the same same mainline tree
+          if @restrictedDepot.options?.sampleStream &&
+              @findMainlineForNode(@restrictedDepot.options.sampleStream) != @findMainlineForNode(node)
+            return false
         else
           return false if @getDepotForNode(node).type == 'depot-stream'
 
@@ -292,18 +314,20 @@ class @P4Tree
 
     if mappingFormInputs.length
       depot            = @getDepotForNode(mappingFormInputs[0].value)
-      options          = {stream: depot.id} if depot.type == 'depot-stream'
+      options          = { streamDepot: depot.id, sampleStream: mappingFormInputs[0].value } if depot.type == 'depot-stream'
       @restrictedDepot = { type: depot.type, options: options }
       filterButton.removeClass('field-disabled').disable()
       this.$('.saved-branches .nothing-here-block').hide()
       @enableTooltip(filterButton)
-      @filterDepots(options?.stream)
+      @filterDepots(options?.streamDepot)
+      @filterStreams(options?.sampleStream)
     else
       filterButton.enable()
       @disableTooltip(filterButton)
       @restrictedDepot = null
       this.$('.saved-branches .nothing-here-block').show() unless this.$('.branch-list li.updating input').length
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
+      @filterStreams(null)
 
   # set the current tree selected mapping as field in the form to submit during project creation
   addSavedMapping: (branchName, nodePath) ->
@@ -332,20 +356,16 @@ class @P4Tree
     @runTreeFilters()
 
   restrictStreamSelection: (node) ->
-    node      = this.$tree.get_node(node) if $.type(node) == 'string'
-    depot     = @getDepotForNode(node)
-    nodeDepth = node.parents.length - 1 # Depth of the node we are checking, minus one for the root node
+    node  = this.$tree.get_node(node) if $.type(node) == 'string'
+    depot = @getDepotForNode(node)
 
-    if depot.type == 'depot-stream'
-      # mark the node as a stream if it's at the right streamDepth
-      # otherwise disable the node
-      if depot.data.streamDepth == nodeDepth
-        this.$tree.set_type(node, 'folder-stream')
-      else
-        this.$tree.disable_node(node)
-        this.$tree.disable_checkbox(node)
+    # disable stream nodes that are not streams
+    if depot.type == 'depot-stream' &&  node.type != 'folder-stream'
+      this.$tree.disable_node(node)
+      this.$tree.disable_checkbox(node)
 
   # Called each time a node's children are loaded from the backend
   _treeNodeLoaded: (data) ->
     if data.status
       @restrictStreamSelection(child) for child in data.node.children
+      @filterStreams(@restrictedDepot.options.sampleStream) if @restrictedDepot?.options?.sampleStream

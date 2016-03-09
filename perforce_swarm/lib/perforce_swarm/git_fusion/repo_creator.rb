@@ -156,6 +156,22 @@ module PerforceSwarm
         unless streams_depots.length == 0 || (streams_depots.length == 1 && branch_depots.length == 1)
           fail 'Branch depots must either all be non-streams, or all use the same stream.'
         end
+
+        # we're done unless we need to do further streams branch validation
+        return unless streams_depots.length == 1
+
+        # ensure all paths are on the same parent path, or define the parent path
+        depot_paths  = branch_mappings.values
+        parent_paths = []
+        depot_paths.each do |depot_path|
+          connection.run('streams', "#{depot_path}").each do |stream_info|
+            parent_paths << stream_info['Parent']
+          end
+        end
+        parent_paths = parent_paths.uniq - depot_paths
+
+        # there can be only one!
+        fail 'Branches based on streams must all use the same parent stream.' unless parent_paths.uniq.length == 1
       end
 
       # run pre-flight checks for:

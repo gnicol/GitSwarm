@@ -82,11 +82,12 @@ module ProjectsHelper
 
   def mirroring_tooltip(project, user, for_button = false)
     errors = mirroring_errors(project, user)
-    return errors if errors
+    return errors if errors && !errors.empty?
 
+    verb = project.git_fusion_repo.present? ? 're-enable' : 'get'
     # all good in the 'hood - tooltip is slightly different for the button vs the text below the clone URL
-    return 'Click to get mirroring!' if for_button
-    'Click "Helix Mirroring" below to get mirroring!'
+    return "Click to #{verb} mirroring!" if for_button
+    "Click \"Helix Mirroring\" below to #{verb} mirroring!"
   end
 
   def helix_reenable_mirroring_tooltip(project)

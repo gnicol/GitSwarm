@@ -165,7 +165,26 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
     end
 
+    it 'raises an exception if not all the streams used in branch mappings have the same mainline' do
+      streams = {
+        '//stream1/foo' => { 'Type' => 'mainline', 'Parent' => 'none' },
+        '//stream1/bar' => { 'Type' => 'mainline', 'Parent' => 'none' }
+      }
+      allow_any_instance_of(PerforceSwarm::GitFusion::RepoCreator).to receive(:streams_info).and_return(streams)
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
+      PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'stream1', 'Type' => 'stream')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
+      creator.branch_mappings('branch1' => '//stream1/foo', 'branch2' => '//stream1/bar')
+      expect { creator.validate_depots(@connection) }.to raise_error
+    end
+
     it 'does not raise an exception if the same streams depot is used for all branch mappings' do
+      streams = {
+        '//stream1/foo' => { 'Type' => 'mainline', 'Parent' => 'none' },
+        '//stream1/bar' => { 'Type' => 'development', 'Parent' => '//stream1/foo' }
+      }
+      allow_any_instance_of(PerforceSwarm::GitFusion::RepoCreator).to receive(:streams_info).and_return(streams)
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'stream1', 'Type' => 'stream')

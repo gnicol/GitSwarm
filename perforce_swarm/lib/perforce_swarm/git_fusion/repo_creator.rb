@@ -156,6 +156,21 @@ module PerforceSwarm
         unless streams_depots.length == 0 || (streams_depots.length == 1 && branch_depots.length == 1)
           fail 'Branch depots must either all be non-streams, or all use the same stream.'
         end
+
+        # we're done unless we need to do further streams branch validation
+        return unless streams_depots.length == 1
+
+        # grab information for all streams in the depot
+        streams = streams_info(connection, streams_depots.keys.first)
+
+        # determine the mainline for each branch mapping's depot path
+        mainline_paths = []
+        branch_mappings.values.each do |depot_path|
+          mainline_paths << determine_mainline(depot_path, streams)
+        end
+
+        # there can be only one!
+        fail 'Branches based on streams must all use the same mainline stream.' unless mainline_paths.uniq.length == 1
       end
 
       # run pre-flight checks for:
@@ -263,6 +278,21 @@ module PerforceSwarm
           return self
         end
         @description
+      end
+
+      private
+
+      def streams_info(connection, depot)
+        streams_info = {}
+        connection.run('streams', "//#{depot}/...").each do |info|
+          stream_info[info['Stream']] = info
+        end
+        streams_info
+      end
+
+      def determine_mainline(path, stream_info)
+        return path if stream_info[path]['Type'] == 'mainline'
+        determine_mainline(stream_info[path]['Parent'], stream_info)
       end
     end
   end

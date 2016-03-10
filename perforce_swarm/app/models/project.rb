@@ -47,8 +47,9 @@ module PerforceSwarm
           if git_fusion_repo_create_type == GIT_FUSION_REPO_CREATION_AUTO_CREATE
             creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(git_fusion_entry, namespace.name, path)
           else
-            creator = PerforceSwarm::GitFusion::RepoCreator.new(git_fusion_entry, nil, git_fusion_branch_mappings)
-              .namespace(namespace.name).project_path(path)
+            creator = PerforceSwarm::GitFusion::RepoCreator.new(
+              git_fusion_entry, nil, git_fusion_branch_mappings, false, git_fusion_default_branch
+            ).namespace(namespace.name).project_path(path)
           end
 
           creator.save
@@ -119,6 +120,7 @@ class Project < ActiveRecord::Base
   attr_accessor :git_fusion_repo_create_type
   attr_accessor :git_fusion_entry
   attr_accessor :git_fusion_branch_mappings
+  attr_accessor :git_fusion_default_branch
 
   # The rspec tests use 'allow_any_instance_of' on Project to stub this method out during testing.
   # Unfortunately, if we 'prepend' our modifications that goes into an endless loop. So we monkey it.

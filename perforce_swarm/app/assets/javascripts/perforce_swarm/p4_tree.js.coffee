@@ -236,7 +236,7 @@ class @P4Tree
           depot = @getDepotForNode(node)
           return false if depot.type != 'depot-stream' || node.search(depot.id) != 0
 
-          # Restrict stream to the same same mainline tree
+          # Restrict stream to the same mainline tree
           if @restrictedDepot.options?.sampleStream &&
               @findMainlineForNode(@restrictedDepot.options.sampleStream) != @findMainlineForNode(node)
             return false

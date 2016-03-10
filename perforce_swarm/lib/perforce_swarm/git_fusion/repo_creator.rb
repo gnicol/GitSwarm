@@ -161,15 +161,12 @@ module PerforceSwarm
         return unless streams_depots.length == 1
 
         # grab information for all streams in the depot
-        stream_info = {}
-        connection.run('streams', "//#{streams_depots.keys.first}/...").each do |info|
-          stream_info[info['Stream']] = info
-        end
+        streams = streams_info(connection, streams_depots.keys.first)
 
         # determine the mainline for each branch mapping's depot path
         mainline_paths = []
         branch_mappings.values.each do |depot_path|
-          mainline_paths << determine_mainline(depot_path, stream_info)
+          mainline_paths << determine_mainline(depot_path, streams)
         end
 
         # there can be only one!
@@ -281,6 +278,14 @@ module PerforceSwarm
       end
 
       private
+
+      def streams_info(connection, depot)
+        streams_info = {}
+        connection.run('streams', "//#{depot}/...").each do |info|
+          stream_info[info['Stream']] = info
+        end
+        streams_info
+      end
 
       def determine_mainline(path, stream_info)
         return path if stream_info[path]['Type'] == 'mainline'

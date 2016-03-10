@@ -10,5 +10,7 @@ module PerforceSwarm
 end
 
 class SessionsController < Devise::SessionsController
+  respond_to :json
+  protect_from_forgery except: [:create]
   prepend PerforceSwarm::SessionsControllerExtension
 end

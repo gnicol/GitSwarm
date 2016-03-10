@@ -185,8 +185,11 @@ module PerforceSwarm
         save_preflight(p4)
 
         # determine if we're using a streams depot
-        first_depot = PerforceSwarm::P4::Spec::Depot.id_from_path(branch_mappings.values.first)
-        stream      = PerforceSwarm::P4::Spec::Depot.fetch(p4, first_depot)['Type'] == 'stream'
+        stream = false
+        if branch_mappings && !branch_mappings.empty?
+          first_depot = PerforceSwarm::P4::Spec::Depot.id_from_path(branch_mappings.values.first)
+          stream      = PerforceSwarm::P4::Spec::Depot.fetch(p4, first_depot)['Type'] == 'stream'
+        end
 
         # generate our file and attempt to add it
         p4.with_temp_client do |tmpdir|

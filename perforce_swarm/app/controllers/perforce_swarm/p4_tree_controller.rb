@@ -39,22 +39,36 @@ module PerforceSwarm
             children: true
           }
 
-          if depot['type'] == 'stream'
-            depot_dir[:data][:streamDepth] =
-              PerforceSwarm::P4::Spec::Depot.fetch(connection, depot['name'])['numericStreamDepth']
-          end
-
           dirs << depot_dir
         end
       else
-        connection.run('dirs', "#{path}/*").each do |dir_info|
-          dir_name = File.basename(dir_info['dir'])
-          dirs << {
-            id:       "#{path}/#{dir_name}",
-            text:     dir_name,
-            type:     'folder',
-            children: true
-          }
+        # Grab basic depot information
+        depot = PerforceSwarm::P4::Spec::Depot.fetch(connection, PerforceSwarm::P4::Spec::Depot.id_from_path(path))
+        current_depth = path.sub(%r{^//}, '').split('/').length
+
+        if depot['Type'] == 'stream' && current_depth == depot['numericStreamDepth']
+          # Find the streams
+          connection.run('streams', "#{path}/...").each do |stream_info|
+            dirs << {
+              id:       "#{path}/#{stream_info['Name']}",
+              text:     stream_info['Name'],
+              type:     'folder-stream',
+              data:     { streamType: stream_info['Type'], streamParent: stream_info['Parent'] },
+              children: true
+            }
+          end
+        else
+          # Find the dirs
+          connection.run('dirs', "#{path}/*").each do |dir_info|
+            dir_name = File.basename(dir_info['dir'])
+
+            dirs << {
+              id:       "#{path}/#{dir_name}",
+              text:     dir_name,
+              type:     'folder',
+              children: true
+            }
+          end
         end
       end
       dirs

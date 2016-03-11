@@ -76,3 +76,13 @@ To uninstall GitSwarm, follow these steps:
             ```
             sudo yum remove helix-cli-base helix-p4d-base helix-git-fusion-base
             ```
+
+1.  Optional: **Remove the GitSwarm directory:**
+
+    After removing all GitSwarm data, and the GitSwarm packages and
+    dependencies, the directory `/opt/gitswarm` may continue to exist. If
+    so and you wish to remove this directory, run:
+
+    ```bash
+    sudo rm -rf /opt/gitswarm
+    ```

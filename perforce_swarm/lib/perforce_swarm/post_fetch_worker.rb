@@ -27,6 +27,8 @@ module PerforceSwarm
 
       # if we thought a git-fusion import was ongoing; flag it as finished
       if project.import_in_progress? && project.git_fusion_mirrored?
+        fusion_head = PerforceSwarm::Repo.new(project.repository.path_to_repo).mirror_head
+        project.change_head(fusion_head) if fusion_head
         project.import_finish
         project.save
       end

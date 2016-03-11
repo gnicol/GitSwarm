@@ -17,6 +17,7 @@ module PerforceSwarm
       VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.-])+\z/
 
       attr_accessor :description, :branch_mappings, :depot_branch_creation
+      attr_writer :default_branch
       attr_reader :config
 
       def self.validate_config(config)
@@ -244,10 +245,6 @@ module PerforceSwarm
       def branch_mappings=(branch_mappings)
         self.class.validate_branch_mappings(branch_mappings)
         @branch_mappings = branch_mappings
-      end
-
-      def default_branch=(default_branch)
-        @default_branch = default_branch
       end
 
       def default_branch(*args)

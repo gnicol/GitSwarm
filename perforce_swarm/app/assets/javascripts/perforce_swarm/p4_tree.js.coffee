@@ -3,9 +3,10 @@ class @P4Tree
   existing_mappings: null
   updating_branch: null
 
-  constructor: (element, fusion_server, existing_mappings) ->
+  constructor: (element, fusion_server, existing_mappings, default_branch) ->
     this.$el           = $(element)
     @existing_mappings = existing_mappings
+    @default_branch    = default_branch
     tree_url           = '/gitswarm/p4_tree.json'
     tree_url           = gon.relative_url_root + tree_url if gon.relative_url_root?
     @disableFields()
@@ -110,6 +111,10 @@ class @P4Tree
     #  Load previous mapping back into page (in case of form error, etc)
     if @existing_mappings
       @addSavedMapping(branch, mapping) for branch, mapping of @existing_mappings
+
+      if @default_branch
+        branchNode = this.$(".branch-list input[name='git_fusion_branch_mappings[#{@default_branch}]']").closest('li')
+        @setDefaultBranch(branchNode) if branchNode
     else
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 

@@ -117,7 +117,7 @@ module PerforceSwarm
         mapping_config = []
         branch_mappings.each do |name, path|
           path.gsub!(%r{\/+(\.\.\.)?$}, '')
-          branch_config =  ['']
+          branch_config = ['']
 
           # Use the branch name as the git-fusion branch id, if we can
           # Else use a uuid for the branch id

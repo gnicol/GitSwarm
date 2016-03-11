@@ -150,6 +150,20 @@ span.mirror-button-wrapper {
   .saved-branches {
     margin-top: 18px;
 
+    .default-branch-label {
+      display: none;
+      margin: 0 4px;
+    }
+
+    li.default-branch {
+      .make-default-branch-text {
+        display: none;
+      }
+      .default-branch-label {
+        display: inline-block;
+      }
+    }
+
     .updating {
       border: 1px solid $border-orange-light;
       border-left-width: 5px;

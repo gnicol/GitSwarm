@@ -18,6 +18,7 @@ module PerforceSwarm
       VALID_BRANCH_ID_REGEX ||= /\A([A-Za-z0-9_.-=])+\z/
 
       attr_accessor :description, :branch_mappings, :depot_branch_creation
+      attr_writer :default_branch
       attr_reader :config
 
       def self.validate_config(config)
@@ -48,12 +49,14 @@ module PerforceSwarm
         end
       end
 
-      def initialize(config_entry_id, repo_name = nil, branch_mappings = nil, depot_branch_creation = false)
+      def initialize(config_entry_id, repo_name = nil, branch_mappings = nil,
+                     depot_branch_creation = false, default_branch = nil)
         # validation happens on assignment
         self.config                = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
         @repo_name                 = repo_name
         self.branch_mappings       = branch_mappings if branch_mappings
         self.depot_branch_creation = depot_branch_creation if depot_branch_creation
+        self.default_branch        = default_branch if default_branch
       end
 
       # returns true if there are any files (even deleted) at the specified depot path, otherwise false
@@ -106,27 +109,41 @@ module PerforceSwarm
           fail PerforceSwarm::GitFusion::RepoCreatorError, 'No branches specified for the Git Fusion repository.'
         end
 
+        # Ensure the default branch exists within the branch_mappings
+        if default_branch && !branch_mappings.keys.include?(default_branch)
+          fail PerforceSwarm::GitFusion::RepoCreatorError, 'Default branch does not exist in the branch mappings'
+        end
+
+        mapping_config = []
         branch_mappings.each do |name, path|
           path.gsub!(%r{\/+(\.\.\.)?$}, '')
-          config << ''
+          branch_config =  ['']
 
           # Use the branch name as the git-fusion branch id, if we can
           # Else use a uuid for the branch id
           if VALID_BRANCH_ID_REGEX.match(name)
-            config << "[#{name}]"
+            branch_config << "[#{name}]"
           else
-            config << "[#{SecureRandome.uuid}]"
+            branch_config << "[#{SecureRandome.uuid}]"
           end
 
           # add the branch mapping as a 'stream' or a 'view' depending on the depot type
           if stream
-            config << "stream = #{path}"
+            branch_config << "stream = #{path}"
           else
-            config << "view = \"#{path}/...\" ..."
+            branch_config << "view = \"#{path}/...\" ..."
           end
 
-          config << "git-branch-name = #{name}"
+          branch_config << "git-branch-name = #{name}"
+
+          # Place the default branch at the start, otherwise append
+          if name == default_branch
+            mapping_config.unshift(*branch_config)
+          else
+            mapping_config.push(*branch_config)
+          end
         end
+        config.push(*mapping_config)
         config << ''
 
         config.join("\n")
@@ -254,6 +271,14 @@ module PerforceSwarm
       def branch_mappings=(branch_mappings)
         self.class.validate_branch_mappings(branch_mappings)
         @branch_mappings = branch_mappings
+      end
+
+      def default_branch(*args)
+        if args.length > 0
+          self.default_branch = args[0]
+          return self
+        end
+        @default_branch
       end
 
       def config(*args)

@@ -76,3 +76,14 @@ To uninstall GitSwarm EE, follow these steps:
             ```
             sudo yum remove helix-cli-base helix-p4d-base helix-git-fusion-base
             ```
+
+1.  Optional: **Remove the GitSwarm EE directory:**
+
+    After removing all GitSwarm EE data, and the GitSwarm EE packages and
+    dependencies, the directory `/opt/gitswarm` may continue to exist. If
+    so and you wish to remove this directory, run:
+    
+    ```bash
+    sudo rm -rf /opt/gitswarm
+    ```
+

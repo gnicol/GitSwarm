@@ -3,9 +3,10 @@ class @P4Tree
   existing_mappings: null
   updating_branch: null
 
-  constructor: (element, fusion_server, existing_mappings) ->
+  constructor: (element, fusion_server, existing_mappings, default_branch) ->
     this.$el           = $(element)
     @existing_mappings = existing_mappings
+    @default_branch    = default_branch
     tree_url           = '/gitswarm/p4_tree.json'
     tree_url           = gon.relative_url_root + tree_url if gon.relative_url_root?
     @disableFields()
@@ -67,9 +68,21 @@ class @P4Tree
       e.preventDefault()
       e.stopPropagation()
       if confirm('Are you sure?')
-        $(e.currentTarget).closest('li').remove()
+        liNode = $(e.currentTarget).closest('li')
+        liNode.remove()
+
+        # Reset the default branch to the first branch
+        if liNode.is('.default-branch') && this.$('.branch-list li').not('.updating').length
+          @setDefaultBranch(this.$('.branch-list li').not('.updating')[0])
+
         @cancelMappingEdit()
         @runTreeFilters()
+
+    # Mark a branch as the default branch for the project mapping
+    this.$el.on 'click', '.make-default', (e) =>
+      e.preventDefault()
+      e.stopPropagation()
+      @setDefaultBranch($(e.currentTarget).closest('li'))
 
     # Edit a branch in the project mapping
     this.$el.on 'click', '.edit-branch', (e) =>
@@ -98,6 +111,10 @@ class @P4Tree
     #  Load previous mapping back into page (in case of form error, etc)
     if @existing_mappings
       @addSavedMapping(branch, mapping) for branch, mapping of @existing_mappings
+
+      if @default_branch
+        branchNode = this.$(".branch-list input[name='git_fusion_branch_mappings[#{@default_branch}]']").closest('li')
+        @setDefaultBranch(branchNode) if branchNode
     else
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
@@ -310,7 +327,7 @@ class @P4Tree
   # enforce tree restrictions based on the mappings you already have
   runTreeFilters: ->
     filterButton      = this.$('.filter-actions a, .filter-actions .depot-type-filter')
-    mappingFormInputs = this.$('.branch-list li').not('.updating').find('input')
+    mappingFormInputs = this.$('.branch-list li').not('.updating').find('.branch-mapping-input')
 
     if mappingFormInputs.length
       depot            = @getDepotForNode(mappingFormInputs[0].value)
@@ -325,23 +342,25 @@ class @P4Tree
       filterButton.enable()
       @disableTooltip(filterButton)
       @restrictedDepot = null
-      this.$('.saved-branches .nothing-here-block').show() unless this.$('.branch-list li.updating input').length
+      this.$('.saved-branches .nothing-here-block').show() unless this.$('.branch-list li.updating').length
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
       @filterStreams(null)
 
   # set the current tree selected mapping as field in the form to submit during project creation
   addSavedMapping: (branchName, nodePath) ->
+    isFirst = this.$('.branch-list li').not('.updating').length == 0
     newBranch = """
     <li>
-      <input type="hidden" style="display:none;" name="git_fusion_branch_mappings[#{branchName}]" value="#{nodePath}" />
-      <div class="saved-branch-name">#{branchName}<div style="float:right;">
-        <a class="edit-branch" href="#">edit</a> | <a class="remove-branch" href="#">delete</a>
+      <input type="hidden" style="display:none;" class="branch-mapping-input" name="git_fusion_branch_mappings[#{branchName}]" value="#{nodePath}" />
+      <div class="saved-branch-name">#{branchName}<span class="label label-primary default-branch-label">default branch</span><div style="float:right;">
+        <span class="make-default-branch-text"><a class="make-default" href="#">make default</a> | </span><a class="edit-branch" href="#">edit</a> | <a class="remove-branch" href="#">delete</a>
       </div></div>
       <code class="saved-branch-path">#{nodePath}</code>
     </li>
     """
     newBranch = $(newBranch)
     newBranch.data('mapping', {branchName: branchName, nodePath: nodePath})
+    @setDefaultBranch(newBranch) if isFirst
 
     # Replace any existing mapping for the same branch name
     # Or add a new branch mapping
@@ -354,6 +373,20 @@ class @P4Tree
     @cancelMappingEdit(true)
     @clearBranchTree()
     @runTreeFilters()
+
+  setDefaultBranch: (branchNode) ->
+    branchNode = $(branchNode)
+
+    # unset the existing default branch
+    existingDefault = this.$('.branch-list li.default-branch')
+    existingDefault.removeClass('default-branch').find('input[name=git_fusion_default_branch]').remove()
+
+    # make the passed branch the default branch
+    data = branchNode.data('mapping')
+    branchNode.addClass('default-branch')
+    branchNode.prepend(
+      "<input type='hidden' style='display:none;'' name='git_fusion_default_branch' value='#{data.branchName}' />"
+    )
 
   restrictStreamSelection: (node) ->
     node  = this.$tree.get_node(node) if $.type(node) == 'string'

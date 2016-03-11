@@ -58,6 +58,7 @@ class @GitFusionProject
       original_repo_selection = $(@original_settings_selector).data('repo')
       this.$(@repo_name_selector).val(original_repo_selection).select2()
       existing_mappings = $(@original_settings_selector).data('branch-mappings')
+      default_branch    = $(@original_settings_selector).data('default-branch')
 
     if (this.$(@auto_create_selector).length)
       disabled_selector    = this.$(@disabled_selector).is(':checked')
@@ -80,7 +81,8 @@ class @GitFusionProject
 
     if p4d_file_selected
       this.$('.git-fusion-file-selector-wrapper').show()
-      p4_tree = new P4Tree(this.$('.git-fusion-split-tree'), fusion_server, existing_mappings) unless this.$('.jstree').length
+      unless this.$('.jstree').length
+        p4_tree = new P4Tree(this.$('.git-fusion-split-tree'), fusion_server, existing_mappings, default_branch)
     else
       this.$('.git-fusion-file-selector-wrapper').hide()
 

@@ -15,7 +15,7 @@ module PerforceSwarm
       include AutoCreateTemplates
 
       # Taken from git-fusion's p4gf_branch.py
-      VALID_BRANCH_ID_REGEX ||= /\A([A-Za-z0-9_.-=])+\z/
+      VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.-=])+\z/
 
       attr_accessor :description, :branch_mappings, :depot_branch_creation
       attr_writer :default_branch
@@ -121,7 +121,7 @@ module PerforceSwarm
 
           # Use the branch name as the git-fusion branch id, if we can
           # Else use a uuid for the branch id
-          if VALID_BRANCH_ID_REGEX.match(name)
+          if VALID_NAME_REGEX.match(name)
             branch_config << "[#{name}]"
           else
             branch_config << "[#{SecureRandom.uuid}]"

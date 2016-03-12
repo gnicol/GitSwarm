@@ -124,7 +124,7 @@ module PerforceSwarm
           if VALID_BRANCH_ID_REGEX.match(name)
             branch_config << "[#{name}]"
           else
-            branch_config << "[#{SecureRandome.uuid}]"
+            branch_config << "[#{SecureRandom.uuid}]"
           end
 
           # add the branch mapping as a 'stream' or a 'view' depending on the depot type

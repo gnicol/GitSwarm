@@ -1,0 +1,2 @@
+# GitSwarm Skip-CI
+# Skips GitLab's CI builds that attempt to happen as a result of the .gitlab-ci.yml that is a peer to this file

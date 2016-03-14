@@ -17,13 +17,13 @@ Versioning Engine prior to updating GitSwarm.
 -   **For Ubuntu:**
 
     ```bash
-    sudo apt-get install helix-git-fusion-base perforce-server
+    sudo apt-get install helix-git-fusion-base helix-p4d
     ```
 
 -   **For CentOS:**
 
     ```bash
-    sudo yum install helix-git-fusion-base perforce-server
+    sudo yum install helix-git-fusion-base helix-p4d
     ```
 
 ## Performing the update to 2016.1

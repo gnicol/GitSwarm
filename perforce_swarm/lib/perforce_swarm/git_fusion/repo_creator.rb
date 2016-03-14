@@ -318,7 +318,7 @@ module PerforceSwarm
       def streams_info(connection, depot)
         streams_info = {}
         connection.run('streams', "//#{depot}/...").each do |info|
-          stream_info[info['Stream']] = info
+          streams_info[info['Stream']] = info
         end
         streams_info
       end

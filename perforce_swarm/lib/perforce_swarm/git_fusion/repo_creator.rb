@@ -14,9 +14,11 @@ module PerforceSwarm
     class RepoCreator
       include AutoCreateTemplates
 
-      VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.-])+\z/
+      # Taken from git-fusion's p4gf_branch.py
+      VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.=-])+\z/
 
       attr_accessor :description, :branch_mappings, :depot_branch_creation
+      attr_writer :default_branch
       attr_reader :config
 
       def self.validate_config(config)
@@ -40,17 +42,21 @@ module PerforceSwarm
 
         # check all the branch mappings
         branch_mappings.each do |name, path|
-          fail "Invalid name '#{name}' specified in branch mapping." unless VALID_NAME_REGEX.match(name)
+          unless Gitlab::GitRefValidator.validate(name)
+            fail "Invalid name '#{name}' specified in branch mapping."
+          end
           validate_depot_path(path)
         end
       end
 
-      def initialize(config_entry_id, repo_name = nil, branch_mappings = nil, depot_branch_creation = false)
-        # config validation happens on assignment
-        self.config            = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
-        @repo_name             = repo_name
-        @branch_mappings       = branch_mappings
-        @depot_branch_creation = depot_branch_creation
+      def initialize(config_entry_id, repo_name = nil, branch_mappings = nil,
+                     depot_branch_creation = false, default_branch = nil)
+        # validation happens on assignment
+        self.config                = PerforceSwarm::GitlabConfig.new.git_fusion.entry(config_entry_id)
+        @repo_name                 = repo_name
+        self.branch_mappings       = branch_mappings if branch_mappings
+        self.depot_branch_creation = depot_branch_creation if depot_branch_creation
+        self.default_branch        = default_branch if default_branch
       end
 
       # returns true if there are any files (even deleted) at the specified depot path, otherwise false
@@ -83,7 +89,7 @@ module PerforceSwarm
 
       # generates the p4gf_config file that should be checked into Perforce under
       # //.git-fusion/repos/repo_name/p4gf_config
-      def p4gf_config
+      def p4gf_config(stream = false)
         config_description  = 'Repo automatically created by GitSwarm.'
         config_description += @description ? ' ' + @description.tr("\n", ' ').strip : ''
 
@@ -103,13 +109,41 @@ module PerforceSwarm
           fail PerforceSwarm::GitFusion::RepoCreatorError, 'No branches specified for the Git Fusion repository.'
         end
 
+        # Ensure the default branch exists within the branch_mappings
+        if default_branch && !branch_mappings.keys.include?(default_branch)
+          fail PerforceSwarm::GitFusion::RepoCreatorError, 'Default branch does not exist in the branch mappings'
+        end
+
+        mapping_config = []
         branch_mappings.each do |name, path|
           path.gsub!(%r{\/+(\.\.\.)?$}, '')
-          config << ''
-          config << "[#{name}]"
-          config << "view = \"#{path}/...\" ..."
-          config << "git-branch-name = #{name}"
+          branch_config = ['']
+
+          # Use the branch name as the git-fusion branch id, if we can
+          # Else use a uuid for the branch id
+          if VALID_NAME_REGEX.match(name)
+            branch_config << "[#{name}]"
+          else
+            branch_config << "[#{SecureRandom.uuid}]"
+          end
+
+          # add the branch mapping as a 'stream' or a 'view' depending on the depot type
+          if stream
+            branch_config << "stream = #{path}"
+          else
+            branch_config << "view = \"#{path}/...\" ..."
+          end
+
+          branch_config << "git-branch-name = #{name}"
+
+          # Place the default branch at the start, otherwise append
+          if name == default_branch
+            mapping_config.unshift(*branch_config)
+          else
+            mapping_config.push(*branch_config)
+          end
         end
+        config.push(*mapping_config)
         config << ''
 
         config.join("\n")
@@ -147,6 +181,21 @@ module PerforceSwarm
         unless streams_depots.length == 0 || (streams_depots.length == 1 && branch_depots.length == 1)
           fail 'Branch depots must either all be non-streams, or all use the same stream.'
         end
+
+        # we're done unless we need to do further streams branch validation
+        return unless streams_depots.length == 1
+
+        # grab information for all streams in the depot
+        streams = streams_info(connection, streams_depots.keys.first)
+
+        # determine the mainline for each branch mapping's depot path
+        mainline_paths = []
+        branch_mappings.values.each do |depot_path|
+          mainline_paths << determine_mainline(depot_path, streams)
+        end
+
+        # there can be only one!
+        fail 'Branches based on streams must all use the same mainline stream.' unless mainline_paths.uniq.length == 1
       end
 
       # run pre-flight checks for:
@@ -175,11 +224,18 @@ module PerforceSwarm
         # run our pre-flight checks, which raises an exception if we shouldn't continue with the save
         save_preflight(p4)
 
+        # determine if we're using a streams depot
+        stream = false
+        if branch_mappings && !branch_mappings.empty?
+          first_depot = PerforceSwarm::P4::Spec::Depot.id_from_path(branch_mappings.values.first)
+          stream      = PerforceSwarm::P4::Spec::Depot.fetch(p4, first_depot)['Type'] == 'stream'
+        end
+
         # generate our file and attempt to add it
         p4.with_temp_client do |tmpdir|
           file = local_p4gf_config_path(tmpdir)
           FileUtils.mkdir_p(File.dirname(file))
-          File.write(file, p4gf_config)
+          File.write(file, p4gf_config(stream))
           add_output = p4.run('add', file).shift
           if add_output.is_a?(String) && add_output.end_with?(" - can't add existing file")
             fail FileAlreadyExists, "Looks like #{repo_name} already exists."
@@ -217,6 +273,14 @@ module PerforceSwarm
         @branch_mappings = branch_mappings
       end
 
+      def default_branch(*args)
+        if args.length > 0
+          self.default_branch = args[0]
+          return self
+        end
+        @default_branch
+      end
+
       def config(*args)
         if args.length > 0
           self.config = args[0]
@@ -247,6 +311,21 @@ module PerforceSwarm
           return self
         end
         @description
+      end
+
+      private
+
+      def streams_info(connection, depot)
+        streams_info = {}
+        connection.run('streams', "//#{depot}/...").each do |info|
+          stream_info[info['Stream']] = info
+        end
+        streams_info
+      end
+
+      def determine_mainline(path, stream_info)
+        return path if stream_info[path]['Type'] == 'mainline'
+        determine_mainline(stream_info[path]['Parent'], stream_info)
       end
     end
   end

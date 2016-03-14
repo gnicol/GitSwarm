@@ -1,3 +1,9 @@
+PATH
+  remote: perforce_swarm
+  specs:
+    perforce_swarm (2016.1)
+      rails (~> 4.2.4)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -64,6 +70,7 @@ GEM
     ast (2.1.0)
     astrolabe (1.3.1)
       parser (~> 2.2)
+    atomic (1.1.99)
     attr_encrypted (1.3.4)
       encryptor (>= 1.3.0)
     attr_required (1.0.0)
@@ -445,7 +452,11 @@ GEM
       turbolinks
     jquery-ui-rails (5.0.5)
       railties (>= 3.2.16)
+    js-routes (1.0.1)
+      railties (>= 3.2)
+      sprockets-rails
     json (1.8.3)
+    jstree-rails-4 (3.2.1)
     jwt (1.5.2)
     kaminari (0.16.3)
       actionpack (>= 3.0.0)
@@ -547,6 +558,7 @@ GEM
     org-ruby (0.9.12)
       rubypants (~> 0.2)
     orm_adapter (0.5.0)
+    p4ruby (2015.1.0)
     paranoia (2.1.4)
       activerecord (~> 4.0)
     parser (2.2.3.0)
@@ -565,6 +577,9 @@ GEM
       slop (~> 3.4)
     pry-rails (0.3.4)
       pry (>= 0.9.10)
+    pry-remote (0.1.8)
+      pry (~> 0.9)
+      slop (~> 3.0)
     pyu-ruby-sasl (0.0.3.3)
     quiet_assets (1.0.3)
       railties (>= 3.1, < 5.0)
@@ -888,6 +903,7 @@ DEPENDENCIES
   annotate (~> 2.6.0)
   asana (~> 0.4.0)
   asciidoctor (~> 1.5.2)
+  atomic
   attr_encrypted (~> 1.3.4)
   awesome_print (~> 1.2.0)
   babosa (~> 1.0.2)
@@ -951,6 +967,8 @@ DEPENDENCIES
   jquery-scrollto-rails (~> 1.4.3)
   jquery-turbolinks (~> 2.1.0)
   jquery-ui-rails (~> 5.0.0)
+  js-routes (~> 1.0.0)
+  jstree-rails-4 (~> 3.2.1)
   kaminari (~> 0.16.3)
   letter_opener (~> 1.1.2)
   loofah (~> 2.0.3)
@@ -980,10 +998,13 @@ DEPENDENCIES
   omniauth-twitter (~> 1.2.0)
   omniauth_crowd (~> 2.2.0)
   org-ruby (~> 0.9.12)
+  p4ruby (= 2015.1.0)
   paranoia (~> 2.0)
+  perforce_swarm!
   pg (~> 0.18.2)
   poltergeist (~> 1.9.0)
   pry-rails
+  pry-remote
   quiet_assets (~> 1.0.2)
   rack-attack (~> 4.3.1)
   rack-cors (~> 0.4.0)

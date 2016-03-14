@@ -1,4 +1,4 @@
-## Configuration
+## Configuring Helix Mirroring
 
 Before you can use Helix Mirroring, GitSwarm needs some configuration
 that describes where the Git Fusion service(s) exist.

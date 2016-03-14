@@ -1,4 +1,4 @@
-## Disable Helix mirroring
+## Disable Helix Mirroring
 
 Once Helix mirroring has been [enabled](enable.md), it can be disabled.
 When disabled, the Git Fusion [configuration](configuration.md) remains in

@@ -1,4 +1,4 @@
-## Re-enable Mirroring
+## Re-enable Helix Mirroring
 
 Often, when Helix mirroring has been enabled for a project, and
 subsequently disabled, it can later be re-enabled. In certain situations,

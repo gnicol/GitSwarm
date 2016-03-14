@@ -1,4 +1,4 @@
-## Requirements
+## Requirements for Helix Mirroring
 
 *   Helix Git Fusion 2015.2, or newer.
 *   Helix GitSwarm 2015.3, or newer.

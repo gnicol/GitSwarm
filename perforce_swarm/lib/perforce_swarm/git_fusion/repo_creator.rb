@@ -14,7 +14,8 @@ module PerforceSwarm
     class RepoCreator
       include AutoCreateTemplates
 
-      VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.-])+\z/
+      # Taken from git-fusion's p4gf_branch.py
+      VALID_NAME_REGEX ||= /\A([A-Za-z0-9_.=-])+\z/
 
       attr_accessor :description, :branch_mappings, :depot_branch_creation
       attr_writer :default_branch
@@ -41,7 +42,7 @@ module PerforceSwarm
 
         # check all the branch mappings
         branch_mappings.each do |name, path|
-          unless VALID_NAME_REGEX.match(name) && Gitlab::GitRefValidator.validate(name)
+          unless Gitlab::GitRefValidator.validate(name)
             fail "Invalid name '#{name}' specified in branch mapping."
           end
           validate_depot_path(path)
@@ -116,8 +117,15 @@ module PerforceSwarm
         mapping_config = []
         branch_mappings.each do |name, path|
           path.gsub!(%r{\/+(\.\.\.)?$}, '')
-          branch_config =  ['']
-          branch_config << "[#{name}]"
+          branch_config = ['']
+
+          # Use the branch name as the git-fusion branch id, if we can
+          # Else use a uuid for the branch id
+          if VALID_NAME_REGEX.match(name)
+            branch_config << "[#{name}]"
+          else
+            branch_config << "[#{SecureRandom.uuid}]"
+          end
 
           # add the branch mapping as a 'stream' or a 'view' depending on the depot type
           if stream

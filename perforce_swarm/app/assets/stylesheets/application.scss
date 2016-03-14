@@ -41,12 +41,6 @@ i.fa-p4-depot-icon, .jstree-icon.fa-p4-depot-icon {
   position: relative;
 }
 
-i.fa-p4-remote-depot-icon, .jstree-icon.fa-p4-remote-depot-icon {
-  background-image: image-url('p4-remote-depot-icon.png');
-  background-position: center center;
-  position: relative;
-}
-
 i.fa-p4-depot-folder, .jstree-icon.fa-p4-depot-folder {
   background-image: image-url('p4-depot-folder.png');
   background-position: center center;
@@ -65,21 +59,6 @@ i.fa-p4-badge:after {
 
 i.fa-p4-stream-badge:after {
   background-image: image-url('p4-stream-badge.png');
-  background-position: center center;
-}
-
-i.fa-p4-spec-badge:after {
-  background-image: image-url('p4-spec-badge.png');
-  background-position: center center;
-}
-
-i.fa-p4-archive-badge:after {
-  background-image: image-url('p4-archive-badge.png');
-  background-position: center center;
-}
-
-i.fa-p4-unload-badge:after {
-  background-image: image-url('p4-unload-badge.png');
   background-position: center center;
 }
 

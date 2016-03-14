@@ -29,6 +29,12 @@ class Spinach::Features::MirrorExistingProject < Spinach::FeatureSteps
     page.should_not have_selector('a.btn.disabled', text: 'Re-enable Helix Mirroring')
   end
 
+  step 'The tooltip should say "Click to re-enable mirroring"' do
+    page.should have_selector('.helix-mirrored-status-label[data-title*=' \
+                              '"below to re-enable mirroring!"]'
+                             )
+  end
+
   step 'I should see a no Git Fusion instances configured tooltip' do
     page.should have_selector('.helix-mirrored-status-label[data-title*=' \
                               '"no Git Fusion instances have been configured."]'

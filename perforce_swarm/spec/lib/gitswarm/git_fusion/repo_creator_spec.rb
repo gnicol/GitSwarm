@@ -165,7 +165,26 @@ describe PerforceSwarm::GitFusion::RepoCreator do
       expect { creator.validate_depots(@connection) }.to raise_error(RuntimeError)
     end
 
+    it 'raises an exception if not all the streams used in branch mappings have the same mainline' do
+      streams = {
+        '//stream1/foo' => { 'Type' => 'mainline', 'Parent' => 'none' },
+        '//stream1/bar' => { 'Type' => 'mainline', 'Parent' => 'none' }
+      }
+      allow_any_instance_of(PerforceSwarm::GitFusion::RepoCreator).to receive(:streams_info).and_return(streams)
+      allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
+      PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
+      PerforceSwarm::P4::Spec::Depot.create(@connection, 'stream1', 'Type' => 'stream')
+      creator = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-project')
+      creator.branch_mappings('branch1' => '//stream1/foo', 'branch2' => '//stream1/bar')
+      expect { creator.validate_depots(@connection) }.to raise_error
+    end
+
     it 'does not raise an exception if the same streams depot is used for all branch mappings' do
+      streams = {
+        '//stream1/foo' => { 'Type' => 'mainline', 'Parent' => 'none' },
+        '//stream1/bar' => { 'Type' => 'development', 'Parent' => '//stream1/foo' }
+      }
+      allow_any_instance_of(PerforceSwarm::GitFusion::RepoCreator).to receive(:streams_info).and_return(streams)
       allow_any_instance_of(PerforceSwarm::GitlabConfig).to receive(:git_fusion).and_return(@base_config)
       PerforceSwarm::P4::Spec::Depot.create(@connection, '.git-fusion')
       PerforceSwarm::P4::Spec::Depot.create(@connection, 'stream1', 'Type' => 'stream')
@@ -261,6 +280,25 @@ view = "//depot1/foo/..." ...
 git-branch-name = branch1
 eos
       expect(creator.p4gf_config).to eq(expected)
+    end
+
+    it 'generates an appropriate p4gf_config for streams' do
+      branch_mapping = { 'branch1' => '//depot1/foo' }
+      creator        = PerforceSwarm::GitFusion::RepoCreator.new('foo', 'my-awesome-project', branch_mapping)
+      creator.description('Extra description parts.')
+      expected = <<eos
+[@repo]
+description = Repo automatically created by GitSwarm. Extra description parts.
+enable-git-submodules = yes
+enable-git-merge-commits = yes
+enable-git-branch-creation = yes
+ignore-author-permissions = yes
+
+[branch1]
+stream = //depot1/foo
+git-branch-name = branch1
+eos
+      expect(creator.p4gf_config(true)).to eq(expected)
     end
   end
 end

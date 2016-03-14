@@ -22,7 +22,7 @@ module PerforceSwarm
 
       # generates the p4gf_config file that should be checked into Perforce under
       # //.git-fusion/repos/repo_name/p4gf_config
-      def p4gf_config
+      def p4gf_config(stream = false)
         depot_branch_creation("#{depot_path}/{git_branch_name}")
         branch_mappings('master' => "#{depot_path}/master")
         super

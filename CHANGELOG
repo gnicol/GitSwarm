@@ -1,6 +1,7 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 8.6.0 (unreleased)
+  - Support Golang subpackage fetching (Stan Hu)
   - Contributions to forked projects are included in calendar
   - Improve the formatting for the user page bio (Connor Shea)
   - Removed the default password from the initial admin account created during
@@ -29,12 +30,14 @@ v 8.6.0 (unreleased)
   - Add main language of a project in the list of projects (Tiago Botelho)
   - Add ability to show archived projects on dashboard, explore and group pages
   - Move group activity to separate page
+  - Continue parameters are checked to ensure redirection goes to the same instance
 
 v 8.5.5
   - Ensure removing a project removes associated Todo entries
   - Prevent a 500 error in Todos when author was removed
   - Fix pagination for filtered dashboard and explore pages
   - Fix "Show all" link behavior
+  - Add #upcoming filter to Milestone filter (Tiago Botelho)
 
 v 8.5.4
   - Do not cache requests for badges (including builds badge)

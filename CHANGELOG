@@ -1,7 +1,9 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v 8.6.0 (unreleased)
+  - Bump gitlab_git to 9.0.3 (Stan Hu)
   - Support Golang subpackage fetching (Stan Hu)
+  - Bump Capybara gem to 2.6.2 (Stan Hu)
   - Contributions to forked projects are included in calendar
   - Improve the formatting for the user page bio (Connor Shea)
   - Removed the default password from the initial admin account created during

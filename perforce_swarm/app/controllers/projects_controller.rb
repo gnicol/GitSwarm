@@ -67,19 +67,21 @@ module PerforceSwarm
       end
 
       # Sanitize branch names
+      if params[:git_fusion_default_branch]
+        # Do the same santization as GitLab's branch create action.
+        # strip_tags removes tags, but keeps their content, sanitize will clean
+        # up the remaining sneakier techniques of using ascii, hex, unicode
+        # characters to get html into the input.
+        params[:git_fusion_default_branch] = sanitize(strip_tags(params[:git_fusion_default_branch]))
+      end
       if params[:git_fusion_branch_mappings]
         # Create a new hash of branch mappings with sanitized branch names
         branch_mappings = {}
         params[:git_fusion_branch_mappings].each do |branch_name, path|
-          # Do the same santization as GitLab's branch create action.
-          # strip_tags removes tags, but keeps their content, sanitize will clean
-          # up the remaining sneakier techniques of using ascii, hex, unicode
-          # characters to get html into the input.
           sanitized_name                  = sanitize(strip_tags(branch_name.dup))
           branch_mappings[sanitized_name] = path
         end
         params[:git_fusion_branch_mappings] = branch_mappings
-        params[:git_fusion_default_branch]  = sanitize(strip_tags(params[:git_fusion_default_branch]))
       end
 
       branches = (params[:git_fusion_branch_mappings] || {}).keys

@@ -389,7 +389,7 @@ class @P4Tree
     data = branchNode.data('mapping')
     branchNode.addClass('default-branch')
     branchNode.prepend(
-      "<input type='hidden' style='display:none;'' name='git_fusion_default_branch' value='#{_.escape(data.branchName)}' />"
+      "<input type='hidden' style='display:none;' name='git_fusion_default_branch' value='#{_.escape(data.branchName)}' />"
     )
 
   restrictStreamSelection: (node) ->

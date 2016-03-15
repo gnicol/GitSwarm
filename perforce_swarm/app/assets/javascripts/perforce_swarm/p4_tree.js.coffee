@@ -147,7 +147,7 @@ class @P4Tree
     # Update the filter button
     filterLabel = this.$('.filter-actions .depot-type-filter')
     filterLabel.data('value', if stream then 'depot-stream' else 'depot-regular')
-    filterLabel.find('.type-text').text(if stream then 'Stream Depots' else 'Regular Depots')
+    filterLabel.find('.type-text').text(if stream then 'Streams' else 'Depots')
 
     depots = this.$tree.get_node('#').children
     for depot in depots
@@ -352,7 +352,7 @@ class @P4Tree
     newBranch = """
     <li>
       <input type="hidden" style="display:none;" class="branch-mapping-input" name="git_fusion_branch_mappings[#{branchName}]" value="#{nodePath}" />
-      <div class="saved-branch-name">#{branchName}<span class="label label-primary default-branch-label">default branch</span><div style="float:right;">
+      <div class="saved-branch-name"><span class="saved-branch-name-label">#{branchName}</span><span class="label label-primary default-branch-label">default branch</span><div style="float:right;">
         <span class="make-default-branch-text"><a class="make-default" href="#">make default</a> | </span><a class="edit-branch" href="#">edit</a> | <a class="remove-branch" href="#">delete</a>
       </div></div>
       <code class="saved-branch-path">#{nodePath}</code>

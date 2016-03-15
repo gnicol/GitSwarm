@@ -113,8 +113,8 @@ class @P4Tree
       @addSavedMapping(branch, mapping) for branch, mapping of @existing_mappings
 
       if @default_branch
-        branchNode = this.$(".branch-list input[name='git_fusion_branch_mappings[#{@default_branch}]']").closest('li')
-        @setDefaultBranch(branchNode) if branchNode
+        branchNode = $(document.getElementsByName("git_fusion_branch_mappings[#{@default_branch}]")).closest('li')
+        @setDefaultBranch(branchNode) if branchNode.length
     else
       @filterDepots(this.$('.depot-type-filter').data('value') == 'depot-stream')
 
@@ -351,8 +351,8 @@ class @P4Tree
     isFirst = this.$('.branch-list li').not('.updating').length == 0
     newBranch = """
     <li>
-      <input type="hidden" style="display:none;" class="branch-mapping-input" name="git_fusion_branch_mappings[#{branchName}]" value="#{nodePath}" />
-      <div class="saved-branch-name">#{branchName}<span class="label label-primary default-branch-label">default branch</span><div style="float:right;">
+      <input type="hidden" style="display:none;" class="branch-mapping-input" name="git_fusion_branch_mappings[#{_.escape(branchName)}]" value="#{nodePath}" />
+      <div class="saved-branch-name">#{@escapeHtml(branchName)}<span class="label label-primary default-branch-label">default branch</span><div style="float:right;">
         <span class="make-default-branch-text"><a class="make-default" href="#">make default</a> | </span><a class="edit-branch" href="#">edit</a> | <a class="remove-branch" href="#">delete</a>
       </div></div>
       <code class="saved-branch-path">#{nodePath}</code>
@@ -364,7 +364,7 @@ class @P4Tree
 
     # Replace any existing mapping for the same branch name
     # Or add a new branch mapping
-    existing = (@updating_branch && @updating_branch.row) || this.$('.branch-list').find("[name='git_fusion_branch_mappings[#{branchName}]']")
+    existing = (@updating_branch && @updating_branch.row) || $(document.getElementsByName("git_fusion_branch_mappings[#{branchName}]"))
     if existing.length
       existing.closest('li').replaceWith(newBranch)
     else
@@ -373,6 +373,10 @@ class @P4Tree
     @cancelMappingEdit(true)
     @clearBranchTree()
     @runTreeFilters()
+
+  escapeHtml: (str) ->
+    # Use the browser's own escapement
+    $('<div></div>').text(str).html()
 
   setDefaultBranch: (branchNode) ->
     branchNode = $(branchNode)
@@ -385,7 +389,7 @@ class @P4Tree
     data = branchNode.data('mapping')
     branchNode.addClass('default-branch')
     branchNode.prepend(
-      "<input type='hidden' style='display:none;'' name='git_fusion_default_branch' value='#{data.branchName}' />"
+      "<input type='hidden' style='display:none;' name='git_fusion_default_branch' value='#{_.escape(data.branchName)}' />"
     )
 
   restrictStreamSelection: (node) ->

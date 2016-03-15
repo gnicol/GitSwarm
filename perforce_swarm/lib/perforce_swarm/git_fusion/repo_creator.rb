@@ -42,6 +42,8 @@ module PerforceSwarm
 
         # check all the branch mappings
         branch_mappings.each do |name, path|
+          fail 'Empty branch in branch mapping.' if !name || name.empty?
+
           unless Gitlab::GitRefValidator.validate(name)
             fail "Invalid name '#{name}' specified in branch mapping."
           end

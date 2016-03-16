@@ -3,6 +3,14 @@
 Before you can use Helix Mirroring, GitSwarm needs some configuration
 that describes where the Git Fusion service(s) exist.
 
+For Helix Mirroring, GitSwarm needs to be configured to connect to one or
+more Git Fusion servers. GitSwarm always connects to a Git Fusion server as
+a specific user, `gitswarm` if you don't specify otherwise. The "gitswarm"
+user must exist in the Helix Versioning Engine as a standard user account
+(not an `operator` or `service` user). The "gitswarm" user does not need
+any special protections in the Helix Versioning Engine, but does require
+read/write access to the `//.git-fusion` depot.
+
 ### Global Configuration
 
 GitSwarm supports a special server entry called `global`, which contains
@@ -22,22 +30,17 @@ In the above example, the user `global-user` is used to log in to the
 `development` and `production` Git Fusion servers. The user for the `local`
 Git Fusion server remains as `gitswarm`.
 
-> Note: Only `user`, `password`, `git_config_params`, `perforce['user']`,
-        `perforce['password']` and `auto_create` settings can have global
-        defaults. Global settings for `url` and `perforce['port']` is
-        ignored if present.
-Git Fusion server remains `gitswarm`.
+> **Note:** Only `user`, `password`, `git_config_params`, `perforce['user']`,
+> `perforce['password']` and `auto_create` settings can have global
+> defaults. Global settings for `url` and `perforce['port']` is ignored if
+> present.
 
-> Note: Only `user`, `password`, `git_config_params`, `perforce['user']`,
-  `perforce['password']` and `auto_create` settings can have global
-  defaults. Global settings for `url` and `perforce['port']` is ignored if
-  present.
-
-> Note: The following priority is given to user/password lookups:
-  1.  Entry-specific user/password keys
-  1.  User/password specified on the Git Fusion server `url`
-  1.  Global user/password
-  1.  Default (`gitswarm` for user, `''` for password)
+> **Note:** The following priority is given to user/password lookups:
+>
+> 1.  Entry-specific user/password keys
+> 1.  User/password specified on the Git Fusion server `url`
+> 1.  Global user/password
+> 1.  Default (`gitswarm` for user, `''` for password)
 
 ### Using an HTTP(S) connection
 
@@ -51,14 +54,14 @@ Git Fusion server remains `gitswarm`.
     gitswarm['git-fusion']['my_entry']['password'] = '<password for "gitswarm" user>'
     ```
 
-    > Note: The user (e.g. `gitswarm`) needs to exist in the Helix
-      Versioning Engine that the Git Fusion service uses, and must have
-      permission to access the repositories you wish to import from.
+    > **Note:** The "gitswarm" user needs to exist in the Helix Versioning
+    > Engine that the Git Fusion service uses, and must have permission to
+    > access the repositories you wish to import from.
 
-    > Note: `my_entry` is an example key that is used to configure the
-      connection to a particular Git Fusion server. Similarly, you can
-      include configurations to other Git Fusion servers under other
-      uniquely-named keys.
+    > **Note:** `my_entry` is an example key that is used to configure the
+    > connection to a particular Git Fusion server. Similarly, you can
+    > include configurations to other Git Fusion servers under other
+    > uniquely-named keys.
 
     ```ruby
     gitswarm['git-fusion']['local']['url']      = 'http://gitswarm@gitfusion.host/'
@@ -67,17 +70,17 @@ Git Fusion server remains `gitswarm`.
     gitswarm['git-fusion']['other']['password'] = '<password for "other-user" user>'
     ```
 
-    > Note: While we do not recommend using self-signed SSL certificates
-      (and these should never be used in production), if you are using
-      self-signed certificates for HTTPS connections in a test environment,
-      you need to specify:
+    > **Note:** While we do not recommend using self-signed SSL certificates
+    > (and these should never be used in production), if you are using
+    > self-signed certificates for HTTPS connections in a test environment,
+    > you need to specify:
 
     ```ruby
     gitswarm['git-fusion']['my_entry']['git_config_params'] = 'http.sslVerify=false'
     ```
 
-    > Note: the key `my_entry` can be replaced with a unique value of your
-      choosing.
+    > **Note:** the key `my_entry` can be replaced with a unique value of your
+    > choosing.
 
 1.  **Make the configuration change active:**
 
@@ -101,27 +104,26 @@ Git Fusion server remains `gitswarm`.
     sudo gitswarm-ctl reconfigure
     ```
 
+    > **Note:** `reconfigure` also ensures that the "gitswarm" user has a
+    > public SSH key.
+
 To permit GitSwarm to connect to Git Fusion via SSH, follow these steps:
 
-1.  **Get a copy of the `git` user's public SSH key**
+1.  **Get a copy of the `git` user's public SSH key from the GitSwarm host
+    machine.**
 
     ```bash
     sudo cat ~git/.ssh/id_rsa.pub
     ```
 
-1.  **Install the public key in the Git Fusion service.**
+1.  **Install the `git` user's public SSH key in the Git Fusion service.**
 
     This process involves interacting with the Helix Versioning Engine that
-    the Git Fusion service connects to. The steps are described in the the
-    [Git Fusion
+    the Git Fusion service connects to. The steps are described in the [Git
+    Fusion
     guide](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/index.html),
     in the section [Authenticating Git Users using
     SSH](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/appendix.ssh.html).
-
-    > Note: When installing the public key on the Git Fusion service, a
-            standard user with read/write access to the `//.git-fusion`
-            depot needs to exist (we recommend `gitswarm`). The public key
-            needs to be installed in Git Fusion/P4D for that user.
 
 ### Convention-based Repository Configuration
 
@@ -141,9 +143,9 @@ gitswarm['git-fusion']['my_entry']['user']     = '<perforce-user-id>'
 gitswarm['git-fusion']['my_entry']['password'] = '<password for "gitswarm" user>'
 ```
 
-> Note: If no `port` is specified under the `perforce` key, GitSwarm
-  connects to the given Git Fusion instance and use the same port as Git
-  Fusion (the `my_entry` Git Fusion instance in the above example).
+> **Note:** If no `port` is specified under the `perforce` key, GitSwarm
+> connects to the given Git Fusion server and uses the same port as Git
+> Fusion (the `my_entry` Git Fusion server in the above example).
 
 If the auto-detected Perforce Port is incorrect, you may optionally specify
 the appropriate value manually by setting:
@@ -152,20 +154,21 @@ the appropriate value manually by setting:
 gitswarm['git-fusion']['my_entry']['perforce']['port']  = 'ssl:my-fusion:1666'
 ```
 
-> Note: GitSwarm uses the following priority for determining user/password
-  to connect to Perforce:
-  1.    Entry-specific user/password keys
-  1.    User/password specified on the Git Fusion server `url`
-  1.    Global user/password
-  1.    Default (`gitswarm` for user, `''` for password)
+> **Note:** GitSwarm uses the following priority for determining
+> user/password to connect to Perforce:
+>
+> 1.    Entry-specific user/password keys
+> 1.    User/password specified on the Git Fusion server `url`
+> 1.    Global user/password
+> 1.    Default (`gitswarm` for user, `''` for password)
 
-> Note: The user (e.g. `gitswarm`) needs to exist in the Helix Versioning
-  Engine that the Git Fusion service uses, and must have permission to
-  access the repositories you wish to import from.
+> **Note:** The user (e.g. `gitswarm`) needs to exist in the Helix
+> Versioning Engine that the Git Fusion service uses, and must have
+> permission to access the repositories you wish to import from.
 
-> Note: The `my_entry` key is used to assign config values to a particular
-  git-fusion instance. You can include more configured servers under other
-  keys.
+> **Note:** The `my_entry` key is used to assign config values to a
+> particular Git Fusion server. You can include more configured servers
+> under other keys.
 
 #### Auto-Create Configuration
 
@@ -179,12 +182,12 @@ gitswarm['git-fusion']['global']['auto_create']['path_template']      = '//gitsw
 gitswarm['git-fusion']['global']['auto_create']['repo_name_template'] = 'gitswarm-{namespace}-{project-path}'
 ```
 
-> Note: `{namespace}` and `{project-path}` are substituted for the GitSwarm
-  project's namespace and project path (name) when the project is created.
+> **Note:** `{namespace}` and `{project-path}` are substituted for the GitSwarm
+> project's namespace and project path (name) when the project is created.
 
-> Note: The depot specified in the `path_template` ('gitswarm' in the above
-  example) must exist *prior* to attempting to use the convention-based
-  repository feature. GitSwarm does *not* create this depot for you.
+> **Note:** The depot specified in the `path_template` ('gitswarm' in the above
+> example) must exist *prior* to attempting to use the convention-based
+> repository feature. GitSwarm does *not* create this depot for you.
 
 #### Sample Configuration
 

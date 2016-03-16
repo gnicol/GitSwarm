@@ -116,6 +116,10 @@ To permit GitSwarm to connect to Git Fusion via SSH, follow these steps:
     sudo cat ~git/.ssh/id_rsa.pub
     ```
 
+    > **Note:** It is possible to modify the username of the system user that
+    > GitSwarm-Shell uses. If you have modified the system username,
+    > replace `git` in the command above with the configured username.
+
 1.  **Install the `git` user's public SSH key in the Git Fusion service.**
 
     This process involves interacting with the Helix Versioning Engine that

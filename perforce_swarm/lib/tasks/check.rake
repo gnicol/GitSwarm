@@ -87,7 +87,7 @@ namespace :perforce_swarm do
       if current_version.valid? && required_version <= current_version
         puts "yes (#{current_version})".green
       else
-        puts "no".red
+        puts 'no'.red
         try_fixing_it(
           "Update your git to a version >= #{required_version} from #{current_version}"
         )

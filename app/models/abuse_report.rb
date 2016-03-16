@@ -19,9 +19,9 @@ class AbuseReport < ActiveRecord::Base
   validates :message, presence: true
   validates :user_id, uniqueness: true
 
-  def remove_user
+  def remove_user(deleted_by:)
     user.block
-    user.destroy
+    DeleteUserWorker.perform_async(deleted_by.id, user.id, delete_solo_owned_groups: true)
   end
 
   def notify

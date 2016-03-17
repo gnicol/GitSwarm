@@ -84,12 +84,12 @@
   }
 
   .project-repo-buttons {
-    margin-top: 12px;
-    margin-bottom: 0px;
+    margin-top: 20px;
+    margin-bottom: 0;
 
     .count-buttons {
       display: block;
-      margin-bottom: 12px;
+      margin-bottom: 20px;
     }
 
     .clone-row {
@@ -155,14 +155,14 @@
         line-height: 13px;
         padding: $gl-vert-padding $gl-padding;
         letter-spacing: .4px;
-        padding: 10px;
+        padding: 10px 14px;
         text-align: center;
         vertical-align: middle;
         touch-action: manipulation;
         cursor: pointer;
         background-image: none;
         white-space: nowrap;
-        margin: 0 11px 0px 4px;
+        margin: 0 11px 0 4px;
 
         &:hover {
           background: #fff;
@@ -210,7 +210,7 @@
 }
 
 .project_member_row form {
-  margin: 0px;
+  margin: 0;
 }
 
 .transfer-project .select2-container {
@@ -286,11 +286,11 @@ table.table.protected-branches-list tr.no-border {
   padding-bottom: 4px;
 
   ul.nav {
-    display:inline-block;
+    display: inline-block;
   }
 
   .nav li {
-    display:inline;
+    display: inline;
   }
 
   .nav > li > a {
@@ -303,11 +303,11 @@ table.table.protected-branches-list tr.no-border {
   }
 
   li {
-    display:inline;
+    display: inline;
   }
 
   a {
-    float:left;
+    float: left;
     font-size: 17px;
   }
 

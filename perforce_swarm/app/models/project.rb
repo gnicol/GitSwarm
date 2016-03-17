@@ -104,6 +104,25 @@ module PerforceSwarm
     def git_fusion_repo_name
       git_fusion_repo_segments[1]
     end
+
+    def default_branch
+      # If project is mirrored and a head has not been sent, ask fusion for it's head.
+      if !@default_branch && git_fusion_mirrored? && repository.rugged_head.nil?
+        begin
+          @default_branch = PerforceSwarm::Repo.new(repository.path_to_repo).mirror_head
+        rescue => e
+          # an exception occurred while getting/setting the head, so log it
+          Gitlab::GitLogger.error("#{e.inspect}\n\tBACKTRACE: #{e.backtrace.join("\n")}")
+        end
+      end
+      @default_branch || super
+    end
+
+    def reload_default_branch
+      # gitlab_git caches it's repo_head so we need to regrab the raw repository to have it update
+      repository.reload_raw_repository
+      super
+    end
   end
 end
 
@@ -136,6 +155,10 @@ class Project < ActiveRecord::Base
 
     # create mirror remote
     PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
+
+    # Try and make it so the current head isn't likely an actual branch before we fetch.
+    # Otherwise it will end up set to that branch, even if git-fusion's HEAD is different
+    change_head('__gitswarm.import__')
 
     # kick off and background initial import task
     import_job = fork do

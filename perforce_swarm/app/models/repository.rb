@@ -48,6 +48,11 @@ module PerforceSwarm
       end
       status
     end
+
+    def reload_raw_repository
+      @raw_repository = nil
+      raw_repository
+    end
   end
 end
 

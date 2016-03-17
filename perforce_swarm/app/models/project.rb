@@ -156,6 +156,10 @@ class Project < ActiveRecord::Base
     # create mirror remote
     PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
 
+    # Try and make it so the current head isn't likely an actual branch before we fetch.
+    # Otherwise it will end up set to that branch, even if git-fusion's HEAD is different
+    change_head('__gitswarm.import__')
+
     # kick off and background initial import task
     import_job = fork do
       gitlab_shell  = File.expand_path(Gitlab.config.gitlab_shell.path)

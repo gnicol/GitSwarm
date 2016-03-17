@@ -1,4 +1,9 @@
-## Configuring Helix Mirroring
+[Help](../../README.md)
+/ [Workflow](../README.md)
+/ [Helix Mirroring](README.md)
+/ Configuration
+
+## Configuration
 
 Before you can use Helix Mirroring, GitSwarm needs some configuration
 that describes where the Git Fusion service(s) exist.

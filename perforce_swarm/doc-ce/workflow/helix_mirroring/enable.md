@@ -1,4 +1,9 @@
-# Enable Helix Mirroring
+[Help](../../README.md)
+/ [Workflow](../README.md)
+/ [Helix Mirroring](README.md)
+/ Enable
+
+# Enable
 
 > **Important:** Be sure to [configure](configuration.md) GitSwarm prior to
 > attempting to enable Helix mirroring.

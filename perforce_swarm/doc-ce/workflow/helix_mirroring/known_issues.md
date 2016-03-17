@@ -1,4 +1,9 @@
-## Known Issues with Helix Mirroring
+[Help](../../README.md)
+/ [Workflow](../README.md)
+/ [Helix Mirroring](README.md)
+/ Known issues
+
+## Known issues
 
 *   Git Fusion, when installed on CentOS/RHEL 7.x, does not support HTTP(S)
     authentication. This issue prevents pushing new work to a Git Fusion

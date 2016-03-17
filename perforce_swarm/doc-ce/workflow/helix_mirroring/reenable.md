@@ -1,4 +1,9 @@
-## Re-enable Helix Mirroring
+[Help](../../README.md)
+/ [Workflow](../README.md)
+/ [Helix Mirroring](README.md)
+/ Re-enable
+
+## Re-enable
 
 Often, when Helix mirroring has been enabled for a project, and
 subsequently disabled, it can later be re-enabled. In certain situations,

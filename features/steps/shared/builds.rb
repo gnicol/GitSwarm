@@ -26,7 +26,7 @@ module SharedBuilds
     create(:ci_build, commit: @ci_commit, name: 'second build', status: 'running')
   end
 
-  step 'I visit recent build summary page' do
+  step 'I visit recent build details page' do
     visit namespace_project_build_path(@project.namespace, @project, @build)
   end
 

@@ -1,10 +1,8 @@
 class Projects::BuildsController < Projects::ApplicationController
   before_action :build, except: [:index, :cancel_all]
-
   before_action :authorize_read_build!, except: [:cancel, :cancel_all, :retry]
   before_action :authorize_update_build!, except: [:index, :show, :status]
-
-  layout "project"
+  layout 'project'
 
   def index
     @scope = params[:scope]

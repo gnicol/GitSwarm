@@ -86,10 +86,13 @@ module Gitlab
 
         true
       rescue Gitlab::Shell::Error => e
-        if e.message =~ /repository not exported/
-          true
+        # GitHub error message when the wiki repo has not been created,
+        # this means that repo has wiki enabled, but have no pages. So,
+        # we can skip the import.
+        if e.message !~ /repository not exported/
+          raise Projects::ImportService::Error, e.message
         else
-          false
+          true
         end
       end
     end

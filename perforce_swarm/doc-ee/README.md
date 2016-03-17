@@ -2,17 +2,17 @@
 
 ## User documentation
 
-- [API](api/README.md) Automate GitSwarm EE via a simple and powerful API.
-- [GitSwarm EE as OAuth2 authentication service
+- [API](api/README.md) Automate $short_name$ via a simple and powerful API.
+- [$short_name$ as OAuth2 authentication service
   provider](integration/oauth_provider.md). It allows you to login to other
-  applications from GitSwarm EE.
-- [GitSwarm EE Basics](gitlab-basics/README.md) Find step-by-step how to
-  start working on your commandline and on GitSwarm.
-- [Importing into GitSwarm](workflow/importing/README.md) Prime a GitSwarm
+  applications from $short_name$.
+- [$short_name$ Basics](gitlab-basics/README.md) Find step-by-step how to
+  start working on your commandline and on $short_name$.
+- [Importing into $short_name$](workflow/importing/README.md) Prime a $short_name$
   project from BitBucket, Git Fusion, GitHub, GitLab.com, or Subversion.
-- [Markdown](markdown/markdown.md) GitSwarm's advanced formatting system.
+- [Markdown](markdown/markdown.md) $short_name$'s advanced formatting system.
 - [Migrating from SVN](workflow/importing/migrating_from_svn.md) Convert an
-  SVN repository to Git and GitSwarm.
+  SVN repository to Git and $short_name$.
 - [Permissions](permissions/permissions.md) Learn what each role in a
   project (guest/reporter/developer/master/owner) can do.
 - [Profile Settings](profile/README.md)
@@ -22,9 +22,9 @@
   public and internal access to projects.
 - [SSH](ssh/README.md) Setup your ssh keys and deploy keys for secure
   access to your projects.
-- [Web hooks](web_hooks/web_hooks.md) Let GitSwarm EE notify you when new
+- [Web hooks](web_hooks/web_hooks.md) Let $short_name$ notify you when new
   code has been pushed to your project.
-- [Workflow](workflow/README.md) Using GitSwarm EE functionality and
+- [Workflow](workflow/README.md) Using $short_name$ functionality and
   importing projects from GitHub and SVN.
 - [GitLab Pages](pages/README.md) Using GitLab Pages.
 - [Custom templates for issues and merge
@@ -65,24 +65,24 @@
 - [Test and deploy Python applications to
   Heroku](ci/examples/test-and-deploy-python-application-to-heroku.md)
 - [Test Clojure applications](ci/examples/test-clojure-application.md)
-- Help your favorite programming language and GitSwarm EE by sending a
+- Help your favorite programming language and $short_name$ by sending a
   merge request with a guide for that language.
 
 ## Administrator documentation
 
 - [Migration from GitLab](install/migration_from_gitlab.md) How to migrate
-  your existing GitLab workflow and repositories to GitSwarm.
+  your existing GitLab workflow and repositories to $short_name$.
 - [Audit Events](administration/audit_events.md) Check how user access
   changed in projects and groups.
 - [Changing the appearance of the login
   page](customization/branded_login_page.md) Make the login page branded
-  for your GitSwarm EE instance.
+  for your $short_name$ instance.
 - [Custom git hooks](hooks/custom_hooks.md) Custom git hooks (on the
   filesystem) for when web hooks aren't enough.
-- [Email](tools/email.md) Email GitSwarm EE users from GitSwarm EE.
+- [Email](tools/email.md) Email $short_name$ users from $short_name$.
 - [Git Hooks](git_hooks/git_hooks.md) Advanced push rules for your project.
 - [Help message](customization/help_message.md) Set information about
-  administrators of your GitSwarm EE instance.
+  administrators of your $short_name$ instance.
 - [Install](install/README.md) Requirements, directory structures and
   installation steps.
 - [Installing your license](license/README.md)
@@ -93,12 +93,12 @@
 - [Libravatar](customization/libravatar.md) Use Libravatar for user avatars.
 - [Log system](logs/logs.md) Log system
 - [Environment Variables](administration/environment_variables.md) to
-  configure GitSwarm.
-- [Operations](operations/README.md) Keeping GitSwarm EE up and running.
+  configure $short_name$.
+- [Operations](operations/README.md) Keeping $short_name$ up and running.
 - [Raketasks](raketasks/README.md) Backups, maintenance, automatic web hook
   setup and the importing of projects.
 - [Security](security/README.md) Learn what you can do to further secure
-  your GitSwarm EE instance.
+  your $short_name$ instance.
 - [System hooks](system_hooks/system_hooks.md) Notifications when users,
   projects and keys are changed.
 - [Update](update/README.md) Update guides to upgrade your installation.
@@ -107,9 +107,9 @@
 - [Reply by email](incoming_email/README.md) Allow users to comment on
   issues and merge requests by replying to notification emails.
 - [Migrate GitLab CI to CE/EE](migrate_ci_to_ce/README.md) Follow this
-  guide to migrate your existing GitLab CI data to GitSwarm EE.
+  guide to migrate your existing GitLab CI data to $short_name$.
 - [Downgrade back to GitSwarm](downgrade_ee_to_ce/README.md) Follow this
-  guide if you need to downgrade from GitSwarm EE to GitSwarm.
+  guide if you need to downgrade from $short_name$ to GitSwarm.
 - [Git LFS configuration](workflow/lfs/lfs_administration.md)
 - [GitLab Pages configuration](pages/administration.md)
 

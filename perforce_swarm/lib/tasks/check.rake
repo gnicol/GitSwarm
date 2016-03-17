@@ -74,5 +74,25 @@ namespace :perforce_swarm do
       puts "Checking #{component.to_s.yellow} ... #{'Finished'.green}"
       puts ''
     end
+
+    # Patch GitLab to require a git version >= 2.7.3
+    # @TODO: Remove when codebase has moved onto GilLab >= 8.5.7 which already has this change
+    define_method :check_git_version do
+      required_version = Gitlab::VersionInfo.new(2, 7, 3)
+      current_version = Gitlab::VersionInfo.parse(run(%W(#{Gitlab.config.git.bin_path} --version)))
+
+      puts "Your git bin path is \"#{Gitlab.config.git.bin_path}\""
+      print "Git version >= #{required_version} ? ... "
+
+      if current_version.valid? && required_version <= current_version
+        puts "yes (#{current_version})".green
+      else
+        puts 'no'.red
+        try_fixing_it(
+          "Update your git to a version >= #{required_version} from #{current_version}"
+        )
+        fix_and_rerun
+      end
+    end
   end
 end

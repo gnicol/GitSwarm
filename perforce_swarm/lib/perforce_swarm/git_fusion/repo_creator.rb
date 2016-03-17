@@ -42,6 +42,8 @@ module PerforceSwarm
 
         # check all the branch mappings
         branch_mappings.each do |name, path|
+          fail 'Empty branch in branch mapping.' if !name || name.empty?
+
           unless Gitlab::GitRefValidator.validate(name)
             fail "Invalid name '#{name}' specified in branch mapping."
           end
@@ -318,7 +320,7 @@ module PerforceSwarm
       def streams_info(connection, depot)
         streams_info = {}
         connection.run('streams', "//#{depot}/...").each do |info|
-          stream_info[info['Stream']] = info
+          streams_info[info['Stream']] = info
         end
         streams_info
       end

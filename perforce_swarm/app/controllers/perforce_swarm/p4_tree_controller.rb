@@ -50,7 +50,7 @@ module PerforceSwarm
           # Find the streams
           connection.run('streams', "#{path}/...").each do |stream_info|
             dirs << {
-              id:       "#{path}/#{stream_info['Name']}",
+              id:       stream_info['Stream'],
               text:     stream_info['Name'],
               type:     'folder-stream',
               data:     { streamType: stream_info['Type'], streamParent: stream_info['Parent'] },

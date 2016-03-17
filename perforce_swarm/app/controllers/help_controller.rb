@@ -15,10 +15,10 @@ module PerforceSwarm
           swarm_ee_path = File.join(Rails.root, 'perforce_swarm', 'doc-ee', @category, "#{@file}.md")
           path          = File.join(Rails.root, 'doc', @category, "#{@file}.md")
           if PerforceSwarm.ee? && File.exist?(swarm_ee_path)
-            @markdown = File.read(swarm_ee_path)
+            @markdown = File.read(swarm_ee_path).gsub("$short_name$", PerforceSwarm.short_name)
             render 'show.html.haml'
           elsif File.exist?(swarm_path)
-            @markdown = File.read(swarm_path)
+            @markdown = File.read(swarm_path).gsub("$short_name$", PerforceSwarm.short_name)
             render 'show.html.haml'
           elsif File.exist?(path)
             @markdown = PerforceSwarm::Help.preprocess(@category, @file)

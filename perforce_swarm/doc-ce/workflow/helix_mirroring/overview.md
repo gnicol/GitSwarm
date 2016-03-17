@@ -9,6 +9,8 @@ GitSwarm. Additionally, for brand new projects; GitSwarm can automatically
 configure a new Git Fusion repository and use it to mirror your work into
 P4D.
 
+![Helix Mirroring Overview](helix_mirroring-outlines.svg)
+
 Once imported, GitSwarm keeps the Git Fusion project up to date using
 bi-directional mirroring; any changes pushed to a GitSwarm project are
 mirrored to Git Fusion, and changes within the Git Fusion project (even if

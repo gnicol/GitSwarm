@@ -2,7 +2,7 @@
 
 ## User documentation
 
-- [API](api/README.md) Automate GitSwarm via a simple and powerful API.
+- [API](api/README.md) Automate $short_name$ via a simple and powerful API.
 - [GitSwarm as OAuth2 authentication service
   provider](integration/oauth_provider.md). It allows you to login to other
   applications from GitSwarm.

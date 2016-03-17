@@ -1,8 +1,6 @@
 %div
   %h1
-    GitSwarm
-    - if PerforceSwarm.ee?
-      Enterprise Edition
+    #{PerforceSwarm.long_name}
     %span= PerforceSwarm::VERSION
     %small= Gitlab::REVISION
 - if PerforceSwarm.ee? && help_text.present?

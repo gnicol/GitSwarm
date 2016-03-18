@@ -12,7 +12,7 @@ your existing version before you run an upgrade.
 
 1.  **Download the 2016.1 GitSwarm EE package and install it.**
 
-    ```
+    ```bash
     curl https://package.perforce.com/bootstrap/gitswarm-ee.sh | sudo sh -
     ```
 
@@ -24,7 +24,7 @@ your existing version before you run an upgrade.
 
     Check if GitSwarm EE and its environment are configured correctly:
 
-    ```
+    ```bash
     sudo gitswarm-rake gitswarm:check
     ```
 
@@ -37,6 +37,6 @@ your existing version before you run an upgrade.
     `/opt/gitswarm/etc/gitswarm.rb.template`. You can see what sort of
     config options have been changed since last release by running:
 
-    ```
+    ```bash
     sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
     ```

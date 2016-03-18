@@ -17,7 +17,7 @@ describe how to remove the keys in the old format.
 
 First we define a shell function with the proper Redis connection details.
 
-```
+```bash
 rcli() {
   sudo /opt/gitswarm/embedded/bin/redis-cli -s /var/opt/gitswarm/redis/redis.socket "$@"
 }
@@ -29,7 +29,7 @@ rcli ping
 Now we do a search to see if there are any session keys in the old format
 for us to clean up.
 
-```
+```bash
 # returns the number of old-format session keys in Redis
 rcli keys '*' | grep '^[a-f0-9]\{32\}$' | wc -l
 ```
@@ -37,7 +37,7 @@ rcli keys '*' | grep '^[a-f0-9]\{32\}$' | wc -l
 If the number is larger than zero, you can proceed to expire the keys from
 Redis. If the number is zero there is nothing to clean up.
 
-```
+```bash
 # Tell Redis to expire each matched key after 600 seconds.
 rcli keys '*' | grep '^[a-f0-9]\{32\}$' | awk '{ print "expire", $0, 600 }' | rcli
 # This will print '(integer) 1' for each key that gets expired.

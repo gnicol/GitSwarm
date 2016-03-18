@@ -120,35 +120,35 @@ See the README for more information.
 
 The GitSwarm EE init script starts and stops Unicorn and Sidekiq.
 
-```
+```bash
 /etc/init.d/gitswarm
 Usage: service gitswarm {start|stop|restart|reload|status}
 ```
 
 Redis (key-value store/non-persistent database)
 
-```
+```bash
 /etc/init.d/redis
 Usage: /etc/init.d/redis {start|stop|status|restart|condrestart|try-restart}
 ```
 
 SSH daemon
 
-```
+```bash
 /etc/init.d/sshd
 Usage: /etc/init.d/sshd {start|stop|restart|reload|force-reload|condrestart|try-restart|status}
 ```
 
 Web server
 
-```
+```bash
 $ /etc/init.d/nginx
 Usage: nginx {start|stop|restart|reload|force-reload|status|configtest}
 ```
 
 Persistent database
 
-```
+```bash
 $ /etc/init.d/postgresql
 Usage: /etc/init.d/postgresql {start|stop|restart|reload|force-reload|status} [version ..]
 ```

@@ -13,7 +13,7 @@ there.
 When not specified, the default `issue_closing_pattern` as shown below will
 be used:
 
-```bash
+```
 ((?:[Cc]los(?:e[sd]?|ing)|[Ff]ix(?:e[sd]|ing)?) +(?:(?:issues? +)?%{issue_ref}(?:(?:, *| +and +)?))+)
 ```
 
@@ -24,7 +24,7 @@ cross-project issue (`group/project#123`) or a link to an issue
 
 For example:
 
-```
+```bash
 git commit -m "Awesome commit message (Fix #20, Fixes #21 and Closes group/otherproject#2). This commit is also related to #17 and fixes #18, #19 and https://gitswarm.example.com/group/otherproject/issues/23."
 ```
 
@@ -34,9 +34,9 @@ closed as it does not match the pattern. It also works with multiline
 commit messages.
 
 > Tip: you can test this closing pattern at [http://rubular.com][1]. Use
-       this site to test your own patterns. Because Rubular doesn't
-       understand `%{issue_ref}`, you can replace this by `#\d+` in
-       testing, which matches only local issue references like `#123`.
+> this site to test your own patterns. Because Rubular doesn't understand
+> `%{issue_ref}`, you can replace this by `#\d+` in testing, which matches
+> only local issue references like `#123`.
 
 ## Change the pattern
 

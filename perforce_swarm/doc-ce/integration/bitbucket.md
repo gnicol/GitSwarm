@@ -33,7 +33,7 @@ secret key for you to use.
 
 1.  On your GitSwarm server, open the configuration file.
 
-    ```sh
+    ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
@@ -93,8 +93,8 @@ projects from Bitbucket" option enabled. If you don't, do the following:
 
 1.  Create a new SSH key:
 
-    ```sh
-sudo -u git -H ssh-keygen
+    ```bash
+    sudo -u git -H ssh-keygen
     ```
 
     When asked `Enter file in which to save the key` specify the correct
@@ -105,13 +105,13 @@ sudo -u git -H ssh-keygen
 
     Open the SSH configuration file of the git user.
 
-    ```sh
-sudo editor /home/git/.ssh/config
+    ```bash
+    sudo editor /home/git/.ssh/config
     ```
 
     Add a host configuration for `bitbucket.org`.
 
-    ```sh
+    ```
     Host bitbucket.org
         IdentityFile ~/.ssh/bitbucket_rsa
         User git
@@ -126,8 +126,8 @@ following steps to do so:
 1.  Manually connect to 'bitbucket.org' over SSH, while logged in as the
     `git` account that GitSwarm uses:
 
-    ```sh
-sudo -u git -H ssh bitbucket.org
+    ```bash
+    sudo -u git -H ssh bitbucket.org
     ```
 
 1.  Verify the RSA key fingerprint you'll see in the response matches the

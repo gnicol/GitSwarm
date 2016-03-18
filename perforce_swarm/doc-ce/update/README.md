@@ -12,7 +12,7 @@ version before you run an upgrade.
 
 1.  **Download the 2016.1 GitSwarm package and install it.**
 
-    ```
+    ```bash
     curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
     ```
 
@@ -24,7 +24,7 @@ version before you run an upgrade.
 
     Check if GitSwarm and its environment are configured correctly:
 
-    ```
+    ```bash
     sudo gitswarm-rake gitswarm:check
     ```
 
@@ -37,7 +37,7 @@ version before you run an upgrade.
     `/opt/gitswarm/etc/gitswarm.rb.template`. You can see what sort of
     config options have been changed since last release by running:
 
-    ```
+    ```bash
     sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
     ```
 
@@ -56,7 +56,7 @@ and understand the [pre-update considerations](#pre-update-considerations).
 1.  **Upgrade to GitSwarm EE**
     1.  **For Ubuntu (12.04 and 14.04):**
 
-        ```
+        ```bash
         sudo apt-get remove helix-gitswarm
         sudo apt-get clean
         sudo apt-get install helix-gitswarm-ee
@@ -65,7 +65,7 @@ and understand the [pre-update considerations](#pre-update-considerations).
 
     1.  **For CentOS/RHEL (6.6+ and 7.x):**
 
-        ```
+        ```bash
         sudo yum remove helix-gitswarm
         sudo yum clean all
         sudo yum install helix-gitswarm-ee
@@ -76,7 +76,7 @@ and understand the [pre-update considerations](#pre-update-considerations).
 
     Check if GitSwarm EE and its environment are configured correctly:
 
-    ```
+    ```bash
     sudo gitswarm-rake gitswarm:check
     ```
 

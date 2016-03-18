@@ -19,13 +19,13 @@ The folder name becomes the name of the new group.
 The new folder needs to have git user ownership and read/write/execute
 access for git user and its group:
 
-```
+```bash
 sudo -u git mkdir /var/opt/gitswarm/git-data/repositories/new_group
 ```
 
 ### Copy your bare repositories inside this newly created folder:
 
-```
+```bash
 sudo cp -r /old/git/foo.git /var/opt/gitswarm/git-data/repositories/new_group/
 
 # Do this once when you are done copying git repositories
@@ -36,7 +36,7 @@ sudo chown -R git:git /var/opt/gitswarm/git-data/repositories/new_group/
 
 ### Import the repositories
 
-```
+```bash
 sudo gitswarm-rake gitswarm:import:repos
 ```
 

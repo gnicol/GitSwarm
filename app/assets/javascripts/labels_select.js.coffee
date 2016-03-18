@@ -11,7 +11,7 @@ class @LabelsSelect
       newColorField = $('#new_label_color')
       showNo = $dropdown.data('show-no')
       showAny = $dropdown.data('show-any')
-      defaultLabel = $dropdown.text().trim()
+      defaultLabel = $dropdown.data('default-label')
 
       if newLabelField.length
         $('.suggest-colors-dropdown a').on 'click', (e) ->
@@ -39,18 +39,9 @@ class @LabelsSelect
 
       $dropdown.glDropdown(
         data: (term, callback) ->
-          # We have to fetch the JS version of the labels list because there is no
-          # public facing JSON url for labels
           $.ajax(
             url: labelUrl
           ).done (data) ->
-            html = $(data)
-            data = []
-            html.find('.label-row a').each ->
-              data.push(
-                title: $(@).text().trim()
-              )
-
             if showNo
               data.unshift(
                 id: 0

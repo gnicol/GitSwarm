@@ -5,105 +5,12 @@
 
 # Enable
 
-> **Important:** Be sure to [configure](configuration.md) GitSwarm prior to
-> attempting to enable Helix mirroring.
+## Requirements
 
-There are several scenarios where Helix Mirroring can be enabled:
-
-- When you want to [create a
-  GitSwarm project with convention-based
-  mirroring](#new-gitswarm-project-with-convention-based-mirroring).
-- When you want to [import a Git Fusion
-  repository](#importing-a-git-fusion-repository).
-- When you want to [create a GitSwarm project from files or folders in the
-  Helix Versioning Engine](#importing-from-the-helix-versioning-engine).
-- When you have an [existing GitSwarm
-  project](#enabling-mirroring-on-an-existing-gitswarm-project).
-
-## Create a GitSwarm Project with Convention-based Mirroring
-
-> **Note**: If your [configuration](configuration.md) is incorrect,
-> this option is disabled:
->
-> ![Select repository error](mirror-choose_gitswarm-error.png)
-
-1.  Sign in to your GitSwarm instance and go to your dashboard.
-
-1.  Click "New Project".
-
-1.  Click the "Git Fusion Server" drop-down menu to select an available Git
-    Fusion Server that your project should be mirrored to.
-
-1.  Click "Create a Helix GitSwarm project to mirror":
-
-    ----
-    ![Select repository to import](mirror-choose_gitswarm.png)
-    ----
-
-1.  Fill in the rest of the details for your project.
-
-1.  Click "Create Project".
-
-    While the import is underway, a progress screen is displayed:
-
-    ----
-    ![Import in progress](import_in_progress.png)
-    ----
-
-## Importing a Git Fusion Repository
-
-1.  Sign in to your GitSwarm instance and go to your dashboard.
-
-1.  Click "New Project".
-
-1.  Click the "Helix Git Fusion Server" drop-down menu to select an
-    available Git Fusion Server to import from.
-
-1.  Click 'Mirror an existing repository'.
-
-    ----
-    ![Select repository to import](mirror-choose_repo.png)
-    ----
-
-1.  Click the "Repository" drop-down menu under the "Mirror an existing
-    repository" option and select an available Git Fusion repository to
-    import:
-
-    ----
-    ![Select repository to import](mirror-choose_repo-popup.png)
-    ----
-
-1.  Fill in the rest of the details for your project.
-
-1.  Click "Create Project".
-
-    While the import is underway, a progress screen is displayed:
-
-    ----
-    ![Import in progress](import_in_progress.png)
-    ----
-
-## Create a GitSwarm project from files or folders in the Helix Versioning
-   Engine
-
-1.  Sign in to your GitSwarm instance, and go to your dashboard.
-
-1.  Click "New Project".
-
-1.  Click "Select files or folder to mirror".
-
-    ----
-    ![Select repository to import](mirror-choose_folders.png)
-    ----
-
-
-## Enabling Mirroring on an Existing GitSwarm Project
-
-### Requirements
-
-*   You must have at least one Git Fusion entry configured for
-    convention-based mirroring. See [this
-    section](#convention-based-repository-configuration) for details.
+*   You must have at least one Git Fusion entry configured in order to
+    use Helix Mirroring, or to import a repo from Git Fusion.
+    convention-based mirroring. See the [configuration](configuration.md)
+    section for details.
 
 *   Your GitSwarm user account must either be an admin account, or you must
     have at least master-level permissions for the project on which you are
@@ -119,7 +26,69 @@ There are several scenarios where Helix Mirroring can be enabled:
     for the current namespace/project path combination. GitSwarm checks for
     this before attempting to mirror the project.
 
-### How to Enable Mirroring on an Existing GitSwarm Project
+When the requirements have not been met, GitSwarm displays an 
+[error message](#error_messages).
+
+Once the requirements have been met, choose a scenario for Helix Mirroring:
+
+- When you want to [create a
+  GitSwarm project with convention-based
+  mirroring](#new-gitswarm-project-with-convention-based-mirroring).
+
+- When you want to [import a Git Fusion
+  repository](#importing-a-git-fusion-repository).
+
+- When you have an [existing GitSwarm
+  project](#enabling-mirroring-on-an-existing-gitswarm-project).
+
+- When you want to [create a GitSwarm project from directories in the Helix
+  Versioning Engine](#importing-from-the-helix-versioning-engine).
+
+
+## Create a GitSwarm Project with Convention-based Mirroring
+
+> **Note**: If your [configuration](configuration.md) is incorrect,
+> this option is disabled:
+>
+> ![Select repository error](mirror-choose_gitswarm-error.png)
+
+1.  **Sign in to your GitSwarm instance and go to your dashboard.**
+
+1.  **Click "New Project".**
+
+1.  **Click the "Helix Git Fusion Server" drop-down menu to select an
+    available Git Fusion Server.**
+
+1.  **Click "Create a Helix GitSwarm project to mirror".**
+
+1.  **Fill in the rest of the details for your project.**
+
+1.  **Click "Create Project".**
+
+
+## Importing a Git Fusion Repository
+
+1.  **Sign in to your GitSwarm instance and go to your dashboard.**
+
+1.  **Click "New Project".**
+
+1.  **Click the "Helix Git Fusion Server" drop-down menu to select an
+    available Git Fusion Server.**
+
+1.  **Click "Mirror an existing repository".**
+
+1.  **Select an available Git Fusion repository to import:**
+
+    ----
+    ![Select repository to import](mirror-choose_repo-popup.png)
+    ----
+
+1.  **Fill in the rest of the details for your project.**
+
+1.  **Click "Create Project".**
+
+
+## Enabling Mirroring on an Existing GitSwarm Project
 
 1.  **Sign in to your GitSwarm instance**
 
@@ -165,6 +134,85 @@ There are several scenarios where Helix Mirroring can be enabled:
     If any errors occur during the above process, GitSwarm takes you back
     to the Mirror in Helix page, and report the error. See below for
     potential error messages, what they mean and how to fix them.
+
+
+## Create a GitSwarm project from directories in the Helix Versioning
+   Engine
+
+> **Note**: If your [configuration](configuration.md) is incorrect,
+> this option is disabled:
+>
+> ![Select directories error](mirror-choose_folders-error.png)
+
+1.  **Sign in to your GitSwarm instance, and go to your dashboard.**
+
+1.  **Click "New Project".**
+
+1.  **Click the "Helix Git Fusion Server" drop-down menu to select an
+    available Git Fusion Server.**
+
+1.  **Click "Select directories to mirror".**
+
+    The depot browser is displayed, showing the available depot paths
+    within the Helix Versioning Engine.
+
+    ----
+    ![Depot browser](mirror-choose_folders-browser.png)
+    ----
+
+1.  **Use the "Depots" dropdown to choose whether you want to browse
+    classic Helix depots or stream depots.**
+
+1.  **Browse the depot to locate a directory.**
+
+    Click the triangle to the left of each directory to see
+    sub-directories.
+    
+    Click the checkbox to the left of a directory to select that directory
+    (and all of its contents) to represent a Git branch within your project.
+
+1.  **Specify the branch name in the "branch-name" field.**
+
+1.  **Click "Add Branch <name>".**
+
+    The "Defined Branches" area maintains a list of the named branches and
+    the corresponding depot path.
+
+    ----
+    ![A defined branch](mirror-choose_folders-defined.png)
+    ----
+
+1.  **Repeat steps 3-6 as many times as necessary to define all of the
+    branches that should appear in your new project.**
+
+1.  If you wish to **edit a branch name or associated depot path, click
+    "edit".**
+    
+    The branch definition within the "Defined Branches" area becomes
+    highlighted, and the depot browser updates to reflect the current name
+    and depot path.
+
+    ----
+    ![Depot browser](mirror-choose_folders-edit.png)
+    ----
+
+    If you change the branch name, click the "Change Branch <oldname> to
+    <newname>" button to save your changes.
+
+    If you change only the depot path, click the "Update Branch <name>"
+    button to save your changes.
+
+    At any time, click the "cancel update?" link to terminate editing the
+    branch definition.
+
+1.  If you specify more than one branch definition, you can **click 
+    "make default" to specify which of the branch definitions should become
+    the new project's default branch.**
+
+1.  **Fill in the rest of the details for your project.**
+
+1.  **Click "Create Project".**
+
 
 ## Error Messages
 

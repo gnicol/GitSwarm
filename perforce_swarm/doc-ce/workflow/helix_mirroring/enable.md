@@ -213,6 +213,21 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
 
 1.  **Click "Create Project".**
 
+>   **Warning:** If any of the branch definitions that you specify overlap,
+>   those branches become read-only.
+
+>   **Important:** Once you have created your project, GitSwarm cannot
+>   modify the Git Fusion branch definitions; modifications are possible
+>   by having an administrator edit the Git Fusion `p4gf_config` files.
+>
+>   You are free to create new branches within the Git repository for your
+>   project, but any new (and therefore, unmapped) branches are considered
+>   to be "lightweight" branches in Git Fusion. A lightweight branch has no
+>   project-specific mapping within the Helix Versioning Engine, and so
+>   participation by developers using Helix versioning is greatly reduced.
+>   See the [Git Fusion
+>   guide](https://www.perforce.com/perforce/doc.current/manuals/git-fusion/chapter_dyn_ngj_3l.html#repos.lightweight_to_fullypopulated) for details.
+
 
 ## Error Messages
 

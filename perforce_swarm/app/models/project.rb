@@ -107,7 +107,7 @@ module PerforceSwarm
 
     def default_branch
       # If project is mirrored and a head has not been sent, ask fusion for it's head.
-      if !@default_branch && git_fusion_mirrored? && repository.rugged_head.nil?
+      if !@default_branch && git_fusion_mirrored? && import_in_progress?
         begin
           @default_branch = PerforceSwarm::Repo.new(repository.path_to_repo).mirror_head
         rescue => e
@@ -155,10 +155,6 @@ class Project < ActiveRecord::Base
 
     # create mirror remote
     PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
-
-    # Try and make it so the current head isn't likely an actual branch before we fetch.
-    # Otherwise it will end up set to that branch, even if git-fusion's HEAD is different
-    change_head('__gitswarm.import__')
 
     # kick off and background initial import task
     import_job = fork do

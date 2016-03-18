@@ -31,9 +31,12 @@ it just works. In others, additional work needs to be done first.
 
 ### How to re-enable Helix Mirroring:
 
-1.  Visit the project's settings page.
+1.  **Visit the project's settings page.**
 
-1.  Click **Re-enable Helix Mirroring**. You are prompted **Are you
-    sure?**.
+1.  **Click "Re-enable Helix Mirroring".**
 
-1.  Click **Yes**. If possible, mirroring is re-enabled for the project.
+    You are prompted **Are you sure?**.
+
+1.  **Click "Yes".**
+
+    If possible, mirroring is re-enabled for the project.

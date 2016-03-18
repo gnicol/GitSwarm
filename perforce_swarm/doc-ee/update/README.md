@@ -28,6 +28,14 @@ your existing version before you run an upgrade.
     sudo gitswarm-rake gitswarm:check
     ```
 
+    If you find that GitSwarm EE does not seem to be operating correctly
+    after the upgrade, it could be that one or more GitSwarm EE services
+    did not restart correctly. Should this happen, run:
+
+    ```bash
+    sudo gitswarm-rake gitswarm:restart
+    ```
+
 # New configuration options
 
 *  **Discovering new config options**

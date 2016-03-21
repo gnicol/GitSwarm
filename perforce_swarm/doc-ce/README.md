@@ -10,9 +10,6 @@
   working on your commandline and on GitSwarm.
 - [Importing into GitSwarm](workflow/importing/README.md) Prime a GitSwarm
   project from BitBucket, Git Fusion, GitHub, GitLab.com, or Subversion.
-- [Helix Mirroring](workflow/helix_mirroring/overview.md) Apply
-  bi-directtional mirroring of your GitSwarm projects into the Helix
-  Versioning Engine.
 - [Markdown](markdown/markdown.md) GitSwarm's advanced formatting system.
 - [Migrating from SVN](workflow/importing/migrating_from_svn.md) Convert a
   SVN repository to Git and GitSwarm
@@ -73,6 +70,9 @@
 
 - [Migration from GitLab](install/migration_from_gitlab.md) How to migrate
   your existing GitLab workflow and repositories to GitSwarm.
+- [Helix Mirroring](workflow/helix_mirroring/overview.md) Apply
+  bi-directtional mirroring of your GitSwarm projects into the Helix
+  Versioning Engine.
 - [Custom git hooks](hooks/custom_hooks.md) Custom git hooks (on the
   filesystem) for when web hooks aren't enough.
 - [Install](install/README.md) Requirements, directory structures and

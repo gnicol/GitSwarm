@@ -104,6 +104,25 @@ module PerforceSwarm
     def git_fusion_repo_name
       git_fusion_repo_segments[1]
     end
+
+    def default_branch
+      # If project is mirrored and a head has not been sent, ask fusion for it's head.
+      if !@default_branch && git_fusion_mirrored? && import_in_progress?
+        begin
+          @default_branch = PerforceSwarm::Repo.new(repository.path_to_repo).mirror_head
+        rescue => e
+          # an exception occurred while getting/setting the head, so log it
+          Gitlab::GitLogger.error("#{e.inspect}\n\tBACKTRACE: #{e.backtrace.join("\n")}")
+        end
+      end
+      @default_branch || super
+    end
+
+    def reload_default_branch
+      # gitlab_git caches it's repo_head so we need to regrab the raw repository to have it update
+      repository.reload_raw_repository
+      super
+    end
   end
 end
 

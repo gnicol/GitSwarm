@@ -19,7 +19,7 @@ read/write access to the `//.git-fusion` depot.
 ### Global Configuration
 
 GitSwarm supports a special server entry called `global`, which contains
-overrides for usernames, passwords, git configuration parameters, and
+defaults for usernames, passwords, git configuration parameters, and
 convention-based repository settings.
 
 ```ruby

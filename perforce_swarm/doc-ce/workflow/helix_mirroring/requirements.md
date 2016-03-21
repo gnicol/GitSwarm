@@ -21,12 +21,12 @@
 ## Recommendations
 
 *   Install GitSwarm and Git Fusion on separate machines to improve
-    performance and scalability. GitSwarm 2015.3+ installs with a local
-    Helix Versioning Engine and a local Git Fusion server, all
-    pre-configured to allow you to easily try out the system. In
-    production, we recommend disabling the local Git Fusion, and using an
-    external one. [Check out the docs on the auto-provisioned Git
-    Fusion](../../install/auto_provision.md))
+    performance and scalability. GitSwarm 2015.3+ installs with an
+    auto-provided Helix Versioning Engine and an auto-providsioned Git
+    Fusion server, all pre-configured to allow you to easily try out the
+    system. In production, we recommend disabling the auto-provisioned Git
+    Fusion, and using an external one. [Check out the docs on the
+    auto-provisioned Git Fusion](../../install/auto_provision.md))
 
 *   Use SSH or HTTPS connections to secure the mirroring connections.
     SSH connections are faster and more secure. We recommend against using

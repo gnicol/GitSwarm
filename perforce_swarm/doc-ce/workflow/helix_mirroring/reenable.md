@@ -9,18 +9,18 @@ Often, when Helix mirroring has been enabled for a project, and
 subsequently disabled, it can later be re-enabled. In certain situations,
 it just works. In others, additional work needs to be done first.
 
--   Generally, if Helix Mirroring has been disabled, you can re-enable when
-    no changes have been provided within the GitSwarm repo, the
-    corresponding depot paths in the Helix Versioning Engine (P4D), or
-    both.
+-   Generally, if Helix Mirroring has been disabled, you can re-enable
+    mirroring there are no changes within GitSwarm and the Helix Versioning
+    Engine (p4d), or when any changes are strictly within GitSwarm or p4d,
+    but not both.
 
--   When work has progressed in GitSwarm and P4D, you need to manually
-    perform a merge using the following steps:
-
-    1.  Clone from the Git Fusion repo associated with the project.
+-   When work has progressed both in GitSwarm and p4d after Helix Mirroring
+    was disabled, you need to manually perform a merge via the command line
+    using the following steps:
+    1.  Clone from the Git Fusion repo associated with the GitSwarm project.
     1.  Add GitSwarm's project repo as another remote.
-    1.  Pull changes from Git Fusion and, where necessary, manually merge
-        in the changes.
+    1.  Pull changes from the GitSwarm remote and, where necessary,
+        manually merge in the changes.
     1.  Push the updated repo to Git Fusion.
     1.  Try to re-enable Helix Mirroring.
 
@@ -32,6 +32,8 @@ it just works. In others, additional work needs to be done first.
 ### How to re-enable Helix Mirroring:
 
 1.  **Visit the project's settings page.**
+
+1.  **Click "Helix Mirroring".**
 
 1.  **Click "Re-enable Helix Mirroring".**
 

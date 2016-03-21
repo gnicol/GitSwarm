@@ -8,6 +8,28 @@ not on 2016.1 or higher versions. Although, upgrading GitSwarm should not
 result in data corruption, we recommend taking backups of your existing
 version before you run an upgrade.
 
+If you are using CentOS or RHEL, and have upgraded the OS distribution on
+your GitSwarm server from 6.x to 7.x, you need to update the URL in the
+Perforce repository configuration. For example, if
+`/etc/yum.repos.d/perforce.repo` contains:
+
+```
+baseurl=http://package.perforce.com/yum/rhel/6/x86_64
+```
+
+you must edit that line to read:
+
+```
+baseurl=http://package.perforce.com/yum/rhel/7/x86_64
+```
+
+After such an adjustment, we recommend that you run the following command
+to remove any old dependencies:
+
+```bash
+sudo yum clean all
+```
+
 ## Update dependencies
 
 If you have any repos mirroring their content into Helix Git Fusion, we

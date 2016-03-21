@@ -57,6 +57,10 @@ Versioning Engine prior to updating GitSwarm.
 > sudo gitswarm-ctl reconfigure
 > ```
 
+> **Important:** If you are upgrading from GitSwarm 2015.3 or prior, and
+> you had GitLab CI enabled, you must upgrade to GitSwarm 2015.4 before you
+> upgrade to GitSwarm 2016.1.
+
 ## Performing the update to 2016.1
 
 1.  **Download the 2016.1 GitSwarm package and install it.**

@@ -29,6 +29,10 @@ it just works. In others, additional work needs to be done first.
     task branch that is not mirrored, and then merging changes into a
     mirrored branch.
 
+> **Note:** Your GitSwarm user account must either be an admin account, or
+> you must have at least master-level permissions for the project on which
+> you are attempting to enable mirroring.
+
 ### How to re-enable Helix Mirroring:
 
 1.  **Visit the project's settings page.**

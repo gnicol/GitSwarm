@@ -26,6 +26,15 @@ Versioning Engine prior to updating GitSwarm.
     sudo yum install helix-git-fusion-base helix-p4d
     ```
 
+> **Important:** Depending on the verion of the `helix-p4d` you may have
+> installed previously, there may be schema/data migrations that prevent
+> the Helix Versioning Engine from restarting immediately. If you encounter
+> this situation, run:
+>
+> ```bash
+> sudo gitswarm-ctl reconfigure
+> ```
+
 ## Performing the update to 2016.1
 
 1.  **Download the 2016.1 GitSwarm package and install it.**

@@ -8,6 +8,28 @@ backup of GitSwarm EE 2015.4 can only be restored to an instance running
 EE should not result in data corruption, we recommend taking backups of
 your existing version before you run an upgrade.
 
+If you are using CentOS or RHEL, and have upgraded the OS distribution on
+your GitSwarm EE server from 6.x to 7.x, you need to update the URL in the
+Perforce repository configuration. For example, if
+`/etc/yum.repos.d/perforce.repo` contains:
+
+```
+baseurl=http://package.perforce.com/yum/rhel/6/x86_64
+```
+
+you must edit that line to read:
+
+```
+baseurl=http://package.perforce.com/yum/rhel/7/x86_64
+```
+
+After such an adjustment, we recommend that you run the following command
+to remove any old dependencies:
+
+```bash
+sudo yum clean all
+```
+
 ## Performing the update to 2016.1
 
 1.  **Download the 2016.1 GitSwarm EE package and install it.**

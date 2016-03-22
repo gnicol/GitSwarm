@@ -27,6 +27,9 @@ module PerforceSwarm
 
       # if we thought a git-fusion import was ongoing; flag it as finished
       if project.import_in_progress? && project.git_fusion_mirrored?
+        # Set the default branch
+        default_branch = project.default_branch
+        project.change_head(default_branch) if default_branch
         project.import_finish
         project.save
       end

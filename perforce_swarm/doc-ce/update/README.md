@@ -30,6 +30,34 @@ to remove any old dependencies:
 sudo yum clean all
 ```
 
+## Update dependencies
+
+If you have any repos mirroring their content into Helix Git Fusion, we
+strongly recommend that you update Helix Git Fusion and the Helix
+Versioning Engine prior to updating GitSwarm.
+
+-   **For Ubuntu:**
+
+    ```bash
+    sudo apt-get install helix-git-fusion-base helix-p4d
+    ```
+
+-   **For CentOS:**
+
+    ```bash
+    sudo yum install helix-git-fusion-base helix-p4d
+    ```
+
+> **Important:** Depending on the verion of the `helix-p4d` you may have
+> installed previously, there may be schema/data migrations required
+> (updating the `helix-p4d` package does not automatically restart the
+> service). Schema/data migrations in the Helix Versioning Engine are
+> typically performed by running `p4d -xu`. For more information, see the
+> [Upgrading
+> p4d](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.install.html#install.upgrade.2013.2_and_earlier)
+> section in the [Helix Versioning Engine Administrator Guide:
+> Fundamentals](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
+
 > **Important:** If you are upgrading from GitSwarm 2015.3 or prior, and
 > you had GitLab CI enabled, you must upgrade to GitSwarm 2015.4 before you
 > upgrade to GitSwarm 2016.1.
@@ -38,7 +66,7 @@ sudo yum clean all
 
 1.  **Download the 2016.1 GitSwarm package and install it.**
 
-    ```
+    ```bash
     curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
     ```
 
@@ -50,7 +78,7 @@ sudo yum clean all
 
     Check if GitSwarm and its environment are configured correctly:
 
-    ```
+    ```bash
     sudo gitswarm-rake gitswarm:check
     ```
 
@@ -63,7 +91,7 @@ sudo yum clean all
     `/opt/gitswarm/etc/gitswarm.rb.template`. You can see what sort of
     config options have been changed since last release by running:
 
-    ```
+    ```bash
     sudo diff /etc/gitswarm/gitswarm.rb /opt/gitswarm/etc/gitswarm.rb.template
     ```
 
@@ -102,16 +130,6 @@ and understand the [pre-update considerations](#pre-update-considerations).
 
     Check if GitSwarm EE and its environment are configured correctly:
 
-    ```
+    ```bash
     sudo gitswarm-rake gitswarm:check
     ```
-
-# For users upgrading FROM 2015.1
-
-## Post-upgrade steps
-
-1.  **Create `gitswarm` user:**
-
-    Before you can [import projects from Git
-    Fusion](../workflow/importing/import_from_gitfusion.md), you need to
-    manually create the `gitswarm` user within GitSwarm.

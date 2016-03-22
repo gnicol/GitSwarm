@@ -133,12 +133,3 @@ and understand the [pre-update considerations](#pre-update-considerations).
     ```bash
     sudo gitswarm-rake gitswarm:check
     ```
-# For users upgrading FROM 2015.1
-
-## Post-upgrade steps
-
-1.  **Create `gitswarm` user:**
-
-    Before you can [use Helix
-    Mirroring](../workflow/helix_mirroring/overview.md), you need to
-    manually create the `gitswarm` user within GitSwarm.

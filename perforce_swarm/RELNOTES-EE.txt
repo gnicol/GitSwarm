@@ -65,20 +65,44 @@ Known Issues
     * Git Fusion HTTP(S) authentication is not supported on CentOS 7 or
       Red Hat Enterprise Linux 7.
 
+    * GitSwarm EE project names can only contain letters, numbers, underscores,
+      periods, and dashes, and must begin with a letter, number, or
+      underscore.
+
+      Since depot paths in the Helix Versioning Engine (P4D) can contain
+      Unicode and other special characters, we recommend depot paths for
+      projects you intend on importing into GitSwarm EE via Git Fusion adhere to
+      the naming convention described above.
+
+      If you are using multi-byte characters in any of your Git Fusion
+      repository names, you should use an SSH connection to Git Fusion.
+
+    * If a new project is created and GitSwarm EE is used to automatically
+      mirror it (via convention-based mirroring), updating the project's
+      namespace and/or project name does *not* change the location under
+      Helix Versioning Engine (P4D). In order to move the project's files to
+      a new location, you need to delete the project, re-create it with
+      convention-based mirroring, and then re-add the files.
+
+    * An error related to setting LANG/LC_ALL can show up when GitSwarm EE tries to
+      connect to a remote Helix Git Fusion server (running on Centos/RHEL
+      6.6+) over SSH, as part of mirroring setup on the `Create Project`
+      page. Please see the Helix mirroring documentation for help.
+
 ---------------------------------------------------------------------------
 
 Major new functionality in 2016.1
 
     #dc874776, #4b6b6f1a, #8a4dbc96, #2c4b9e9d, #c82e6884, #06aee6d9, #239a5c8c, #19aecef4, #b87f33d7, #63ce742e, #56eb4196, #2de88af7
     (Bug #85089, Bug #85088, Bug #85127, Bug #85177, Bug #85197, Bug #85367, Bug #85368, Bug #85478, Bug #85516, Bug #85681, Bug #85701)
-        Add ability to create custom branch mappings for mirrored projects
+        Add ability to create custom branch mappings from Helix depot paths
 
     #c7383efd, #a5a0f738, #a2ef9572, #55d68e67 (Bug #83775, Bug #83776, Bug #83777, Bug #83778, Bug #83779, Bug #84013)
         Add experimental support for enforcing Helix protections
 
     #7771ec0e, #78124ebb, #28c84e8a, d0828830, #78124ebb, #156b6977, #0c1875a9, #35dc7354
     (Bug #83802, Bug #83803, Bug #83804, Bug #83805, Bug #83906, Bug #84574, Bug #84808, Bug #84761, Bug #85200)
-        Add ability to disable and re-enable mirroring in Helix Git Fusion
+        Add ability to disable and re-enable mirroring in Helix
 
 Minor new functionality in 2016.1
 
@@ -105,7 +129,7 @@ Bugs fixed in 2016.1
         Allow repos with a '/' in the name
 
     #fdae5087 (Bug #81226)
-        Selecting a repository to mirror should auto-select mirror from existing
+        Selecting a repository to mirror should auto-select "mirror from existing"
 
     #c412fbe3 (Bug #83849, Bug #80745, Bug #80820)
         Fixed multiple help links

@@ -112,6 +112,6 @@ and understand the [pre-update considerations](#pre-update-considerations).
 
 1.  **Create `gitswarm` user:**
 
-    Before you can [import projects from Git
-    Fusion](../workflow/importing/import_from_gitfusion.md), you need to
+    Before you can [use Helix
+    Mirroring](../workflow/helix_mirroring/overview.md), you need to
     manually create the `gitswarm` user within GitSwarm.

@@ -148,8 +148,8 @@ To uninstall GitSwarm, follow the [uninstall steps](uninstall.md).
 
     In production, you will likely already have your own Helix Server
     already setup and will want to configure GitSwarm to talk to it in
-    order to enable [project
-    mirroring](../workflow/importing/import_from_gitfusion.md).
+    order to enable [Helix
+    Mirroring](../workflow/helix_mirroring/overview.md).
 
 *   **Set up other ways of signing in:**
 

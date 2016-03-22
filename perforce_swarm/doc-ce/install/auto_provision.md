@@ -9,9 +9,11 @@ entries:
 #gitswarm['git-fusion']['local']['password']     = '<PASSWORD>'
 ```
 
-**[Instructions on configuring the connection to external Helix Git Fusion can be found here](../workflow/importing/import_from_gitfusion.md#configuration)**.
+**[Instructions on configuring the connection to external Helix Git Fusion
+can be found here](../workflow/helix_mirroring/configuration.md)**.
 
-When GitSwarm is left in its `local` auto-provision mode, the Helix Server is configured with the following configuration:
+When GitSwarm is left in its `local` auto-provision mode, the Helix Server
+is configured with the following configuration:
 
 - Port
     - ssl:1666

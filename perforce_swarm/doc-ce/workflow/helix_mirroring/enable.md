@@ -9,8 +9,7 @@
 
 *   You must have at least one Git Fusion entry configured in order to
     use Helix Mirroring, or to import a repo from Git Fusion.
-    convention-based mirroring. See the [configuration](configuration.md)
-    section for details.
+    See the [configuration](configuration.md) section for details.
 
 *   Your GitSwarm user account must either be an admin account, or you must
     have at least master-level permissions for the project on which you are
@@ -18,13 +17,15 @@
 
 *   The project cannot already be mirrored in Git Fusion.
 
-*   There must not be any content in Helix where the to-be mirrored
-    project's files are to be stored. GitSwarm checks for this before
-    attempting to mirror the project.
+*   When you use convention-based mirroring, there must not be any content
+    in the Helix Versioning Engine where the to-be mirrored project's files
+    are to be stored. GitSwarm checks for this before attempting to mirror
+    the project.
 
-*   There must not be a Git Fusion configuration file (```p4gf_config```)
-    for the current namespace/project path combination. GitSwarm checks for
-    this before attempting to mirror the project.
+*   When you use convention-based mirroring, there must not be a Git Fusion
+    configuration file (```p4gf_config```) for the current
+    namespace/project path combination. GitSwarm checks for this before
+    attempting to mirror the project.
 
 When the requirements have not been met, GitSwarm displays an 
 [error message](#error_messages).
@@ -132,12 +133,12 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
         Git Fusion
 
     If any errors occur during the above process, GitSwarm takes you back
-    to the Mirror in Helix page, and report the error. See below for
-    potential error messages, what they mean and how to fix them.
+    to the Mirror in Helix page, and report the error. [See
+    below](#error-messages) for potential error messages, what they mean
+    and how to fix them.
 
 
-## Create a GitSwarm project from directories in the Helix Versioning
-   Engine
+## Create a GitSwarm project from directories in the Helix Versioning Engine
 
 > **Note**: If your [configuration](configuration.md) is incorrect,
 > this option is disabled:
@@ -214,18 +215,20 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
 1.  **Click "Create Project".**
 
 >   **Warning:** If any of the branch definitions that you specify overlap,
->   those branches become read-only.
+>   those branches become read-only. For example, if you specify one branch
+>   for `//depot` and another branch for `//depot/jam`, those two branch
+>   definitions overlap because `jam` is inside `//depot`.
 
->   **Important:** Once you have created your project, GitSwarm cannot
->   modify the Git Fusion branch definitions; modifications are possible
+>   **Important:** Once you have created your project, the branch
+>   definitions cannot be altered by GitSwarm. Modifications are possible
 >   by having an administrator edit the Git Fusion `p4gf_config` files.
->
->   You are free to create new branches within the Git repository for your
->   project, but any new (and therefore, unmapped) branches are considered
->   to be "lightweight" branches in Git Fusion. A lightweight branch has no
->   project-specific mapping within the Helix Versioning Engine, and so
->   participation by developers using Helix versioning is greatly reduced.
->   See the [Git Fusion
+
+>   **Important:** You are free to create new branches within the Git
+>   repository for your GitSwarm project, but any new (and therefore,
+>   unmapped) branches are considered to be "lightweight" branches in Git
+>   Fusion. A lightweight branch has no project-specific mapping within the
+>   Helix Versioning Engine, and so participation by developers using Helix
+>   versioning is greatly reduced. See the [Git Fusion
 >   guide](https://www.perforce.com/perforce/doc.current/manuals/git-fusion/chapter_dyn_ngj_3l.html#repos.lightweight_to_fullypopulated) for details.
 
 
@@ -251,10 +254,8 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
 
     When mirroring an existing GitSwarm project in Git Fusion, GitSwarm
     must be configured to be able to create a Git Fusion repository
-    definition. To do this, GitSwarm relies on the ```auto_create```
-    section of the Git Fusion configuration. Please see [this
-    section](#auto-create-configuration) for instructions on configuring
-    auto create.
+    definition. Please see [this section](#auto-create-configuration) for
+    instructions on configuring auto create.
 
 *   **GitSwarm is configured for Helix mirroring, but you lack permissions
     to enable it for this project.**

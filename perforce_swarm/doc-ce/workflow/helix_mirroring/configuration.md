@@ -35,10 +35,8 @@ In the above example, the user `global-user` is used to log in to the
 `development` and `production` Git Fusion servers. The user for the `local`
 Git Fusion server remains as `gitswarm`.
 
-> **Note:** Only `user`, `password`, `git_config_params`, `perforce['user']`,
-> `perforce['password']` and `auto_create` settings can have global
-> defaults. Global settings for `url` and `perforce['port']` is ignored if
-> present.
+> **Note:** A global setting for `url` is ignored if present; each Git
+> Fusion configuration should use a distinct `url`.
 
 > **Note:** The following priority is given to user/password lookups:
 >
@@ -134,7 +132,7 @@ To permit GitSwarm to connect to Git Fusion via SSH, follow these steps:
     in the section [Authenticating Git Users using
     SSH](http://www.perforce.com/perforce/doc.current/manuals/git-fusion/appendix.ssh.html).
 
-### Convention-based Repository Configuration
+### Helix Mirroring Configuration
 
 In order for GitSwarm to automatically create new Git Fusion repositories
 when adding projects, GitSwarm needs to connect to the Helix Versioning
@@ -166,10 +164,10 @@ gitswarm['git-fusion']['my_entry']['perforce']['port']  = 'ssl:my-fusion:1666'
 > **Note:** GitSwarm uses the following priority for determining
 > user/password to connect to Perforce:
 >
-> 1.    Entry-specific user/password keys
-> 1.    User/password specified on the Git Fusion server `url`
-> 1.    Global user/password
-> 1.    Default (`gitswarm` for user, `''` for password)
+> 1. Entry-specific user/password keys
+> 1. User/password specified on the Git Fusion server `url`
+> 1. Global user/password
+> 1. Default (`gitswarm` for user, `''` for password)
 
 > **Note:** The user (e.g. `gitswarm`) needs to exist in the Helix
 > Versioning Engine that the Git Fusion service uses, and must have
@@ -182,21 +180,23 @@ gitswarm['git-fusion']['my_entry']['perforce']['port']  = 'ssl:my-fusion:1666'
 #### Auto-Create Configuration
 
 GitSwarm generates a Git Fusion configuration and unique depot path for
-each new project that has convention-based mirroring enabled. It constructs
-these by substituting the GitSwarm project's namespace and project path
-into a template that is specified in the configuration.
+each new project that has Helix Mirroring enabled. It constructs these by
+substituting the GitSwarm project's namespace and project path into a
+template that is specified in the configuration.
 
 ```ruby
 gitswarm['git-fusion']['global']['auto_create']['path_template']      = '//gitswarm/projects/{namespace}/{project-path}'
 gitswarm['git-fusion']['global']['auto_create']['repo_name_template'] = 'gitswarm-{namespace}-{project-path}'
 ```
 
-> **Note:** `{namespace}` and `{project-path}` are substituted for the GitSwarm
-> project's namespace and project path (name) when the project is created.
+> **Note:** `{namespace}` and `{project-path}` are substituted for the
+> GitSwarm project's namespace and project path (name) when the project is
+> created.
 
-> **Note:** The depot specified in the `path_template` ('gitswarm' in the above
-> example) must exist *prior* to attempting to use the convention-based
-> repository feature. GitSwarm does *not* create this depot for you.
+> **Note:** The depot specified in the `path_template` ('gitswarm' in the
+> above example) must exist *prior* to attempting to use the
+> convention-based repository feature. GitSwarm does *not* create this
+> depot for you.
 
 #### Sample Configuration
 

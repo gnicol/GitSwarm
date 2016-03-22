@@ -60,7 +60,7 @@ sudo gitswarm-rake gitswarm:check
 ```
 
 > Note: Use `SANITIZE=true` for gitswarm:check if you want to omit project
-        names from the output.
+> names from the output.
 
 Example output:
 

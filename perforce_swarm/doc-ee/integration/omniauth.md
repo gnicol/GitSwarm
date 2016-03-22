@@ -38,7 +38,7 @@ sudo editor /etc/gitswarm/gitswarm.rb
 
 and change
 
-```
+```ruby
 gitlab_rails['omniauth_enabled'] = true
 gitlab_rails['omniauth_allow_single_sign_on'] = false
 gitlab_rails['omniauth_block_auto_created_users'] = true

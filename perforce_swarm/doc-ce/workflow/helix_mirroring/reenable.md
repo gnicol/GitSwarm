@@ -31,7 +31,7 @@ it just works. In others, additional work needs to be done first.
 
 > **Note:** Your GitSwarm user account must either be an admin account, or
 > you must have at least master-level permissions for the project on which
-> you are attempting to enable mirroring.
+> you are attempting to re-enable mirroring.
 
 ### How to re-enable Helix Mirroring:
 

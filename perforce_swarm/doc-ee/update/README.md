@@ -4,11 +4,11 @@
 
 GitSwarm EE can only restore backups made on the same version. Hence, a
 backup of GitSwarm EE 2015.4 can only be restored to an instance running
-2015.4, and not on 2016.1 or higher versions. Although, upgrading GitSwarm
+2015.4, and not on 2016.1 or higher versions. Although, updating GitSwarm
 EE should not result in data corruption, we recommend taking backups of
-your existing version before you run an upgrade.
+your existing version before you run an update.
 
-If you are using CentOS or RHEL, and have upgraded the OS distribution on
+If you are using CentOS or RHEL, and have updated the OS distribution on
 your GitSwarm EE server from 6.x to 7.x, you need to update the URL in the
 Perforce repository configuration. For example, if
 `/etc/yum.repos.d/perforce.repo` contains:
@@ -72,7 +72,7 @@ Versioning Engine prior to updating GitSwarm.
     ```
 
     The script should add the Perforce package repository, and install the
-    latest version of GitSwarm EE. The upgrade will create a backup of your
+    latest version of GitSwarm EE. The update will create a backup of your
     existing GitSwarm EE data before fully installing.
 
 1.  **Check the application status.**
@@ -81,6 +81,14 @@ Versioning Engine prior to updating GitSwarm.
 
     ```bash
     sudo gitswarm-rake gitswarm:check
+    ```
+
+    If you find that GitSwarm EE does not seem to be operating correctly
+    after the update, it could be that one or more GitSwarm EE services
+    did not restart correctly. Should this happen, run:
+
+    ```bash
+    sudo gitswarm-ctl restart
     ```
 
 # New configuration options

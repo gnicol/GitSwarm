@@ -49,13 +49,14 @@ Versioning Engine prior to updating GitSwarm.
     ```
 
 > **Important:** Depending on the verion of the `helix-p4d` you may have
-> installed previously, there may be schema/data migrations that prevent
-> the Helix Versioning Engine from restarting immediately. If you encounter
-> this situation, run:
->
-> ```bash
-> sudo gitswarm-ctl reconfigure
-> ```
+> installed previously, there may be schema/data migrations required
+> (updating the `helix-p4d` package does not automatically restart the
+> service). Schema/data migrations in the Helix Versioning Engine are
+> typically performed by running `p4d -xu`. For more information, see the
+> [Upgrading
+> p4d](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.install.html#install.upgrade.2013.2_and_earlier)
+> section in the [Helix Versioning Engine Administrator Guide:
+> Fundamentals](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
 
 > **Important:** If you are upgrading from GitSwarm 2015.3 or prior, and
 > you had GitLab CI enabled, you must upgrade to GitSwarm 2015.4 before you

@@ -72,6 +72,9 @@
 
 - [Migration from GitLab](install/migration_from_gitlab.md) How to migrate
   your existing GitLab workflow and repositories to GitSwarm.
+- [Helix Mirroring](workflow/helix_mirroring/overview.md) Apply
+  bi-directtional mirroring of your GitSwarm projects into the Helix
+  Versioning Engine.
 - [Audit Events](administration/audit_events.md) Check how user access
   changed in projects and groups.
 - [Changing the appearance of the login

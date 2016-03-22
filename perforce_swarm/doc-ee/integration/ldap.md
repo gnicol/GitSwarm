@@ -49,7 +49,7 @@ EOS
 
 After making the configuration changes, run the follow for the LDAP settings to take effect:
 
-```
+```bash
 sudo gitswarm-ctl reconfigure
 ```
 
@@ -301,10 +301,9 @@ with the `sync_time` attribute in your config.
 Add `"sync_time"` in `/etc/gitswarm/gitswarm.rb` to your LDAP config, and
 run `sudo gitswarm-ctl reconfigure` for the new setting to take effect.
 
-A typical LDAP configuration for GitSwarm EE installed with an Omnibus
-package might look like this:
+A typical LDAP configuration for GitSwarm EE might look like this:
 
-```
+```ruby
 gitlab_rails['ldap_servers'] = YAML.load <<-EOS
 main:
   label: 'LDAP'

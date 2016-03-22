@@ -39,8 +39,8 @@ use.
 
 1.  On your GitSwarm server, open the configuration file.
 
-    ```sh
-sudo editor /etc/gitswarm/gitswarm.rb
+    ```bash
+    sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
 1.  See [Initial OmniAuth

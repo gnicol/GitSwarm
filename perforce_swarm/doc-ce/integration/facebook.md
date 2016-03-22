@@ -55,7 +55,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 1.  On your GitSwarm server, open the configuration file.
 
     ```bash
-sudo editor /etc/gitswarm/gitswarm.rb
+    sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
 1.  See [Initial OmniAuth

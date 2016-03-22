@@ -70,6 +70,9 @@
 
 - [Migration from GitLab](install/migration_from_gitlab.md) How to migrate
   your existing GitLab workflow and repositories to GitSwarm.
+- [Helix Mirroring](workflow/helix_mirroring/overview.md) Apply
+  bi-directtional mirroring of your GitSwarm projects into the Helix
+  Versioning Engine.
 - [Custom git hooks](hooks/custom_hooks.md) Custom git hooks (on the
   filesystem) for when web hooks aren't enough.
 - [Install](install/README.md) Requirements, directory structures and

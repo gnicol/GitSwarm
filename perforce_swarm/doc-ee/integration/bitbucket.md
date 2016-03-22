@@ -113,7 +113,7 @@ projects from Bitbucket" option enabled. If you don't, do the following:
 
     Add a host configuration for `bitbucket.org`.
 
-    ```bash
+    ```
     Host bitbucket.org
         IdentityFile ~/.ssh/bitbucket_rsa
         User git

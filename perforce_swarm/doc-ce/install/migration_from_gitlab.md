@@ -185,7 +185,7 @@ Perforce Helix as the master for all assets.
 
     These problems can be corrected by running the following commands:
 
-    ```
+    ```bash
     sudo chmod -R ug+rwX,o-rwx /var/opt/gitswarm/git-data/repositories
     sudo chmod -R ug-s /var/opt/gitswarm/git-data/repositories
     find /var/opt/gitswarm/git-data/repositories -type d -print0 | sudo xargs -0 chmod g+s

@@ -12,7 +12,7 @@ application in your SAML IdP:
 
 1.  On your GitSwarm server, open the configuration file.
 
-    ```sh
+    ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
     ```
 

@@ -79,7 +79,7 @@ Versioning Engine prior to updating GitSwarm.
 
     Check if GitSwarm EE and its environment are configured correctly:
 
-    ```
+    ```bash
     sudo gitswarm-rake gitswarm:check
     ```
 

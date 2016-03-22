@@ -13,16 +13,16 @@ GitSwarm:
 
     1.  **For CentOS/RHEL 6.6+:**
 
-        ```
-sudo lokkit -s http -s ssh
+        ```bash
+        sudo lokkit -s http -s ssh
         ```
 
     1.  **For CentOS/RHEL 7:**
 
-        ```
-sudo firewall-cmd --permanent --add-service=http
-sudo firewall-cmd --permanent --add-service=ssh
-sudo systemctl reload firewalld
+        ```bash
+        sudo firewall-cmd --permanent --add-service=http
+        sudo firewall-cmd --permanent --add-service=ssh
+        sudo systemctl reload firewalld
         ```
 
 1.  Optional: **Ensure that your system is up-to-date.**
@@ -31,15 +31,15 @@ sudo systemctl reload firewalld
 
     1.  **For Ubuntu (12.04 and 14.04):**
 
-        ```
-sudo apt-get update
-sudo apt-get upgrade
+        ```bash
+        sudo apt-get update
+        sudo apt-get upgrade
         ```
 
     1.  **For CentOS/RHEL 6.6+ and 7:**
 
-        ```
-sudo yum update
+        ```bash
+        sudo yum update
         ```
 
 1.  **Install a mail server and curl.**
@@ -55,29 +55,29 @@ sudo yum update
 
     1.  **For Ubuntu (12.04 and 14.04):**
 
-        ```
-sudo apt-get install postfix curl
+        ```bash
+        sudo apt-get install postfix curl
         ```
 
     1.  **For CentOS/RHEL 6.6+:**
 
-        ```
-sudo yum install postfix curl
-sudo service postfix start
-sudo chkconfig postfix on
+        ```bash
+        sudo yum install postfix curl
+        sudo service postfix start
+        sudo chkconfig postfix on
         ```
 
     1.  **For CentOS/RHEL 7:**
 
-        ```
-sudo yum install postfix curl
-sudo systemctl enable postfix
-sudo systemctl start postfix
+        ```bash
+        sudo yum install postfix curl
+        sudo systemctl enable postfix
+        sudo systemctl start postfix
         ```
 
 ## Quick install
 
-```
+```bash
 curl -s https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
 ```
 
@@ -98,8 +98,8 @@ Perform the [post-installation](#post-installation) steps.
     View `/etc/gitswarm/gitswarm.rb`, and verify that the following
     setting is set to the URL that your GitSwarm users should use:
 
-    ```
-external_url "http://gitswarm.example.com"
+    ```ruby
+    external_url "http://gitswarm.example.com"
     ```
 
     Edit the setting if necessary.
@@ -108,8 +108,8 @@ external_url "http://gitswarm.example.com"
 
     Edit `/etc/gitswarm/gitswarm.rb`, and edit the line:
 
-    ```
-#gitlab_rails['time_zone'] = 'UTC'
+    ```ruby
+    #gitlab_rails['time_zone'] = 'UTC'
     ```
 
     Replace `UTC` with an [appropriate
@@ -120,15 +120,15 @@ external_url "http://gitswarm.example.com"
     If you have made changes to `/etc/gitswarm/gitswarm.rb`, then you will
     want to run `reconfigure` for them to take effect.
 
-    ```
-sudo gitswarm-ctl reconfigure
+    ```ruby
+    sudo gitswarm-ctl reconfigure
     ```
 
 1.  **Browse to the hostname and login.**
 
     ```
-Username: root
-Password: 5iveL!fe
+    Username: root
+    Password: 5iveL!fe
     ```
 
 1.  **Tweet about it!**
@@ -169,9 +169,9 @@ readme](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md).
     actually apply. The error usually looks something like this:
 
     ```
-STDERR: error: "net.bridge.bridge-nf-call-ip6tables" is an unknown key
-error: "net.bridge.bridge-nf-call-iptables" is an unknown key
-error: "net.bridge.bridge-nf-call-arptables" is an unknown key
+    STDERR: error: "net.bridge.bridge-nf-call-ip6tables" is an unknown key
+    error: "net.bridge.bridge-nf-call-iptables" is an unknown key
+    error: "net.bridge.bridge-nf-call-arptables" is an unknown key
     ```
 
     These errors are ignorable, you just need to run `sudo gitswarm-ctl

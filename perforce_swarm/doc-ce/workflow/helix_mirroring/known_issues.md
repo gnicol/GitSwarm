@@ -37,6 +37,9 @@
     Unfortunately, the solution is to delete the project, correct the
     settings in `gitswarm.rb`, and then re-create the project.
 
+*   Helix Mirroring stops working when a GitSwarm project contains commits
+    that contain only tags and no file changes.
+
 *   The following error can be displayed when Git Swarm is attempting to
     connect to a remote Helix Git Fusion server (running on Centos/RHEL
     6.6+) over SSH, as part of mirroring setup on the `Create Project`

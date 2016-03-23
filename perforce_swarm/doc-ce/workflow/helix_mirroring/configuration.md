@@ -177,7 +177,7 @@ gitswarm['git-fusion']['my_entry']['perforce']['port']  = 'ssl:my-fusion:1666'
 > particular Git Fusion server. You can include more configured servers
 > under other keys.
 
-#### Auto-Create Configuration
+#### Convention-based mirroring configuration
 
 GitSwarm generates a Git Fusion configuration and unique depot path for
 each new project that has Helix Mirroring enabled. It constructs these by
@@ -201,7 +201,7 @@ gitswarm['git-fusion']['global']['auto_create']['repo_name_template'] = 'gitswar
 #### Sample Configuration
 
 The following is a sample configuration for GitSwarm, including Helix
-Versioning Engine integration, and auto-create settings:
+Versioning Engine integration, and convention-based mirroring settings:
 
 ```ruby
 gitswarm['git-fusion']['enabled']                                       = true

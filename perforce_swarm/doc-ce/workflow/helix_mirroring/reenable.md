@@ -5,7 +5,7 @@
 
 ## Re-enable
 
-Often, when Helix mirroring has been enabled for a project, and
+Often, when Helix Mirroring has been enabled for a project, and
 subsequently disabled, it can later be re-enabled. In certain situations,
 it just works. In others, additional work needs to be done first.
 

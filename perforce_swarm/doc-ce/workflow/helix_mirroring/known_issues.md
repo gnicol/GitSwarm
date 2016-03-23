@@ -87,5 +87,5 @@
 ## Problems?
 
 If you encounter problems with importing projects from Git Fusion, or with
-mirroring between GitSwarm and Git Fusion, please contact
+Helix Mirroring between GitSwarm and Git Fusion, please contact
 Perforce support <support@perforce.com> for assistance.

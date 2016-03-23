@@ -13,7 +13,7 @@
 
 *   Your GitSwarm user account must either be an admin account, or you must
     have at least master-level permissions for the project on which you are
-    attempting to enable mirroring.
+    attempting to enable Helix Mirroring.
 
 *   The project cannot already be mirrored in Git Fusion.
 
@@ -257,7 +257,7 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
     definition. Please see [this section](#auto-create-configuration) for
     instructions on configuring auto create.
 
-*   **GitSwarm is configured for Helix mirroring, but you lack permissions
+*   **GitSwarm is configured for Helix Mirroring, but you lack permissions
     to enable it for this project.**
 
     Enabling mirroring on an existing GitSwarm project requires permissions
@@ -268,5 +268,5 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
 ## Problems?
 
 If you encounter problems with importing projects from Git Fusion, or with
-mirroring between GitSwarm and Git Fusion, please contact
+Helix Mirroring between GitSwarm and Git Fusion, please contact
 Perforce support <support@perforce.com> for assistance.

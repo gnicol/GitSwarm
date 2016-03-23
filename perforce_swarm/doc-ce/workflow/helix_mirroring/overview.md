@@ -16,6 +16,11 @@ P4D.
 
 ![Helix Mirroring Overview](helix_mirroring-outlines.svg)
 
+Helix Mirroring allows you to specify the depot paths within the Helix
+Versioning Engine where the mirrored files from Git repository branches
+should appear. When you want to map arbitrary Git branches, you can employ
+a template that provides "convention-based" mirroring.
+
 Once imported, GitSwarm keeps the Git Fusion project up to date using
 bi-directional mirroring; any changes pushed to a GitSwarm project are
 mirrored to Git Fusion, and changes within the Git Fusion project (even if

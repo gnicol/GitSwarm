@@ -11,8 +11,7 @@ out the 'local' instance and add new config entries:
 ```
 
 **[Instructions on configuring the connection to external Helix Git Fusion
-can be found
-here](../workflow/importing/import_from_gitfusion.md#configuration)**.
+can be found here](../workflow/helix_mirroring/configuration.md)**.
 
 When GitSwarm is left in its `local` auto-provision mode, the Helix Server
 is configured with the following configuration:

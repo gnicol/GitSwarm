@@ -28,7 +28,7 @@ Upgrading
 Overview
 
     To get the GitSwarm web application installed and configured, this
-    document will cover these main areas:
+    document covers these main areas:
 
     * Pre-installation Steps
     * Quick Install
@@ -46,8 +46,8 @@ Note: If you install Postfix to send email, please select Internet Site
       configure a custom SMTP server. Do not use Exim to send email from
       GitSwarm.
 
-      We advise installing GitSwarm on a fully up-to-date operating system. We've
-      included the system specific upgrade commands below.
+      We advise installing GitSwarm on a fully up-to-date operating system.
+      We've included the system specific upgrade commands below.
 
       By default, the CentOS firewall rules block HTTP and SSH access.
 
@@ -68,8 +68,8 @@ Note: If you install Postfix to send email, please select Internet Site
    $ sudo apt-get update  # optional
    $ sudo apt-get upgrade # optional
 
-GitSwarm requires a local mail server to facilitate delivery of notifications
-via email, and curl is used in the Quick install.
+GitSwarm requires a local mail server to facilitate delivery of
+notifications via email, and curl is used in the Quick Install.
 
 Install your selected mail server. For example:
 
@@ -107,19 +107,20 @@ Manual Install (package manager)
 
 1. Add Perforce's repository to your package configuration.
 
-See this document: https://www.perforce.com/perforce-packages for instructions
-on adding Perforce's packaging key to your keyring, as well as adding the
-Perforce package repository to your package configuration.
+   See this document: https://www.perforce.com/perforce-packages for
+   instructions on adding Perforce's packaging key to your keyring, as well
+   as adding the Perforce package repository to your package configuration.
 
-2. Install the GitSwarm package and necessary dependencies via the OS package manager.
+2. Install the GitSwarm package and necessary dependencies via the OS
+   package manager.
 
-    For Ubuntu (12.04 and 14.04):
+   For Ubuntu (12.04 and 14.04):
 
-        $ sudo apt-get install helix-gitswarm
+   $ sudo apt-get install helix-gitswarm
 
-    For CentOS (6 and 7):
+   For CentOS (6 and 7):
 
-        $ sudo yum install helix-gitswarm
+   $ sudo yum install helix-gitswarm
 
 3. Complete the post-installation steps below.
 
@@ -130,37 +131,37 @@ Manual Install (offline install, no package manager)
 
 1. Add Perforce's repository to your package configuration.
 
-See this document: https://www.perforce.com/perforce-packages for instructions
-on adding Perforce's packaging key to your keyring, as well as adding the
-Perforce package repository to your package configuration.
+   See this document: https://www.perforce.com/perforce-packages for
+   instructions on adding Perforce's packaging key to your keyring, as well
+   as adding the Perforce package repository to your package configuration.
 
 2. Install and configure the necessary dependencies.
 
-    For Ubuntu (12.04 and 14.04):
+   For Ubuntu (12.04 and 14.04):
 
-    $ sudo apt-get install openssh-server ca-certificates perforce-server helix-git-fusion-base
+   $ sudo apt-get install openssh-server ca-certificates perforce-server helix-git-fusion-base
 
 3. Download the GitSwarm package and install everything.
 
-    For Ubuntu 12.04:
+   For Ubuntu 12.04:
 
-    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu12x86_64/helix-gitswarm-2016.1.precise.amd64.deb
-    $ sudo dpkg -i helix-gitswarm-2016.1.precise.amd64.deb
+   $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu12x86_64/helix-gitswarm-2016.1.precise.amd64.deb
+   $ sudo dpkg -i helix-gitswarm-2016.1.precise.amd64.deb
 
-    For Ubuntu 14.04:
+   For Ubuntu 14.04:
 
-    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu14x86_64/helix-gitswarm-2016.1.trusty.amd64.deb
-    $ sudo dpkg -i helix-gitswarm-2016.1.trusty.amd64.deb
+   $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu14x86_64/helix-gitswarm-2016.1.trusty.amd64.deb
+   $ sudo dpkg -i helix-gitswarm-2016.1.trusty.amd64.deb
 
-    For CentOS 6:
+   For CentOS 6:
 
-    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos6x86_64/helix-gitswarm-2016.1.el6.x86_64.rpm
-    $ sudo yum install helix-gitswarm-2016.1.el6.x86_64.rpm
+   $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos6x86_64/helix-gitswarm-2016.1.el6.x86_64.rpm
+   $ sudo yum install helix-gitswarm-2016.1.el6.x86_64.rpm
 
-    For CentOS 7:
+   For CentOS 7:
 
-    $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos7x86_64/helix-gitswarm-2016.1.el7.x86_64.rpm
-    $ sudo yum install helix-gitswarm-2016.1.el7.x86_64.rpm
+   $ curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos7x86_64/helix-gitswarm-2016.1.el7.x86_64.rpm
+   $ sudo yum install helix-gitswarm-2016.1.el7.x86_64.rpm
 
 4. Complete the post-installation steps below.
 
@@ -174,7 +175,7 @@ Post-installation
    View /etc/gitswarm/gitswarm.rb, and verify that the following setting is
    set to the URL that your GitSwarm users should use:
 
-     external_url "http://gitswarm.example.com"
+   external_url "http://gitswarm.example.com"
 
    Edit the setting if necessary.
 
@@ -182,7 +183,7 @@ Post-installation
 
    Edit /etc/gitswarm/gitswarm.rb, and edit the line:
 
-     #gitlab_rails['time_zone'] = 'UTC'
+   #gitlab_rails['time_zone'] = 'UTC'
 
    Replace UTC with an appropriate timezone, and uncomment the line.
 

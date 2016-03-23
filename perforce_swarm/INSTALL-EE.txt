@@ -8,8 +8,8 @@ Introduction
     This document describes the installation and initial configuration
     process for Helix GitSwarm EE release 2016.1.
 
-    * Note, installing and configuring GitSwarm EE is a System Administrator
-      function and requires root access.
+    * Note, installing and configuring GitSwarm EE is a System
+      Administrator function and requires root access.
 
 Hardware Requirements
 
@@ -28,7 +28,7 @@ Upgrading
 Overview
 
     To get the GitSwarm EE web application installed and configured, this
-    document will cover these main areas:
+    document covers these main areas:
 
     * Pre-installation Steps
     * Quick Install
@@ -46,10 +46,17 @@ Note: If you install Postfix to send email, please select Internet Site
       configure a custom SMTP server. Do not use Exim to send email from
       GitSwarm EE.
 
-      We advise installing GitSwarm EE on a fully up-to-date operating system.
-      We've included the system specific upgrade commands below.
+      We advise installing GitSwarm EE on a fully up-to-date operating
+      system. We've included the system specific upgrade commands below.
 
       By default, the CentOS firewall rules block HTTP and SSH access.
+
+1. Acquire a license.
+
+   GitSwarm EE requires a valid subscription license. Certain features,
+   such as the ability to push to a repository, are not available without a
+   valid license. To request licenses, please contact your Perforce sales
+   representative or email <sales@perforce.com>.
 
 1. For CentOS 6:
 
@@ -68,8 +75,8 @@ Note: If you install Postfix to send email, please select Internet Site
    $ sudo apt-get update  # optional
    $ sudo apt-get upgrade # optional
 
-GitSwarm EE requires a local mail server to facilitate delivery of notifications
-via email, and curl is used in the Quick install.
+GitSwarm EE requires a local mail server to facilitate delivery of
+notifications via email, and curl is used in the Quick install.
 
 Install your selected mail server. For example:
 
@@ -107,19 +114,20 @@ Manual Install (package manager)
 
 1. Add Perforce's repository to your package configuration.
 
-See this document: https://www.perforce.com/perforce-packages for instructions
-on adding Perforce's packaging key to your keyring, as well as adding the
-Perforce package repository to your package configuration.
+   See this document: https://www.perforce.com/perforce-packages for
+   instructions on adding Perforce's packaging key to your keyring, as well
+   as adding the Perforce package repository to your package configuration.
 
-2. Install the GitSwarm EE package and necessary dependencies via the OS package manager.
+2. Install the GitSwarm EE package and necessary dependencies via the OS
+   package manager.
 
-    For Ubuntu (12.04 and 14.04):
+   For Ubuntu (12.04 and 14.04):
 
-        $ sudo apt-get install helix-gitswarm-ee
+   $ sudo apt-get install helix-gitswarm-ee
 
-    For CentOS (6 and 7):
+   For CentOS (6 and 7):
 
-        $ sudo yum install helix-gitswarm-ee
+   $ sudo yum install helix-gitswarm-ee
 
 3. Complete the post-installation steps below.
 
@@ -130,9 +138,9 @@ Manual Install (offline install, no package manager)
 
 1. Add Perforce's repository to your package configuration.
 
-See this document: https://www.perforce.com/perforce-packages for instructions
-on adding Perforce's packaging key to your keyring, as well as adding the
-Perforce package repository to your package configuration.
+   See this document: https://www.perforce.com/perforce-packages for
+   instructions on adding Perforce's packaging key to your keyring, as well
+   as adding the Perforce package repository to your package configuration.
 
 2. Install and configure the necessary dependencies.
 
@@ -174,7 +182,7 @@ Post-installation
    View /etc/gitswarm/gitswarm.rb, and verify that the following setting is
    set to the URL that your GitSwarm EE users should use:
 
-     external_url "http://gitswarm.example.com"
+   external_url "http://gitswarm.example.com"
 
    Edit the setting if necessary.
 
@@ -182,7 +190,7 @@ Post-installation
 
    Edit /etc/gitswarm/gitswarm.rb, and edit the line:
 
-     #gitlab_rails['time_zone'] = 'UTC'
+   #gitlab_rails['time_zone'] = 'UTC'
 
    Replace UTC with an appropriate timezone, and uncomment the line.
 

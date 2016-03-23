@@ -47,7 +47,7 @@
     Git Fusion. Instead, use SSH connections when Git Fusion is hosted on
     CentOS/RHEL 7.x.
 
-*   The following error can be displayed when Git Swarm is attempting to
+*   The following error can be displayed when GitSwarm EE is attempting to
     connect to a remote Helix Git Fusion server (running on Centos/RHEL
     6.6+) over SSH, as part of mirroring setup on the `Create Project`
     page.

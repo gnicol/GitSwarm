@@ -132,9 +132,9 @@ Perforce Helix as the master for all assets.
     GitSwarm schema, and then restore any backed-up repositories to your
     GitSwarm instance. Once the backup process is complete and your
     GitSwarm instance has been (re)started, you can then continue with
-    enabling [mirroring for your existing
-    projects](../workflow/importing/import_from_gitfusion.md), to gain the
-    full benefit of using GitSwarm.
+    enabling [Helix Mirroring for your existing
+    projects](../workflow/helix_mirroring/overview.md), to gain the full
+    benefit of using GitSwarm.
 
     As a final step, if you are using the same FQDN (fully-qualified domain
     name) for both your GitLab and GitSwarm instances, you should ensure

@@ -6,6 +6,7 @@
 - [File finder](file_finder.md)
 - [GitLab Flow](gitlab_flow.md)
 - [Groups](groups.md)
+- [Helix Mirroring](helix_mirroring/README.md)
 - [Importing into GitSwarm](importing/README.md)
 - [Keyboard shortcuts](shortcuts.md)
 - [Labels](labels.md)

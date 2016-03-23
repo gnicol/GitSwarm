@@ -12,7 +12,8 @@
     merges. Behind the scenes, this involves rebasing and forced pushes.
     Helix Mirroring is incompatible with these operations, and so the
     "Fast-forward merge" and "Merge commit with semi-linear history"
-    options on your GitSwarm EE project pages do not work.
+    options on your GitSwarm EE project pages, for mirrored projects, do
+    not work.
 
 *   GitSwarm EE project names can only contain letters, numbers,
     underscores, periods, and dashes, and must begin with a letter, number,

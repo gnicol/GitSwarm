@@ -69,7 +69,7 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
     page.should have_content 'Auto create is not configured properly. Please see this document for help.'
     page.should have_link(
       'this document',
-      href: '/help/workflow/importing/import_from_gitfusion#convention-based-repository-configuration'
+      href: '/help/workflow/helix_mirroring/configuration#convention-based-mirroring-configuration'
     )
   end
 

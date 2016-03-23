@@ -39,8 +39,8 @@ All services are created automatically for every project you have, so in
 order to avoid getting this error, you need to remove all instances of the
 `JenkinsService` from your database:
 
-```
-$ sudo gitswarm-rails runner "Service.where(type: 'JenkinsService').delete_all"
+```bash
+sudo gitswarm-rails runner "Service.where(type: 'JenkinsService').delete_all"
 ```
 
 ## Downgrade to GitSwarm

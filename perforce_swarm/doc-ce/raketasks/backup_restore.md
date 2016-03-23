@@ -16,21 +16,21 @@ created on, for example 2015.4. The best way to migrate your repositories
 from one server to another is through backup/restore.
 
 > Note: You need to keep a separate copy of the `/etc/gitswarm` directory,
-        as this contains the operational configuration for GitSwarm, and
-        encryption keys for the database (for users who have two-factor
-        authentication enabled). See the [steps for configuration
-        backup](#backup-the-configuration).
+> as this contains the operational configuration for GitSwarm, and
+> encryption keys for the database (for users who have two-factor
+> authentication enabled). See the [steps for configuration
+> backup](#backup-the-configuration).
 
 > Note: If you have enabled mirroring for any of your projects, you will
-        need to backup any associated Helix server instances separately,
-        *after* you have performed the GitSwarm backup. See the [Backup and
-        Recovery](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.backup.html)
-        chapter in the [_Helix Versioning Engine Administrator Guide:
-        Fundamentals_](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
+> need to backup any associated Helix server instances separately, *after*
+> you have performed the GitSwarm backup. See the [Backup and
+> Recovery](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.backup.html)
+> chapter in the [_Helix Versioning Engine Administrator Guide:
+> Fundamentals_](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
 
 > Note: If you are using the `:auto_provisioned` Helix server instance
-        (which we do not recommend for production systems), the following
-        information may be helpful:
+> (which we do not recommend for production systems), the following
+> information may be helpful:
 
 *   The auto provisioned Helix Server's 'P4ROOT' is
     `/var/opt/gitswarm/perforce/data`
@@ -43,12 +43,12 @@ If you are interested in GitLab CI backup please follow to the [CI backup
 documentation](https://gitlab.com/gitlab-org/gitlab-ci/blob/master/doc/raketasks/backup_restore.md)\*
 
 > Important: We recommend that you store your backup files in a safe
-             location, and at a secure offsite location as a disaster
-             prevention measure.
+> location, and at a secure offsite location as a disaster prevention
+> measure.
 
 ## Creating a backup
 
-```
+```bash
 sudo gitswarm-rake gitswarm:backup:create
 ```
 
@@ -57,7 +57,7 @@ You can choose what should be backed up by adding the environment variable
 `builds` (CI build output logs), `artifacts` (CI build artifacts), `lfs` (LFS
 objects). Use a comma to specify several options at the same time.
 
-```
+```bash
 sudo gitswarm-rake gitswarm:backup:create SKIP=db,uploads
 ```
 
@@ -98,7 +98,7 @@ is meant to avoid other system users reading GitSwarm's data. If you need
 the backup archives to have different permissions you can use the
 `archive_permissions` setting.
 
-```
+```ruby
 # In /etc/gitswarm/gitswarm.rb
 # 0644 makes the backup archives world-readable
 gitlab_rails['backup_archive_permissions'] = 0644
@@ -115,14 +115,14 @@ encryption in the first place!
 All of the configuration for GitSwarm is stored in `/etc/gitswarm`. To
 backup your configuration:
 
-```
+```bash
 # Creates a timestamped .tar file in the current directory
 sudo sh -c 'umask 0077; tar -cf $(date "+etc-gitswarm-%s.tar") -C / etc/gitswarm
 ```
 
 You can extract the `.tar` file as follows:
 
-```
+```bash
 # Rename the existing /etc/gitswarm, if any
 sudo mv /etc/gitswarm /etc/gitswarm.$(date +%s)
 # Change the example timestamp below to match your configuration backup
@@ -133,15 +133,15 @@ Remember to run `sudo gitswarm-ctl reconfigure` after restoring a
 configuration backup.
 
 > Note: Your machine's SSH host keys are stored separately in `/etc/ssh`.
-        Be sure to also [backup and restore those
-        keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079)
-        to avoid man-in-the-middle attack warnings if you have to perform a
-        full machine restore.
+> Be sure to also [backup and restore those
+> keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079)
+> to avoid man-in-the-middle attack warnings if you have to perform a full
+> machine restore.
 
 > Important: **Do not store your GitSwarm application backups in the same
-             place as your configuration backup.** The configuration backup
-             can contain database encryption keys to protect sensitive data
-             in the SQL database:
+> place as your configuration backup.** The configuration backup can
+> contain database encryption keys to protect sensitive data in the SQL
+> database:
 
 *   GitSwarm two-factor authentication (2FA) user secrets ('QR codes')
 *   GitLab CI 'secure variables'
@@ -177,19 +177,19 @@ gitlab_rails['backup_keep_time'] = 604800
 ```
 
 > Note: This cron job does not [backup your GitSwarm
-        configuration](#backup-the-configuration) or [SSH host
-        keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
+> configuration](#backup-the-configuration) or [SSH host
+> keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
 
 ## Restore a previously created backup
 
 > Important: You can only restore a backup to GitSwarm if the backup was
-             created on the same version of GitSwarm, or the corresponding
-             version of GitLab. For example, a backup taken on GitLab 8.0.5
-             can be restored to a 2015.4 GitSwarm install. Here is a list
-             of the GitSwarm releases and their corresponding GitLab
-             releases:
-  * GitLab CE, 8.0.5 = GitSwarm 2015.4
-  * GitLab CE, 8.4.5 = GitSwarm 2016.1
+> created on the same version of GitSwarm, or the corresponding version of
+> GitLab. For example, a backup taken on GitLab 8.0.5 can be restored to a
+> 2015.4 GitSwarm install. Here is a list of the GitSwarm releases and
+> their corresponding GitLab releases:
+>
+> * GitLab CE, 8.0.5 = GitSwarm 2015.4
+> * GitLab CE, 8.4.5 = GitSwarm 2016.1
 
 ### Prerequisites
 

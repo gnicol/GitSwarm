@@ -5,11 +5,11 @@ GitSwarm. This feature is available for Helix Git Fusion 2015.4, or
 newer.
 
 > **Warning: This capability is not enabled by default, nor do we recommend
-  that you enable it.**
+> that you enable it.**
 
 > **Important**: The 'Select files or folder to mirror' feature shown on
-  the add project page exposes all folders that the `gitswarm` user has
-  access to; regardless of the authenticated user's rights.
+> the add project page exposes all folders that the `gitswarm` user has
+> access to; regardless of the authenticated user's rights.
 
 ## Requirements
 
@@ -46,7 +46,7 @@ To enable permission enforcement via Git Fusion, you need to:
     ```
 
     > Note: Ensure that the `unknown_git` user exists in the Helix
-      Versioning Engine.
+    > Versioning Engine.
 
 1.  If you want to allow GitSwarm users to push changes that are mirrored
     into the Helix Versioning Engine (p4d), and those users do not exist in

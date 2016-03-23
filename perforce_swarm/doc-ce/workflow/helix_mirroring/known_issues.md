@@ -5,11 +5,8 @@
 
 ## Known issues
 
-*   Git Fusion, when installed on CentOS/RHEL 7.x, does not support HTTP(S)
-    authentication. This issue prevents pushing new work to a Git Fusion
-    repo, including any updates in GitSwarm that would be mirrored to Git
-    Fusion. Instead, use SSH connections when Git Fusion is hosted on
-    CentOS/RHEL 7.x.
+*   Helix Mirroring stops working when a GitSwarm project involves commits
+    that contain only tags and no file changes.
 
 *   GitSwarm project names can only contain letters, numbers, underscores,
     periods, and dashes, and must begin with a letter, number, or
@@ -37,8 +34,11 @@
     Unfortunately, the solution is to delete the project, correct the
     settings in `gitswarm.rb`, and then re-create the project.
 
-*   Helix Mirroring stops working when a GitSwarm project contains commits
-    that contain only tags and no file changes.
+*   Git Fusion, when installed on CentOS/RHEL 7.x, does not support HTTP(S)
+    authentication. This issue prevents pushing new work to a Git Fusion
+    repo, including any updates in GitSwarm that would be mirrored to Git
+    Fusion. Instead, use SSH connections when Git Fusion is hosted on
+    CentOS/RHEL 7.x.
 
 *   The following error can be displayed when Git Swarm is attempting to
     connect to a remote Helix Git Fusion server (running on Centos/RHEL

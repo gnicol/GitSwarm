@@ -69,7 +69,7 @@ Note: If you install Postfix to send email, please select Internet Site
    $ sudo apt-get upgrade # optional
 
 GitSwarm requires a local mail server to facilitate delivery of
-notifications via email, and curl is used in the Quick install.
+notifications via email, and curl is used in the Quick Install.
 
 Install your selected mail server. For example:
 

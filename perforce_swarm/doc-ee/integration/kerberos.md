@@ -47,8 +47,8 @@ The keytab is a sensitive file and must be readable by the GitSwarm EE
 user. Set ownership and protect the file appropriately:
 
 ```bash
-$ sudo chown git /etc/http.keytab
-$ sudo chmod 0700 /etc/http.keytab
+sudo chown git /etc/http.keytab
+sudo chmod 0700 /etc/http.keytab
 ```
 
 ##### Configuration changes

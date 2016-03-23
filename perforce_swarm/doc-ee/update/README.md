@@ -34,7 +34,7 @@ sudo yum clean all
 
 If you have any repos mirroring their content into Helix Git Fusion, we
 strongly recommend that you update Helix Git Fusion and the Helix
-Versioning Engine prior to updating GitSwarm.
+Versioning Engine prior to updating GitSwarm EE.
 
 -   **For Ubuntu:**
 

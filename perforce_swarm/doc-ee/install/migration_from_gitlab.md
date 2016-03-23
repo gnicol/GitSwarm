@@ -137,7 +137,7 @@ well as leveraging Perforce Helix as the master for all assets.
     GitSwarm EE instance. Once the backup process is complete and your
     GitSwarm EE instance has been (re)started, you can then continue with
     enabling [mirroring for your existing
-    projects](../workflow/importing/import_from_gitfusion.md), to gain the
+    projects](../workflow/helix_mirroring/README.md), to gain the
     full benefit of using GitSwarm EE.
 
     As a final step, if you are using the same FQDN (fully-qualified domain

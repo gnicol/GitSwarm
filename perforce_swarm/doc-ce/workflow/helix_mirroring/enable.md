@@ -133,7 +133,7 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
         Git Fusion
 
     If any errors occur during the above process, GitSwarm takes you back
-    to the Mirror in Helix page, and report the error. [See
+    to the Mirror in Helix page, and reports the error. [See
     below](#error-messages) for potential error messages, what they mean
     and how to fix them.
 
@@ -177,7 +177,8 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
 1.  **Click "Add Branch <name>".**
 
     The "Defined Branches" area maintains a list of the named branches and
-    the corresponding depot path.
+    the corresponding depot paths (directories) within the Helix Versioning
+    Engine.
 
     ----
     ![A defined branch](mirror-choose_folders-defined.png)

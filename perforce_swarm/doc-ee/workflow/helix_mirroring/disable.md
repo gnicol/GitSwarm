@@ -8,7 +8,7 @@
 Once Helix Mirroring has been [enabled](enable.md), it can be disabled.
 When disabled, the Git Fusion [configuration](configuration.md) remains in
 the `/etc/gitswarm/gitswarm.rb` file. Projects that have disabled Helix
-Mirroring should display 'Previously mirrored in Helix'.
+Mirroring should display 'Not mirrored in Helix'.
 
 > **Note:** Your GitSwarm EE user account must either be an admin account,
 > or you must have at least master-level permissions for the project on

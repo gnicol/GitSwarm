@@ -18,7 +18,7 @@ be used:
 ```
 
 Here, `%{issue_ref}` is a complex regular expression defined inside
-GitSwarm, that matches a reference to a local issue (`#123`), cross-project
+$GitSwarm$, that matches a reference to a local issue (`#123`), cross-project
 issue (`group/project#123`) or a link to an issue
 (`https://gitswarm.example.com/group/project/issues/123`).
 

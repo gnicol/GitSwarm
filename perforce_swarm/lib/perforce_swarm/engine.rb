@@ -80,6 +80,10 @@ module PerforceSwarm
     ce? ? 'GitSwarm' : 'GitSwarm Enterprise Edition'
   end
 
+  def self.package_name
+    ce? ? 'gitswarm' : 'gitswarm-ee'
+  end
+
   module ConfigurationExtension
     def initialize(*)
       super

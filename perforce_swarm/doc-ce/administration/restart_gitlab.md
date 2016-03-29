@@ -1,6 +1,6 @@
-# How to restart GitSwarm
+# How to restart $GitSwarm$
 
-Depending on how you installed GitSwarm, there are different methods to
+Depending on how you installed $GitSwarm$, there are different methods to
 restart its service(s).
 
 If you want the TL;DR versions, jump to:
@@ -8,7 +8,7 @@ If you want the TL;DR versions, jump to:
 - [Restart](#restart)
 - [Reconfigure](#reconfigure)
 
-`gitswarm-ctl` can be used to restart the GitSwarm application (Unicorn) as
+`gitswarm-ctl` can be used to restart the $GitSwarm$ application (Unicorn) as
 well as the other components, like:
 
 - GitLab Workhorse
@@ -22,7 +22,7 @@ well as the other components, like:
 ## Restart
 
 There may be times in the documentation where you are asked to _restart_
-GitSwarm. In that case, you need to run the following command:
+$GitSwarm$. In that case, you need to run the following command:
 
 ```bash
 sudo gitswarm-ctl restart
@@ -48,7 +48,7 @@ To restart a component separately, you can append its service name to the
 sudo gitswarm-ctl restart nginx
 ```
 
-To check the status of GitSwarm services, run:
+To check the status of $GitSwarm$ services, run:
 
 ```bash
 sudo gitswarm-ctl status
@@ -66,23 +66,23 @@ As a last resort, you can try to [reconfigure](#reconfigure) instead.
 ## Reconfigure
 
 There may be times in the documentation where you are asked to
-_reconfigure_ GitSwarm.
+_reconfigure_ $GitSwarm$.
 
-Reconfigure GitSwarm with:
+Reconfigure $GitSwarm$ with:
 
 ```bash
 sudo gitswarm-ctl reconfigure
 ```
 
-Reconfiguring GitSwarm should occur in the event that something in its
+Reconfiguring $GitSwarm$ should occur in the event that something in its
 configuration (`/etc/gitswarm/gitswarm.rb`) has changed.
 
 When you run this command, [Chef], the underlying configuration management
-application that powers GitSwarm, ensures that all directories,
+application that powers $GitSwarm$, ensures that all directories,
 permissions, services, etc., are in place and in the same shape that they
 were initially shipped.
 
-It also restarts GitSwarm components where needed, if any of their
+It also restarts $GitSwarm$ components where needed, if any of their
 configuration files have changed.
 
 If you manually edit any files in `/var/opt/gitswarm` that are managed by
@@ -90,5 +90,5 @@ Chef, running reconfigure reverts the changes AND restarts the services
 that depend on those files.
 
 [omnibus-dl]: https://about.gitlab.com/downloads/ "Download the Omnibus packages"
-[mailroom]: ../incoming_email/README.md "Used for replying by email in GitSwarm issues and merge requests"
+[mailroom]: ../incoming_email/README.md "Used for replying by email in $GitSwarm$ issues and merge requests"
 [chef]: https://www.chef.io/chef/ "Chef official website"

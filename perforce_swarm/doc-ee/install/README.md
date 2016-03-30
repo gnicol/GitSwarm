@@ -157,7 +157,7 @@ To uninstall GitSwarm EE, follow the [uninstall steps](uninstall.md).
     In production, you will likely already have your own Helix Server
     already setup and will want to configure GitSwarm EE to talk to it in
     order to enable [project
-    mirroring](../workflow/importing/import_from_gitfusion.md).
+    mirroring](../workflow/helix_mirroring/README.md).
 
 *   **Set up other ways of signing in:**
 

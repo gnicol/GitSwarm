@@ -47,7 +47,7 @@ Two things to note:
 
 Edit `/etc/gitswarm/gitswarm.rb` and add the line:
 
-```
+```ruby
 gitlab-rails['gitlab_default_projects_features_builds'] = false
 ```
 

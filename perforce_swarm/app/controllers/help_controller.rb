@@ -30,7 +30,7 @@ module PerforceSwarm
         end
 
         # Allow access to images in the doc folder
-        format.any(:png, :gif, :jpeg) do
+        format.any(:png, :gif, :jpeg, :svg) do
           # Note: We are purposefully NOT using `Rails.root.join`
           swarm_path    = File.join(Rails.root, 'perforce_swarm', 'doc-ce', @category, "#{@file}.#{params[:format]}")
           swarm_ee_path = File.join(Rails.root, 'perforce_swarm', 'doc-ee', @category, "#{@file}.#{params[:format]}")

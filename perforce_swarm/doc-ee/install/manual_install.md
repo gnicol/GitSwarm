@@ -13,12 +13,13 @@
 
     1.  **For Ubuntu (12.04 and 14.04):**
 
-        ```
+        ```bash
         sudo apt-get install helix-gitswarm-ee
         ```
+
     1.  **For CentOS/RHEL (6.6+ and 7.x):**
 
-        ```
+        ```bash
         sudo yum install helix-gitswarm-ee
         ```
 
@@ -40,7 +41,7 @@
 
     1.  **For Ubuntu (12.04 and 14.04):**
 
-        ```
+        ```bash
         sudo apt-get install openssh-server ca-certificates helix-p4d helix-git-fusion-base
         ```
 
@@ -48,28 +49,28 @@
 
     1.  **For Ubuntu 12.04:**
 
-        ```
+        ```bash
         curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu12x86_64/helix-gitswarm-ee-2016.1.precise.amd64.deb
         sudo dpkg -i helix-gitswarm-ee-2016.1.precise.amd64.deb
         ```
 
     1.  **For Ubuntu 14.04:**
 
-        ```
+        ```bash
         curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu14x86_64/helix-gitswarm-ee-2016.1.trusty.amd64.deb
         sudo dpkg -i helix-gitswarm-ee-2016.1.trusty.amd64.deb
         ```
 
     1.  **For CentOS/RHEL 6.6+:**
 
-        ```
+        ```bash
         curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos6x86_64/helix-gitswarm-ee-2016.1.el6.x86_64.rpm
         sudo yum install helix-gitswarm-ee-2016.1.el6.x86_64.rpm
         ```
 
     1.  **For CentOS/RHEL 7.x:**
 
-        ```
+        ```bash
         curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos7x86_64/helix-gitswarm-ee-2016.1.el7.x86_64.rpm
         sudo yum install helix-gitswarm-ee-2016.1.el7.x86_64.rpm
         ```

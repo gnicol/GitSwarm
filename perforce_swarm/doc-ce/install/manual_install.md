@@ -13,13 +13,14 @@
 
     1.  **For Ubuntu (12.04 and 14.04):**
 
+        ```bash
+        sudo apt-get install helix-gitswarm
         ```
-sudo apt-get install helix-gitswarm
-        ```
+
     1.  **For CentOS/RHEL (6.6+ and 7.x):**
 
-        ```
-sudo yum install helix-gitswarm
+        ```bash
+        sudo yum install helix-gitswarm
         ```
 
 1.  **Complete the post-installation steps.**
@@ -40,38 +41,38 @@ sudo yum install helix-gitswarm
 
     1.  **For Ubuntu (12.04 and 14.04):**
 
-        ```
-sudo apt-get install openssh-server ca-certificates perforce-server helix-git-fusion-base
+        ```bash
+        sudo apt-get install openssh-server ca-certificates perforce-server helix-git-fusion-base
         ```
 
 1.  **Download the GitSwarm package and install everything.**
 
     1.  **For Ubuntu 12.04:**
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu12x86_64/helix-gitswarm-2016.1.precise.amd64.deb
-sudo dpkg -i helix-gitswarm-2016.1.precise.amd64.deb
+        ```bash
+        curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu12x86_64/helix-gitswarm-2016.1.precise.amd64.deb
+        sudo dpkg -i helix-gitswarm-2016.1.precise.amd64.deb
         ```
 
     1.  **For Ubuntu 14.04:**
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu14x86_64/helix-gitswarm-2016.1.trusty.amd64.deb
-sudo dpkg -i helix-gitswarm-2016.1.trusty.amd64.deb
+        ```bash
+        curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.ubuntu14x86_64/helix-gitswarm-2016.1.trusty.amd64.deb
+        sudo dpkg -i helix-gitswarm-2016.1.trusty.amd64.deb
         ```
 
     1.  **For CentOS/RHEL 6.6+:**
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos6x86_64/helix-gitswarm-2016.1.el6.x86_64.rpm
-sudo yum install helix-gitswarm-2016.1.el6.x86_64.rpm
+        ```bash
+        curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos6x86_64/helix-gitswarm-2016.1.el6.x86_64.rpm
+        sudo yum install helix-gitswarm-2016.1.el6.x86_64.rpm
         ```
 
     1.  **For CentOS/RHEL 7.x:**
 
-        ```
-curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos7x86_64/helix-gitswarm-2016.1.el7.x86_64.rpm
-sudo yum install helix-gitswarm-2016.1.el7.x86_64.rpm
+        ```bash
+        curl -O ftp://ftp.perforce.com/perforce/r16.1/bin.centos7x86_64/helix-gitswarm-2016.1.el7.x86_64.rpm
+        sudo yum install helix-gitswarm-2016.1.el7.x86_64.rpm
         ```
 
 1.  **Complete the post-installation steps.**

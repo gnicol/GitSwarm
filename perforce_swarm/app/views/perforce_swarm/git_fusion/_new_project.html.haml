@@ -4,7 +4,7 @@
       %h4 There was an error communicating with Helix Git Fusion:
       = @errors.first
       Please see
-      = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#known-issues'
+      = link_to ' this document ', help_page_path('workflow', 'helix_mirroring', 'configuration')
       for help.
   - else
     - repos_options = git_fusion_repos(@repos)
@@ -36,12 +36,12 @@
               %br
               = @auto_create_errors.first
               Please see
-              = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#convention-based-repository-configuration'
+              = link_to ' this document ', help_page_path('workflow', 'helix_mirroring', 'configuration') + '#convention-based-mirroring-configuration'
               for help.
             - elsif !@depot_exists
               Configured project depot #{@project_depot.inspect} is missing.
               Please see
-              = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#convention-based-repository-configuration'
+              = link_to ' this document ', help_page_path('workflow', 'helix_mirroring', 'configuration') + '#convention-based-mirroring-configuration'
               for help.
       .radio{:class => ("disabled" if @repos.empty?)}
         = label_tag do
@@ -114,10 +114,10 @@
               %br
               = @auto_create_errors.first
               Please see
-              = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#convention-based-repository-configuration'
+              = link_to ' this document ', help_page_path('workflow', 'helix_mirroring', 'configuration') + '#convention-based-mirroring-configuration'
               for help.
             - elsif !@depot_exists
               Configured project depot #{@project_depot.inspect} is missing.
               Please see
-              = link_to ' this document ', help_page_path('workflow', 'importing', 'import_from_gitfusion') + '#convention-based-repository-configuration'
+              = link_to ' this document ', help_page_path('workflow', 'helix_mirroring', 'configuration') + '#convention-based-mirroring-configuration'
               for help.

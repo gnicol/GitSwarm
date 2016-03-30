@@ -49,7 +49,7 @@ the [Troubleshooting](#troubleshooting).
 Make sure that the backup script on both servers can connect to the
 database.
 
-```
+```bash
 # On your CI server:
 sudo chown gitlab-ci:gitlab-ci /var/opt/gitswarm/gitlab-ci/builds
 sudo gitlab-ci-rake backup:create
@@ -57,7 +57,7 @@ sudo gitlab-ci-rake backup:create
 
 Also check on your GitSwarm server.
 
-```
+```bash
 # On your GitSwarm server:
 sudo gitswarm-rake gitswarm:backup:create SKIP=repositories,uploads
 ```
@@ -72,12 +72,12 @@ both use PostgreSQL, no special care is needed. If your CI server
 uses MySQL, you need to pass a special option during the 'Moving data'
 part.
 
-```
+```bash
 # On your CI server:
 sudo gitlab-ci-rake env:info
 ```
 
-```
+```bash
 # On your GitSwarm server:
 sudo gitswarm-rake gitswarm:env:info
 ```
@@ -120,7 +120,7 @@ GitSwarm, this may have already happened.
 
 Disable GitLab CI after upgrading to 8.0.
 
-```
+```bash
 # On your CI server:
 sudo gitswarm-ctl stop ci-unicorn
 sudo gitswarm-ctl stop ci-sidekiq
@@ -135,7 +135,7 @@ server. The command below will show you what you need to copy-paste to
 your GitSwarm server. You have to add a line to
 `/etc/gitswarm/gitswarm.rb`.
 
-```
+```bash
 # On your CI server:
 sudo gitlab-ci-rake backup:show_secrets
 ```
@@ -145,7 +145,7 @@ sudo gitlab-ci-rake backup:show_secrets
 Create your final CI data export. When the command finishes it will print
 the path to your data export archive; you will need this file later.
 
-```
+```bash
 # On your CI server:
 sudo chown gitlab-ci:gitlab-ci /var/opt/gitswarm/gitlab-ci/builds
 sudo gitlab-ci-rake backup:create
@@ -161,7 +161,7 @@ this, below we use SSH agent forwarding and 'scp', which will be easy and
 fast for most setups. You can also copy the data archive first from the CI
 server to your laptop and then from your laptop to the GitSwarm server.
 
-```
+```bash
 # Start from your laptop
 ssh -A ci_admin@ci_server.example
 # Now on the CI server
@@ -173,7 +173,7 @@ scp /path/to/12345_gitlab_ci_backup.tar gitswarm_admin@gitswarm_server.example:~
 Make the CI data archive discoverable for GitSwarm. We assume below that
 you store backups in the default path, adjust the command if necessary.
 
-```
+```bash
 # On your GitSwarm server:
 sudo mv /path/to/12345_gitlab_ci_backup.tar /var/opt/gitswarm/backups/
 ```
@@ -184,7 +184,7 @@ This step will delete any existing CI data on your GitSwarm server. There
 should be no CI data yet because you turned CI on the GitSwarm server off
 earlier.
 
-```
+```bash
 # On your GitSwarm server:
 sudo chown git:git /var/opt/gitswarm/gitlab-ci/builds
 sudo gitswarm-rake ci:migrate
@@ -192,7 +192,7 @@ sudo gitswarm-rake ci:migrate
 
 #### 6. Restart GitSwarm
 
-```
+```bash
 # On your GitSwarm server:
 sudo gitswarm-ctl hup unicorn
 sudo gitswarm-ctl restart sidekiq
@@ -301,13 +301,13 @@ GitSwarm to 2015.4.
 To fix that issue you have to change `builds/` folder permission before
 doing final backup:
 
-```
+```bash
 sudo chown -R gitlab-ci:gitlab-ci /var/opt/gitswarm/gitlab-ci/builds
 ```
 
 Then before executing `ci:migrate` you need to fix builds folder permission:
 
-```
+```bash
 sudo chown git:git /var/opt/gitswarm/gitlab-ci/builds
 ```
 
@@ -333,7 +333,7 @@ CREATE TABLE
 
 To fix that you need to apply this SQL statement before doing final backup:
 
-```
+```bash
 gitlab-ci-rails dbconsole <<EOF
 -- ALTER TABLES - DROP DEFAULTS
 ALTER TABLE ONLY ci_application_settings ALTER COLUMN id DROP DEFAULT;

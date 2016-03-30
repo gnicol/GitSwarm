@@ -26,8 +26,8 @@ sudo gitswarm-rake gitswarm:import:user_to_groups[username@domain.tld]
 sudo gitswarm-rake gitswarm:import:all_users_to_all_groups
 ```
 
-> Note:  admin users are added as owners so they can add additional users to
-         the group
+> Note: admin users are added as owners so they can add additional users to
+> the group
 
 ## Maintain tight control over the number of active users on your GitSwarm EE installation
 

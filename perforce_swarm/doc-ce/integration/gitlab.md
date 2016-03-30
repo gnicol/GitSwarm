@@ -22,8 +22,8 @@ secret key for you to use.
     - Redirect URI:
 
     ```
-http://your-gitswarm.example.com/import/gitlab/callback
-http://your-gitswarm.example.com/users/auth/gitlab/callback
+    http://your-gitswarm.example.com/import/gitlab/callback
+    http://your-gitswarm.example.com/users/auth/gitlab/callback
     ```
 
     The first link is required for the importer and second for the
@@ -39,8 +39,8 @@ http://your-gitswarm.example.com/users/auth/gitlab/callback
 1.  On your GitSwarm server, open the configuration file.
 
 
-    ```sh
-sudo editor /etc/gitswarm/gitswarm.rb
+    ```bash
+    sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
 1.  See [Initial OmniAuth

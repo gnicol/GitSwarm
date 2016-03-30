@@ -72,6 +72,14 @@ module PerforceSwarm
     edition == 'ce'
   end
 
+  def self.short_name
+    ce? ? 'GitSwarm' : 'GitSwarm EE'
+  end
+
+  def self.long_name
+    ce? ? 'GitSwarm' : 'GitSwarm Enterprise Edition'
+  end
+
   module ConfigurationExtension
     def initialize(*)
       super

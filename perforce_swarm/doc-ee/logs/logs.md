@@ -1,8 +1,8 @@
 ## Log system
 
-GitSwarm EE has advanced log system so everything is logging and you can
-analize your instance using various system log files. In addition to system
-log files, GitSwarm EE comes with Audit Events. Find more about them [in
+$GitSwarm$ has advanced log system so everything is logging and you can
+analyze your instance using various system log files. In addition to system
+log files, $GitSwarm$ comes with Audit Events. Find more about them [in
 Audit Events documentation](../administration/audit_events.md).
 
 System log files are typically plain text in a standard log file format.
@@ -16,8 +16,8 @@ This file contains information about all performed requests. You can see
 URL and type of request, IP address and what exactly parts of code were
 involved to service this particular request. Also you can see all SQL
 request that have been performed and how much time it took. This task is
-more useful for GitSwarm EE contributors and developers. Use part of this
-log file when you are going to report bug.
+more useful for $GitSwarm$ contributors and developers. Use part of this log
+file when you are going to report bug.
 
 ```
 Started GET "/gitlabhq/yaml_db/tree/master" for 168.111.56.1 at 2015-02-12 19:34:53 +0200
@@ -26,7 +26,7 @@ Processing by Projects::TreeController#show as HTML
 
   ... [CUT OUT]
 
-  amespaces"."created_at" DESC, "namespaces"."id" DESC LIMIT 1[0m  [["id", 26]]
+  namespaces"."created_at" DESC, "namespaces"."id" DESC LIMIT 1[0m  [["id", 26]]
   [1m[35mCACHE (0.0ms)[0m  SELECT  "members".* FROM "members"  WHERE "members"."source_type" = 'Project' AND "members"."type" IN ('ProjectMember') AND "members"."source_id" = $1 AND "members"."source_type" = $2 AND "members"."user_id" = 1  ORDER BY "members"."created_at" DESC, "members"."id" DESC LIMIT 1  [["source_id", 18], ["source_type", "Project"]]
   [1m[36mCACHE (0.0ms)[0m  [1mSELECT  "members".* FROM "members"  WHERE "members"."source_type" = 'Project' AND "members".
   [1m[36m (1.4ms)[0m  [1mSELECT COUNT(*) FROM "merge_requests"  WHERE "merge_requests"."target_project_id" = $1 AND ("merge_requests"."state" IN ('opened','reopened'))[0m  [["target_project_id", 18]]
@@ -61,9 +61,9 @@ October 07, 2014 11:25: Project "project133" was removed
 
 This file lives in `/var/log/gitswarm/gitlab-rails/githost.log`.
 
-GitSwarm EE has to interact with git repositories. In rare cases,
+$GitSwarm$ has to interact with git repositories. In rare cases,
 something can go wrong; refer to this log file to know what exactly
-happened. This log file contains all failed requests from GitSwarm EE to
+happened. This log file contains all failed requests from $GitSwarm$ to
 git repository. In majority of cases this file will be useful for
 developers only.
 
@@ -73,11 +73,11 @@ December 03, 2014 13:20 -> ERROR -> Command failed [1]: /usr/bin/git --git-dir=/
 error: failed to push some refs to '/Users/vsizov/gitlab-development-kit/repositories/gitlabhq/gitlab_git.git'
 ```
 
-#### sidekiq.log
+### sidekiq.log
 
 This file lives in `/var/log/gitswarm/gitlab-rails/sidekiq.log`.
 
-GitSwarm EE uses background jobs for processing tasks which can take a long
+$GitSwarm$ uses background jobs for processing tasks which can take a long
 time. All information about processing these jobs are recorded to this
 file.
 
@@ -86,26 +86,26 @@ file.
 2014-06-10T18:18:26Z 14299 TID-55uqo INFO: Booting Sidekiq 3.0.0 with redis options {:url=>"redis://localhost:6379/0", :namespace=>"sidekiq"}
 ```
 
-#### gitlab-shell.log
+### gitlab-shell.log
 
 This file lives in `/var/log/gitswarm/gitlab-shell/gitlab-shell.log`.
 
-gitlab-shell is using by GitSwarm EE for executing git commands and
-providing SSH access to git repositories.
+gitlab-shell is used by $GitSwarm$ for executing git commands and provides
+SSH access to git repositories.
 
 ```
 I, [2015-02-13T06:17:00.671315 #9291]  INFO -- : Adding project root/example.git at </var/opt/gitswarm/git-data/repositories/root/dcdcdcdcd.git>.
 I, [2015-02-13T06:17:00.679433 #9291]  INFO -- : Moving existing hooks directory and simlinking global hooks directory for /var/opt/gitswarm/git-data/repositories/root/example.git.
 ```
 
-#### unicorn_stderr.log
+### unicorn_stderr.log
 
 This file lives in `/var/log/gitswarm/unicorn/unicorn_stderr.log`.
 
 Unicorn is a high-performance forking Web server which is used for serving
-GitSwarm EE. You can look at this log, for example, if your application
-does not respond. This log contains all information about state of unicorn
-processes at any given time.
+the $GitSwarm$ application. You can look at this log, for example, if your
+application does not respond. This log contains all information about the
+state of unicorn processes at any given time.
 
 ```
 I, [2015-02-13T06:14:46.680381 #9047]  INFO -- : Refreshing Gem list

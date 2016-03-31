@@ -125,17 +125,19 @@ and understand the pre-update considerations above.
 
    For Ubuntu (12.04 and 14.04):
 
+   $ sudo gitswarm-ctl stop
    $ sudo apt-get remove helix-gitswarm
    $ sudo apt-get clean
    $ sudo apt-get install helix-gitswarm-ee
-   $ sudo gitswarm-ctl reconfigure
+   $ sudo gitswarm-ctl start
 
    For CentOS (6 and 7):
 
+   $ sudo gitswarm-ctl stop
    $ sudo yum remove helix-gitswarm
    $ sudo yum clean all
    $ sudo yum install helix-gitswarm-ee
-   $ sudo gitswarm-ctl reconfigure
+   $ sudo gitswarm-ctl start
 
 3. Check the application status.
 

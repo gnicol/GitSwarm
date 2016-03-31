@@ -1,0 +1,5 @@
+- if current_user && mirroring_permitted?(@project, current_user) && mirroring_configured? && git_fusion_last_fetch_error(@project)
+  .alert.alert-warning.hidden-xs
+    Helix Mirroring is reporting an error.
+    .pull-right
+      = link_to('More details', configure_helix_mirroring_namespace_project_path(@project.namespace, @project))

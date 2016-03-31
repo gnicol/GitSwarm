@@ -7,8 +7,9 @@
 @import "bootstrap/variables";
 @import "bootstrap/mixins";
 
-/* Bring in GitLab's variables */
+/* Bring in GitLab's variables and mixins */
 @import "framework/variables";
+@import "framework/mixins";
 
 /* Our own boostrap style overrides */
 @import "perforce_swarm/bootstrap";

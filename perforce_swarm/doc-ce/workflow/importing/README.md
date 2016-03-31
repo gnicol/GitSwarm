@@ -1,7 +1,7 @@
-# Migrating projects to a GitSwarm instance
+# Importing projects into GitSwarm
 
 1. [Bitbucket](import_projects_from_bitbucket.md)
-1. [Git Fusion](import_from_gitfusion.md)
+1. [Helix Mirroring](../helix_mirroring/README.md)
 1. [GitHub](import_projects_from_github.md)
 1. [GitLab.com](import_projects_from_gitlab_com.md)
 1. [FogBugz](import_projects_from_fogbugz.md)

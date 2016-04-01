@@ -42,7 +42,7 @@ Versioning Engine prior to updating GitSwarm.
     sudo apt-get install helix-git-fusion-base helix-p4d
     ```
 
--   **For CentOS:**
+-   **For CentOS/RHEL:**
 
     ```bash
     sudo yum install helix-git-fusion-base helix-p4d

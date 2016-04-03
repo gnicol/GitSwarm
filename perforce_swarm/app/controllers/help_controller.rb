@@ -18,12 +18,14 @@ module PerforceSwarm
             content = File.read(swarm_ee_path)
             content.gsub!('$GitSwarm$', PerforceSwarm.short_name)
             content.gsub!('$GitSwarmPackage$', PerforceSwarm.package_name)
+            content.gsub!('$GitLab$', PerforceSwarm.gitlab_name)
             @markdown = content
             render 'show.html.haml'
           elsif File.exist?(swarm_path)
             content = File.read(swarm_path)
             content.gsub!('$GitSwarm$', PerforceSwarm.short_name)
             content.gsub!('$GitSwarmPackage$', PerforceSwarm.package_name)
+            content.gsub!('$GitLab$', PerforceSwarm.gitlab_name)
             @markdown = content
             render 'show.html.haml'
           elsif File.exist?(path)

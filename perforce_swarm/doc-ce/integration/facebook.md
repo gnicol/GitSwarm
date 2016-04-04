@@ -11,7 +11,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 1.  Select the type "Website".
 
 1.  Enter a name for your app. This can be anything. Consider something
-    like "\<Organization\>'s GitSwarm" or "\<Your Name\>'s GitSwarm" or
+    like "\<Organization\>'s $GitSwarm$" or "\<Your Name\>'s $GitSwarm$" or
     something else descriptive.
 
 1.  Choose "Create New Facebook App ID".
@@ -20,7 +20,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
 1.  Choose "Create App ID".
 
-1.  Enter the address of your GitSwarm installation at the bottom of the
+1.  Enter the address of your $GitSwarm$ installation at the bottom of the
     package:
 
     ![Facebook Website URL](facebook_website_url.png)
@@ -52,7 +52,7 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
     ![Facebook API Keys](facebook_api_keys.png)
 
-1.  On your GitSwarm server, open the configuration file.
+1.  On your $GitSwarm$ server, open the configuration file.
 
     ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
@@ -81,9 +81,9 @@ with Facebook. Facebook generates an app ID and secret key for you to use.
 
 1.  Save the configuration file.
 
-1.  Restart GitSwarm for the changes to take effect.
+1.  Restart $GitSwarm$ for the changes to take effect.
 
 On the sign in page there should now be a Facebook icon below the regular
 sign in form. Click the icon to begin the authentication process. Facebook
-asks the user to sign in and authorize GitSwarm. If everything goes well,
-the user is returned to GitSwarm and is signed in.
+asks the user to sign in and authorize $GitSwarm$. If everything goes well,
+the user is returned to $GitSwarm$ and is signed in.

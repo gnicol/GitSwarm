@@ -1,17 +1,17 @@
 # Google OAuth2 OmniAuth Provider
 
 To enable the Google OAuth2 OmniAuth provider you must register your
-application with Google. Google will generate a client ID and secret key
-for you to use.
+application with Google. Google generates a client ID and secret key for
+you to use.
 
 1.  Sign in to the [Google Developers
     Console](https://console.developers.google.com/) with the Google
-    account you want to use to register GitSwarm.
+    account you want to use to register $GitSwarm$.
 
 1.  Select "Create Project".
 
 1.  Provide the project information
-    - Project name: 'GitSwarm' works just fine here.
+    - Project name: '$GitSwarm$' works just fine here.
     - Project ID: Must be unique to all Google Developer registered
       applications. Google provides a randomly generated Project ID by
       default. You can use the randomly generated ID or choose a new one.
@@ -31,16 +31,15 @@ for you to use.
 
 1.  Fill in the required information
     - Application type: "Web Application"
-    - Authorized JavaScript origins: This isn't really used by GitSwarm but
-      go ahead and put 'https://gitswarm.example.com' here.
-    - Authorized redirect URI:
-      'https://gitswarm.example.com/users/auth/google_oauth2/callback'
+    - Authorized JavaScript origins: This isn't really used by $GitSwarm$
+      but go ahead and put 'https://gitswarm.example.com' here.
+    - Authorized redirect URI: 'https://gitswarm.example.com/users/auth/google_oauth2/callback'
 
 1.  Under the heading "Client ID for web application" you should see a
     Client ID and Client secret (see screenshot). Keep this page open as
     you continue configuration. ![Google app](google_app.png)
 
-1.  On your GitSwarm server, open the configuration file.
+1.  On your $GitSwarm$ server, open the configuration file.
 
     ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
@@ -71,31 +70,31 @@ for you to use.
 
 1.  Save the configuration file.
 
-1.  Restart GitSwarm for the changes to take effect.
+1.  Restart $GitSwarm$ for the changes to take effect.
 
 On the sign in page there should now be a Google icon below the regular
 sign in form. Click the icon to begin the authentication process. Google
-asks the user to sign in and authorize the GitSwarm application. If
-everything goes well, the user is returned to GitSwarm and is signed in.
+asks the user to sign in and authorize the $GitSwarm$ application. If
+everything goes well the user is returned to $GitSwarm$ and is signed in.
 
 ## Further Configuration
 
 This further configuration is not required for Google authentication to
-function but it is strongly recommended. Taking these steps will increase
+function but it is strongly recommended. Taking these steps increases
 usability for users by providing a little more recognition and branding.
 
-At this point, when users first try to authenticate to your GitSwarm
-installation with Google they will see a generic application name on the
+At this point, when users first try to authenticate to your $GitSwarm$
+installation with Google they see a generic application name on the
 prompt screen. The prompt informs the user that "Project Default Service
 Account" would like to access their account. "Project Default Service
 Account" isn't very recognizable and may confuse or cause users to be
 concerned. This is easily changeable.
 
-1. Select 'Consent screen' in the left menu. (See steps 1, 4 and 5 above
-   for instructions on how to get here if you closed your window).
+1.  Select 'Consent screen' in the left menu. (See steps 1, 4 and 5 above
+    for instructions on how to get here if you closed your window).
 
-1. Scroll down until you find "Product Name". Change the product name to
-   something more descriptive.
+1.  Scroll down until you find "Product Name". Change the product name to
+    something more descriptive.
 
-1. Add any additional information as you wish - homepage, logo, privacy
-   policy, etc. None of this is required, but it may help your users.
+1.  Add any additional information as you wish - homepage, logo, privacy
+    policy, etc. None of this is required, but it may help your users.

@@ -1,6 +1,6 @@
 # Integrate your server with GitLab.com
 
-Import projects from GitLab.com and login to your GitSwarm instance with
+Import projects from GitLab.com and login to your $GitSwarm$ instance with
 your GitLab.com account.
 
 To enable the GitLab.com OmniAuth provider you must register your
@@ -17,7 +17,7 @@ secret key for you to use.
 
 1.  Provide the required details.
     - Name: This can be anything. Consider something like
-      "\<Organization\>'s GitSwarm" or "\<Your Name\>'s GitSwarm" or
+      "\<Organization\>'s $GitSwarm$" or "\<Your Name\>'s $GitSwarm$" or
       something else descriptive.
     - Redirect URI:
 
@@ -36,8 +36,7 @@ secret key for you to use.
     configuration. 
     ![GitLab app](gitlab_app.png)
 
-1.  On your GitSwarm server, open the configuration file.
-
+1.  On your $GitSwarm$ server, open the configuration file.
 
     ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
@@ -68,9 +67,10 @@ secret key for you to use.
 
 1.  Save the configuration file.
 
-1.  Restart GitSwarm for the changes to take effect.
+1.  Restart $GitSwarm$ for the changes to take effect.
 
-On the sign in page, there should now be a GitLab.com icon below the
-regular sign in form. Click the icon to begin the authentication process.
-GitLab.com asks the user to sign in and authorize GitSwarm. If everything
-goes well, the user is returned to your GitSwarm instance and is signed in.
+On the sign in page, there should now be a GitLab.com icon below the regular
+sign in form. Click the icon to begin the authentication process.
+GitLab.com asks the user to sign in and authorize the $GitSwarm$
+application. If everything goes well, the user is returned to your $GitSwarm$
+instance and is signed in.

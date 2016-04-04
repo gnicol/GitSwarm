@@ -1,8 +1,8 @@
-## GitSwarm as OAuth2 authentication service provider
+## $GitSwarm$ as OAuth2 authentication service provider
 
-This document is about using GitSwarm as an OAuth authentication service
+This document is about using $GitSwarm$ as an OAuth authentication service
 provider to sign into other services. If you want to use other OAuth
-authentication service providers to sign into GitSwarm, please see the
+authentication service providers to sign into $GitSwarm$, please see the
 [OAuth2 client documentation](../api/oauth2.md)
 
 OAuth2 provides client applications a 'secure delegated access' to server
@@ -13,13 +13,13 @@ does so without transmitting the original credentials.
 OAuth allows you to issue access tokens to third-party clients by an
 authorization server, with the approval of the resource owner, or end-user.
 Mostly, OAuth2 is used for SSO (Single sign-on). But you can find a lot of
-different usages for this functionality. For example, the 'GitSwarm
+different usages for this functionality. For example, the '$GitSwarm$
 Importer' feature uses the OAuth protocol to give access to repositories
 without sharing user credentials to GitLab.com. Also, GitLab.com
-authentication can be used for logging in to your GitSwarm instance if
-needed [GitSwarm OmniAuth](gitlab.md).
+authentication can be used for logging in to your $GitSwarm$ instance if
+needed [$GitSwarm$ OmniAuth](gitlab.md).
 
-GitSwarm has two ways to add new OAuth2 applications to an instance, you
+$GitSwarm$ has two ways to add new OAuth2 applications to an instance, you
 can add application as regular user and via the admin area. There are no
 differences between them except the different permission levels.
 

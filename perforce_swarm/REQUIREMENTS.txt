@@ -68,9 +68,9 @@ CPU
     be installed on their own independent machines. In that configuration:
 
     * 1 core supports up to 100 users, but performance may suffer as all
-      workers and background jobs running on the same core
-    * 2 cores is the recommended number of cores and supports up to 500
-      users
+      workers and background jobs run on the same core
+    * 2 cores is the recommended minimum number of cores and supports up to
+      500 users
     * 4 cores supports up to 2,000 users
     * 8 cores supports up to 5,000 users
     * 16 cores supports up to 10,000 users
@@ -88,13 +88,13 @@ Memory
     use GitSwarm! With less memory, GitSwarm will give strange errors
     during the reconfigure run and 500 errors during usage.
 
-    For production use, it is recommended GitSwarm be run on a dedicated server.
-    The Helix Server and Helix Git Fusion products should ideally be installed
-    on their own independent machines. In that configuration:
+    For production use, it is recommended GitSwarm be run on a dedicated
+    server. The Helix Server and Helix Git Fusion products should ideally
+    be installed on their own independent machines. In that configuration:
 
-    * 1GB RAM + 1GB of swap is the absolute minimum, but we strongly
-      advise against this amount of memory.
-    * 2GB RAM supports up to 100 users
+    * 2GB RAM is the absolute minimum, but we strongly advise against this
+      amount of memory. See the Unicorn Workers section below for more
+      advice.
     * 4GB RAM is the recommended memory size and supports up to 1,000 users
     * 8GB RAM supports up to 2,000 users
     * 16GB RAM supports up to 4,000 users

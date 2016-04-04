@@ -89,7 +89,7 @@ The Helix Server and Helix Git Fusion products should ideally be installed
 on their own independent machines. In that configuration:
 
 - 2GB RAM is the absolute minimum, but we strongly **advise against** this
-  amount of memory. See the Unicorn work section below for more advice.
+  amount of memory. See the Unicorn Workers section below for more advice.
 - **4GB RAM** is the **recommended** memory size and supports up to 1,000
   users
 - 8GB RAM supports up to 2,000 users
@@ -112,7 +112,8 @@ increase the ability to handle parallel requests.
 For most instances we recommend using: CPU cores + 1 = unicorn workers. So
 for a machine with 2 cores, 3 unicorn workers is ideal.
 
-A **minimum** of **3** unicorn workers is required for concurrent use of the system.
+A **minimum** of **3** unicorn workers is required for concurrent use of
+the system.
 
 For all machines that have 1GB and up we recommend a minimum of three
 unicorn workers. If you have a 512MB machine with a magnetic (non-SSD) swap

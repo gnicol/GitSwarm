@@ -1,6 +1,6 @@
 # Listing repository directories
 
-You can print a list of all Git repositories on disk managed by GitSwarm
+You can print a list of all Git repositories on disk managed by $GitSwarm$
 with the following command:
 
 ```bash
@@ -17,4 +17,4 @@ sudo gitswarm-rake gitswarm:list_repos SINCE='Sep 1 2015'
 ```
 
 Note that the projects listed are NOT sorted by activity; they use the
-default ordering of the GitSwarm application.
+default ordering of the $GitSwarm$ application.

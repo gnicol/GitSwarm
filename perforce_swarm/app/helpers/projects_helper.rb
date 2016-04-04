@@ -34,13 +34,13 @@ module ProjectsHelper
     return tooltip.html_safe
   end
 
-  def mirroring_errors(project, user)
+  def helix_mirroring_errors(project, user)
     # user does not have adequate permissions to enable mirroring
     tooltip = <<-EOM
       GitSwarm is configured for Helix mirroring, but you lack permissions to manage it for this project.<br />
       To manage Helix mirroring, you must be a project 'master', 'owner' or a site admin.
     EOM
-    return tooltip.html_safe unless mirroring_permitted?(project, user)
+    return tooltip.html_safe unless helix_mirroring_permitted?(project, user)
 
     # Git Fusion integration is explicitly disabled
     tooltip = <<-EOM
@@ -75,13 +75,13 @@ module ProjectsHelper
       None of the Helix Git Fusion instances GitSwarm knows about are configured for 'auto create'.<br />
       To enable Helix mirroring, please have an admin configure at least one Git Fusion instance for auto create.
     EOM
-    return tooltip.html_safe unless mirroring_configured?
+    return tooltip.html_safe unless helix_mirroring_configured?
 
     nil
   end
 
-  def mirroring_tooltip(project, user, for_button = false)
-    errors = mirroring_errors(project, user)
+  def helix_mirroring_tooltip(project, user, for_button = false)
+    errors = helix_mirroring_errors(project, user)
     return errors if errors && !errors.empty?
 
     # no tooltip if project is already mirrored
@@ -95,7 +95,7 @@ module ProjectsHelper
 
   def helix_reenable_mirroring_tooltip(project)
     tooltip = helix_missing_config_error(project)
-    return tooltip.html_safe if mirroring_configured? && tooltip
+    return tooltip.html_safe if helix_mirroring_configured? && tooltip
 
     begin
       url     = git_fusion_url!(project)
@@ -148,14 +148,14 @@ module ProjectsHelper
   end
 
   # boolean as to whether the current user is permitted to enable mirroring on the given project
-  def mirroring_permitted?(project, user)
+  def helix_mirroring_permitted?(project, user)
     user && user.can?(:admin_project, project)
   end
 
   # returns true if there is at least one configured Git Fusion repository that supports convention-based mirroring
   # note that we are doing pre-flight style checks with the config only, and not actually connecting to Helix at this
   # point
-  def mirroring_configured?
+  def helix_mirroring_configured?
     return false unless git_fusion_instances?
 
     # ensure that at least one entry is configured for convention-based mirroring
@@ -219,10 +219,10 @@ module ProjectsHelper
   def helix_mirroring_button(project, user, color = 'white')
     # wrapper for tooltip
     haml_tag(:span,
-             data:  { title: mirroring_tooltip(project, user, true), html: 'true' },
+             data:  { title: helix_mirroring_tooltip(project, user, true), html: 'true' },
              class: 'has_tooltip mirror-button-wrapper') do
       # parameters for an enable button
-      can_mirror = mirroring_permitted?(@project, current_user) && mirroring_configured?
+      can_mirror = helix_mirroring_permitted?(@project, current_user) && helix_mirroring_configured?
       attributes = { class: 'btn btn-save helix-mirroring' + (can_mirror ? '' : ' disabled') }
 
       # add the button at the appropriate haml indent level

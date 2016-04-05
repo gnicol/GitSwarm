@@ -7,7 +7,7 @@
 
 By default, GitSwarm EE does not use HTTPS. If you want to enable HTTPS
 for `gitswarm.example.com`, add the following statement to
-`/etc/gitlab/gitlab.rb`:
+`/etc/gitswarm/gitswarm.rb`:
 
 ```ruby
 # note the 'https' below
@@ -282,7 +282,7 @@ First, generate `dhparams.pem` with:
 openssl dhparam -out /etc/gitswarm/ssl/dhparams.pem 2048
 ```
 
-Then, in `/etc/gitswarm/gitlab.rb` add a path to the generated file, for
+Then, in `/etc/gitswarm/gitswarm.rb` add a path to the generated file, for
 example:
 
 ```ruby
@@ -360,8 +360,8 @@ server {
 
   client_max_body_size 250m;
 
-  access_log  /var/log/gitlab/nginx/gitlab_access.log;
-  error_log   /var/log/gitlab/nginx/gitlab_error.log;
+  access_log  /var/log/gitswarm/nginx/gitlab_access.log;
+  error_log   /var/log/gitswarm/nginx/gitlab_error.log;
 
   # Ensure Passenger uses the bundled Ruby version
   passenger_ruby /opt/gitswarm/embedded/bin/ruby;

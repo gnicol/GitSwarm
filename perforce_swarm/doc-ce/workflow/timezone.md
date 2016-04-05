@@ -1,6 +1,6 @@
 # Changing your time zone
 
-GitSwarm defaults its time zone to UTC. It has a global timezone
+$GitSwarm$ defaults its time zone to UTC. It has a global timezone
 configuration parameter in `/etc/gitswarm/gitswarm.rb`.
 
 To update, add the time zone that best applies to your location. Here are

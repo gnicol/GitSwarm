@@ -115,9 +115,14 @@ module ProjectsHelper
     return false
   end
 
-  # the error being reported by Git Fusion mirroring, or false if there are no errors
+  # the error being reported by the most recent fetch from Git Fusion, or false if there are no errors
   def git_fusion_last_fetch_error(project)
     PerforceSwarm::Mirror.last_fetch_error(project.repository.path_to_repo)
+  end
+
+  # the error being reported by the most recent push to Git Fusion, or false if there are no errors
+  def git_fusion_last_push_error(project)
+    PerforceSwarm::Mirror.last_push_error(project.repository.path_to_repo)
   end
 
   # returns the rendered URL for a currently or previously mirrored project

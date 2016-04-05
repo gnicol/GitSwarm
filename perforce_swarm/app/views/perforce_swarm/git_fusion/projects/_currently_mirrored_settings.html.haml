@@ -24,6 +24,11 @@ Helix Git Fusion server on the repo
       During the last fetch, the following error occurred:
       %pre
         = git_fusion_last_fetch_error(@project)
+  - if git_fusion_last_push_error(@project)
+    %p
+      During the last push, the following error occurred:
+      %pre
+        = git_fusion_last_push_error(@project)
 - else
   %p
     It appears this project hasn't updated from Helix Git Fusion yet.

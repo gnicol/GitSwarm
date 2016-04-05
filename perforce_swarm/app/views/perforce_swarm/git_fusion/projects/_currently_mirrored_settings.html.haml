@@ -24,14 +24,16 @@ Helix Git Fusion server on the repo
       During the last fetch, the following error occurred:
       %pre
         = git_fusion_last_fetch_error(@project)
-  - if git_fusion_last_push_error(@project)
-    %p
-      During the last push, the following error occurred:
-      %pre
-        = git_fusion_last_push_error(@project)
 - else
   %p
     It appears this project hasn't updated from Helix Git Fusion yet.
+
+- if git_fusion_last_push_error(@project)
+  %p
+    During the last push, the following error occurred:
+    %pre
+      = git_fusion_last_push_error(@project)
+
 = render partial: 'perforce_swarm/git_fusion/projects/mirroring_config_errors'
 %span.mirror-button-wrapper
   = link_to disable_helix_mirroring_namespace_project_path(@project.namespace, @project), { method: 'post', class: button_class, data: { confirm: 'Are you sure you want to disable Helix Mirroring?' } } do

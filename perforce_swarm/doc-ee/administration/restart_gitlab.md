@@ -89,6 +89,5 @@ If you manually edit any files in `/var/opt/gitswarm` that are managed by
 Chef, running reconfigure reverts the changes AND restarts the services
 that depend on those files.
 
-[omnibus-dl]: https://about.gitlab.com/downloads/ "Download the Omnibus packages"
 [mailroom]: ../incoming_email/README.md "Used for replying by email in GitSwarm EE issues and merge requests"
 [chef]: https://www.chef.io/chef/ "Chef official website"

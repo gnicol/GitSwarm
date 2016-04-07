@@ -1,4 +1,5 @@
-- if current_user && mirroring_permitted?(@project, current_user) && mirroring_configured? && git_fusion_last_fetch_error(@project)
+- mirroring_error = git_fusion_last_fetch_error(@project) || git_fusion_enable_error(@project)
+- if current_user && mirroring_permitted?(@project, current_user) && mirroring_configured? && mirroring_error
   .alert.alert-warning.hidden-xs
     Helix Mirroring is reporting an error.
     .pull-right

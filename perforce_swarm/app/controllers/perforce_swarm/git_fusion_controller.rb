@@ -76,7 +76,7 @@ class PerforceSwarm::GitFusionController < ApplicationController
     begin
       init_reenable
       @status = @project.git_fusion_reenable_status
-      @error  = @project.git_fusion_reenable_error
+      @error  = @project.git_fusion_enable_error
     rescue => e
       @status = Project::GIT_FUSION_REENABLE_ERROR
       @error  = e.message

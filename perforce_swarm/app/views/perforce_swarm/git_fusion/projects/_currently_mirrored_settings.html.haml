@@ -28,11 +28,11 @@ Helix Git Fusion server on the repo
   %p
     It appears this project hasn't updated from Helix Git Fusion yet.
 
-- if git_fusion_last_push_error(@project)
+- if git_fusion_enable_error(@project)
   %p
     During the last push, the following error occurred:
     %pre
-      = git_fusion_last_push_error(@project)
+      = git_fusion_enable_error(@project)
 
 = render partial: 'perforce_swarm/git_fusion/projects/mirroring_config_errors'
 %span.mirror-button-wrapper

@@ -37,7 +37,7 @@
     = icon 'helix-icon white'
     Re-enable Helix Mirroring
   .reenable-status
-- reenable_error = @project.git_fusion_reenable_error
+- reenable_error = @project.git_fusion_enable_error
 - params = { reenable_url: reenable_helix_mirroring_perforce_swarm_git_fusion_path(project_id: @project.id) }
 - params[:reenable_status_url] = reenable_helix_mirroring_status_perforce_swarm_git_fusion_path(project_id: @project.id)
 - params[:status] = @project.git_fusion_reenable_status

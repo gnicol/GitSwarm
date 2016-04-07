@@ -42,7 +42,7 @@ Versioning Engine prior to updating GitSwarm.
     sudo apt-get install helix-git-fusion-base helix-p4d
     ```
 
--   **For CentOS:**
+-   **For CentOS/RHEL:**
 
     ```bash
     sudo yum install helix-git-fusion-base helix-p4d
@@ -119,19 +119,21 @@ and understand the [pre-update considerations](#pre-update-considerations).
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```bash
+        sudo gitswarm-ctl stop
         sudo apt-get remove helix-gitswarm
         sudo apt-get clean
         sudo apt-get install helix-gitswarm-ee
-        sudo gitswarm-ctl reconfigure
+        sudo gitswarm-ctl start
         ```
 
     1.  **For CentOS/RHEL (6.6+ and 7.x):**
 
         ```bash
+        sudo gitswarm-ctl stop
         sudo yum remove helix-gitswarm
         sudo yum clean all
         sudo yum install helix-gitswarm-ee
-        sudo gitswarm-ctl reconfigure
+        sudo gitswarm-ctl start
         ```
 
 1.  **Check the application status.**

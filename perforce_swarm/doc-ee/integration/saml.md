@@ -7,8 +7,8 @@ Provider (IdP) such as Microsoft ADFS to authenticate users.
 First, configure SAML 2.0 support in GitSwarm EE, then register GitSwarm EE
 in your SAML IdP:  
 
-1.  Make sure that GitSwarm EE is configured with HTTPS. See [Using
-    HTTPS](../install/installation.md#using-https) for instructions.
+1.  Make sure that GitSwarm EE is configured with HTTPS. See [Enable
+    HTTPS](../install/https.md) for instructions.
 
 1.  On your GitSwarm EE server, open the configuration file.
 

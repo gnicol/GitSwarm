@@ -144,6 +144,9 @@ Perform the [post-installation](#post-installation) steps.
 If you are interested, [learn about the GitSwarm EE directory
 structure](structure.md).
 
+If you prefer to use HTTPS with GitSwarm, [learn how to configure
+HTTPS](https.md).
+
 To uninstall GitSwarm EE, follow the [uninstall steps](uninstall.md).
 
 ###  Additional Setup Options

@@ -42,7 +42,7 @@
     1.  **For Ubuntu (12.04 and 14.04):**
 
         ```bash
-        sudo apt-get install openssh-server ca-certificates helix-p4d helix-git-fusion-base
+        sudo apt-get install openssh-server ca-certificates perforce-server helix-git-fusion-base
         ```
 
 1.  **Download the GitSwarm EE package and install everything.**

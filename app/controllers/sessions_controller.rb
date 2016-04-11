@@ -3,7 +3,7 @@ class SessionsController < Devise::SessionsController
   include Recaptcha::ClientHelper
 
   prepend_before_action :authenticate_with_two_factor,
-      if: :two_factor_enabled?, only: [:create]
+    if: :two_factor_enabled?, only: [:create]
   prepend_before_action :store_redirect_path, only: [:new]
   before_action :auto_sign_in_with_provider, only: [:new]
   before_action :load_recaptcha

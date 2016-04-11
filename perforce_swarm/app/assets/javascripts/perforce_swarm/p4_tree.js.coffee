@@ -397,7 +397,7 @@ class @P4Tree
     depot = @getDepotForNode(node)
 
     # disable stream nodes that are not streams and top level local depots
-    if ( depot.type == 'depot-stream' &&  node.type != 'folder-stream' ) || ( depot.type == 'depot-local' && node.type != 'folder' )
+    if (depot.type == 'depot-stream' &&  node.type != 'folder-stream') || (depot.type == 'depot-local' && node.type != 'folder')
       this.$tree.disable_node(node)
       this.$tree.disable_checkbox(node)
 

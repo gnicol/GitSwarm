@@ -140,7 +140,7 @@ Minor new functionality in 2016.1
     #45d62189 (Bug #85091)
         Improve display of mirroring status on project details page
 
-    #f44e3dbf (Bug #84828)
+    #f44e3dbf, #1d9895e3 (Bug #84828, #85949)
         Improvements to bootstrap script, with support for RHEL
 
     #b0eb9f83 (Bug #84076)
@@ -151,6 +151,12 @@ Minor new functionality in 2016.1
         errors out
 
 Bugs fixed in 2016.1
+    #6c190a6a (Bug #86120)
+        Incorporated GitLab Community fix for two-factor authentication bypass
+
+    #b3e472f9 (Bug #85879)
+        Update hooks now run before mirroring to Git Fusion
+
     #1d3099b1 (Bug #83814)
         Allow repos with a '/' in the name
 

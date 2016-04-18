@@ -392,17 +392,17 @@ class @P4Tree
       "<input type='hidden' style='display:none;' name='git_fusion_default_branch' value='#{_.escape(data.branchName)}' />"
     )
 
-  restrictStreamSelection: (node) ->
+  restrictDepotSelection: (node) ->
     node  = this.$tree.get_node(node) if $.type(node) == 'string'
     depot = @getDepotForNode(node)
 
-    # disable stream nodes that are not streams
-    if depot.type == 'depot-stream' &&  node.type != 'folder-stream'
+    # disable stream nodes that are not streams and top level local depots
+    if (depot.type == 'depot-stream' &&  node.type != 'folder-stream') || (depot.type == 'depot-local' && node.type != 'folder')
       this.$tree.disable_node(node)
       this.$tree.disable_checkbox(node)
 
   # Called each time a node's children are loaded from the backend
   _treeNodeLoaded: (data) ->
     if data.status
-      @restrictStreamSelection(child) for child in data.node.children
+      @restrictDepotSelection(child) for child in data.node.children
       @filterStreams(@restrictedDepot.options.sampleStream) if @restrictedDepot?.options?.sampleStream

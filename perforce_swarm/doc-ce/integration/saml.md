@@ -7,8 +7,8 @@ Provider (IdP) such as Microsoft ADFS to authenticate users.
 First, configure SAML 2.0 support in $GitSwarm$, then register $GitSwarm$
 in your SAML IdP:
 
-1.  Make sure that $GitSwarm$ is configured with HTTPS. See [Using
-    HTTPS](../install/installation.md#using-https) for instructions.
+1.  Make sure $GitSwarm$ is configured with HTTPS. See [Enable
+    HTTPS](../install/https.md) for instructions.
 
 1.  On your $GitSwarm$ server, open the configuration file.
 
@@ -48,7 +48,7 @@ in your SAML IdP:
     documentation](https://github.com/PracticallyGreen/omniauth-saml) for
     details on these options.
 
-1.  Change the value of 'issuer' to a unique name, which identifies the
+1.  Change the value of 'issuer' to a unique name, which will identify the
     application to the IdP.
 
 1.  Restart $GitSwarm$ for the changes to take effect.
@@ -66,22 +66,22 @@ https://gitswarm.example.com/users/auth/saml/metadata
 ```
 
 At a minimum the IdP *must* provide a claim containing the user's email
-address, using claim name 'email' or 'mail'. The email is used to
-automatically generate the $GitSwarm$ username. $GitSwarm$ also uses
-claims with name 'name', 'first_name', 'last_name' (see [the omniauth-saml
+address, using claim name 'email' or 'mail'. The email will be used to
+automatically generate the $GitSwarm$ username. $GitSwarm$ also uses claims 
+with name 'name', 'first_name', 'last_name' (see [the omniauth-saml
 gem](https://github.com/PracticallyGreen/omniauth-saml/blob/master/lib/omniauth/strategies/saml.rb)
 for supported claims).
 
 On the sign in page there should now be a SAML button below the regular
 sign in form. Click the icon to begin the authentication process. If
-everything goes well the user is returned to $GitSwarm$ and is signed in.
+everything goes well, the user is returned to $GitSwarm$ and is signed in.
 
 ## Troubleshooting
 
-If you see a "500 error" in $GitSwarm$ when you are redirected back from
-the SAML sign in page, this likely indicates that $GitSwarm$ could not get
-the email address for the SAML user.
+If you see a "500 error" in $GitSwarm$ when you are redirected back from the
+SAML sign in page, this likely indicates that $GitSwarm$ could not get the
+email address for the SAML user.
 
 Make sure the IdP provides a claim containing the user's email address,
-using claim name 'email' or 'mail'. The email is used to automatically
+using claim name 'email' or 'mail'. The email will be used to automatically
 generate the $GitSwarm$ username.

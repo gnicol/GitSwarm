@@ -27,7 +27,7 @@
     namespace/project path combination. $GitSwarm$ checks for this before
     attempting to mirror the project.
 
-When the requirements have not been met, $GitSwarm$ displays an 
+When the requirements have not been met, $GitSwarm$ displays an
 [error message](#error_messages).
 
 Once the requirements have been met, choose a scenario for Helix Mirroring:
@@ -60,7 +60,7 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
 1.  **Click the "Helix Git Fusion Server" drop-down menu to select an
     available Git Fusion Server.**
 
-1.  **Click "Create a Helix GitSwarm project to mirror".**
+1.  **Click "Create a Helix $GitSwarm$ project to mirror".**
 
 1.  **Fill in the rest of the details for your project.**
 
@@ -168,7 +168,7 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
 
     Click the triangle to the left of each directory to see
     sub-directories.
-    
+
     Click the checkbox to the left of a directory to select that directory
     (and all of its contents) to represent a Git branch within your project.
 
@@ -189,7 +189,7 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
 
 1.  If you wish to **edit a branch name or associated depot path, click
     "edit".**
-    
+
     The branch definition within the "Defined Branches" area becomes
     highlighted, and the depot browser updates to reflect the current name
     and depot path.
@@ -207,7 +207,7 @@ Once the requirements have been met, choose a scenario for Helix Mirroring:
     At any time, click the "cancel update?" link to terminate editing the
     branch definition.
 
-1.  If you specify more than one branch definition, you can **click 
+1.  If you specify more than one branch definition, you can **click
     "make default" to specify which of the branch definitions should become
     the new project's default branch.**
 

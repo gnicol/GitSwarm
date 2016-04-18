@@ -184,7 +184,7 @@ gitlab_rails['backup_keep_time'] = 604800
 
 > Important: You can only restore a backup to $GitSwarm$ if the backup was
 > created on the same version of $GitSwarm$, or the corresponding version of
-> $GitLab$. For example, a backup taken on GitLab 8.0.5 can be restored to a
+> $GitLab$. For example, a backup taken on $GitLab$ 8.0.5 can be restored to a
 > 2015.4 $GitSwarm$ install. Here is a list of the $GitSwarm$ releases and
 > their corresponding $GitLab$ releases:
 >

@@ -190,6 +190,12 @@ module PerforceSwarm
         # grab information for all streams in the depot
         streams = streams_info(connection, streams_depots.keys.first)
 
+        # Check for any missing streams.
+        missing_streams = branch_mappings.values - streams.keys
+        if missing_streams.length > 0
+          fail "The following stream(s) are required and were found to be missing: #{missing_streams.join(', ')}"
+        end
+
         # determine the mainline for each branch mapping's depot path
         mainline_paths = []
         branch_mappings.values.each do |depot_path|

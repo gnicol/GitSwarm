@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Repository, models: true do
   include RepoHelpers
+  TestBlob = Struct.new(:name)
 
   let(:repository) { create(:project).repository }
   let(:user) { create(:user) }
@@ -131,7 +132,6 @@ describe Repository, models: true do
   describe "#license" do
     before do
       repository.send(:cache).expire(:license)
-      TestBlob = Struct.new(:name)
     end
 
     it 'test selection preference' do
@@ -145,6 +145,25 @@ describe Repository, models: true do
       expect(repository.tree).to receive(:blobs).and_return([TestBlob.new('licence')])
 
       expect(repository.license.name).to eq('licence')
+    end
+  end
+
+  describe "#gitlab_ci_yml" do
+    it 'returns valid file' do
+      files = [TestBlob.new('file'), TestBlob.new('.gitlab-ci.yml'), TestBlob.new('copying')]
+      expect(repository.tree).to receive(:blobs).and_return(files)
+
+      expect(repository.gitlab_ci_yml.name).to eq('.gitlab-ci.yml')
+    end
+
+    it 'returns nil if not exists' do
+      expect(repository.tree).to receive(:blobs).and_return([])
+      expect(repository.gitlab_ci_yml).to be_nil
+    end
+
+    it 'returns nil for empty repository' do
+      expect(repository).to receive(:empty?).and_return(true)
+      expect(repository.gitlab_ci_yml).to be_nil
     end
   end
 
@@ -537,6 +556,12 @@ describe Repository, models: true do
 
         repository.before_delete
       end
+
+      it 'flushes the exists cache' do
+        expect(repository).to receive(:expire_exists_cache).twice
+
+        repository.before_delete
+      end
     end
 
     describe 'when a repository exists' do
@@ -587,9 +612,29 @@ describe Repository, models: true do
     end
   end
 
+  describe '#before_import' do
+    it 'flushes the emptiness cachess' do
+      expect(repository).to receive(:expire_emptiness_caches)
+
+      repository.before_import
+    end
+
+    it 'flushes the exists cache' do
+      expect(repository).to receive(:expire_exists_cache)
+
+      repository.before_import
+    end
+  end
+
   describe '#after_import' do
     it 'flushes the emptiness cachess' do
       expect(repository).to receive(:expire_emptiness_caches)
+
+      repository.after_import
+    end
+
+    it 'flushes the exists cache' do
+      expect(repository).to receive(:expire_exists_cache)
 
       repository.after_import
     end
@@ -616,6 +661,14 @@ describe Repository, models: true do
       expect(repository).to receive(:expire_has_visible_content_cache)
 
       repository.after_remove_branch
+    end
+  end
+
+  describe '#after_create' do
+    it 'flushes the exists cache' do
+      expect(repository).to receive(:expire_exists_cache)
+
+      repository.after_create
     end
   end
 
@@ -778,6 +831,16 @@ describe Repository, models: true do
 
         repository.expire_avatar_cache(repository.root_ref, '123')
       end
+    end
+  end
+
+  describe '#expire_exists_cache' do
+    let(:cache) { repository.send(:cache) }
+
+    it 'expires the cache' do
+      expect(cache).to receive(:expire).with(:exists?)
+
+      repository.expire_exists_cache
     end
   end
 

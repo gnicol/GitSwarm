@@ -408,6 +408,8 @@ class User < ActiveRecord::Base
   end
 
   def owns_notification_email
+    return if self.temp_oauth_email?
+
     self.errors.add(:notification_email, "is not an email you own") unless self.all_emails.include?(self.notification_email)
   end
 
@@ -435,7 +437,7 @@ class User < ActiveRecord::Base
     Group.where("namespaces.id IN (#{union.to_sql})")
   end
 
-  # Returns the groups a user is authorized to access.
+  # Returns projects user is authorized to access.
   def authorized_projects
     Project.where("projects.id IN (#{projects_union.to_sql})")
   end

@@ -3,11 +3,11 @@
     .issue-check
       = check_box_tag dom_id(issue,"selected"), nil, false, 'data-id' => issue.id, class: "selected_issue"
 
-  .issue-title.title
+  .issue-title
     %span.issue-title-text
       = confidential_icon(issue)
-      = link_to_gfm issue.title, issue_path(issue)
-    %ul.controls
+      = link_to_gfm issue.title, issue_path(issue), class: "title"
+    %ul.controls.light
       - if issue.closed?
         %li
           CLOSED

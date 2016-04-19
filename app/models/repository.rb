@@ -42,12 +42,15 @@ class Repository
   end
 
   def exists?
-    return false unless raw_repository
+    return @exists unless @exists.nil?
 
-    raw_repository.rugged
-    true
-  rescue Gitlab::Git::Repository::NoRepository
-    false
+    @exists = cache.fetch(:exists?) do
+      begin
+        raw_repository && raw_repository.rugged ? true : false
+      rescue Gitlab::Git::Repository::NoRepository
+        false
+      end
+    end
   end
 
   def empty?
@@ -320,12 +323,25 @@ class Repository
     @avatar = nil
   end
 
+  def expire_exists_cache
+    cache.expire(:exists?)
+    @exists = nil
+  end
+
+  # Runs code after a repository has been created.
+  def after_create
+    expire_exists_cache
+  end
+
   # Runs code just before a repository is deleted.
   def before_delete
+    expire_exists_cache
+
     expire_cache if exists?
 
     expire_root_ref_cache
     expire_emptiness_caches
+    expire_exists_cache
   end
 
   # Runs code just before the HEAD of a repository is changed.
@@ -348,9 +364,15 @@ class Repository
     expire_tag_count_cache
   end
 
+  def before_import
+    expire_emptiness_caches
+    expire_exists_cache
+  end
+
   # Runs code after a repository has been forked/imported.
   def after_import
     expire_emptiness_caches
+    expire_exists_cache
   end
 
   # Runs code after a new commit has been pushed.
@@ -450,6 +472,18 @@ class Repository
 
       license
     end
+  end
+
+  def gitlab_ci_yml
+    return nil if !exists? || empty?
+
+    @gitlab_ci_yml ||= tree(:head).blobs.find do |file|
+      file.name == '.gitlab-ci.yml'
+    end
+  rescue Rugged::ReferenceError
+    # For unknow reason spinach scenario "Scenario: I change project path"
+    # lead to "Reference 'HEAD' not found" exception from Repository#empty?
+    nil
   end
 
   def head_commit
@@ -791,7 +825,7 @@ class Repository
   end
 
   def fetch_ref(source_path, source_ref, target_ref)
-    args = %W(#{Gitlab.config.git.bin_path} fetch -f #{source_path} #{source_ref}:#{target_ref})
+    args = %W(#{Gitlab.config.git.bin_path} fetch --no-tags -f #{source_path} #{source_ref}:#{target_ref})
     Gitlab::Popen.popen(args, path_to_repo)
   end
 
@@ -856,9 +890,9 @@ class Repository
   end
 
   def main_language
-    unless empty?
-      Linguist::Repository.new(rugged, rugged.head.target_id).language
-    end
+    return if empty? || rugged.head_unborn?
+
+    Linguist::Repository.new(rugged, rugged.head.target_id).language
   end
 
   def avatar

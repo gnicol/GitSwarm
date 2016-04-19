@@ -1,5 +1,6 @@
 class Projects::IssuesController < Projects::ApplicationController
   include ToggleSubscriptionAction
+  include IssuableActions
 
   before_action :module_enabled
   before_action :issue, only: [:edit, :update, :show]
@@ -90,6 +91,12 @@ class Projects::IssuesController < Projects::ApplicationController
   def update
     @issue = Issues::UpdateService.new(project, current_user, issue_params).execute(issue)
 
+    if params[:move_to_project_id].to_i > 0
+      new_project = Project.find(params[:move_to_project_id])
+      move_service = Issues::MoveService.new(project, current_user)
+      @issue = move_service.execute(@issue, new_project)
+    end
+
     respond_to do |format|
       format.js
       format.html do
@@ -127,6 +134,11 @@ class Projects::IssuesController < Projects::ApplicationController
                end
   end
   alias_method :subscribable_resource, :issue
+  alias_method :issuable, :issue
+
+  def authorize_read_issue!
+    return render_404 unless can?(current_user, :read_issue, @issue)
+  end
 
   def authorize_read_issue!
     return render_404 unless can?(current_user, :read_issue, @issue)

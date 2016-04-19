@@ -356,6 +356,7 @@ Rails.application.routes.draw do
 
     scope module: :dashboard do
       resources :milestones, only: [:index, :show]
+      resources :labels, only: [:index]
 
       resources :groups, only: [:index]
       resources :snippets, only: [:index]
@@ -613,7 +614,7 @@ Rails.application.routes.draw do
           end
         end
 
-        resources :merge_requests, constraints: { id: /\d+/ }, except: [:destroy] do
+        resources :merge_requests, constraints: { id: /\d+/ } do
           member do
             get :commits
             get :diffs
@@ -623,6 +624,7 @@ Rails.application.routes.draw do
             post :cancel_merge_when_build_succeeds
             get :ci_status
             post :toggle_subscription
+            post :remove_wip
           end
 
           collection do
@@ -683,7 +685,7 @@ Rails.application.routes.draw do
           end
         end
 
-        resources :issues, constraints: { id: /\d+/ }, except: [:destroy] do
+        resources :issues, constraints: { id: /\d+/ } do
           member do
             post :toggle_subscription
           end

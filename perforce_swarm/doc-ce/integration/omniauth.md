@@ -34,16 +34,16 @@ If you want to change these settings:
 
 1.  Open the configuration file:
 
-    ```sh
-sudo editor /etc/gitswarm/gitswarm.rb
+    ```bash
+    sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
 1.  Edit these lines:
 
-    ```
-gitlab_rails['omniauth_enabled'] = true
-gitlab_rails['omniauth_allow_single_sign_on'] = false
-gitlab_rails['omniauth_block_auto_created_users'] = true
+    ```ruby
+    gitlab_rails['omniauth_enabled'] = true
+    gitlab_rails['omniauth_allow_single_sign_on'] = false
+    gitlab_rails['omniauth_block_auto_created_users'] = true
     ```
 
 Now we can choose one or more of the Supported Providers below to continue
@@ -97,30 +97,30 @@ from the Omniauth provider's documentation.
 1.  Stop GitSwarm:
 
     ```bash
-sudo service gitswarm stop
+    sudo service gitswarm stop
     ```
 
 1.  Add the gem to your
     [Gemfile](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/Gemfile):
 
     ```bash
-gem "omniauth-your-auth-provider"
+    gem "omniauth-your-auth-provider"
     ```
 
 1.  Install the new Omniauth provider gem by running the following command:
 
     ```bash
-sudo -u git -H bundle install --without development test mysql --path vendor/bundle --no-deployment
+    sudo -u git -H bundle install --without development test mysql --path vendor/bundle --no-deployment
     ```
 
     > These are the same commands you used in the [Install Gems
-      section](#install-gems) with `--path vendor/bundle --no-deployment`
-      instead of `--deployment`.
+    > section](#install-gems) with `--path vendor/bundle --no-deployment`
+    > instead of `--deployment`.
 
 1.  Start GitSwarm:
 
     ```bash
-sudo service gitlab start
+    sudo service gitlab start
     ````
 
 ### Examples

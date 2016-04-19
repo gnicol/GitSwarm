@@ -28,7 +28,7 @@ period to `0`.
 There may be some special situations where you want to disable 2FA for
 everyone even when forced 2FA is disabled. There is a rake task for that:
 
-```
+```bash
 sudo gitswarm-rake gitlab:two_factor:disable_for_all_users
 ```
 

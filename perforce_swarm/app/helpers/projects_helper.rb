@@ -84,6 +84,9 @@ module ProjectsHelper
     errors = mirroring_errors(project, user)
     return errors if errors && !errors.empty?
 
+    # no tooltip if project is already mirrored
+    return '' if project.git_fusion_mirrored?
+
     verb = project.git_fusion_repo.present? ? 're-enable' : 'get'
     # all good in the 'hood - tooltip is slightly different for the button vs the text below the clone URL
     return "Click to #{verb} mirroring!" if for_button

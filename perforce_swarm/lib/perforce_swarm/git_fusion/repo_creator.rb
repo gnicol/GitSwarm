@@ -42,6 +42,8 @@ module PerforceSwarm
 
         # check all the branch mappings
         branch_mappings.each do |name, path|
+          fail 'Empty branch in branch mapping.' if !name || name.empty?
+
           unless Gitlab::GitRefValidator.validate(name)
             fail "Invalid name '#{name}' specified in branch mapping."
           end
@@ -188,6 +190,12 @@ module PerforceSwarm
         # grab information for all streams in the depot
         streams = streams_info(connection, streams_depots.keys.first)
 
+        # Check for any missing streams.
+        missing_streams = branch_mappings.values - streams.keys
+        if missing_streams.length > 0
+          fail "The following stream(s) are required and were found to be missing: #{missing_streams.join(', ')}"
+        end
+
         # determine the mainline for each branch mapping's depot path
         mainline_paths = []
         branch_mappings.values.each do |depot_path|
@@ -318,7 +326,7 @@ module PerforceSwarm
       def streams_info(connection, depot)
         streams_info = {}
         connection.run('streams', "//#{depot}/...").each do |info|
-          stream_info[info['Stream']] = info
+          streams_info[info['Stream']] = info
         end
         streams_info
       end

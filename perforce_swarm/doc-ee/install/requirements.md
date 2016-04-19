@@ -64,9 +64,10 @@ For production use, it is recommended GitSwarm EE be run on a dedicated
 server. The Helix Server and Helix Git Fusion products should ideally be
 installed on their own independent machines. In that configuration:
 
-- 1 core works supports up to 100 users, but performance may suffer as
-  all workers and background jobs running on the same core
-- **2 cores** is the **recommended** number of cores and supports up to 500 users
+- 1 core supports up to 100 users, but performance may suffer as all
+  workers and background jobs run on the same core
+- **2 cores** is the **recommended minimum** number of cores and supports
+  up to 500 users
 - 4 cores supports up to 2,000 users
 - 8 cores supports up to 5,000 users
 - 16 cores supports up to 10,000 users
@@ -87,12 +88,10 @@ For production use, it is recommended GitSwarm EE be run on a dedicated
 server. The Helix Server and Helix Git Fusion products should ideally be
 installed on their own independent machines. In that configuration:
 
-- 512MB RAM + 1.5GB of swap is the absolute minimum but we strongly
-  **advise against** this amount of memory. See the unicorn worker section
-  below for more advise.
-- 1GB RAM + 1GB swap supports up to 100 users
-- **2GB RAM** is the **recommended** memory size and supports up to 100 users
-- 4GB RAM supports up to 1,000 users
+- 2GB RAM is the absolute minimum but we strongly **advise against** this
+  amount of memory. See the Unicorn Workers section below for more advice.
+- **4GB RAM** is the **recommended** memory size and supports up to 1,000
+  users
 - 8GB RAM supports up to 2,000 users
 - 16GB RAM supports up to 4,000 users
 - 32GB RAM supports up to 8,000 users
@@ -113,7 +112,8 @@ increase the ability to handle parallel requests.
 For most instances we recommend using: CPU cores + 1 = unicorn workers. So
 for a machine with 2 cores, 3 unicorn workers is ideal.
 
-A **minimum** of **3** unicorn workers is required for concurrent use of the system.
+A **minimum** of **3** unicorn workers is required for concurrent use of
+the system.
 
 For all machines that have 1GB and up we recommend a minimum of three
 unicorn workers. If you have a 512MB machine with a magnetic (non-SSD) swap
@@ -128,7 +128,7 @@ to swapping.
 If you need to adjust the Unicorn timeout or the number of workers you can
 use the following settings in `/etc/gitswarm/gitswarm.rb`:
 
-```
+```bash
 unicorn['worker_processes'] = 3
 unicorn['worker_timeout'] = 60
 ```

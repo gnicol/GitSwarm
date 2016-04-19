@@ -7,12 +7,12 @@ allows GitSwarm to consume assertions from a SAML 2.0 Identity Provider
 First configure SAML 2.0 support in GitSwarm, then register the GitSwarm
 application in your SAML IdP:  
 
-1.  Make sure GitSwarm is configured with HTTPS. See [Using
-    HTTPS](../install/installation.md#using-https) for instructions.
+1.  Make sure GitSwarm is configured with HTTPS. See [Enable
+    HTTPS](../install/https.md) for instructions.
 
 1.  On your GitSwarm server, open the configuration file.
 
-    ```sh
+    ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
     ```
 

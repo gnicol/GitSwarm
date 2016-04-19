@@ -72,6 +72,9 @@
 
 - [Migration from GitLab](install/migration_from_gitlab.md) How to migrate
   your existing GitLab workflow and repositories to GitSwarm.
+- [Helix Mirroring](workflow/helix_mirroring/overview.md) Apply
+  bi-directtional mirroring of your GitSwarm projects into the Helix
+  Versioning Engine.
 - [Audit Events](administration/audit_events.md) Check how user access
   changed in projects and groups.
 - [Changing the appearance of the login
@@ -104,6 +107,7 @@
 - [Update](update/README.md) Update guides to upgrade your installation.
 - [Welcome message](customization/welcome_message.md) Add a custom welcome
   message to the sign-in page.
+- [Enable HTTPS](install/https.md) Configure GitSwarm EE to use HTTPS.
 - [Reply by email](incoming_email/README.md) Allow users to comment on
   issues and merge requests by replying to notification emails.
 - [Migrate GitLab CI to CE/EE](migrate_ci_to_ce/README.md) Follow this

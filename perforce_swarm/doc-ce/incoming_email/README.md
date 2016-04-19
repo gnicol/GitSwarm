@@ -100,14 +100,14 @@ To set up a basic Postfix mail server with IMAP access on Ubuntu, follow
 1.  Reconfigure GitSwarm and restart mailroom for the changes to take
     effect:
 
-    ```sh
+    ```bash
     sudo gitswarm-ctl reconfigure
     sudo gitswarm-ctl restart mailroom
     ```
 
 1.  Verify that everything is configured correctly:
 
-    ```sh
+    ```bash
     sudo gitswarm-rake gitswarm:incoming_email:check
     ```
 

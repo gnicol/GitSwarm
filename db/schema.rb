@@ -419,7 +419,7 @@ ActiveRecord::Schema.define(version: 20160331133914) do
     t.integer  "iid"
     t.integer  "updated_by_id"
     t.integer  "moved_to_id"
-    t.boolean  "confidential",              default: false
+    t.boolean  "confidential",  default: false
     t.datetime "deleted_at"
   end
 

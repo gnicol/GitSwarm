@@ -101,7 +101,7 @@ module PerforceSwarm
   end
 end
 
-class ProjectsController < ApplicationController
+class ProjectsController < Projects::ApplicationController
   prepend PerforceSwarm::ProjectsControllerExtension
   prepend PerforceSwarm::ProjectsControllerHelper
   include ActionView::Helpers::SanitizeHelper

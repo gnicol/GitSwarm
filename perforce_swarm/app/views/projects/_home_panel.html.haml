@@ -6,7 +6,12 @@
   .project-identicon-holder
     = project_icon(@project, alt: '', class: 'project-avatar avatar s90')
   .project-home-desc
-    %h1= @project.name
+    %h1
+      = @project.name
+      %span.visibility-icon.has_tooltip{data: { container: 'body' },
+        title: "#{visibility_level_label(@project.visibility_level)} - #{project_visibility_level_description(@project.visibility_level)}"}
+        = visibility_level_icon(@project.visibility_level, fw: false)
+
     - if @project.description.present?
       = markdown(@project.description, pipeline: :description)
 
@@ -15,16 +20,13 @@
         Forked from
         = link_to project_path(forked_from_project) do
           = forked_from_project.namespace.try(:name)
+  -# gitswarm changes start
   .cover-controls.left
-    .visibility-level-label.has_tooltip{title: project_visibility_level_description(@project.visibility_level), data: { container: 'body' } }
-      = visibility_level_icon(@project.visibility_level, fw: false)
-      = visibility_level_label(@project.visibility_level)
-    -# gitswarm changes start
     - mirrored = @project.git_fusion_mirrored?
     .helix-mirrored-status-label.btn.btn-gray{ data: { container: 'body', toggle: 'tooltip', html: 'true', title: mirroring_tooltip(@project, current_user)}}
       = (mirrored ? '' : 'Not ') + 'Mirrored in Helix'
       = icon('fw question-circle') unless mirrored
-    -# gitswarm changes end
+  -# gitswarm changes end
 
   .cover-controls
     - if current_user

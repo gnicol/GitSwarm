@@ -93,6 +93,7 @@
           .js-toggle-content.hide
             = render "shared/import_form", f: f
 
+      -# gitswarm changes start
         %hr.prepend-bottom-10.or
       .form-group.git-fusion-import
         = f.label :perforce_swarm, class: 'control-label' do
@@ -102,6 +103,7 @@
           = render 'perforce_swarm/git_fusion/new'
 
       %hr.prepend-bottom-10
+      -# gitswarm changes end
 
       .form-group
         = f.label :description, class: 'control-label' do

@@ -1,6 +1,6 @@
 # Integrate your server with GitHub
 
-Import projects from GitHub and login to your GitSwarm instance with your
+Import projects from GitHub and login to your $GitSwarm$ instance with your
 GitHub account.
 
 To enable the GitHub OmniAuth provider you must register your application
@@ -20,9 +20,9 @@ to use.
 
 1.  Provide the required details.
     - Application name: This can be anything. Consider something like
-      "\<Organization\>'s GitSwarm" or "\<Your Name\>'s GitSwarm" or
+      "\<Organization\>'s $GitSwarm$" or "\<Your Name\>'s $GitSwarm$" or
       something else descriptive.
-    - Homepage URL: The URL to your GitSwarm installation.
+    - Homepage URL: The URL to your $GitSwarm$ installation.
       `https://gitswarm.company.com`
     - Application description: Fill this in if you wish.
     - Authorization callback URL: `https://gitswarm.company.com/`
@@ -33,7 +33,7 @@ to use.
 
     ![GitHub app](github_app.png)
 
-1.  On your GitSwarm server, open the configuration file.
+1.  On your $GitSwarm$ server, open the configuration file.
 
     ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
@@ -65,10 +65,10 @@ to use.
 
 1.  Save the configuration file.
 
-1.  Restart GitSwarm for the changes to take effect.
+1.  Restart $GitSwarm$ for the changes to take effect.
 
 On the sign in page there should now be a GitHub icon below the regular
 sign in form. Click the icon to begin the authentication process. GitHub
-will ask the user to sign in and authorize the GitSwarm application. If
-everything goes well the user will be returned to GitSwarm and will be
+will ask the user to sign in and authorize the $GitSwarm$ application. If
+everything goes well the user will be returned to $GitSwarm$ and will be
 signed in.

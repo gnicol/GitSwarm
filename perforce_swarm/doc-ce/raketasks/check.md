@@ -4,7 +4,7 @@
 
 Even though Git is very resilient and tries to prevent data integrity
 issues, there are times when things go wrong. The following Rake tasks
-intend to help GitSwarm administrators diagnose problem repositories so
+intend to help $GitSwarm$ administrators diagnose problem repositories so
 they can be fixed.
 
 There are 3 things that are checked to determine integrity.
@@ -19,7 +19,7 @@ There are 3 things that are checked to determine integrity.
 
 It's important to note that the existence of `config.lock` or reference
 locks alone do not necessarily indicate a problem. Lock files are routinely
-created and removed as Git and GitSwarm perform operations on the
+created and removed as Git and $GitSwarm$ perform operations on the
 repository. They serve to prevent data integrity issues. However, if a Git
 operation is interrupted these locks may not be cleaned up properly.
 
@@ -30,12 +30,12 @@ to determine exactly which repositories are causing the trouble.
 - Receiving an error when trying to push code -
   `remote: error: cannot lock ref`
 
-- A 500 error when viewing the GitSwarm dashboard or when accessing a
+- A 500 error when viewing the $GitSwarm$ dashboard or when accessing a
   specific project.
 
-### Check all GitLab repositories
+### Check all $GitSwarm$ repositories
 
-This task loops through all repositories on the GitSwarm server and runs
+This task loops through all repositories on the $GitSwarm$ server and runs
 the 3 integrity checks described previously.
 
 ```bash

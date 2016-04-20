@@ -29,7 +29,7 @@ sudo gitswarm-rake gitswarm:import:all_users_to_all_groups
 > Note: Admin users are added as owners so they can add additional users
 > to the group.
 
-## Maintain tight control over the number of active users on your GitSwarm installation
+## Maintain tight control over the number of active users on your $GitSwarm$ installation
 
 Enable this setting to keep new users blocked until they have been cleared
 by the admin (default: false).
@@ -41,7 +41,7 @@ block_auto_created_users: false
 ## Disable Two-factor Authentication (2FA) for all users
 
 This task will disable 2FA for all users that have it enabled. This can be
-useful if GitSwarm's `.secret` file has been lost and users are unable to
+useful if $GitSwarm$'s `.secret` file has been lost and users are unable to
 login, for example.
 
 ```bash

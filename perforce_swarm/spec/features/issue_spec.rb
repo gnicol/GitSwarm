@@ -19,7 +19,7 @@ describe 'Issues', js: true, feature: true do
       before do
         within('.js-main-target-form') do
           fill_in 'note[note]', with: 'Adding a comment in this issue.'
-          click_button 'Add Comment'
+          click_button 'Comment'
         end
       end
 

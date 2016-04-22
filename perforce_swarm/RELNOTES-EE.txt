@@ -151,6 +151,9 @@ Minor new functionality in 2016.1
         errors out
 
 Bugs fixed in 2016.1
+    #5b06580d (Bug #86271)
+        Updated internal patch version to match check for updates version.
+
     #6c190a6a (Bug #86120)
         Incorporated GitLab Community fix for two-factor authentication bypass
 

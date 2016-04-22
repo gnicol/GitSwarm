@@ -8,7 +8,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   include LoginHelpers
 
   step 'I click link "New Merge Request"' do
-    ancestor = page.find('.issue-search-form + div')
+    ancestor = page.find('.nav-controls')
     ancestor.should have_link 'New Merge Request'
     ancestor.click_link 'New Merge Request'
   end

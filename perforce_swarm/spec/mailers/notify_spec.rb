@@ -1,22 +1,15 @@
 require 'spec_helper'
+require 'mailers/shared/notify'
+require_relative 'shared/notify'
 
 describe Notify do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
   include RepoHelpers
 
-  let(:gitlab_sender) { Gitlab.config.gitlab.email_from }
-  let(:project) { create(:project) }
+  include_context 'gitlab email notification'
   let(:example_site_path) { root_path }
   let(:user) { create(:user) }
-
-  shared_examples 'an email sent from GitLab' do
-    it 'is sent from GitLab' do
-      sender = subject.header[:from].addrs[0]
-      expect(sender.display_name).to eq('GitSwarm')
-      expect(sender.address).to eq(gitlab_sender)
-    end
-  end
 
   describe 'for new users, the email', override: true do
     let(:new_user) { create(:user, email: 'newguy@example.com', created_by_id: 1) }

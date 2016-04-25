@@ -19,7 +19,7 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
 
   step 'I click the "Close Issue" button' do
     page.within first('.note-form-actions') do
-      click_link 'Close Issue'
+      click_link 'Close issue'
     end
   end
 

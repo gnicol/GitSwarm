@@ -15,7 +15,7 @@ describe 'Builds' do
     before do
       @build.run!
       visit namespace_project_builds_path(@project.namespace, @project)
-      within('.controls') do
+      within('.nav-controls') do
         click_link 'Cancel running'
       end
     end

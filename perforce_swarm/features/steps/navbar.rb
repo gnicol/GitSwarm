@@ -166,8 +166,8 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
   end
 
   step 'I click on project "QAProject"' do
-    page.within '.navbar-gitlab .dashboard-menu' do
-      find(:link, 'QAProject').trigger('click')
+    page.within '.navbar-gitlab .dashboard-menu.open' do
+      first(:link, 'QAProject').trigger('click')
     end
   end
 
@@ -271,7 +271,7 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I should see the "All Projects" page' do
     expect(find('title')).to have_content('Explore')
-    page.assert_selector('.public-projects')
+    page.assert_selector('.projects-list-holder ul.projects-list.content-list')
   end
 
   step 'I should see the "Forum" page' do

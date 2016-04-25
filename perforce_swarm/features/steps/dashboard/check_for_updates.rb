@@ -130,8 +130,8 @@ class Spinach::Features::CheckForUpdates < Spinach::FeatureSteps
   end
 
   step 'VersionCheck is set to an unsupported platform' do
-    File.write(Rails.root.join('.platform'), 'pdp-11')
-    VersionCheck.platform = 'pdp-11'
+    File.write(Rails.root.join('.platform'), 'pdp-12')
+    VersionCheck.platform = 'pdp-12'
   end
 
   step 'VersionCheck has a platform of noarch' do

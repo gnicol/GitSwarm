@@ -1,3 +1,3 @@
 module PerforceSwarm
-  VERSION = '2016.1-3'
+  VERSION = '2016.1-4'
 end

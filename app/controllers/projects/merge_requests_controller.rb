@@ -1,11 +1,12 @@
 class Projects::MergeRequestsController < Projects::ApplicationController
   include ToggleSubscriptionAction
   include DiffHelper
+  include IssuableActions
 
   before_action :module_enabled
   before_action :merge_request, only: [
     :edit, :update, :show, :diffs, :commits, :builds, :merge, :merge_check,
-    :ci_status, :cancel_merge_when_build_succeeds
+    :ci_status, :toggle_subscription, :cancel_merge_when_build_succeeds, :remove_wip
   ]
   before_action :closes_issues, only: [:edit, :update, :show, :diffs, :commits, :builds]
   before_action :validates_merge_request, only: [:show, :diffs, :commits, :builds]
@@ -20,7 +21,7 @@ class Projects::MergeRequestsController < Projects::ApplicationController
   before_action :authorize_create_merge_request!, only: [:new, :create]
 
   # Allow modify merge_request
-  before_action :authorize_update_merge_request!, only: [:close, :edit, :update, :sort]
+  before_action :authorize_update_merge_request!, only: [:close, :edit, :update, :remove_wip, :sort]
 
   def index
     terms = params['issue_search']
@@ -34,16 +35,17 @@ class Projects::MergeRequestsController < Projects::ApplicationController
       end
     end
 
-    @merge_requests = @merge_requests.page(params[:page]).per(PER_PAGE)
+    @merge_requests = @merge_requests.page(params[:page])
     @merge_requests = @merge_requests.preload(:target_project)
 
-    @label = @project.labels.find_by(title: params[:label_name])
+    @labels = @project.labels.where(title: params[:label_name])
 
     respond_to do |format|
       format.html
       format.json do
         render json: {
-          html: view_to_html_string("projects/merge_requests/_merge_requests")
+          html: view_to_html_string("projects/merge_requests/_merge_requests"),
+          labels: @labels.as_json(methods: :text_color)
         }
       end
     end
@@ -56,8 +58,8 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     respond_to do |format|
       format.html
       format.json { render json: @merge_request }
-      format.diff { render text: @merge_request.to_diff(current_user) }
-      format.patch { render text: @merge_request.to_patch(current_user) }
+      format.diff { render text: @merge_request.to_diff }
+      format.patch { render text: @merge_request.to_patch }
     end
   end
 
@@ -147,21 +149,24 @@ class Projects::MergeRequestsController < Projects::ApplicationController
 
     if @merge_request.valid?
       respond_to do |format|
-        format.js
         format.html do
           redirect_to([@merge_request.target_project.namespace.becomes(Namespace),
                        @merge_request.target_project, @merge_request])
         end
         format.json do
-          render json: {
-            saved: @merge_request.valid?,
-            assignee_avatar_url: @merge_request.assignee.try(:avatar_url)
-          }
+          render json: @merge_request.to_json(include: { milestone: {}, assignee: { methods: :avatar_url }, labels: { methods: :text_color } })
         end
       end
     else
       render "edit"
     end
+  end
+
+  def remove_wip
+    MergeRequests::UpdateService.new(project, current_user, title: @merge_request.wipless_title).execute(@merge_request)
+
+    redirect_to namespace_project_merge_request_path(@project.namespace, @project, @merge_request),
+      notice: "The merge request can now be merged."
   end
 
   def merge_check
@@ -202,31 +207,41 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     #This is always source
     @source_project = @merge_request.nil? ? @project : @merge_request.source_project
     @commit = @repository.commit(params[:ref]) if params[:ref].present?
+    render layout: false
   end
 
   def branch_to
     @target_project = selected_target_project
     @commit = @target_project.commit(params[:ref]) if params[:ref].present?
+    render layout: false
   end
 
   def update_branches
     @target_project = selected_target_project
     @target_branches = @target_project.repository.branch_names
 
-    respond_to do |format|
-      format.js
-    end
+    render layout: false
   end
 
   def ci_status
-    ci_service = @merge_request.source_project.ci_service
-    status = ci_service.commit_status(merge_request.last_commit.sha, merge_request.source_branch)
+    ci_commit = @merge_request.ci_commit
+    if ci_commit
+      status = ci_commit.status
+      coverage = ci_commit.try(:coverage)
+    else
+      ci_service = @merge_request.source_project.ci_service
+      status = ci_service.commit_status(merge_request.last_commit.sha, merge_request.source_branch) if ci_service
 
-    if ci_service.respond_to?(:commit_coverage)
-      coverage = ci_service.commit_coverage(merge_request.last_commit.sha, merge_request.source_branch)
+      if ci_service.respond_to?(:commit_coverage)
+        coverage = ci_service.commit_coverage(merge_request.last_commit.sha, merge_request.source_branch)
+      end
     end
 
+    status = "preparing" if status.nil?
+
     response = {
+      title: merge_request.title,
+      sha: merge_request.last_commit_short_sha,
       status: status,
       coverage: coverage
     }
@@ -248,6 +263,7 @@ class Projects::MergeRequestsController < Projects::ApplicationController
     @merge_request ||= @project.merge_requests.find_by!(iid: params[:id])
   end
   alias_method :subscribable_resource, :merge_request
+  alias_method :issuable, :merge_request
 
   def closes_issues
     @closes_issues ||= @merge_request.closes_issues
@@ -304,6 +320,7 @@ class Projects::MergeRequestsController < Projects::ApplicationController
 
   def define_widget_vars
     @ci_commit = @merge_request.ci_commit
+    @ci_commits = [@ci_commit].compact
     closes_issues
   end
 

@@ -19,6 +19,7 @@ module Issuable
     has_many :notes, as: :noteable, dependent: :destroy
     has_many :label_links, as: :target, dependent: :destroy
     has_many :labels, through: :label_links
+    has_many :todos, as: :target, dependent: :destroy
 
     validates :author, presence: true
     validates :title, presence: true, length: { within: 0..255 }
@@ -36,12 +37,11 @@ module Issuable
     scope :closed, -> { with_state(:closed) }
     scope :order_milestone_due_desc, -> { joins(:milestone).reorder('milestones.due_date DESC, milestones.id DESC') }
     scope :order_milestone_due_asc, -> { joins(:milestone).reorder('milestones.due_date ASC, milestones.id ASC') }
-    scope :with_label, ->(title) { joins(:labels).where(labels: { title: title }) }
     scope :without_label, -> { joins("LEFT OUTER JOIN label_links ON label_links.target_type = '#{name}' AND label_links.target_id = #{table_name}.id").where(label_links: { id: nil }) }
 
     scope :join_project, -> { joins(:project) }
     scope :references_project, -> { references(:project) }
-    scope :non_archived, -> { join_project.merge(Project.non_archived) }
+    scope :non_archived, -> { join_project.where(projects: { archived: false }) }
 
     delegate :name,
              :email,
@@ -58,6 +58,8 @@ module Issuable
     attr_mentionable :description, cache: true
     participant :author, :assignee, :notes_with_associations
     strip_attributes :title
+
+    acts_as_paranoid
   end
 
   module ClassMethods
@@ -118,6 +120,14 @@ module Issuable
       ).join_sources
 
       joins(join_clause).group(issuable_table[:id]).reorder("COUNT(notes.id) DESC")
+    end
+
+    def with_label(title)
+      if title.is_a?(Array) && title.count > 1
+        joins(:labels).where(labels: { title: title }).group('issues.id').having("count(distinct labels.title) = #{title.count}")
+      else
+        joins(:labels).where(labels: { title: title })
+      end
     end
   end
 
@@ -208,5 +218,14 @@ module Issuable
   def updated_tasks
     Taskable.get_updated_tasks(old_content: previous_changes['description'].first,
                                new_content: description)
+  end
+
+  ##
+  # Method that checks if issuable can be moved to another project.
+  #
+  # Should be overridden if issuable can be moved.
+  #
+  def can_move?(*)
+    false
   end
 end

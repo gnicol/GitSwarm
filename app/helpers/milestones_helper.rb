@@ -46,24 +46,11 @@ module MilestonesHelper
     end
   end
 
-  def projects_milestones_options
-    milestones =
-      if @project
-        @project.milestones
-      else
-        Milestone.where(project_id: @projects)
-      end.active
-
-    epoch = DateTime.parse('1970-01-01')
-    grouped_milestones = GlobalMilestone.build_collection(milestones)
-    grouped_milestones.sort_by { |x| x.due_date.nil? ? epoch : x.due_date }
-  end
-
   def milestones_filter_dropdown_path
     if @project
       namespace_project_milestones_path(@project.namespace, @project, :json)
     else
-      milestones_dashboard_path(:json)
+      dashboard_milestones_path(:json)
     end
   end
 

@@ -4,7 +4,7 @@ eval_gemfile File.join(File.dirname(__FILE__), 'perforce_swarm/Gemfile')
 
 source "https://rubygems.org"
 
-gem 'rails', '4.2.5.2'
+gem 'rails', '4.2.6'
 gem 'rails-deprecated_sanitizer', '~> 1.0.3'
 
 # Responders respond_to and respond_with
@@ -12,7 +12,7 @@ gem 'responders', '~> 2.0'
 
 # Specify a sprockets version due to increased performance
 # See https://gitlab.com/gitlab-org/gitlab-ce/issues/6069
-gem 'sprockets', '~> 3.3.5'
+gem 'sprockets', '~> 3.6.0'
 
 # Default values for AR models
 gem "default_value_for", "~> 3.0.0"
@@ -23,7 +23,6 @@ gem "pg", '~> 0.18.2', group: :postgres
 
 # Authentication libraries
 gem 'devise',                 '~> 3.5.4'
-gem 'devise-async',           '~> 0.9.0'
 gem 'doorkeeper',             '~> 2.2.0'
 gem 'omniauth',               '~> 1.3.1'
 gem 'omniauth-auth0',         '~> 1.4.1'
@@ -153,6 +152,10 @@ gem 'version_sorter', '~> 2.0.0'
 # Cache
 gem "redis-rails", '~> 4.0.0'
 
+# Redis
+gem 'redis', '~> 3.2'
+gem 'connection_pool', '~> 2.0'
+
 # Campfire integration
 gem 'tinder', '~> 1.10.0'
 
@@ -178,7 +181,7 @@ gem 'ruby-fogbugz', '~> 0.2.1'
 gem 'd3_rails', '~> 3.5.0'
 
 #cal-heatmap
-gem 'cal-heatmap-rails', '~> 3.5.0'
+gem 'cal-heatmap-rails', '~> 3.6.0'
 
 # underscore-rails
 gem "underscore-rails", "~> 1.8.0"
@@ -189,6 +192,9 @@ gem 'babosa', '~> 1.0.2'
 
 # Sanitizes SVG input
 gem "loofah", "~> 2.0.3"
+
+# Working with license
+gem 'licensee', '~> 8.0.0'
 
 # Protect against bruteforcing
 gem "rack-attack", '~> 4.3.1'
@@ -214,11 +220,11 @@ gem 'font-awesome-rails', '~> 4.2'
 gem 'gitlab_emoji',       '~> 0.3.0'
 gem 'gon',                '~> 6.0.1'
 gem 'jquery-atwho-rails', '~> 1.3.2'
-gem 'jquery-rails',       '~> 4.0.0'
+gem 'jquery-rails',       '~> 4.1.0'
 gem 'jquery-scrollto-rails', '~> 1.4.3'
 gem 'jquery-ui-rails',    '~> 5.0.0'
 gem 'raphael-rails',      '~> 2.1.2'
-gem 'request_store',      '~> 1.2.0'
+gem 'request_store',      '~> 1.3.0'
 gem 'select2-rails',      '~> 3.5.9'
 gem 'virtus',             '~> 1.0.1'
 gem 'net-ssh',            '~> 3.0.1'
@@ -226,20 +232,21 @@ gem 'net-ssh',            '~> 3.0.1'
 # Sentry integration
 gem 'sentry-raven', '~> 0.15'
 
+gem 'premailer-rails', '~> 1.9.0'
+
 # Metrics
 group :metrics do
   gem 'allocations', '~> 1.0', require: false, platform: :mri
   gem 'method_source', '~> 0.8', require: false
   gem 'influxdb', '~> 0.2', require: false
-  gem 'connection_pool', '~> 2.0', require: false
 end
 
 group :development do
   gem "foreman"
-  gem 'brakeman', '~> 3.1.0', require: false
+  gem 'brakeman', '~> 3.2.0', require: false
 
-  gem "annotate", "~> 2.6.0"
-  gem "letter_opener", '~> 1.1.2'
+  gem "annotate", "~> 2.7.0"
+  gem 'letter_opener_web', '~> 1.3.0'
   gem 'quiet_assets', '~> 1.0.2'
   gem 'rerun', '~> 0.11.0'
   gem 'bullet', require: false
@@ -281,18 +288,18 @@ group :development, :test do
   gem 'capybara-screenshot', '~> 1.0.0'
   gem 'poltergeist',         '~> 1.9.0'
 
-  gem 'teaspoon', '~> 1.0.0'
+  gem 'teaspoon', '~> 1.1.0'
   gem 'teaspoon-jasmine', '~> 2.2.0'
 
-  gem 'spring', '~> 1.6.4'
+  gem 'spring',                   '~> 1.7.0'
   gem 'spring-commands-rspec',    '~> 1.0.4'
-  gem 'spring-commands-spinach',  '~> 1.0.0'
+  gem 'spring-commands-spinach',  '~> 1.1.0'
   gem 'spring-commands-teaspoon', '~> 0.0.2'
 
-  gem 'rubocop', '~> 0.35.0', require: false
+  gem 'rubocop', '~> 0.38.0', require: false
   gem 'scss_lint', '~> 0.47.0', require: false
   gem 'coveralls',  '~> 0.8.2', require: false
-  gem 'simplecov', '~> 0.10.0', require: false
+  gem 'simplecov', '~> 0.11.0', require: false
   gem 'flog', require: false
   gem 'flay', require: false
   gem 'bundler-audit', require: false
@@ -314,7 +321,7 @@ end
 
 gem "newrelic_rpm", '~> 3.14'
 
-gem 'octokit', '~> 3.8.0'
+gem 'octokit', '~> 4.3.0'
 
 gem "mail_room", "~> 0.6.1"
 

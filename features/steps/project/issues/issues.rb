@@ -5,6 +5,7 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   include SharedNote
   include SharedPaths
   include SharedMarkdown
+  include SharedUser
 
   step 'I should see "Release 0.4" in issues' do
     expect(page).to have_content "Release 0.4"
@@ -19,11 +20,11 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   end
 
   step 'I should see that I am subscribed' do
-    expect(find('.subscribe-button span')).to have_content 'Unsubscribe'
+    expect(find('.issuable-subscribe-button span')).to have_content 'Unsubscribe'
   end
 
   step 'I should see that I am unsubscribed' do
-    expect(find('.subscribe-button span')).to have_content 'Subscribe'
+    expect(find('.issuable-subscribe-button span')).to have_content 'Subscribe'
   end
 
   step 'I click link "Closed"' do
@@ -240,7 +241,7 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
   end
 
   step 'empty project "Empty Project"' do
-    create :empty_project, name: 'Empty Project', namespace: @user.namespace
+    create :project_empty_repo, name: 'Empty Project', namespace: @user.namespace
   end
 
   When 'I visit empty project page' do

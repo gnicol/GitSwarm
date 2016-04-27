@@ -11,16 +11,8 @@ describe ProjectsHelper do
 
   describe "can_change_visibility_level?" do
     let(:project) { create(:project) }
-
-    let(:fork_project) do
-      fork_project = create(:forked_project_with_submodules)
-      fork_project.build_forked_project_link(forked_to_project_id: fork_project.id, forked_from_project_id: project.id)
-      fork_project.save
-
-      fork_project
-    end
-
     let(:user) { create(:user) }
+    let(:fork_project) { Projects::ForkService.new(project, user).execute }
 
     it "returns false if there are no appropriate permissions" do
       allow(helper).to receive(:can?) { false }
@@ -91,6 +83,51 @@ describe ProjectsHelper do
         link = helper.link_to_member(project, user)
 
         expect(link).to match(%r{/u/#{user.username}})
+      end
+    end
+  end
+
+  describe 'default_clone_protocol' do
+    describe 'using HTTP' do
+      it 'returns HTTP' do
+        expect(helper).to receive(:current_user).and_return(nil)
+
+        expect(helper.send(:default_clone_protocol)).to eq('http')
+      end
+    end
+
+    describe 'using HTTPS' do
+      it 'returns HTTPS' do
+        allow(Gitlab.config.gitlab).to receive(:protocol).and_return('https')
+        expect(helper).to receive(:current_user).and_return(nil)
+
+        expect(helper.send(:default_clone_protocol)).to eq('https')
+      end
+    end
+  end
+
+  describe '#license_short_name' do
+    let(:project) { create(:project) }
+
+    context 'when project.repository has a license_key' do
+      it 'returns the nickname of the license if present' do
+        allow(project.repository).to receive(:license_key).and_return('agpl-3.0')
+
+        expect(helper.license_short_name(project)).to eq('GNU AGPLv3')
+      end
+
+      it 'returns the name of the license if nickname is not present' do
+        allow(project.repository).to receive(:license_key).and_return('mit')
+
+        expect(helper.license_short_name(project)).to eq('MIT License')
+      end
+    end
+
+    context 'when project.repository has no license_key but a license_blob' do
+      it 'returns LICENSE' do
+        allow(project.repository).to receive(:license_key).and_return(nil)
+
+        expect(helper.license_short_name(project)).to eq('LICENSE')
       end
     end
   end

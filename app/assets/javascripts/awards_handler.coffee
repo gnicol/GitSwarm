@@ -1,5 +1,5 @@
 class @AwardsHandler
-  constructor: (@post_emoji_url, @noteable_type, @noteable_id, @aliases) ->
+  constructor: (@get_emojis_url, @post_emoji_url, @noteable_type, @noteable_id, @unicodes) ->
     $(".js-add-award").on "click", (event) =>
       event.stopPropagation()
       event.preventDefault()
@@ -22,7 +22,20 @@ class @AwardsHandler
     emoji = $(this)
       .find(".icon")
       .data "emoji"
+
+    if emoji is "thumbsup" and awards_handler.didUserClickEmoji $(this), "thumbsdown"
+      awards_handler.addAward "thumbsdown"
+
+    else if emoji is "thumbsdown" and awards_handler.didUserClickEmoji $(this), "thumbsup"
+      awards_handler.addAward "thumbsup"
+
     awards_handler.addAward emoji
+
+    $(this).trigger 'blur'
+
+  didUserClickEmoji: (that, emoji) ->
+    if $(that).siblings("button:has([data-emoji=#{emoji}])").attr("data-original-title")
+      $(that).siblings("button:has([data-emoji=#{emoji}])").attr("data-original-title").indexOf('me') > -1
 
   showEmojiMenu: ->
     if $(".emoji-menu").length
@@ -34,7 +47,7 @@ class @AwardsHandler
         $("#emoji_search").focus()
     else
       $('.js-add-award').addClass "is-loading"
-      $.get "/emojis", (response) =>
+      $.get @get_emojis_url, (response) =>
         $('.js-add-award').removeClass "is-loading"
         $(".js-award-holder").append response
         setTimeout =>
@@ -44,7 +57,6 @@ class @AwardsHandler
         , 200
 
   addAward: (emoji) ->
-    emoji = @normilizeEmojiName(emoji)
     @postEmoji emoji, =>
       @addAwardToEmojiBar(emoji)
 
@@ -53,7 +65,6 @@ class @AwardsHandler
   addAwardToEmojiBar: (emoji) ->
     @addEmojiToFrequentlyUsedList(emoji)
 
-    emoji = @normilizeEmojiName(emoji)
     if @exist(emoji)
       if @isActive(emoji)
         @decrementCounter(emoji)
@@ -105,7 +116,7 @@ class @AwardsHandler
     if origTitle
       authors = origTitle.split(', ')
     authors.push("me")
-    award_block.attr("title", authors.join(", "))
+    award_block.attr("data-original-title", authors.join(", "))
     @resetTooltip(award_block)
 
   resetTooltip: (award) ->
@@ -122,7 +133,7 @@ class @AwardsHandler
 
     nodes = []
     nodes.push(
-      "<button class='btn award-control js-emoji-btn has_tooltip active' title='me'>",
+      "<button class='btn award-control js-emoji-btn has-tooltip active' data-original-title='me'>",
       "<div class='icon emoji-icon #{emojiCssClass}' data-emoji='#{emoji}'></div>",
       "<span class='award-control-text js-counter'>1</span>",
       "</button>"
@@ -135,15 +146,7 @@ class @AwardsHandler
     $('.award-control').tooltip()
 
   resolveNameToCssClass: (emoji) ->
-    emoji_icon = $(".emoji-menu-content [data-emoji='#{emoji}']")
-
-    if emoji_icon.length > 0
-      unicodeName = emoji_icon.data("unicode-name")
-    else
-      # Find by alias
-      unicodeName = $(".emoji-menu-content [data-aliases*=':#{emoji}:']").data("unicode-name")
-
-    "emoji-#{unicodeName}"
+    "emoji-#{@unicodes[emoji]}"
 
   postEmoji: (emoji, callback) ->
     $.post @post_emoji_url, { note: {
@@ -161,9 +164,6 @@ class @AwardsHandler
     $('body, html').animate({
       scrollTop: $('.awards').offset().top - 80
     }, 200)
-
-  normilizeEmojiName: (emoji) ->
-    @aliases[emoji] || emoji
 
   addEmojiToFrequentlyUsedList: (emoji) ->
     frequently_used_emojis = @getFrequentlyUsedEmojis()

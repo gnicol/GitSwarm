@@ -37,6 +37,11 @@ describe Issue, models: true do
 
   subject { create(:issue) }
 
+  describe "act_as_paranoid" do
+    it { is_expected.to have_db_column(:deleted_at) }
+    it { is_expected.to have_db_index(:deleted_at) }
+  end
+
   describe '#to_reference' do
     it 'returns a String reference to the object' do
       expect(subject.to_reference).to eq "##{subject.iid}"
@@ -130,12 +135,92 @@ describe Issue, models: true do
     end
   end
 
-  describe '#related_branches' do
-    it "should " do
-      allow(subject.project.repository).to receive(:branch_names).
-                                    and_return(["mpempe", "#{subject.iid}mepmep", subject.to_branch_name])
+  describe '#can_move?' do
+    let(:user) { create(:user) }
+    let(:issue) { create(:issue) }
+    subject { issue.can_move?(user) }
 
-      expect(subject.related_branches).to eq [subject.to_branch_name]
+    context 'user is not a member of project issue belongs to' do
+      it { is_expected.to eq false}
+    end
+
+    context 'user is reporter in project issue belongs to' do
+      let(:project) { create(:project) }
+      let(:issue) { create(:issue, project: project) }
+
+      before { project.team << [user, :reporter] }
+
+      it { is_expected.to eq true }
+
+      context 'issue not persisted' do
+        let(:issue) { build(:issue, project: project) }
+        it { is_expected.to eq false }
+      end
+
+      context 'checking destination project also' do
+        subject { issue.can_move?(user, to_project) }
+        let(:to_project) { create(:project) }
+
+        context 'destination project allowed' do
+          before { to_project.team << [user, :reporter] }
+          it { is_expected.to eq true }
+        end
+
+        context 'destination project not allowed' do
+          before { to_project.team << [user, :guest] }
+          it { is_expected.to eq false }
+        end
+      end
+    end
+  end
+
+  describe '#moved?' do
+    let(:issue) { create(:issue) }
+    subject { issue.moved? }
+
+    context 'issue not moved' do
+      it { is_expected.to eq false }
+    end
+
+    context 'issue already moved' do
+      let(:moved_to_issue) { create(:issue) }
+      let(:issue) { create(:issue, moved_to: moved_to_issue) }
+
+      it { is_expected.to eq true }
+    end
+  end
+
+  describe '#related_branches' do
+    let(:user) { build(:admin) }
+
+    before do
+      allow(subject.project.repository).to receive(:branch_names).
+                                            and_return(["mpempe", "#{subject.iid}mepmep", subject.to_branch_name, "#{subject.iid}-branch"])
+
+      # Without this stub, the `create(:merge_request)` above fails because it can't find
+      # the source branch. This seems like a reasonable compromise, in comparison with
+      # setting up a full repo here.
+      allow_any_instance_of(MergeRequest).to receive(:create_merge_request_diff)
+    end
+
+    it "selects the right branches when there are no referenced merge requests" do
+      expect(subject.related_branches(user)).to eq([subject.to_branch_name, "#{subject.iid}-branch"])
+    end
+
+    it "selects the right branches when there is a referenced merge request" do
+      merge_request = create(:merge_request, { description: "Closes ##{subject.iid}",
+                                               source_project: subject.project,
+                                               source_branch: "#{subject.iid}-branch" })
+      merge_request.create_cross_references!(user)
+      expect(subject.referenced_merge_requests).to_not be_empty
+      expect(subject.related_branches(user)).to eq([subject.to_branch_name])
+    end
+
+    it 'excludes stable branches from the related branches' do
+      allow(subject.project.repository).to receive(:branch_names).
+        and_return(["#{subject.iid}-0-stable"])
+
+      expect(subject.related_branches(user)).to eq []
     end
   end
 
@@ -151,10 +236,19 @@ describe Issue, models: true do
   end
 
   describe "#to_branch_name" do
-    let(:issue) { build(:issue, title: 'a' * 30) }
+    let(:issue) { create(:issue, title: 'testing-issue') }
 
-    it "starts with the issue iid" do
-      expect(issue.to_branch_name).to match /\A#{issue.iid}-a+\z/
+    it 'starts with the issue iid' do
+      expect(issue.to_branch_name).to match /\A#{issue.iid}-[A-Za-z\-]+\z/
+    end
+
+    it "contains the issue title if not confidential" do
+      expect(issue.to_branch_name).to match /testing-issue\z/
+    end
+
+    it "does not contain the issue title if confidential" do
+      issue = create(:issue, title: 'testing-issue', confidential: true)
+      expect(issue.to_branch_name).to match /confidential-issue\z/
     end
   end
 end

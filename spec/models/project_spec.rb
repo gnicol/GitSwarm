@@ -104,6 +104,15 @@ describe Project, models: true do
     end
   end
 
+  describe 'default_scope' do
+    it 'excludes projects pending deletion from the results' do
+      project = create(:empty_project)
+      create(:empty_project, pending_delete: true)
+
+      expect(Project.all).to eq [project]
+    end
+  end
+
   describe 'project token' do
     it 'should set an random token if none provided' do
       project = FactoryGirl.create :empty_project, runners_token: ''
@@ -422,13 +431,32 @@ describe Project, models: true do
 
       it { should eq "http://localhost#{avatar_path}" }
     end
+
+    context 'when git repo is empty' do
+      let(:project) { create(:empty_project) }
+
+      it { should eq nil }
+    end
   end
 
   describe :ci_commit do
     let(:project) { create :project }
-    let(:commit) { create :ci_commit, project: project }
+    let(:commit) { create :ci_commit, project: project, ref: 'master' }
 
-    it { expect(project.ci_commit(commit.sha)).to eq(commit) }
+    subject { project.ci_commit(commit.sha, 'master') }
+
+    it { is_expected.to eq(commit) }
+
+    context 'return latest' do
+      let(:commit2) { create :ci_commit, project: project, ref: 'master' }
+
+      before do
+        commit
+        commit2
+      end
+
+      it { is_expected.to eq(commit2) }
+    end
   end
 
   describe :builds_enabled do
@@ -442,7 +470,7 @@ describe Project, models: true do
   end
 
   describe '.trending' do
-    let(:group)    { create(:group) }
+    let(:group)    { create(:group, :public) }
     let(:project1) { create(:empty_project, :public, group: group) }
     let(:project2) { create(:empty_project, :public, group: group) }
 
@@ -571,12 +599,8 @@ describe Project, models: true do
     end
 
     context 'when checking on forked project' do
-      let(:forked_project) { create :forked_project_with_submodules }
-
-      before do
-        forked_project.build_forked_project_link(forked_to_project_id: forked_project.id, forked_from_project_id: project.id)
-        forked_project.save
-      end
+      let(:project)        { create(:project, :internal) }
+      let(:forked_project) { create(:project, forked_from_project: project) }
 
       it { expect(forked_project.visibility_level_allowed?(Gitlab::VisibilityLevel::PRIVATE)).to be_truthy }
       it { expect(forked_project.visibility_level_allowed?(Gitlab::VisibilityLevel::INTERNAL)).to be_truthy }
@@ -695,11 +719,8 @@ describe Project, models: true do
         with('foo.wiki', project).
         and_return(wiki)
 
-      expect(repo).to receive(:expire_cache)
-      expect(repo).to receive(:expire_emptiness_caches)
-
-      expect(wiki).to receive(:expire_cache)
-      expect(wiki).to receive(:expire_emptiness_caches)
+      expect(repo).to receive(:before_delete)
+      expect(wiki).to receive(:before_delete)
 
       project.expire_caches_before_rename('foo')
     end
@@ -718,6 +739,63 @@ describe Project, models: true do
 
     it 'returns projects with a matching name regardless of the casing' do
       expect(described_class.search_by_title('KITTENS')).to eq([project])
+    end
+  end
+
+  context 'when checking projects from groups' do
+    let(:private_group)    { create(:group, visibility_level: 0)  }
+    let(:internal_group)   { create(:group, visibility_level: 10) }
+
+    let(:private_project)  { create :project, :private, group: private_group }
+    let(:internal_project) { create :project, :internal, group: internal_group }
+
+    context 'when group is private project can not be internal' do
+      it { expect(private_project.visibility_level_allowed?(Gitlab::VisibilityLevel::INTERNAL)).to be_falsey }
+    end
+
+    context 'when group is internal project can not be public' do
+      it { expect(internal_project.visibility_level_allowed?(Gitlab::VisibilityLevel::PUBLIC)).to be_falsey }
+    end
+  end
+
+  describe '#create_repository' do
+    let(:project) { create(:project) }
+    let(:shell) { Gitlab::Shell.new }
+
+    before do
+      allow(project).to receive(:gitlab_shell).and_return(shell)
+    end
+
+    context 'using a regular repository' do
+      it 'creates the repository' do
+        expect(shell).to receive(:add_repository).
+          with(project.path_with_namespace).
+          and_return(true)
+
+        expect(project.repository).to receive(:after_create)
+
+        expect(project.create_repository).to eq(true)
+      end
+
+      it 'adds an error if the repository could not be created' do
+        expect(shell).to receive(:add_repository).
+          with(project.path_with_namespace).
+          and_return(false)
+
+        expect(project.repository).not_to receive(:after_create)
+
+        expect(project.create_repository).to eq(false)
+        expect(project.errors).not_to be_empty
+      end
+    end
+
+    context 'using a forked repository' do
+      it 'does nothing' do
+        expect(project).to receive(:forked?).and_return(true)
+        expect(shell).not_to receive(:add_repository)
+
+        project.create_repository
+      end
     end
   end
 end

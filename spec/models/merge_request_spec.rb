@@ -49,6 +49,11 @@ describe MergeRequest, models: true do
     it { is_expected.to include_module(Taskable) }
   end
 
+  describe "act_as_paranoid" do
+    it { is_expected.to have_db_column(:deleted_at) }
+    it { is_expected.to have_db_index(:deleted_at) }
+  end
+
   describe 'validation' do
     it { is_expected.to validate_presence_of(:target_branch) }
     it { is_expected.to validate_presence_of(:source_branch) }
@@ -216,33 +221,25 @@ describe MergeRequest, models: true do
   end
 
   describe "#work_in_progress?" do
-    it "detects the 'WIP ' prefix" do
-      subject.title = "WIP #{subject.title}"
-      expect(subject).to be_work_in_progress
-    end
-
-    it "detects the 'WIP: ' prefix" do
-      subject.title = "WIP: #{subject.title}"
-      expect(subject).to be_work_in_progress
-    end
-
-    it "detects the '[WIP] ' prefix" do
-      subject.title = "[WIP] #{subject.title}"
-      expect(subject).to be_work_in_progress
-    end
-
-    it "detects the '[WIP]' prefix" do
-      subject.title = "[WIP]#{subject.title}"
-      expect(subject).to be_work_in_progress
+    ['WIP ', 'WIP:', 'WIP: ', '[WIP]', '[WIP] ', ' [WIP] WIP [WIP] WIP: WIP '].each do |wip_prefix|
+      it "detects the '#{wip_prefix}' prefix" do
+        subject.title = "#{wip_prefix}#{subject.title}"
+        expect(subject.work_in_progress?).to eq true
+      end
     end
 
     it "doesn't detect WIP for words starting with WIP" do
       subject.title = "Wipwap #{subject.title}"
-      expect(subject).not_to be_work_in_progress
+      expect(subject.work_in_progress?).to eq false
+    end
+
+    it "doesn't detect WIP for words containing with WIP" do
+      subject.title = "WupWipwap #{subject.title}"
+      expect(subject.work_in_progress?).to eq false
     end
 
     it "doesn't detect WIP by default" do
-      expect(subject).not_to be_work_in_progress
+      expect(subject.work_in_progress?).to eq false
     end
   end
 
@@ -407,12 +404,12 @@ describe MergeRequest, models: true do
     describe 'when the source project exists' do
       it 'returns the latest commit' do
         commit    = double(:commit, id: '123abc')
-        ci_commit = double(:ci_commit)
+        ci_commit = double(:ci_commit, ref: 'master')
 
         allow(subject).to receive(:last_commit).and_return(commit)
 
         expect(subject.source_project).to receive(:ci_commit).
-          with('123abc').
+          with('123abc', 'master').
           and_return(ci_commit)
 
         expect(subject.ci_commit).to eq(ci_commit)

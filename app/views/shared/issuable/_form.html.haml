@@ -1,31 +1,36 @@
-- if issuable.errors.any?
-  .row
-    .col-sm-offset-2.col-sm-10
-      .alert.alert-danger
-        - issuable.errors.full_messages.each do |msg|
-          %span= msg
-          %br
+= form_errors(issuable)
+
 .form-group
   = f.label :title, class: 'control-label'
   .col-sm-10
     = f.text_field :title, maxlength: 255, autofocus: true, autocomplete: 'off',
-        class: 'form-control pad js-gfm-input', required: true
+        class: 'form-control pad', required: true
 
     - if issuable.is_a?(MergeRequest)
       %p.help-block
-        - if issuable.work_in_progress?
-          Remove the <code>WIP</code> prefix from the title to allow this
-          <strong>Work In Progress</strong> merge request to be merged when it's ready.
-        - else
-          Start the title with <code>[WIP]</code> or <code>WIP:</code> to prevent a
-          <strong>Work In Progress</strong> merge request from being merged before it's ready.
+        .js-wip-explanation
+          %a.js-toggle-wip{href: "", tabindex: -1}
+            Remove the
+            %code WIP:
+            prefix from the title
+          to allow this
+          %strong Work In Progress
+          merge request to be merged when it's ready.
+        .js-no-wip-explanation
+          %a.js-toggle-wip{href: "", tabindex: -1}
+            Start the title with
+            %code WIP:
+          to prevent a
+          %strong Work In Progress
+          merge request from being merged before it's ready.
 .form-group.detail-page-description
   = f.label :description, 'Description', class: 'control-label'
   .col-sm-10
 
     = render layout: 'projects/md_preview', locals: { preview_class: "md-preview", referenced_users: true } do
       = render 'projects/zen', f: f, attr: :description,
-                               classes: 'description form-control'
+                               classes: 'note-textarea',
+                               placeholder: "Write a comment or drag your files here..."
       = render 'projects/notes/hints'
       .clearfix
       .error-alert
@@ -44,10 +49,11 @@
     .issue-assignee
       = f.label :assignee_id, "Assignee", class: 'control-label'
       .col-sm-10
-        = users_select_tag("#{issuable.class.model_name.param_key}[assignee_id]",
-            placeholder: 'Select assignee', class: 'custom-form-control', null_user: true,
-            selected: issuable.assignee_id, project: @target_project || @project,
-            first_user: true, current_user: true, include_blank: true)
+        .issuable-form-select-holder
+          = users_select_tag("#{issuable.class.model_name.param_key}[assignee_id]",
+              placeholder: 'Select assignee', class: 'custom-form-control', null_user: true,
+              selected: issuable.assignee_id, project: @target_project || @project,
+              first_user: true, current_user: true, include_blank: true)
         &nbsp;
         = link_to 'Assign to me', '#', class: 'btn assign-to-me-link'
   .form-group
@@ -55,8 +61,9 @@
       = f.label :milestone_id, "Milestone", class: 'control-label'
       .col-sm-10
         - if milestone_options(issuable).present?
-          = f.select(:milestone_id, milestone_options(issuable),
-            { include_blank: true }, { class: 'select2', data: { placeholder: 'Select milestone' } })
+          .issuable-form-select-holder
+            = f.select(:milestone_id, milestone_options(issuable),
+              { include_blank: true }, { class: 'select2', data: { placeholder: 'Select milestone' } })
         - else
           .prepend-top-10
           %span.light No open milestones available.
@@ -64,31 +71,48 @@
         - if can? current_user, :admin_milestone, issuable.project
           = link_to 'Create new milestone', new_namespace_project_milestone_path(issuable.project.namespace, issuable.project), target: :blank
   .form-group
+    - has_labels = issuable.project.labels.any?
     = f.label :label_ids, "Labels", class: 'control-label'
-    .col-sm-10
-      - if issuable.project.labels.any?
-        = f.collection_select :label_ids, issuable.project.labels.all, :id, :name,
-          { selected: issuable.label_ids }, multiple: true, class: 'select2', data: { placeholder: "Select labels" }
+    .col-sm-10{ class: ('issuable-form-padding-top' if !has_labels) }
+      - if has_labels
+        .issuable-form-select-holder
+          = f.collection_select :label_ids, issuable.project.labels.all, :id, :name,
+            { selected: issuable.label_ids }, multiple: true, class: 'select2', data: { placeholder: "Select labels" }
       - else
-        .prepend-top-10
         %span.light No labels yet.
       &nbsp;
       - if can? current_user, :admin_label, issuable.project
         = link_to 'Create new label', new_namespace_project_label_path(issuable.project.namespace, issuable.project), target: :blank
 
+- if issuable.can_move?(current_user)
+  %hr
+  .form-group
+    = label_tag :move_to_project_id, 'Move', class: 'control-label'
+    .col-sm-10
+      .issuable-form-select-holder
+        - projects = project_options(issuable, current_user, ability: :admin_issue)
+        = select_tag(:move_to_project_id, projects, include_blank: true,
+                     class: 'select2', data: { placeholder: 'Select project' })
+      &nbsp;
+      %span{ data: { toggle: 'tooltip', placement: 'auto top' }, style: 'cursor: default',
+      title: 'Moving an issue will copy the discussion to a different project and close it here. All participants will be notified of the new location.' }
+        = icon('question-circle')
+
 - if issuable.is_a?(MergeRequest)
   %hr
-    - if @merge_request.new_record?
-      .form-group
-        = f.label :source_branch, class: 'control-label'
-        .col-sm-10
+  - if @merge_request.new_record?
+    .form-group
+      = f.label :source_branch, class: 'control-label'
+      .col-sm-10
+        .issuable-form-select-holder
           = f.select(:source_branch, [@merge_request.source_branch], { }, { class: 'source_branch select2 span2', disabled: true })
   .form-group
     = f.label :target_branch, class: 'control-label'
     .col-sm-10
-      = f.select(:target_branch, @merge_request.target_branches, { include_blank: true }, { class: 'target_branch select2 span2', disabled: @merge_request.new_record?, data: {placeholder: "Select branch"} })
+      .issuable-form-select-holder
+        = f.select(:target_branch, @merge_request.target_branches, { include_blank: true }, { class: 'target_branch select2 span2', disabled: @merge_request.new_record?, data: {placeholder: "Select branch"} })
       - if @merge_request.new_record?
-        %p.help-block
+        &nbsp;
         = link_to 'Change branches', mr_change_branches_path(@merge_request)
 
 - is_footer = !(issuable.is_a?(MergeRequest) && issuable.new_record?)
@@ -105,7 +129,10 @@
       for this project.
 
   - if issuable.new_record?
-    - cancel_project = issuable.source_project
+    = link_to 'Cancel', polymorphic_path([@project.namespace.becomes(Namespace), @project, issuable.class]), class: 'btn btn-cancel'
   - else
-    - cancel_project = issuable.project
-  = link_to 'Cancel', [cancel_project.namespace.becomes(Namespace), cancel_project, issuable], class: 'btn btn-cancel'
+    .pull-right
+      - if current_user.can?(:"destroy_#{issuable.to_ability_name}", @project)
+        = link_to 'Delete', polymorphic_path([@project.namespace.becomes(Namespace), @project, issuable]), data: { confirm: "#{issuable.class.name.titleize} will be removed! Are you sure?" },
+                                                                                                  method: :delete, class: 'btn btn-danger btn-grouped'
+      = link_to 'Cancel', polymorphic_path([@project.namespace.becomes(Namespace), @project, issuable]), class: 'btn btn-grouped btn-cancel'

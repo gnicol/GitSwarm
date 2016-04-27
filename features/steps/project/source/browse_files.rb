@@ -213,13 +213,12 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   end
 
   step 'I see Browse file link' do
-    expect(page).to have_link 'Browse File »'
-    expect(page).not_to have_link 'Browse Files »'
+    expect(page).to have_link 'Browse File'
+    expect(page).not_to have_link 'Browse Files'
   end
 
   step 'I see Browse code link' do
-    expect(page).to have_link 'Browse Files »'
-    expect(page).not_to have_link 'Browse File »'
+    expect(page).to have_link 'Browse Files'
     expect(page).not_to have_link 'Browse Directory »'
   end
 
@@ -283,8 +282,8 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     click_link 'Create empty bare repository'
   end
 
-  step 'I click on "add a file" link' do
-    click_link 'adding README'
+  step 'I click on "README" link' do
+    click_link 'README'
 
     # Remove pre-receive hook so we can push without auth
     FileUtils.rm_f(File.join(@project.repository.path, 'hooks', 'pre-receive'))

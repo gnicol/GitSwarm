@@ -8,14 +8,14 @@ module API
       expose :id, :state, :avatar_url
 
       expose :web_url do |user, options|
-        Gitlab::Application.routes.url_helpers.user_url(user)
+        Gitlab::Routing.url_helpers.user_url(user)
       end
     end
 
     class User < UserBasic
       expose :created_at
       expose :is_admin?, as: :is_admin
-      expose :bio, :skype, :linkedin, :twitter, :website_url
+      expose :bio, :location, :skype, :linkedin, :twitter, :website_url
     end
 
     class Identity < Grape::Entity
@@ -85,11 +85,11 @@ module API
     end
 
     class Group < Grape::Entity
-      expose :id, :name, :path, :description
+      expose :id, :name, :path, :description, :visibility_level
       expose :avatar_url
 
       expose :web_url do |group, options|
-        Gitlab::Application.routes.url_helpers.group_url(group)
+        Gitlab::Routing.url_helpers.group_url(group)
       end
     end
 
@@ -170,6 +170,10 @@ module API
       expose :label_names, as: :labels
       expose :milestone, using: Entities::Milestone
       expose :assignee, :author, using: Entities::UserBasic
+
+      expose :subscribed do |issue, options|
+        issue.subscribed?(options[:current_user])
+      end
     end
 
     class MergeRequest < ProjectEntity
@@ -183,6 +187,10 @@ module API
       expose :milestone, using: Entities::Milestone
       expose :merge_when_build_succeeds
       expose :merge_status
+
+      expose :subscribed do |merge_request, options|
+        merge_request.subscribed?(options[:current_user])
+      end
     end
 
     class MergeRequestChanges < MergeRequest
@@ -204,7 +212,7 @@ module API
       expose :note, as: :body
       expose :attachment_identifier, as: :attachment
       expose :author, using: Entities::UserBasic
-      expose :created_at
+      expose :created_at, :updated_at
       expose :system?, as: :system
       expose :noteable_id, :noteable_type
       # upvote? and downvote? are deprecated, always return false
@@ -255,14 +263,19 @@ module API
       expose :id, :path, :kind
     end
 
-    class ProjectAccess < Grape::Entity
+    class Member < Grape::Entity
       expose :access_level
-      expose :notification_level
+      expose :notification_level do |member, options|
+        if member.notification_setting
+          NotificationSetting.levels[member.notification_setting.level]
+        end
+      end
     end
 
-    class GroupAccess < Grape::Entity
-      expose :access_level
-      expose :notification_level
+    class ProjectAccess < Member
+    end
+
+    class GroupAccess < Member
     end
 
     class ProjectService < Grape::Entity
@@ -292,7 +305,8 @@ module API
     end
 
     class Label < Grape::Entity
-      expose :name, :color
+      expose :name, :color, :description
+      expose :open_issues_count, :closed_issues_count, :open_merge_requests_count
     end
 
     class Compare < Grape::Entity
@@ -334,12 +348,12 @@ module API
       expose :updated_at
       expose :home_page_url
       expose :default_branch_protection
-      expose :twitter_sharing_enabled
       expose :restricted_visibility_levels
       expose :max_attachment_size
       expose :session_expire_delay
       expose :default_project_visibility
       expose :default_snippet_visibility
+      expose :default_group_visibility
       expose :restricted_signup_domains
       expose :user_oauth_applications
       expose :after_sign_out_path
@@ -424,6 +438,18 @@ module API
 
     class Variable < Grape::Entity
       expose :key, :value
+    end
+
+    class RepoLicense < Grape::Entity
+      expose :key, :name, :nickname
+      expose :featured, as: :popular
+      expose :url, as: :html_url
+      expose(:source_url) { |license| license.meta['source'] }
+      expose(:description) { |license| license.meta['description'] }
+      expose(:conditions) { |license| license.meta['conditions'] }
+      expose(:permissions) { |license| license.meta['permissions'] }
+      expose(:limitations) { |license| license.meta['limitations'] }
+      expose :content
     end
   end
 end

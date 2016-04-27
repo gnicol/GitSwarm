@@ -17,7 +17,7 @@
 
       - if merge_request.open? && merge_request.broken?
         %li
-          = link_to merge_request_path(merge_request), class: "has_tooltip", title: "Cannot be merged automatically", data: { container: 'body' } do
+          = link_to merge_request_path(merge_request), class: "has-tooltip", title: "Cannot be merged automatically", data: { container: 'body' } do
             = icon('exclamation-triangle')
 
       - if merge_request.assignee
@@ -35,7 +35,7 @@
           = icon('thumbs-down')
           = downvotes
 
-      - note_count = merge_request.mr_and_commit_notes.user.count
+      - note_count = merge_request.mr_and_commit_notes.user.nonawards.count
       - if note_count > 0
         %li
           = link_to merge_request_path(merge_request) + "#notes" do

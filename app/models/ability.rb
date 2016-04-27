@@ -18,6 +18,7 @@ class Ability
       when Namespace then namespace_abilities(user, subject)
       when GroupMember then group_member_abilities(user, subject)
       when ProjectMember then project_member_abilities(user, subject)
+      when User then user_abilities
       else []
       end.concat(global_abilities(user))
     end
@@ -27,12 +28,16 @@ class Ability
       case true
       when subject.is_a?(PersonalSnippet)
         anonymous_personal_snippet_abilities(subject)
+      when subject.is_a?(ProjectSnippet)
+        anonymous_project_snippet_abilities(subject)
       when subject.is_a?(CommitStatus)
         anonymous_commit_status_abilities(subject)
       when subject.is_a?(Project) || subject.respond_to?(:project)
         anonymous_project_abilities(subject)
       when subject.is_a?(Group) || subject.respond_to?(:group)
         anonymous_group_abilities(subject)
+      when subject.is_a?(User)
+        anonymous_user_abilities
       else
         []
       end
@@ -79,17 +84,17 @@ class Ability
     end
 
     def anonymous_group_abilities(subject)
+      rules = []
+
       group = if subject.is_a?(Group)
                 subject
               else
                 subject.group
               end
 
-      if group && group.projects.public_only.any?
-        [:read_group]
-      else
-        []
-      end
+      rules << :read_group if group.public?
+
+      rules
     end
 
     def anonymous_personal_snippet_abilities(snippet)
@@ -100,9 +105,22 @@ class Ability
       end
     end
 
+    def anonymous_project_snippet_abilities(snippet)
+      if snippet.public?
+        [:read_project_snippet]
+      else
+        []
+      end
+    end
+
+    def anonymous_user_abilities
+      [:read_user] unless restricted_public_level?
+    end
+
     def global_abilities(user)
       rules = []
       rules << :create_group if user.can_create_group
+      rules << :read_users_list
       rules
     end
 
@@ -114,19 +132,18 @@ class Ability
         # Push abilities on the users team role
         rules.push(*project_team_rules(project.team, user))
 
+        if project.owner == user ||
+          (project.group && project.group.has_owner?(user)) ||
+          user.admin?
+
+          rules.push(*project_owner_rules)
+        end
+
         if project.public? || (project.internal? && !user.external?)
           rules.push(*public_project_rules)
 
           # Allow to read builds for internal projects
           rules << :read_build if project.public_builds?
-        end
-
-        if project.owner == user || user.admin?
-          rules.push(*project_admin_rules)
-        end
-
-        if project.group && project.group.has_owner?(user)
-          rules.push(*project_admin_rules)
         end
 
         if project.archived?
@@ -154,7 +171,7 @@ class Ability
       @public_project_rules ||= project_guest_rules + [
         :download_code,
         :fork_project,
-        :read_commit_status,
+        :read_commit_status
       ]
     end
 
@@ -171,7 +188,8 @@ class Ability
         :read_note,
         :create_project,
         :create_issue,
-        :create_note
+        :create_note,
+        :upload_file
       ]
     end
 
@@ -228,14 +246,16 @@ class Ability
       ]
     end
 
-    def project_admin_rules
-      @project_admin_rules ||= project_master_rules + [
+    def project_owner_rules
+      @project_owner_rules ||= project_master_rules + [
         :change_namespace,
         :change_visibility_level,
         :rename_project,
         :remove_project,
         :archive_project,
-        :remove_fork_project
+        :remove_fork_project,
+        :destroy_merge_request,
+        :destroy_issue
       ]
     end
 
@@ -272,12 +292,9 @@ class Ability
 
     def group_abilities(user, group)
       rules = []
+      rules << :read_group if can_read_group?(user, group)
 
-      if user.admin? || group.users.include?(user) || ProjectsFinder.new.execute(user, group: group).any?
-        rules << :read_group
-      end
-
-      # Only group masters and group owners can create new projects in group
+      # Only group masters and group owners can create new projects
       if group.has_master?(user) || group.has_owner?(user) || user.admin?
         rules += [
           :create_projects,
@@ -290,11 +307,21 @@ class Ability
         rules += [
           :admin_group,
           :admin_namespace,
-          :admin_group_member
+          :admin_group_member,
+          :change_visibility_level
         ]
       end
 
       rules.flatten
+    end
+
+    def can_read_group?(user, group)
+      return true if user.admin?
+      return true if group.public?
+      return true if group.internal? && !user.external?
+      return true if group.users.include?(user)
+
+      GroupProjectsFinder.new(group).execute(user).any?
     end
 
     def namespace_abilities(user, namespace)
@@ -328,24 +355,22 @@ class Ability
       end
     end
 
-    [:note, :project_snippet].each do |name|
-      define_method "#{name}_abilities" do |user, subject|
-        rules = []
+    def note_abilities(user, note)
+      rules = []
 
-        if subject.author == user
-          rules += [
-            :"read_#{name}",
-            :"update_#{name}",
-            :"admin_#{name}"
-          ]
-        end
-
-        if subject.respond_to?(:project) && subject.project
-          rules += project_abilities(user, subject.project)
-        end
-
-        rules
+      if note.author == user
+        rules += [
+          :read_note,
+          :update_note,
+          :admin_note
+        ]
       end
+
+      if note.respond_to?(:project) && note.project
+        rules += project_abilities(user, note.project)
+      end
+
+      rules
     end
 
     def personal_snippet_abilities(user, snippet)
@@ -361,6 +386,24 @@ class Ability
 
       if snippet.public? || (snippet.internal? && !user.external?)
         rules << :read_personal_snippet
+      end
+
+      rules
+    end
+
+    def project_snippet_abilities(user, snippet)
+      rules = []
+
+      if snippet.author == user || user.admin?
+        rules += [
+          :read_project_snippet,
+          :update_project_snippet,
+          :admin_project_snippet
+        ]
+      end
+
+      if snippet.public? || (snippet.internal? && !user.external?) || (snippet.private? && snippet.project.team.member?(user))
+        rules << :read_project_snippet
       end
 
       rules
@@ -420,6 +463,10 @@ class Ability
       rules
     end
 
+    def user_abilities
+      [:read_user]
+    end
+
     def abilities
       @abilities ||= begin
         abilities = Six.new
@@ -433,6 +480,10 @@ class Ability
     end
 
     private
+
+    def restricted_public_level?
+      current_application_settings.restricted_visibility_levels.include?(Gitlab::VisibilityLevel::PUBLIC)
+    end
 
     def named_abilities(name)
       [

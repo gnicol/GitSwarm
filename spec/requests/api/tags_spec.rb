@@ -32,11 +32,30 @@ describe API::API, api: true  do
 
       it "should return an array of project tags with release info" do
         get api("/projects/#{project.id}/repository/tags", user)
+
         expect(response.status).to eq(200)
         expect(json_response).to be_an Array
         expect(json_response.first['name']).to eq(tag_name)
+        expect(json_response.first['message']).to eq('Version 1.1.0')
         expect(json_response.first['release']['description']).to eq(description)
       end
+    end
+  end
+
+  describe 'GET /projects/:id/repository/tags/:tag_name' do
+    let(:tag_name) { project.repository.tag_names.sort.reverse.first }
+
+    it 'returns a specific tag' do
+      get api("/projects/#{project.id}/repository/tags/#{tag_name}", user)
+
+      expect(response.status).to eq(200)
+      expect(json_response['name']).to eq(tag_name)
+    end
+
+    it 'returns 404 for an invalid tag name' do
+      get api("/projects/#{project.id}/repository/tags/foobar", user)
+
+      expect(response.status).to eq(404)
     end
   end
 

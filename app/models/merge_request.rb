@@ -27,9 +27,6 @@
 #  merge_commit_sha          :string
 #
 
-require Rails.root.join("app/models/commit")
-require Rails.root.join("lib/static_model")
-
 class MergeRequest < ActiveRecord::Base
   include InternalId
   include Issuable
@@ -128,14 +125,14 @@ class MergeRequest < ActiveRecord::Base
   validates :target_project, presence: true
   validates :target_branch, presence: true
   validates :merge_user, presence: true, if: :merge_when_build_succeeds?
-  validate :validate_branches
+  validate :validate_branches, unless: :allow_broken
   validate :validate_fork
 
-  scope :of_group, ->(group) { where("source_project_id in (:group_project_ids) OR target_project_id in (:group_project_ids)", group_project_ids: group.projects.select(:id).reorder(nil)) }
   scope :by_branch, ->(branch_name) { where("(source_branch LIKE :branch) OR (target_branch LIKE :branch)", branch: branch_name) }
   scope :cared, ->(user) { where('assignee_id = :user OR author_id = :user', user: user.id) }
   scope :by_milestone, ->(milestone) { where(milestone_id: milestone) }
   scope :of_projects, ->(ids) { where(target_project_id: ids) }
+  scope :from_project, ->(project) { where(source_project_id: project.id) }
   scope :merged, -> { with_state(:merged) }
   scope :closed_and_merged, -> { with_states(:closed, :merged) }
 
@@ -150,14 +147,14 @@ class MergeRequest < ActiveRecord::Base
   #
   # This pattern supports cross-project references.
   def self.reference_pattern
-    %r{
+    @reference_pattern ||= %r{
       (#{Project.reference_pattern})?
       #{Regexp.escape(reference_prefix)}(?<merge_request>\d+)
     }x
   end
 
   def self.link_reference_pattern
-    super("merge_requests", /(?<merge_request>\d+)/)
+    @link_reference_pattern ||= super("merge_requests", /(?<merge_request>\d+)/)
   end
 
   # Returns all the merge requests from an ActiveRecord:Relation.
@@ -218,7 +215,7 @@ class MergeRequest < ActiveRecord::Base
     end
 
     if opened? || reopened?
-      similar_mrs = self.target_project.merge_requests.where(source_branch: source_branch, target_branch: target_branch, source_project_id: source_project.id).opened
+      similar_mrs = self.target_project.merge_requests.where(source_branch: source_branch, target_branch: target_branch, source_project_id: source_project.try(:id)).opened
       similar_mrs = similar_mrs.where('id not in (?)', self.id) if self.id
       if similar_mrs.any?
         errors.add :validate_branches,
@@ -277,8 +274,14 @@ class MergeRequest < ActiveRecord::Base
     self.target_project.events.where(target_id: self.id, target_type: "MergeRequest", action: Event::CLOSED).last
   end
 
+  WIP_REGEX = /\A\s*(\[WIP\]\s*|WIP:\s*|WIP\s+)+\s*/i.freeze
+
   def work_in_progress?
-    !!(title =~ /\A\[?WIP(\]|:| )/i)
+    !!(title =~ WIP_REGEX)
+  end
+
+  def wipless_title
+    self.title.sub(WIP_REGEX, "")
   end
 
   def mergeable?
@@ -326,20 +329,20 @@ class MergeRequest < ActiveRecord::Base
   # Returns the raw diff for this merge request
   #
   # see "git diff"
-  def to_diff(current_user)
-    target_project.repository.diff_text(target_branch, source_sha)
+  def to_diff
+    target_project.repository.diff_text(diff_base_commit.sha, source_sha)
   end
 
   # Returns the commit as a series of email patches.
   #
   # see "git format-patch"
-  def to_patch(current_user)
-    target_project.repository.format_patch(target_branch, source_sha)
+  def to_patch
+    target_project.repository.format_patch(diff_base_commit.sha, source_sha)
   end
 
   def hook_attrs
     attrs = {
-      source: source_project.hook_attrs,
+      source: source_project.try(:hook_attrs),
       target: target_project.hook_attrs,
       last_commit: nil,
       work_in_progress: work_in_progress?
@@ -583,7 +586,7 @@ class MergeRequest < ActiveRecord::Base
   end
 
   def ci_commit
-    @ci_commit ||= source_project.ci_commit(last_commit.id) if last_commit && source_project
+    @ci_commit ||= source_project.ci_commit(last_commit.id, source_branch) if last_commit && source_project
   end
 
   def diff_refs
@@ -598,5 +601,9 @@ class MergeRequest < ActiveRecord::Base
 
   def can_be_reverted?(current_user = nil)
     merge_commit && !merge_commit.has_been_reverted?(current_user, self)
+  end
+
+  def can_be_cherry_picked?
+    merge_commit
   end
 end

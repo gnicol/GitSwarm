@@ -9,10 +9,8 @@
 %hr.clearfix
 
 = form_for [@project.namespace.becomes(Namespace), @project, @hook], as: :hook, url: namespace_project_hooks_path(@project.namespace, @project), html: { class: 'form-horizontal' } do |f|
-  -if @hook.errors.any?
-    .alert.alert-danger
-      - @hook.errors.full_messages.each do |msg|
-        %p= msg
+  = form_errors(@hook)
+
   .form-group
     = f.label :url, "URL", class: 'control-label'
     .col-sm-10
@@ -76,16 +74,15 @@
   .panel.panel-default
     .panel-heading
       Webhooks (#{@hooks.count})
-    %ul.well-list
+    %ul.content-list
       - @hooks.each do |hook|
         %li
-          .pull-right
+          .controls
             = link_to 'Test Hook', test_namespace_project_hook_path(@project.namespace, @project, hook), class: "btn btn-sm btn-grouped"
             = link_to 'Remove', namespace_project_hook_path(@project.namespace, @project, hook), data: { confirm: 'Are you sure?'}, method: :delete, class: "btn btn-remove btn-sm btn-grouped"
-          .clearfix
-            %span.monospace= hook.url
-          %p
+          .monospace= hook.url
+          %div
             - %w(push_events tag_push_events issues_events note_events merge_requests_events build_events).each do |trigger|
               - if hook.send(trigger)
                 %span.label.label-gray= trigger.titleize
-            SSL Verification: #{hook.enable_ssl_verification ? "enabled" : "disabled"}
+            %span.label.label-gray SSL Verification: #{hook.enable_ssl_verification ? "enabled" : "disabled"}

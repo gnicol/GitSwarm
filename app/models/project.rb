@@ -40,7 +40,6 @@
 #
 
 require 'carrierwave/orm/activerecord'
-require 'file_size_validator'
 
 class Project < ActiveRecord::Base
   include Gitlab::ConfigHelper
@@ -73,7 +72,7 @@ class Project < ActiveRecord::Base
     update_column(:last_activity_at, self.created_at)
   end
 
-  # update visibility_levet of forks
+  # update visibility_level of forks
   after_update :update_forks_visibility_level
   def update_forks_visibility_level
     return unless visibility_level < visibility_level_was
@@ -154,6 +153,7 @@ class Project < ActiveRecord::Base
   has_many :project_group_links, dependent: :destroy
   has_many :invited_groups, through: :project_group_links, source: :group
   has_many :todos, dependent: :destroy
+  has_many :notification_settings, dependent: :destroy, as: :source
 
   has_one :import_data, dependent: :destroy, class_name: "ProjectImportData"
 
@@ -197,6 +197,8 @@ class Project < ActiveRecord::Base
   validate :avatar_type,
     if: ->(project) { project.avatar.present? && project.avatar_changed? }
   validates :avatar, file_size: { maximum: 200.kilobytes.to_i }
+  validate :visibility_level_allowed_by_group
+  validate :visibility_level_allowed_as_fork
 
   add_authentication_token_field :runners_token
   before_save :ensure_runners_token
@@ -204,6 +206,8 @@ class Project < ActiveRecord::Base
   mount_uploader :avatar, AvatarUploader
 
   # Scopes
+  default_scope { where(pending_delete: false) }
+
   scope :sorted_by_activity, -> { reorder(last_activity_at: :desc) }
   scope :sorted_by_stars, -> { reorder('projects.star_count DESC') }
   scope :sorted_by_names, -> { joins(:namespace).reorder('namespaces.name ASC, projects.name ASC') }
@@ -215,8 +219,6 @@ class Project < ActiveRecord::Base
   scope :in_group_namespace, -> { joins(:group) }
   scope :personal, ->(user) { where(namespace_id: user.namespace_id) }
   scope :joined, ->(user) { where('namespace_id != ?', user.namespace_id) }
-  scope :public_only, -> { where(visibility_level: Project::PUBLIC) }
-  scope :public_and_internal_only, -> { where(visibility_level: Project.public_and_internal_levels) }
   scope :non_archived, -> { where(archived: false) }
   scope :for_milestones, ->(ids) { joins(:milestones).where('milestones.id' => ids).distinct }
 
@@ -246,10 +248,6 @@ class Project < ActiveRecord::Base
   end
 
   class << self
-    def public_and_internal_levels
-      [Project::PUBLIC, Project::INTERNAL]
-    end
-
     def abandoned
       where('projects.last_activity_at < ?', 6.months.ago)
     end
@@ -308,7 +306,7 @@ class Project < ActiveRecord::Base
     end
 
     def find_with_namespace(id)
-      namespace_path, project_path = id.split('/')
+      namespace_path, project_path = id.split('/', 2)
 
       return nil if !namespace_path || !project_path
 
@@ -390,9 +388,15 @@ class Project < ActiveRecord::Base
 
   def add_import_job
     if forked?
-      RepositoryForkWorker.perform_async(self.id, forked_from_project.path_with_namespace, self.namespace.path)
+      job_id = RepositoryForkWorker.perform_async(self.id, forked_from_project.path_with_namespace, self.namespace.path)
     else
-      RepositoryImportWorker.perform_async(self.id)
+      job_id = RepositoryImportWorker.perform_async(self.id)
+    end
+
+    if job_id
+      Rails.logger.info "Import job started for #{path_with_namespace} with job ID #{job_id}"
+    else
+      Rails.logger.error "Import job failed to start for #{path_with_namespace}"
     end
   end
 
@@ -402,6 +406,35 @@ class Project < ActiveRecord::Base
     ProjectCacheWorker.perform_async(self.id)
 
     self.import_data.destroy if self.import_data
+  end
+
+  def import_url=(value)
+    import_url = Gitlab::ImportUrl.new(value)
+    create_or_update_import_data(credentials: import_url.credentials)
+    super(import_url.sanitized_url)
+  end
+
+  def import_url
+    if import_data && super
+      import_url = Gitlab::ImportUrl.new(super, credentials: import_data.credentials)
+      import_url.full_url
+    else
+      super
+    end
+  end
+
+  def create_or_update_import_data(data: nil, credentials: nil)
+    project_import_data = import_data || build_import_data
+    if data
+      project_import_data.data ||= {}
+      project_import_data.data = project_import_data.data.merge(data)
+    end
+    if credentials
+      project_import_data.credentials ||= {}
+      project_import_data.credentials = project_import_data.credentials.merge(credentials)
+    end
+
+    project_import_data.save
   end
 
   def import?
@@ -435,6 +468,7 @@ class Project < ActiveRecord::Base
   def safe_import_url
     result = URI.parse(self.import_url)
     result.password = '*****' unless result.password.nil?
+    result.user = '*****' unless result.user.nil? || result.user == "git" #tokens or other data may be saved as user
     result.to_s
   rescue
     self.import_url
@@ -442,10 +476,25 @@ class Project < ActiveRecord::Base
 
   def check_limit
     unless creator.can_create_project? or namespace.kind == 'group'
-      errors[:limit_reached] << ("Your project limit is #{creator.projects_limit} projects! Please contact your administrator to increase it")
+      self.errors.add(:limit_reached, "Your project limit is #{creator.projects_limit} projects! Please contact your administrator to increase it")
     end
   rescue
-    errors[:base] << ("Can't check your ability to create project")
+    self.errors.add(:base, "Can't check your ability to create project")
+  end
+
+  def visibility_level_allowed_by_group
+    return if visibility_level_allowed_by_group?
+
+    level_name = Gitlab::VisibilityLevel.level_name(self.visibility_level).downcase
+    group_level_name = Gitlab::VisibilityLevel.level_name(self.group.visibility_level).downcase
+    self.errors.add(:visibility_level, "#{level_name} is not allowed in a #{group_level_name} group.")
+  end
+
+  def visibility_level_allowed_as_fork
+    return if visibility_level_allowed_as_fork?
+
+    level_name = Gitlab::VisibilityLevel.level_name(self.visibility_level).downcase
+    self.errors.add(:visibility_level, "#{level_name} is not allowed since the fork source project has lower visibility.")
   end
 
   def to_param
@@ -457,7 +506,7 @@ class Project < ActiveRecord::Base
   end
 
   def web_url
-    Gitlab::Application.routes.url_helpers.namespace_project_url(self.namespace, self)
+    Gitlab::Routing.url_helpers.namespace_project_url(self.namespace, self)
   end
 
   def web_url_without_protocol
@@ -578,7 +627,7 @@ class Project < ActiveRecord::Base
     if avatar.present?
       [gitlab_config.url, avatar.url].join
     elsif avatar_in_git
-      Gitlab::Application.routes.url_helpers.namespace_project_avatar_url(namespace, self)
+      Gitlab::Routing.url_helpers.namespace_project_avatar_url(namespace, self)
     end
   end
 
@@ -771,18 +820,16 @@ class Project < ActiveRecord::Base
     wiki = Repository.new("#{old_path}.wiki", self)
 
     if repo.exists?
-      repo.expire_cache
-      repo.expire_emptiness_caches
+      repo.before_delete
     end
 
     if wiki.exists?
-      wiki.expire_cache
-      wiki.expire_emptiness_caches
+      wiki.before_delete
     end
   end
 
-  def hook_attrs
-    {
+  def hook_attrs(backward: true)
+    attrs = {
       name: name,
       description: description,
       web_url: web_url,
@@ -793,12 +840,19 @@ class Project < ActiveRecord::Base
       visibility_level: visibility_level,
       path_with_namespace: path_with_namespace,
       default_branch: default_branch,
-      # Backward compatibility
-      homepage: web_url,
-      url: url_to_repo,
-      ssh_url: ssh_url_to_repo,
-      http_url: http_url_to_repo
     }
+
+    # Backward compatibility
+    if backward
+      attrs.merge!({
+                    homepage: web_url,
+                    url: url_to_repo,
+                    ssh_url: ssh_url_to_repo,
+                    http_url: http_url_to_repo
+                  })
+    end
+
+    attrs
   end
 
   # Reset events cache related to this project
@@ -844,7 +898,9 @@ class Project < ActiveRecord::Base
 
   def change_head(branch)
     repository.before_change_head
-    gitlab_shell.update_repository_head(self.path_with_namespace, branch)
+    repository.rugged.references.create('HEAD',
+                                        "refs/heads/#{branch}",
+                                        force: true)
     reload_default_branch
   end
 
@@ -876,6 +932,7 @@ class Project < ActiveRecord::Base
     # Forked import is handled asynchronously
     unless forked?
       if gitlab_shell.add_repository(path_with_namespace)
+        repository.after_create
         true
       else
         errors.add(:base, 'Failed to create repository via gitlab-shell')
@@ -904,26 +961,16 @@ class Project < ActiveRecord::Base
     !namespace.share_with_group_lock
   end
 
-  def ci_commit(sha)
-    ci_commits.find_by(sha: sha)
+  def ci_commit(sha, ref)
+    ci_commits.order(id: :desc).find_by(sha: sha, ref: ref)
   end
 
-  def ensure_ci_commit(sha)
-    ci_commit(sha) || ci_commits.create(sha: sha)
+  def ensure_ci_commit(sha, ref)
+    ci_commit(sha, ref) || ci_commits.create(sha: sha, ref: ref)
   end
 
   def enable_ci
     self.builds_enabled = true
-  end
-
-  def unlink_fork
-    if forked?
-      forked_from_project.lfs_objects.find_each do |lfs_object|
-        lfs_object.projects << self
-      end
-
-      forked_project_link.destroy
-    end
   end
 
   def any_runners?(&block)
@@ -960,9 +1007,25 @@ class Project < ActiveRecord::Base
     issues.opened.count
   end
 
-  def visibility_level_allowed?(level)
+  def visibility_level_allowed_as_fork?(level = self.visibility_level)
     return true unless forked?
-    Gitlab::VisibilityLevel.allowed_fork_levels(forked_from_project.visibility_level).include?(level.to_i)
+
+    # self.forked_from_project will be nil before the project is saved, so
+    # we need to go through the relation
+    original_project = forked_project_link.forked_from_project
+    return true unless original_project
+
+    level <= original_project.visibility_level
+  end
+
+  def visibility_level_allowed_by_group?(level = self.visibility_level)
+    return true unless group
+
+    level <= group.visibility_level
+  end
+
+  def visibility_level_allowed?(level = self.visibility_level)
+    visibility_level_allowed_as_fork?(level) && visibility_level_allowed_by_group?(level)
   end
 
   def runners_token

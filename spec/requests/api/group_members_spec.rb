@@ -11,7 +11,7 @@ describe API::API, api: true  do
   let(:stranger) { create(:user) }
 
   let!(:group_with_members) do
-    group = create(:group)
+    group = create(:group, :private)
     group.add_users([reporter.id], GroupMember::REPORTER)
     group.add_users([developer.id], GroupMember::DEVELOPER)
     group.add_users([master.id], GroupMember::MASTER)
@@ -42,9 +42,10 @@ describe API::API, api: true  do
         end
       end
 
-      it "users not part of the group should get access error" do
+      it 'users not part of the group should get access error' do
         get api("/groups/#{group_with_members.id}/members", stranger)
-        expect(response.status).to eq(403)
+
+        expect(response.status).to eq(404)
       end
     end
   end
@@ -165,12 +166,13 @@ describe API::API, api: true  do
     end
   end
 
-  describe "DELETE /groups/:id/members/:user_id" do
-    context "when not a member of the group" do
+  describe 'DELETE /groups/:id/members/:user_id' do
+    context 'when not a member of the group' do
       it "should not delete guest's membership of group_with_members" do
         random_user = create(:user)
         delete api("/groups/#{group_with_members.id}/members/#{owner.id}", random_user)
-        expect(response.status).to eq(403)
+
+        expect(response.status).to eq(404)
       end
     end
 

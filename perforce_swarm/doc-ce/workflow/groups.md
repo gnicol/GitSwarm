@@ -1,16 +1,16 @@
-# GitSwarm Groups
+# $GitSwarm$ Groups
 
-GitSwarm groups allow you to group projects into directories and give users
+$GitSwarm$ groups allow you to group projects into directories and give users
 to several projects at once.
 
-When you create a new project in GitSwarm, the default namespace for the
-project is the personal namespace associated with your GitSwarm user. In
+When you create a new project in $GitSwarm$, the default namespace for the
+project is the personal namespace associated with your $GitSwarm$ user. In
 this document we will see how to create groups, put projects in groups and
 manage who can access the projects in a group.
 
 ## Creating groups
 
-You can create a group by going to the 'Groups' tab of the GitSwarm
+You can create a group by going to the 'Groups' tab of the $GitSwarm$
 dashboard and clicking the 'New group' button.
 
 ![Click the 'New group' button in the 'Groups' tab](groups/new_group_button.png)
@@ -37,7 +37,7 @@ groups you manage as the new namespace for the group.
 
 ![Transfer a project to a new namespace](groups/transfer_project.png)
 
-GitSwarm administrators can use the admin interface to move any project to
+$GitSwarm$ administrators can use the admin interface to move any project to
 any namespace if needed.
 
 ## Adding users to a group
@@ -58,22 +58,22 @@ Now, because Joan Funk is a 'Developer' member of the 'Open Source' group,
 she automatically gets 'Developer' access to all projects in the 'Open
 Source' group.
 
-![Joan Funk has 'Developer' access to GitSwarm](groups/project_members_via_group.png)
+![Joan Funk has 'Developer' access to $GitSwarm$](groups/project_members_via_group.png)
 
 If necessary, you can increase the access level of an individual user for a
 specific project, by adding them as a Member to the project.
 
-![Joan Funk effectively has 'Master' access to GitSwarm now](groups/override_access_level.png)
+![Joan Funk effectively has 'Master' access to $GitSwarm$ now](groups/override_access_level.png)
 
 ## Managing group memberships via LDAP
 
-In GitSwarm Enterprise Edition, it is possible to manage GitSwarm group memberships using LDAP groups.
+In $GitSwarm$ Enterprise Edition, it is possible to manage $GitSwarm$ group memberships using LDAP groups.
 
 ## Allowing only admins to create groups
 
-By default, any GitSwarm user can create new groups. This ability can be
+By default, any $GitSwarm$ user can create new groups. This ability can be
 disabled for individual users from the admin panel. It is also possible to
-configure GitSwarm so that new users default to not being able to create
+configure $GitSwarm$ so that new users default to not being able to create
 groups:
 
 ```ruby

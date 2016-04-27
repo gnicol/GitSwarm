@@ -1,6 +1,6 @@
 # Auto provision
 
-By default GitSwarm will automatically provision a Helix Server and connected Helix Git Fusion for you.
+By default $GitSwarm$ will automatically provision a Helix Server and connected Helix Git Fusion for you.
 
 If you wish to use an existing Helix Git Fusion instance you can comment
 out the 'local' instance and add new config entries:
@@ -13,7 +13,7 @@ out the 'local' instance and add new config entries:
 **[Instructions on configuring the connection to external Helix Git Fusion
 can be found here](../workflow/helix_mirroring/configuration.md)**.
 
-When GitSwarm is left in its `local` auto-provision mode, the Helix Server
+When $GitSwarm$ is left in its `local` auto-provision mode, the Helix Server
 is configured with the following configuration:
 
 - Port
@@ -29,7 +29,7 @@ is configured with the following configuration:
 - p4dctl is used to interact with the server and is configured in
   `/etc/perforce/p4dctl.conf.d/gitswarm.conf`
 
-When the `root` user password is updated from the GitSwarm UI the password
+When the `root` user password is updated from the $GitSwarm$ UI the password
 change will also take effect for the `root` Perforce user.
 
 If `:auto_provision` is not specified in `/etc/gitswarm/gitswarm.rb` when

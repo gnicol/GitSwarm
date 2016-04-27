@@ -8,7 +8,7 @@
 - CentOS 6.6 or higher, or 7.0 or higher
 - Red Hat Enterprise Linux (RHEL) 6.6 or higher, or 7.0 or higher
 
-> Note: GitSwarm is only available for 64-bit systems.
+> Note: $GitSwarm$ is only available for 64-bit systems.
 
 See the [installation instructions](README.md).
 
@@ -22,14 +22,14 @@ See the [installation instructions](README.md).
 
 ### Non-Unix operating systems such as Windows
 
-GitSwarm is developed for Unix operating systems. GitSwarm does **not** run
+$GitSwarm$ is developed for Unix operating systems. $GitSwarm$ does **not** run
 on Windows and we have no plans of supporting it in the near future.
-Please consider using a virtual machine to run GitSwarm.
+Please consider using a virtual machine to run $GitSwarm$.
 
 ## Ruby versions
 
-GitSwarm requires Ruby (MRI) 2.1 You will have to use the standard MRI
-implementation of Ruby. We love JRuby and Rubinius but GitSwarm needs
+$GitSwarm$ requires Ruby (MRI) 2.1 You will have to use the standard MRI
+implementation of Ruby. We love JRuby and Rubinius but $GitSwarm$ needs
 several Gems that have native extensions.
 
 ## Hardware requirements
@@ -37,7 +37,7 @@ several Gems that have native extensions.
 ### Storage
 
 The necessary hard drive space largely depends on the size of the repos you
-want to store in GitSwarm but as a *rule of thumb* you should have at least
+want to store in $GitSwarm$ but as a *rule of thumb* you should have at least
 twice as much free space as all your repos combined take up.
 
 Note that if you are mirroring projects to Helix Server using the [locally
@@ -53,14 +53,14 @@ network file system (NFS) protocol. This volume might be located on a file
 server, a network attached storage (NAS) device, a storage area network
 (SAN) or on an Amazon Web Services (AWS) Elastic Block Store (EBS) volume.
 
-If you have enough RAM memory and a recent CPU the speed of GitSwarm is
+If you have enough RAM memory and a recent CPU the speed of $GitSwarm$ is
 mainly limited by hard drive seek times. Having a fast drive (7200 RPM and
 up) or a solid state drive (SSD) will improve the responsiveness of
-GitSwarm.
+$GitSwarm$.
 
 ### CPU
 
-For production use, it is recommended GitSwarm be run on a dedicated server.
+For production use, it is recommended $GitSwarm$ be run on a dedicated server.
 The Helix Server and Helix Git Fusion products should ideally be installed
 on their own independent machines. In that configuration:
 
@@ -74,17 +74,17 @@ on their own independent machines. In that configuration:
 - 32 cores supports up to 20,000 users
 - 64 cores supports up to 40,000 users
 
-By default, GitSwarm will attempt to automatically provision an instance
+By default, $GitSwarm$ will attempt to automatically provision an instance
 of Helix Server and Helix Git Fusion all on the local system. When running
 all components on the same machine, we suggest a minimum of 4 cores.
 
 ### Memory
 
 You need at least 2GB of addressable memory (RAM + swap) to install and use
-GitSwarm! With less memory GitSwarm will give strange errors during the
+$GitSwarm$! With less memory, $GitSwarm$ will give strange errors during the
 reconfigure run and 500 errors during usage.
 
-For production use, it is recommended GitSwarm be run on a dedicated server.
+For production use, it is recommended $GitSwarm$ be run on a dedicated server.
 The Helix Server and Helix Git Fusion products should ideally be installed
 on their own independent machines. In that configuration:
 

@@ -1,6 +1,6 @@
 ## Log system
 
-GitSwarm has an advanced log system so everything is logging and you can
+$GitSwarm$ has an advanced log system so everything is logging and you can
 analyze your instance using various system log files. System log files are
 typically plain text in a standard log file format. This guide talks about
 how to read and use these system log files.
@@ -10,10 +10,10 @@ how to read and use these system log files.
 This file lives in `/var/log/gitswarm/gitlab-rails/production.log`.
 
 This file contains information about all performed requests. You can see
-url and type of request, IP address and what exactly parts of code were
+URL and type of request, IP address and what exactly parts of code were
 involved to service this particular request. Also you can see all SQL
 request that have been performed and how much time it took. This task is
-more useful for GitSwarm contributors and developers. Use part of this log
+more useful for $GitSwarm$ contributors and developers. Use part of this log
 file when you are going to report bug.
 
 ```
@@ -23,7 +23,7 @@ Processing by Projects::TreeController#show as HTML
 
   ... [CUT OUT]
 
-  amespaces"."created_at" DESC, "namespaces"."id" DESC LIMIT 1[0m  [["id", 26]]
+  namespaces"."created_at" DESC, "namespaces"."id" DESC LIMIT 1[0m  [["id", 26]]
   [1m[35mCACHE (0.0ms)[0m  SELECT  "members".* FROM "members"  WHERE "members"."source_type" = 'Project' AND "members"."type" IN ('ProjectMember') AND "members"."source_id" = $1 AND "members"."source_type" = $2 AND "members"."user_id" = 1  ORDER BY "members"."created_at" DESC, "members"."id" DESC LIMIT 1  [["source_id", 18], ["source_type", "Project"]]
   [1m[36mCACHE (0.0ms)[0m  [1mSELECT  "members".* FROM "members"  WHERE "members"."source_type" = 'Project' AND "members".
   [1m[36m (1.4ms)[0m  [1mSELECT COUNT(*) FROM "merge_requests"  WHERE "merge_requests"."target_project_id" = $1 AND ("merge_requests"."state" IN ('opened','reopened'))[0m  [["target_project_id", 18]]
@@ -58,8 +58,11 @@ October 07, 2014 11:25: Project "project133" was removed
 
 This file lives in `/var/log/gitswarm/gitlab-rails/githost.log`.
 
-This log file contains all failed requests from GitSwarm to git repository.
-In majority of cases, this file is only useful for developers.
+$GitSwarm$ has to interact with git repositories. In rare cases,
+something can go wrong; refer to this log file to know what exactly
+happened. This log file contains all failed requests from $GitSwarm$ to
+git repository. In majority of cases this file will be useful for
+developers only.
 
 ```
 December 03, 2014 13:20 -> ERROR -> Command failed [1]: /usr/bin/git --git-dir=/Users/vsizov/gitlab-development-kit/gitlab/tmp/tests/gitlab-satellites/group184/gitlabhq/.git --work-tree=/Users/vsizov/gitlab-development-kit/gitlab/tmp/tests/gitlab-satellites/group184/gitlabhq merge --no-ff -mMerge branch 'feature_conflict' into 'feature' source/feature_conflict
@@ -71,8 +74,9 @@ error: failed to push some refs to '/Users/vsizov/gitlab-development-kit/reposit
 
 This file lives in `/var/log/gitswarm/gitlab-rails/sidekiq.log`.
 
-GitSwarm uses background jobs for processing tasks which can take a long
-time. All information about processing these jobs is included in this file.
+$GitSwarm$ uses background jobs for processing tasks which can take a long
+time. All information about processing these jobs are recorded to this
+file.
 
 ```
 2014-06-10T07:55:20Z 2037 TID-tm504 ERROR: /opt/bitnami/apps/discourse/htdocs/vendor/bundle/ruby/1.9.1/gems/redis-3.0.7/lib/redis/client.rb:228:in `read'
@@ -83,7 +87,7 @@ time. All information about processing these jobs is included in this file.
 
 This file lives in `/var/log/gitswarm/gitlab-shell/gitlab-shell.log`.
 
-gitlab-shell is used by GitSwarm for executing git commands and provides
+gitlab-shell is used by $GitSwarm$ for executing git commands and provides
 SSH access to git repositories.
 
 ```
@@ -96,7 +100,7 @@ I, [2015-02-13T06:17:00.679433 #9291]  INFO -- : Moving existing hooks directory
 This file lives in `/var/log/gitswarm/unicorn/unicorn_stderr.log`.
 
 Unicorn is a high-performance forking Web server which is used for serving
-the GitSwarm application. You can look at this log, for example, if your
+the $GitSwarm$ application. You can look at this log, for example, if your
 application does not respond. This log contains all information about the
 state of unicorn processes at any given time.
 

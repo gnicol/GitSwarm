@@ -5,11 +5,11 @@
 
 ## Configuration
 
-Before you can use Helix Mirroring, GitSwarm needs some configuration
+Before you can use Helix Mirroring, $GitSwarm$ needs some configuration
 that describes where the Git Fusion service(s) exist.
 
-For Helix Mirroring, GitSwarm needs to be configured to connect to one or
-more Git Fusion servers. GitSwarm always connects to a Git Fusion server as
+For Helix Mirroring, $GitSwarm$ needs to be configured to connect to one or
+more Git Fusion servers. $GitSwarm$ always connects to a Git Fusion server as
 a specific user, `gitswarm` if you don't specify otherwise. The "gitswarm"
 user must exist in the Helix Versioning Engine as a standard user account
 (not an `operator` or `service` user). The "gitswarm" user does not need
@@ -18,7 +18,7 @@ read/write access to the `//.git-fusion` depot.
 
 ### Global Configuration
 
-GitSwarm supports a special server entry called `global`, which contains
+$GitSwarm$ supports a special server entry called `global`, which contains
 defaults for usernames, passwords, git configuration parameters, and
 convention-based repository settings.
 
@@ -110,9 +110,9 @@ Git Fusion server remains as `gitswarm`.
     > **Note:** `reconfigure` also ensures that the "gitswarm" user has a
     > public SSH key.
 
-To permit GitSwarm to connect to Git Fusion via SSH, follow these steps:
+To permit $GitSwarm$ to connect to Git Fusion via SSH, follow these steps:
 
-1.  **Get a copy of the `git` user's public SSH key from the GitSwarm host
+1.  **Get a copy of the `git` user's public SSH key from the $GitSwarm$ host
     machine.**
 
     ```bash
@@ -134,12 +134,12 @@ To permit GitSwarm to connect to Git Fusion via SSH, follow these steps:
 
 ### Helix Mirroring Configuration
 
-In order for GitSwarm to automatically create new Git Fusion repositories
-when adding projects, GitSwarm needs to connect to the Helix Versioning
-Engine (P4D) directly. GitSwarm also needs to be configured with a path
+In order for $GitSwarm$ to automatically create new Git Fusion repositories
+when adding projects, $GitSwarm$ needs to connect to the Helix Versioning
+Engine (P4D) directly. $GitSwarm$ also needs to be configured with a path
 where it can place the repository files.
 
-At a minimum, GitSwarm needs to be configured with a user id and password
+At a minimum, $GitSwarm$ needs to be configured with a user id and password
 for the connection. When using HTTP(S), this information should already be
 present. When using SSH, you may need to add the settings:
 
@@ -150,7 +150,7 @@ gitswarm['git-fusion']['my_entry']['user']     = '<perforce-user-id>'
 gitswarm['git-fusion']['my_entry']['password'] = '<password for "gitswarm" user>'
 ```
 
-> **Note:** If no `port` is specified under the `perforce` key, GitSwarm
+> **Note:** If no `port` is specified under the `perforce` key, $GitSwarm$
 > connects to the given Git Fusion server and uses the same port as Git
 > Fusion (the `my_entry` Git Fusion server in the above example).
 
@@ -161,7 +161,7 @@ the appropriate value manually by setting:
 gitswarm['git-fusion']['my_entry']['perforce']['port']  = 'ssl:my-fusion:1666'
 ```
 
-> **Note:** GitSwarm uses the following priority for determining
+> **Note:** $GitSwarm$ uses the following priority for determining
 > user/password to connect to Perforce:
 >
 > 1. Entry-specific user/password keys
@@ -179,9 +179,9 @@ gitswarm['git-fusion']['my_entry']['perforce']['port']  = 'ssl:my-fusion:1666'
 
 #### Convention-based mirroring configuration
 
-GitSwarm generates a Git Fusion configuration and unique depot path for
+$GitSwarm$ generates a Git Fusion configuration and unique depot path for
 each new project that has Helix Mirroring enabled. It constructs these by
-substituting the GitSwarm project's namespace and project path into a
+substituting the $GitSwarm$ project's namespace and project path into a
 template that is specified in the configuration.
 
 ```ruby
@@ -190,17 +190,17 @@ gitswarm['git-fusion']['global']['auto_create']['repo_name_template'] = 'gitswar
 ```
 
 > **Note:** `{namespace}` and `{project-path}` are substituted for the
-> GitSwarm project's namespace and project path (name) when the project is
+> $GitSwarm$ project's namespace and project path (name) when the project is
 > created.
 
 > **Note:** The depot specified in the `path_template` ('gitswarm' in the
 > above example) must exist *prior* to attempting to use the
-> convention-based repository feature. GitSwarm does *not* create this
+> convention-based repository feature. $GitSwarm$ does *not* create this
 > depot for you.
 
 #### Sample Configuration
 
-The following is a sample configuration for GitSwarm, including Helix
+The following is a sample configuration for $GitSwarm$, including Helix
 Versioning Engine integration, and convention-based mirroring settings:
 
 ```ruby

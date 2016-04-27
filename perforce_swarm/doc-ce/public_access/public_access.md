@@ -1,10 +1,10 @@
 # Public access
 
-GitSwarm allows you to change your project's visibility in order to be
+$GitSwarm$ allows you to change your project's visibility in order to be
 accessed **publicly** or **internally**.
 
 Projects with either of these visibility levels are listed in the
-public access directory (`/public` under your GitSwarm instance).
+public access directory (`/public` under your $GitSwarm$ instance).
 
 Internal projects will only be available to authenticated users.
 

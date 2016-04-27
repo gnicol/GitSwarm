@@ -1,9 +1,9 @@
 # OmniAuth
 
-GitSwarm leverages OmniAuth to allow users to sign in using Twitter,
+$GitSwarm$ leverages OmniAuth to allow users to sign in using Twitter,
 GitHub, and other popular services.
 
-Configuring OmniAuth does not prevent standard GitSwarm authentication or
+Configuring OmniAuth does not prevent standard $GitSwarm$ authentication or
 LDAP (if configured) from continuing to work. Users can choose to sign in
 using any of the configured mechanisms.
 
@@ -27,23 +27,23 @@ settings that are in common for all providers that we need to consider.
   before they are able to sign in.
 - **Note:** If you set `allow_single_sign_on` to `true` and
   `block_auto_created_users` to `false` please be aware that any user on
-  the Internet could successfully sign in to your GitSwarm without
+  the Internet could successfully sign in to your $GitSwarm$ without
   administrative approval.
 
 If you want to change these settings:
 
 1.  Open the configuration file:
 
-    ```sh
-sudo editor /etc/gitswarm/gitswarm.rb
+    ```bash
+    sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
 1.  Edit these lines:
 
-    ```
-gitlab_rails['omniauth_enabled'] = true
-gitlab_rails['omniauth_allow_single_sign_on'] = false
-gitlab_rails['omniauth_block_auto_created_users'] = true
+    ```ruby
+    gitlab_rails['omniauth_enabled'] = true
+    gitlab_rails['omniauth_allow_single_sign_on'] = false
+    gitlab_rails['omniauth_block_auto_created_users'] = true
     ```
 
 Now we can choose one or more of the Supported Providers below to continue
@@ -76,14 +76,14 @@ enable an OmniAuth provider for an existing user.
 1. Under "Connected Accounts" select the desired OmniAuth provider, such as
    Twitter.
 1. The user is redirected to the provider. Once the user has authorized
-   GitSwarm, they are redirected back to GitSwarm.
+   $GitSwarm$, they are redirected back to $GitSwarm$.
 
 The chosen OmniAuth provider is now active and can be used to sign in to
-GitSwarm from then on.
+$GitSwarm$ from then on.
 
 ## Using Custom Omniauth Providers
 
-GitSwarm uses [Omniauth](http://www.omniauth.org/) for authentication and
+$GitSwarm$ uses [Omniauth](http://www.omniauth.org/) for authentication and
 already ships with a few providers preinstalled (e.g. LDAP, GitHub,
 Twitter). But sometimes that is not enough and you need to integrate with
 other authentication solutions. For these cases you can use the Omniauth
@@ -94,39 +94,39 @@ provider.
 These steps are fairly general and you must figure out the exact details
 from the Omniauth provider's documentation.
 
-1.  Stop GitSwarm:
+1.  Stop $GitSwarm$:
 
     ```bash
-sudo service gitswarm stop
+    sudo service gitswarm stop
     ```
 
 1.  Add the gem to your
     [Gemfile](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/Gemfile):
 
     ```bash
-gem "omniauth-your-auth-provider"
+    gem "omniauth-your-auth-provider"
     ```
 
 1.  Install the new Omniauth provider gem by running the following command:
 
     ```bash
-sudo -u git -H bundle install --without development test mysql --path vendor/bundle --no-deployment
+    sudo -u git -H bundle install --without development test mysql --path vendor/bundle --no-deployment
     ```
 
     > These are the same commands you used in the [Install Gems
-      section](#install-gems) with `--path vendor/bundle --no-deployment`
-      instead of `--deployment`.
+    > section](#install-gems) with `--path vendor/bundle --no-deployment`
+    > instead of `--deployment`.
 
-1.  Start GitSwarm:
+1.  Start $GitSwarm$:
 
     ```bash
-sudo service gitlab start
+    sudo service gitlab start
     ````
 
 ### Examples
 
 If you have successfully set up a provider that is not shipped with
-GitSwarm itself, please let us know.
+$GitSwarm$ itself, please let us know.
 
 You can help others by reporting successful configurations and probably
 share a few insights or provide warnings for common errors or pitfalls by

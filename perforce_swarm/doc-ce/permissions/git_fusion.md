@@ -1,15 +1,15 @@
 # Helix Git Fusion permissions
 
 It is possible to enforce the permissions of Helix Git Fusion users within
-GitSwarm. This feature is available for Helix Git Fusion 2015.4, or
+$GitSwarm$. This feature is available for Helix Git Fusion 2015.4, or
 newer.
 
 > **Warning: This capability is not enabled by default, nor do we recommend
-  that you enable it.**
+> that you enable it.**
 
 > **Important**: The 'Select files or folder to mirror' feature shown on
-  the add project page exposes all folders that the `gitswarm` user has
-  access to; regardless of the authenticated user's rights.
+> the add project page exposes all folders that the `gitswarm` user has
+> access to; regardless of the authenticated user's rights.
 
 ## Requirements
 
@@ -35,7 +35,7 @@ To enable permission enforcement via Git Fusion, you need to:
     ```
 
 1.  To ensure that authentication is based solely on userid (ignoring
-    the user's email address, which could be different between GitSwarm and
+    the user's email address, which could be different between $GitSwarm$ and
     Git Fusion), the `ignore-author-permissions` field must be set to `yes`
     in the `p4gf_config` file (the global file, or the per-repo
     file):
@@ -46,9 +46,9 @@ To enable permission enforcement via Git Fusion, you need to:
     ```
 
     > Note: Ensure that the `unknown_git` user exists in the Helix
-      Versioning Engine.
+    > Versioning Engine.
 
-1.  If you want to allow GitSwarm users to push changes that are mirrored
+1.  If you want to allow $GitSwarm$ users to push changes that are mirrored
     into the Helix Versioning Engine (p4d), and those users do not exist in
     p4d, the `unknown_git` user must be added to the `git-fusion-push`
     group. Execute this command:
@@ -59,7 +59,7 @@ To enable permission enforcement via Git Fusion, you need to:
 
     and add `unknown_git` to the `Users:` section.
 
-1.  Permission enforcement in GitSwarm can be global or project-specific.
+1.  Permission enforcement in $GitSwarm$ can be global or project-specific.
     To enforce permissions globally, edit `/etc/gitswarm/gitswarm.rb` and
     set:
 
@@ -77,6 +77,6 @@ To enable permission enforcement via Git Fusion, you need to:
     Replace `my_identifier` with the common identifier used by your project
     and Git Fusion.
 
-1.  If you need to enforce read permissions on GitSwarm projects, as
+1.  If you need to enforce read permissions on $GitSwarm$ projects, as
     defined in the Helix Versioning Engine's `protect` rules, make sure
-    that the GitSwarm project's visibility is set to `private`.
+    that the $GitSwarm$ project's visibility is set to `private`.

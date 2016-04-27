@@ -1,6 +1,6 @@
 # Supporting Large Pushes
 
-If you are planning to push large mirrored projects to GitSwarm, we recommend
+If you are planning to push large mirrored projects to $GitSwarm$, we recommend
 that you use SSH. If you encounter failures due to large pushes, or are only
 able to use HTTP/S, the following changes made to `/etc/gitswarm/gitswarm.rb`
 may be of help:

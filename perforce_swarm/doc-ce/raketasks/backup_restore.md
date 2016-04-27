@@ -9,33 +9,33 @@ The archive filename is constructed as `$TIMESTAMP_gitswarm_backup.tar`,
 where `$TIMESTAMP` is the Unix time in seconds when the backup archive is
 created. This timestamp can be used to restore a specific backup.
 
-You can only restore a backup to exactly the same version of GitSwarm (or
-the corresponding version of GitLab; see
+You can only restore a backup to exactly the same version of $GitSwarm$ (or
+the corresponding version of $GitLab$; see
 [below](#restore-a-previously-created-backup) for details) that it was
 created on, for example 2015.4. The best way to migrate your repositories
 from one server to another is through backup/restore.
 
 > Note: You need to keep a separate copy of the `/etc/gitswarm` directory,
-        as this contains the operational configuration for GitSwarm, and
-        encryption keys for the database (for users who have two-factor
-        authentication enabled). See the [steps for configuration
-        backup](#backup-the-configuration).
+> as this contains the operational configuration for $GitSwarm$, and
+> encryption keys for the database (for users who have two-factor
+> authentication enabled). See the [steps for configuration
+> backup](#backup-the-configuration).
 
 > Note: If you have enabled mirroring for any of your projects, you will
-        need to backup any associated Helix server instances separately,
-        *after* you have performed the GitSwarm backup. See the [Backup and
-        Recovery](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.backup.html)
-        chapter in the [_Helix Versioning Engine Administrator Guide:
-        Fundamentals_](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
+> need to backup any associated Helix server instances separately, *after*
+> you have performed the $GitSwarm$ backup. See the [Backup and
+> Recovery](https://www.perforce.com/perforce/doc.current/manuals/p4sag/chapter.backup.html)
+> chapter in the [_Helix Versioning Engine Administrator Guide:
+> Fundamentals_](https://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html).
 
 > Note: If you are using the `:auto_provisioned` Helix server instance
-        (which we do not recommend for production systems), the following
-        information may be helpful:
+> (which we do not recommend for production systems), the following
+> information may be helpful:
 
 *   The auto provisioned Helix Server's 'P4ROOT' is
     `/var/opt/gitswarm/perforce/data`
 *   The 'root' user can log in to the auto_provisioned Helix server with
-    the GitSwarm 'root' user's password
+    the $GitSwarm$ 'root' user's password
 *   The auto provisioned Helix Server's 'p4d' binary is located under
     '/opt/perforce/sbin'
 
@@ -43,12 +43,12 @@ If you are interested in GitLab CI backup please follow to the [CI backup
 documentation](https://gitlab.com/gitlab-org/gitlab-ci/blob/master/doc/raketasks/backup_restore.md)\*
 
 > Important: We recommend that you store your backup files in a safe
-             location, and at a secure offsite location as a disaster
-             prevention measure.
+> location, and at a secure offsite location as a disaster prevention
+> measure.
 
 ## Creating a backup
 
-```
+```bash
 sudo gitswarm-rake gitswarm:backup:create
 ```
 
@@ -57,7 +57,7 @@ You can choose what should be backed up by adding the environment variable
 `builds` (CI build output logs), `artifacts` (CI build artifacts), `lfs` (LFS
 objects). Use a comma to specify several options at the same time.
 
-```
+```bash
 sudo gitswarm-rake gitswarm:backup:create SKIP=db,uploads
 ```
 
@@ -92,13 +92,13 @@ Deleting old backups... [SKIPPING]
 
 ### Backup archive permissions
 
-The backup archives created by GitSwarm (`123456_gitswarm_backup.tar`
+The backup archives created by $GitSwarm$ (`123456_gitswarm_backup.tar`
 above) have owner/group `git:git` and `0600` permissions by default. This
-is meant to avoid other system users reading GitSwarm's data. If you need
+is meant to avoid other system users reading $GitSwarm$'s data. If you need
 the backup archives to have different permissions you can use the
 `archive_permissions` setting.
 
-```
+```ruby
 # In /etc/gitswarm/gitswarm.rb
 # 0644 makes the backup archives world-readable
 gitlab_rails['backup_archive_permissions'] = 0644
@@ -106,23 +106,23 @@ gitlab_rails['backup_archive_permissions'] = 0644
 
 ### Backup the configuration
 
-Please be aware that the backup task does not backup your GitSwarm
+Please be aware that the backup task does not backup your $GitSwarm$
 configuration. One reason for this is that your database contains encrypted
 information for two-factor authentication. Storing encrypted information
 along with its key in the same place defeats the purpose of using
 encryption in the first place!
 
-All of the configuration for GitSwarm is stored in `/etc/gitswarm`. To
+All of the configuration for $GitSwarm$ is stored in `/etc/gitswarm`. To
 backup your configuration:
 
-```
+```bash
 # Creates a timestamped .tar file in the current directory
 sudo sh -c 'umask 0077; tar -cf $(date "+etc-gitswarm-%s.tar") -C / etc/gitswarm
 ```
 
 You can extract the `.tar` file as follows:
 
-```
+```bash
 # Rename the existing /etc/gitswarm, if any
 sudo mv /etc/gitswarm /etc/gitswarm.$(date +%s)
 # Change the example timestamp below to match your configuration backup
@@ -133,17 +133,17 @@ Remember to run `sudo gitswarm-ctl reconfigure` after restoring a
 configuration backup.
 
 > Note: Your machine's SSH host keys are stored separately in `/etc/ssh`.
-        Be sure to also [backup and restore those
-        keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079)
-        to avoid man-in-the-middle attack warnings if you have to perform a
-        full machine restore.
+> Be sure to also [backup and restore those
+> keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079)
+> to avoid man-in-the-middle attack warnings if you have to perform a full
+> machine restore.
 
-> Important: **Do not store your GitSwarm application backups in the same
-             place as your configuration backup.** The configuration backup
-             can contain database encryption keys to protect sensitive data
-             in the SQL database:
+> Important: **Do not store your $GitSwarm$ application backups in the same
+> place as your configuration backup.** The configuration backup can
+> contain database encryption keys to protect sensitive data in the SQL
+> database:
 
-*   GitSwarm two-factor authentication (2FA) user secrets ('QR codes')
+*   $GitSwarm$ two-factor authentication (2FA) user secrets ('QR codes')
 *   GitLab CI 'secure variables'
 
 If you keep your configuration backup in a different place from your
@@ -153,7 +153,7 @@ lost/leaked/stolen.
 
 ### Configure cron to make daily backups
 
-To schedule a cron job that backs up your repositories and GitSwarm
+To schedule a cron job that backs up your repositories and $GitSwarm$
 metadata, use the root user:
 
 ```bash
@@ -176,24 +176,24 @@ backups using all your disk space. To do this add the following lines to
 gitlab_rails['backup_keep_time'] = 604800
 ```
 
-> Note: This cron job does not [backup your GitSwarm
-        configuration](#backup-the-configuration) or [SSH host
-        keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
+> Note: This cron job does not [backup your $GitSwarm$
+> configuration](#backup-the-configuration) or [SSH host
+> keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
 
 ## Restore a previously created backup
 
-> Important: You can only restore a backup to GitSwarm if the backup was
-             created on the same version of GitSwarm, or the corresponding
-             version of GitLab. For example, a backup taken on GitLab 8.0.5
-             can be restored to a 2015.4 GitSwarm install. Here is a list
-             of the GitSwarm releases and their corresponding GitLab
-             releases:
-  * GitLab CE, 8.0.5 = GitSwarm 2015.4
-  * GitLab CE, 8.4.5 = GitSwarm 2016.1
+> Important: You can only restore a backup to $GitSwarm$ if the backup was
+> created on the same version of $GitSwarm$, or the corresponding version of
+> $GitLab$. For example, a backup taken on $GitLab$ 8.0.5 can be restored to a
+> 2015.4 $GitSwarm$ install. Here is a list of the $GitSwarm$ releases and
+> their corresponding $GitLab$ releases:
+>
+> * $GitLab$, 8.0.5 = $GitSwarm$ 2015.4
+> * $GitLab$, 8.4.5 = $GitSwarm$ 2016.1
 
 ### Prerequisites
 
-You need to have a working GitSwarm installation before you can perform a
+You need to have a working $GitSwarm$ installation before you can perform a
 restore. This is mainly because the system user performing the restore
 actions ('git') is usually not allowed to create or delete the SQL database
 it needs to import data into ('gitlabhq_production'). All existing data
@@ -201,16 +201,16 @@ will be either erased (SQL) or moved to a separate directory (repositories,
 uploads).
 
 If you are also restoring Helix Versioning Engine (P4D) backups, it is
-better to restore Helix Versioning Engine before restoring GitSwarm.
+better to restore Helix Versioning Engine before restoring $GitSwarm$.
 
-If some or all of your GitLab users are using two-factor authentication
+If some or all of your $GitLab$ users are using two-factor authentication
 (2FA) then you must also make sure to restore the backup of the
 configuration from `/etc/gitswarm`. Note that you need to run `gitswarm-ctl
 reconfigure` after changing anything in `/etc/gitswarm`.
 
 ### Restoration procedure
 
-We assume that you have installed GitSwarm and have run
+We assume that you have installed $GitSwarm$ and have run
 `sudo gitswarm-ctl reconfigure` at least once.
 
 1.  **Make sure your that backup `.tar` file is in the correct location.**
@@ -226,7 +226,7 @@ We assume that you have installed GitSwarm and have run
 
     You need to specify the timestamp of the backup you are restoring.
 
-    1.  **Stop GitSwarm processes:**
+    1.  **Stop $GitSwarm$ processes:**
 
         ```bash
         sudo gitswarm-ctl stop unicorn
@@ -236,42 +236,42 @@ We assume that you have installed GitSwarm and have run
     1.  **Run the restoration task:**
 
         ```bash
-        # This command overwrites the contents of your GitSwarm database!
+        # This command overwrites the contents of your $GitSwarm$ database!
         sudo gitswarm-rake gitswarm:backup:restore BACKUP=1393513186
         ```
 
-    1.  **Restart GitSwarm processes:**
+    1.  **Restart $GitSwarm$ processes:**
 
         ```bash
         sudo gitswarm-ctl start
         ```
 
-    1.  **Check GitSwarm:**
+    1.  **Check $GitSwarm$:**
 
         ```bash
         sudo gitswarm-rake gitswarm:check SANITIZE=true
         ```
 
-If there is a GitSwarm version mismatch between your backup tar file and
-the installed version of GitSwarm, the restore command aborts with an
+If there is a $GitSwarm$ version mismatch between your backup tar file and
+the installed version of $GitSwarm$, the restore command aborts with an
 error.
 
 ## Alternative backup strategies
 
-If your GitSwarm server contains a lot of git repository data, you may find
-the GitSwarm backup script to be too slow. In this case you can consider
+If your $GitSwarm$ server contains a lot of git repository data, you may find
+the $GitSwarm$ backup script to be too slow. In this case you can consider
 using filesystem snapshots as part of your backup strategy.
 
 Example: Amazon EBS
 
-> A GitLab server using omnibus-gitlab hosted on Amazon AWS. An EBS drive
+> A $GitLab$ server using omnibus-gitlab hosted on Amazon AWS. An EBS drive
 > containing an ext4 filesystem is mounted at `/var/opt/gitswarm`. In this
 > case you could make an application backup by taking an EBS snapshot. The
 > backup includes all repositories, uploads and Postgres data.
 
 Example: LVM snapshots + rsync
 
-> A GitSwarm server with an LVM logical volume mounted at
+> A $GitSwarm$ server with an LVM logical volume mounted at
 > `/var/opt/gitswarm`. Replicating the `/var/opt/gitswarm` directory using
 > rsync would not be reliable because too many files could change while
 > rsync is running. Instead of rsync-ing `/var/opt/gitswarm`, we create a
@@ -280,8 +280,8 @@ Example: LVM snapshots + rsync
 > will create a consistent replica on the remote server. The replica
 > includes all repositories, uploads and Postgres data.
 
-If you are running GitSwarm on a virtualized server, you can possibly also
-create VM snapshots of the entire GitSwarm server. It is not uncommon
+If you are running $GitSwarm$ on a virtualized server, you can possibly also
+create VM snapshots of the entire $GitSwarm$ server. It is not uncommon
 however for a VM snapshot to require you to power down the server, so this
 approach is probably of limited practical use.
 

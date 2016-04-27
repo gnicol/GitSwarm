@@ -117,6 +117,7 @@ span.mirror-button-wrapper {
   cursor: default;
 
   .tree-save {
+    @include str-truncated(300px);
     float: right;
   }
 
@@ -176,6 +177,10 @@ span.mirror-button-wrapper {
 
     .saved-branch-name {
       font-weight: bold;
+
+      .saved-branch-name-label {
+        @include str-truncated(300px);
+      }
     }
 
     .saved-branch-path {
@@ -189,9 +194,10 @@ span.mirror-button-wrapper {
 
   .branch-label {
     padding-right: $gl-padding;
-    display: block;
+    display: inline-block;
     float: left;
     margin-right: 10px;
+    line-height: 35px;
     position: relative;
   }
 
@@ -205,21 +211,20 @@ span.mirror-button-wrapper {
     font-family: $monospace_font;
     font-size: 90%;
     line-height: 42px;
-    padding: 7px 16px 0 16px;
+    padding: 7px 16px;
     position: relative;
     background: #f7f8fa;
     border: 1px solid #e7e9ed;
 
     .filter-actions {
+      display: inline-block;
+      line-height: 35px;
       float: right;
-      position: absolute;
-      top: 5px;
-      right: 15px;
 
       .btn {
         padding: 0px 10px;
         font-size: 13px;
-        line-height: 28px;
+        line-height: 30px;
       }
     }
   }

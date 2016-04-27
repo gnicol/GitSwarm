@@ -10,10 +10,10 @@ use.
 
 1.  Fill in the application details.
     - Name: This can be anything. Consider something like
-      "\<Organization\>'s GitSwarm" or "\<Your Name\>'s GitSwarm" or
+      "\<Organization\>'s $GitSwarm$" or "\<Your Name\>'s $GitSwarm$" or
       something else descriptive.
     - Description: Create a description.
-    - Website: The URL to your GitSwarm installation.
+    - Website: The URL to your $GitSwarm$ installation.
       `https://gitswarm.example.com`
     - Callback URL:
       `https://gitswarm.example.com/users/auth/twitter/callback`
@@ -37,10 +37,10 @@ use.
 
     ![Twitter app](twitter_app_api_keys.png)
 
-1.  On your GitSwarm server, open the configuration file.
+1.  On your $GitSwarm$ server, open the configuration file.
 
-    ```sh
-sudo editor /etc/gitswarm/gitswarm.rb
+    ```bash
+    sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
 1.  See [Initial OmniAuth
@@ -66,9 +66,9 @@ sudo editor /etc/gitswarm/gitswarm.rb
 
 1.  Save the configuration file.
 
-1.  Restart GitSwarm for the changes to take effect.
+1.  Restart $GitSwarm$ for the changes to take effect.
 
 On the sign in page there should now be a Twitter icon below the regular
 sign in form. Click the icon to begin the authentication process. Twitter
-asks the user to sign in and authorize the GitSwarm application. If
-everything goes well, the user is returned to GitSwarm and is signed in.
+asks the user to sign in and authorize the $GitSwarm$ application. If
+everything goes well, the user is returned to $GitSwarm$ and is signed in.

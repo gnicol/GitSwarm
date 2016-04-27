@@ -1,6 +1,6 @@
 # Integrate your server with Bitbucket
 
-Import projects from Bitbucket and login to your GitSwarm instance with
+Import projects from Bitbucket and login to your $GitSwarm$ instance with
 your Bitbucket account.
 
 To enable the Bitbucket OmniAuth provider, you must register your
@@ -20,10 +20,10 @@ secret key for you to use.
 
 1.  Provide the required details.
     - Name: This can be anything. Consider something like
-      "\<Organization\>'s GitSwarm" or "\<Your Name\>'s GitSwarm" or
+      "\<Organization\>'s $GitSwarm$" or "\<Your Name\>'s $GitSwarm$" or
       something else descriptive.
     - Application description: Fill this in, if you wish.
-    - URL: The URL to your GitSwarm installation.
+    - URL: The URL to your $GitSwarm$ installation.
       'https://gitswarm.example.com'
 
 1.  Select "Save".
@@ -31,9 +31,9 @@ secret key for you to use.
 1.  You should now see a Key and Secret in the list of OAuth customers.
     Keep this page open as you continue configuration.
 
-1.  On your GitSwarm server, open the configuration file.
+1.  On your $GitSwarm$ server, open the configuration file.
 
-    ```sh
+    ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
@@ -62,27 +62,27 @@ secret key for you to use.
 
 1.  Save the configuration file.
 
-1.  Reconfigure GitSwarm (```sudo gitswarm-ctl reconfigure```).
+1.  Reconfigure $GitSwarm$ (```sudo gitswarm-ctl reconfigure```).
 
-1.  Restart GitSwarm for the changes to take effect.
+1.  Restart $GitSwarm$ for the changes to take effect.
 
 On the sign in page there should now be a Bitbucket icon below the regular
 sign in form. Click the icon to begin the authentication process.
-Bitbucket asks the user to sign in and authorize GitSwarm. If everything
-goes well, the user is returned to GitSwarm and is signed in.
+Bitbucket asks the user to sign in and authorize $GitSwarm$. If everything
+goes well, the user is returned to $GitSwarm$ and is signed in.
 
 ## Bitbucket project import
 
-To allow projects to be imported directly into GitSwarm, Bitbucket requires
+To allow projects to be imported directly into $GitSwarm$, Bitbucket requires
 two extra setup steps compared to GitHub and GitLab.com.
 
 Bitbucket doesn't allow OAuth applications to clone repositories over
-HTTPS, and instead requires GitSwarm to use SSH and identify itself using
-your GitSwarm server's SSH key.
+HTTPS, and instead requires $GitSwarm$ to use SSH and identify itself using
+your $GitSwarm$ server's SSH key.
 
 ### Step 1: Public key
 
-To be able to access repositories on Bitbucket, GitSwarm automatically
+To be able to access repositories on Bitbucket, $GitSwarm$ automatically
 registers your public key with Bitbucket as a deploy key for the
 repositories to be imported. Your public key needs to be at
 `~/.ssh/bitbucket_rsa.pub`, which expands to
@@ -93,8 +93,8 @@ projects from Bitbucket" option enabled. If you don't, do the following:
 
 1.  Create a new SSH key:
 
-    ```sh
-sudo -u git -H ssh-keygen
+    ```bash
+    sudo -u git -H ssh-keygen
     ```
 
     When asked `Enter file in which to save the key` specify the correct
@@ -105,13 +105,13 @@ sudo -u git -H ssh-keygen
 
     Open the SSH configuration file of the git user.
 
-    ```sh
-sudo editor /home/git/.ssh/config
+    ```bash
+    sudo editor /home/git/.ssh/config
     ```
 
     Add a host configuration for `bitbucket.org`.
 
-    ```sh
+    ```
     Host bitbucket.org
         IdentityFile ~/.ssh/bitbucket_rsa
         User git
@@ -119,15 +119,15 @@ sudo editor /home/git/.ssh/config
 
 ### Step 2: Known hosts
 
-To allow GitSwarm to connect to Bitbucket over SSH, you need to add
-'bitbucket.org' to your GitSwarm server's known SSH hosts. Take the
+To allow $GitSwarm$ to connect to Bitbucket over SSH, you need to add
+'bitbucket.org' to your $GitSwarm$ server's known SSH hosts. Take the
 following steps to do so:
 
 1.  Manually connect to 'bitbucket.org' over SSH, while logged in as the
-    `git` account that GitSwarm uses:
+    `git` account that $GitSwarm$ uses:
 
-    ```sh
-sudo -u git -H ssh bitbucket.org
+    ```bash
+    sudo -u git -H ssh bitbucket.org
     ```
 
 1.  Verify the RSA key fingerprint you'll see in the response matches the
@@ -144,9 +144,9 @@ sudo -u git -H ssh bitbucket.org
 1. If the fingerprint matches, type `yes` to continue connecting and have
    'bitbucket.org' added to your known hosts.
 
-1. Your GitSwarm server is now able to connect to Bitbucket over SSH.
+1. Your $GitSwarm$ server is now able to connect to Bitbucket over SSH.
 
-1. Restart GitSwarm to allow it to find the new public key.
+1. Restart $GitSwarm$ to allow it to find the new public key.
 
 You should now see the "Import projects from Bitbucket" option on the New
 Project page enabled.

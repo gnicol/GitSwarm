@@ -18,13 +18,13 @@ be used:
 ```
 
 Here, `%{issue_ref}` is a complex regular expression defined inside
-GitSwarm, that matches a reference to a local issue (`#123`), cross-project
+$GitSwarm$, that matches a reference to a local issue (`#123`), cross-project
 issue (`group/project#123`) or a link to an issue
 (`https://gitswarm.example.com/group/project/issues/123`).
 
 For example:
 
-```
+```bash
 git commit -m "Awesome commit message (Fix #20, Fixes #21 and Closes group/otherproject#2). This commit is also related to #17 and fixes #18, #19 and https://gitswarm.example.com/group/otherproject/issues/23."
 ```
 
@@ -34,15 +34,15 @@ closed as it does not match the pattern. It also works with multiline
 commit messages.
 
 > Tip: you can test this closing pattern at [http://rubular.com][1]. Use
-       this site to test your own patterns. Because Rubular doesn't
-       understand `%{issue_ref}`, you can replace this by `#\d+` in
-       testing, which matches only local issue references like `#123`.
+> this site to test your own patterns. Because Rubular doesn't understand
+> `%{issue_ref}`, you can replace this by `#\d+` in testing, which matches
+> only local issue references like `#123`.
 
 ## Change the pattern
 
 You can change the default pattern in `/etc/gitswarm/gitswarm.rb`:
 
-```
+```ruby
 issue_closing_pattern: '((?:[Cc]los(?:e[sd]|ing)|[Ff]ix(?:e[sd]|ing)?) +(?:(?:issues? +)?%{issue_ref}(?:(?:, *| +and +)?))+)'
 ```
 

@@ -2,11 +2,11 @@
 
 To enable the Crowd OmniAuth provider you must register your application
 with Crowd. To configure Crowd integration you need an application name and
-password.  
+password.
 
-1.  On your GitSwarm server, open the configuration file.
+1.  On your $GitSwarm$ server, open the configuration file.
 
-    ```sh
+    ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
     ```
 
@@ -36,6 +36,6 @@ password.
 
 1.  Save the configuration file.
 
-1.  Restart GitSwarm for the changes to take effect.
+1.  Restart $GitSwarm$ for the changes to take effect.
 
 On the sign in page there should now be a Crowd tab in the sign in form.

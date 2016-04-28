@@ -24,28 +24,28 @@ module PerforceSwarm
       def self.validate_config(config)
         # we need at the very least have a config, an auto_create path_template and repo_name_template
         unless config.is_a?(PerforceSwarm::GitFusion::ConfigEntry)
-          fail ConfigValidationError, '"config" must be a PerforceSwarm::GitFusion::ConfigEntry.'
+          raise ConfigValidationError, '"config" must be a PerforceSwarm::GitFusion::ConfigEntry.'
         end
       end
 
       def self.validate_depot_path(path)
-        fail 'Empty depot path specified.' unless path && !path.empty?
+        raise 'Empty depot path specified.' unless path && !path.empty?
         unless path.start_with?('//') && PerforceSwarm::P4::Spec::Depot.id_from_path(path)
-          fail "Specified path '#{path}' does not appear to be a valid depot path."
+          raise "Specified path '#{path}' does not appear to be a valid depot path."
         end
       end
 
       def self.validate_branch_mappings(branch_mappings)
         if !branch_mappings || !branch_mappings.is_a?(Hash)
-          fail RepoCreatorError, 'No branch mappings specified.'
+          raise RepoCreatorError, 'No branch mappings specified.'
         end
 
         # check all the branch mappings
         branch_mappings.each do |name, path|
-          fail 'Empty branch in branch mapping.' if !name || name.empty?
+          raise 'Empty branch in branch mapping.' if !name || name.empty?
 
           unless Gitlab::GitRefValidator.validate(name)
-            fail "Invalid name '#{name}' specified in branch mapping."
+            raise "Invalid name '#{name}' specified in branch mapping."
           end
           validate_depot_path(path)
         end
@@ -108,12 +108,12 @@ module PerforceSwarm
         end
 
         unless branch_mappings && branch_mappings.is_a?(Hash) && !branch_mappings.empty?
-          fail PerforceSwarm::GitFusion::RepoCreatorError, 'No branches specified for the Git Fusion repository.'
+          raise PerforceSwarm::GitFusion::RepoCreatorError, 'No branches specified for the Git Fusion repository.'
         end
 
         # Ensure the default branch exists within the branch_mappings
         if default_branch && !branch_mappings.keys.include?(default_branch)
-          fail PerforceSwarm::GitFusion::RepoCreatorError, 'Default branch does not exist in the branch mappings'
+          raise PerforceSwarm::GitFusion::RepoCreatorError, 'Default branch does not exist in the branch mappings'
         end
 
         mapping_config = []
@@ -123,19 +123,10 @@ module PerforceSwarm
 
           # Use the branch name as the git-fusion branch id, if we can
           # Else use a uuid for the branch id
-          if VALID_NAME_REGEX.match(name)
-            branch_config << "[#{name}]"
-          else
-            branch_config << "[#{SecureRandom.uuid}]"
-          end
+          branch_config << VALID_NAME_REGEX.match(name) ? "[#{name}]" : "[#{SecureRandom.uuid}]"
 
           # add the branch mapping as a 'stream' or a 'view' depending on the depot type
-          if stream
-            branch_config << "stream = #{path}"
-          else
-            branch_config << "view = \"#{path}/...\" ..."
-          end
-
+          branch_config << stream ? "stream = #{path}" : "view = \"#{path}/...\" ..."
           branch_config << "git-branch-name = #{name}"
 
           # Place the default branch at the start, otherwise append
@@ -170,8 +161,8 @@ module PerforceSwarm
         # check for any outright missing depots
         all_depots = PerforceSwarm::P4::Spec::Depot.all(connection)
         missing    = depots - all_depots.keys
-        if missing.length > 0
-          fail 'The following depot(s) are required and were found to be missing: ' + missing.join(', ')
+        unless missing.empty?
+          raise 'The following depot(s) are required and were found to be missing: ' + missing.join(', ')
         end
 
         # find all referenced branch depots that are streams depots
@@ -180,8 +171,8 @@ module PerforceSwarm
         end
 
         # we expect either no streams depots, or one streams depot as the only branch depot
-        unless streams_depots.length == 0 || (streams_depots.length == 1 && branch_depots.length == 1)
-          fail 'Branch depots must either all be non-streams, or all use the same stream.'
+        unless streams_depots.empty? || (streams_depots.length == 1 && branch_depots.length == 1)
+          raise 'Branch depots must either all be non-streams, or all use the same stream.'
         end
 
         # we're done unless we need to do further streams branch validation
@@ -192,8 +183,8 @@ module PerforceSwarm
 
         # Check for any missing streams.
         missing_streams = branch_mappings.values - streams.keys
-        if missing_streams.length > 0
-          fail "The following stream(s) are required and were found to be missing: #{missing_streams.join(', ')}"
+        unless missing_streams.empty?
+          raise "The following stream(s) are required and were found to be missing: #{missing_streams.join(', ')}"
         end
 
         # determine the mainline for each branch mapping's depot path
@@ -203,7 +194,7 @@ module PerforceSwarm
         end
 
         # there can be only one!
-        fail 'Branches based on streams must all use the same mainline stream.' unless mainline_paths.uniq.length == 1
+        raise 'Branches based on streams must all use the same mainline stream.' unless mainline_paths.uniq.length == 1
       end
 
       # run pre-flight checks for:
@@ -212,14 +203,14 @@ module PerforceSwarm
       # if any of the above conditions are not met, an exception is thrown
       def save_preflight(connection)
         # ensure we have a repo_name
-        fail 'Repo name was not specified.' unless repo_name
+        raise 'Repo name was not specified.' unless repo_name
 
         # ensure both //.git-fusion and target depots exist
         validate_depots(connection)
 
         # ensure there isn't already a Git Fusion repo with our ID
         if perforce_path_exists?(perforce_p4gf_config_path, connection)
-          fail "A Git Fusion repository already exists with the name (#{repo_name}). " \
+          raise "A Git Fusion repository already exists with the name (#{repo_name}). " \
                'You can import the existing Git Fusion repository into a new project.'
         end
       end
@@ -246,7 +237,7 @@ module PerforceSwarm
           File.write(file, p4gf_config(stream))
           add_output = p4.run('add', file).shift
           if add_output.is_a?(String) && add_output.end_with?(" - can't add existing file")
-            fail FileAlreadyExists, "Looks like #{repo_name} already exists."
+            raise FileAlreadyExists, "Looks like #{repo_name} already exists."
           end
 
           begin
@@ -282,7 +273,7 @@ module PerforceSwarm
       end
 
       def default_branch(*args)
-        if args.length > 0
+        unless args.empty?
           self.default_branch = args[0]
           return self
         end
@@ -290,7 +281,7 @@ module PerforceSwarm
       end
 
       def config(*args)
-        if args.length > 0
+        unless args.empty?
           self.config = args[0]
           return self
         end
@@ -298,7 +289,7 @@ module PerforceSwarm
       end
 
       def branch_mappings(*args)
-        if args.length > 0
+        unless args.empty?
           self.branch_mappings = args[0]
           return self
         end
@@ -306,7 +297,7 @@ module PerforceSwarm
       end
 
       def depot_branch_creation(*args)
-        if args.length > 0
+        unless args.empty?
           self.depot_branch_creation = args[0]
           return self
         end
@@ -314,7 +305,7 @@ module PerforceSwarm
       end
 
       def description(*args)
-        if args.length > 0
+        unless args.empty?
           self.description = args[0]
           return self
         end

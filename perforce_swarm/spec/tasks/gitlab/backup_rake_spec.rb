@@ -138,11 +138,11 @@ describe 'gitlab:app namespace rake task' do
     end
 
     it 'should delete temp directories', override: true do
-      if PerforceSwarm.ee?
-        dirs = '{db,repositories,uploads,builds,artifacts,pages,lfs}'
-      else
-        dirs = '{db,repositories,uploads,builds,artifacts,lfs}'
-      end
+      dirs = if PerforceSwarm.ee?
+               '{db,repositories,uploads,builds,artifacts,pages,lfs}'
+             else
+               '{db,repositories,uploads,builds,artifacts,lfs}'
+             end
       temp_dirs = Dir.glob(File.join(Gitlab.config.backup.path, dirs))
 
       expect(temp_dirs).to be_empty

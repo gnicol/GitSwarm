@@ -40,8 +40,8 @@ describe 'BasicValidationTests', browser: true do
         skip "Skipping test because GitSwarm & P4 admin users in config.yml are not '#{root_user}'"
       end
       if CONFIG.get(CONFIG::GS_PASSWORD) != CONFIG.get(CONFIG::P4_PASSWORD)
-        fail("Failing test because GitSwarm & P4 admin users passwords are not configured to be the same
-             #{CONFIG.get(CONFIG::GS_PASSWORD)} #{CONFIG.get(CONFIG::P4_PASSWORD)}")
+        raise "Failing test because GitSwarm & P4 admin users passwords are not configured to be the same
+             #{CONFIG.get(CONFIG::GS_PASSWORD)} #{CONFIG.get(CONFIG::P4_PASSWORD)}"
       end
       # Verify that auto provisioned p4 'root' user's password matches GitSwarm root user's password
       verify_p4_password(CONFIG.get(CONFIG::P4_PORT), root_user, CONFIG.get(CONFIG::GS_PASSWORD))

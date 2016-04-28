@@ -53,7 +53,7 @@ class LoggedInPage < Page
     newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}/merge_requests"
     goto newuri
     mr_links = @driver.find_elements(:link_text, merge_request_name)
-    fail("unique merge request not found for #{merge_request_name} : #{mr_links}") unless mr_links.length == 1
+    raise "unique merge request not found for #{merge_request_name} : #{mr_links}" unless mr_links.length == 1
     mr_links.first.click
     MergeRequestPage.new(@driver)
   end
@@ -74,7 +74,7 @@ class LoggedInPage < Page
     newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}/configure_helix_mirroring"
     goto newuri
     pp = ProjectPage.new(@driver) # validate we are redirected to the project page
-    fail("Expected error not found : #{error_text}") unless page_has_text(error_text)
+    raise "Expected error not found : #{error_text}" unless page_has_text(error_text)
     pp
   end
 end

@@ -60,7 +60,7 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
 
   step 'Git Fusion list raises an exception' do
     PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: default_config)
-    allow(PerforceSwarm::GitFusionRepo).to receive(:list) { fail 'Some error.' }
+    allow(PerforceSwarm::GitFusionRepo).to receive(:list) { raise 'Some error.' }
   end
 
   step 'I should see a Git Fusion is disabled message' do
@@ -97,10 +97,12 @@ class Spinach::Features::GitFusionImport < Spinach::FeatureSteps
 
   step 'P4D contains regular depots' do
     mock_auto_create
-    allow_any_instance_of(PerforceSwarm::P4TreeController).to receive(:get_dirs).and_return([
-      { id: '//depot1', text: 'depot1', type: 'depot-regular', data: {}, children: true },
-      { id: '//depot2', text: 'depot2', type: 'depot-regular', data: {}, children: true }
-    ])
+    allow_any_instance_of(PerforceSwarm::P4TreeController).to receive(:get_dirs).and_return(
+      [
+        { id: '//depot1', text: 'depot1', type: 'depot-regular', data: {}, children: true },
+        { id: '//depot2', text: 'depot2', type: 'depot-regular', data: {}, children: true }
+      ]
+    )
   end
 
   step 'I choose to populate the repo from P4D paths' do

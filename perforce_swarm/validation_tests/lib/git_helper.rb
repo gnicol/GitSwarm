@@ -110,7 +110,7 @@ class GitHelper
     LOG.debug(command)
     command = Shellwords.join(command) if command.is_a?(Array)
     success = system(command)
-    fail "system command failed: #{command}" if !success && @fail_on_error
+    raise "system command failed: #{command}" if !success && @fail_on_error
     success
   end
 end

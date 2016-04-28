@@ -156,23 +156,23 @@ module PerforceSwarm
       # apply a note about using SSH instead of HTTP(S), to avoid
       # resource issues.
       if category == 'workflow' && file == 'workflow'
-        if PerforceSwarm.ee?
-          content += <<EOS
+        content += if PerforceSwarm.ee?
+                     <<EOS
 
 Note: For performance reasons, it is better to clone from a repo via SSH
 instead of HTTP(S). GitSwarm EE maintains a limited pool of web worker
 processes, and each HTTP(S) push/pull/fetch operation ties up a worker
 process until completion.
 EOS
-        else
-          content += <<EOS
+                   else
+                     <<EOS
 
 Note: For performance reasons, it is better to clone from a repo via SSH
 instead of HTTP(S). GitSwarm maintains a limited pool of web worker
 processes, and each HTTP(S) push/pull/fetch operation ties up a worker
 process until completion.
 EOS
-        end
+                   end
       end
 
       # point the archived download link to our ftp.

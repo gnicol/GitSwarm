@@ -5,7 +5,7 @@ rule(/^gitswarm:/, [:args]) do |task, args|
   if Rake.application.lookup(task_name)
     Rake.application[task_name].invoke(args[:args])
   else
-    fail "Don't know how to build task '#{task.name}'"
+    raise "Don't know how to build task '#{task.name}'"
   end
 end
 

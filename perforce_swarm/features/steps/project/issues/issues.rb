@@ -11,12 +11,6 @@ class Spinach::Features::ProjectIssues < Spinach::FeatureSteps
     click_link 'Assigned to me'
   end
 
-  step 'I click the "Close" button' do
-    page.within '.detail-page-header' do
-      click_link 'Close'
-    end
-  end
-
   step 'I click the "Close Issue" button' do
     page.within first('.note-form-actions') do
       click_link 'Close issue'

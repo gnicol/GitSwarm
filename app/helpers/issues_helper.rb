@@ -52,6 +52,7 @@ module IssuesHelper
 
   def milestone_options(object)
     milestones = object.project.milestones.active.reorder(due_date: :asc, title: :asc).to_a
+    milestones.unshift(object.milestone) if object.milestone.present? && object.milestone.closed?
     milestones.unshift(Milestone::None)
 
     options_from_collection_for_select(milestones, 'id', 'title', object.milestone_id)
@@ -115,17 +116,32 @@ module IssuesHelper
     icon('eye-slash') if issue.confidential?
   end
 
-  def emoji_icon(name, unicode = nil, aliases = [])
+  def emoji_icon(name, unicode = nil, aliases = [], sprite: true)
     unicode ||= Emoji.emoji_filename(name) rescue ""
 
-    content_tag :div, "",
-      class: "icon emoji-icon emoji-#{unicode}",
-      title: name,
-      data: {
-        aliases: aliases.join(' '),
-        emoji: name,
-        unicode_name: unicode
-      }
+    data = {
+      aliases: aliases.join(" "),
+      emoji: name,
+      unicode_name: unicode
+    }
+
+    if sprite
+      # Emoji icons for the emoji menu, these use a spritesheet.
+      content_tag :div, "",
+        class: "icon emoji-icon emoji-#{unicode}",
+        title: name,
+        data: data
+    else
+      # Emoji icons displayed separately, used for the awards already given
+      # to an issue or merge request.
+      content_tag :img, "",
+        class: "icon emoji",
+        title: name,
+        height: "20px",
+        width: "20px",
+        src: url_to_image("#{unicode}.png"),
+        data: data
+    end
   end
 
   def emoji_author_list(notes, current_user)
@@ -154,6 +170,18 @@ module IssuesHelper
         2
       end
     end.to_h
+  end
+
+  def due_date_options
+    options = [
+      Issue::AnyDueDate,
+      Issue::NoDueDate,
+      Issue::DueThisWeek,
+      Issue::DueThisMonth,
+      Issue::Overdue
+    ]
+
+    options_from_collection_for_select(options, 'name', 'title', params[:due_date])
   end
 
   # Required for Banzai::Filter::IssueReferenceFilter

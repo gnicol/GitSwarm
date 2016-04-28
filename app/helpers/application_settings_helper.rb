@@ -3,10 +3,6 @@ module ApplicationSettingsHelper
     current_application_settings.gravatar_enabled?
   end
 
-  def twitter_sharing_enabled?
-    current_application_settings.twitter_sharing_enabled?
-  end
-
   def signup_enabled?
     current_application_settings.signup_enabled?
   end
@@ -17,6 +13,10 @@ module ApplicationSettingsHelper
 
   def extra_sign_in_text
     current_application_settings.sign_in_text
+  end
+
+  def shared_runners_text
+    current_application_settings.shared_runners_text
   end
 
   def user_oauth_applications?

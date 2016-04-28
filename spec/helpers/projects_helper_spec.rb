@@ -86,4 +86,49 @@ describe ProjectsHelper do
       end
     end
   end
+
+  describe 'default_clone_protocol' do
+    describe 'using HTTP' do
+      it 'returns HTTP' do
+        expect(helper).to receive(:current_user).and_return(nil)
+
+        expect(helper.send(:default_clone_protocol)).to eq('http')
+      end
+    end
+
+    describe 'using HTTPS' do
+      it 'returns HTTPS' do
+        allow(Gitlab.config.gitlab).to receive(:protocol).and_return('https')
+        expect(helper).to receive(:current_user).and_return(nil)
+
+        expect(helper.send(:default_clone_protocol)).to eq('https')
+      end
+    end
+  end
+
+  describe '#license_short_name' do
+    let(:project) { create(:project) }
+
+    context 'when project.repository has a license_key' do
+      it 'returns the nickname of the license if present' do
+        allow(project.repository).to receive(:license_key).and_return('agpl-3.0')
+
+        expect(helper.license_short_name(project)).to eq('GNU AGPLv3')
+      end
+
+      it 'returns the name of the license if nickname is not present' do
+        allow(project.repository).to receive(:license_key).and_return('mit')
+
+        expect(helper.license_short_name(project)).to eq('MIT License')
+      end
+    end
+
+    context 'when project.repository has no license_key but a license_blob' do
+      it 'returns LICENSE' do
+        allow(project.repository).to receive(:license_key).and_return(nil)
+
+        expect(helper.license_short_name(project)).to eq('LICENSE')
+      end
+    end
+  end
 end

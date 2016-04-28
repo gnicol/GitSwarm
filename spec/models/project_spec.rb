@@ -104,6 +104,15 @@ describe Project, models: true do
     end
   end
 
+  describe 'default_scope' do
+    it 'excludes projects pending deletion from the results' do
+      project = create(:empty_project)
+      create(:empty_project, pending_delete: true)
+
+      expect(Project.all).to eq [project]
+    end
+  end
+
   describe 'project token' do
     it 'should set an random token if none provided' do
       project = FactoryGirl.create :empty_project, runners_token: ''
@@ -422,13 +431,32 @@ describe Project, models: true do
 
       it { should eq "http://localhost#{avatar_path}" }
     end
+
+    context 'when git repo is empty' do
+      let(:project) { create(:empty_project) }
+
+      it { should eq nil }
+    end
   end
 
   describe :ci_commit do
     let(:project) { create :project }
-    let(:commit) { create :ci_commit, project: project }
+    let(:commit) { create :ci_commit, project: project, ref: 'master' }
 
-    it { expect(project.ci_commit(commit.sha)).to eq(commit) }
+    subject { project.ci_commit(commit.sha, 'master') }
+
+    it { is_expected.to eq(commit) }
+
+    context 'return latest' do
+      let(:commit2) { create :ci_commit, project: project, ref: 'master' }
+
+      before do
+        commit
+        commit2
+      end
+
+      it { is_expected.to eq(commit2) }
+    end
   end
 
   describe :builds_enabled do
@@ -691,11 +719,8 @@ describe Project, models: true do
         with('foo.wiki', project).
         and_return(wiki)
 
-      expect(repo).to receive(:expire_cache)
-      expect(repo).to receive(:expire_emptiness_caches)
-
-      expect(wiki).to receive(:expire_cache)
-      expect(wiki).to receive(:expire_emptiness_caches)
+      expect(repo).to receive(:before_delete)
+      expect(wiki).to receive(:before_delete)
 
       project.expire_caches_before_rename('foo')
     end

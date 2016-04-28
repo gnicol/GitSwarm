@@ -16,6 +16,20 @@ Rails.application.routes.draw do
     end
   end
 
+  if Rails.env.development?
+    # Make the built-in Rails routes available in development, otherwise they'd
+    # get swallowed by the `namespace/project` route matcher below.
+    #
+    # See https://git.io/va79N
+    get '/rails/mailers'         => 'rails/mailers#index'
+    get '/rails/mailers/:path'   => 'rails/mailers#preview'
+    get '/rails/info/properties' => 'rails/info#properties'
+    get '/rails/info/routes'     => 'rails/info#routes'
+    get '/rails/info'            => 'rails/info#index'
+
+    mount LetterOpenerWeb::Engine, at: '/rails/letter_opener'
+  end
+
   namespace :ci do
     # CI API
     Ci::API::API.logger Rails.logger
@@ -252,6 +266,7 @@ Rails.application.routes.draw do
 
         member do
           put :transfer
+          post :repository_check
         end
 
         resources :runner_projects
@@ -269,6 +284,7 @@ Rails.application.routes.draw do
     resource :application_settings, only: [:show, :update] do
       resources :services
       put :reset_runners_token
+      put :clear_repository_check_states
     end
 
     resources :labels
@@ -314,7 +330,7 @@ Rails.application.routes.draw do
         end
       end
       resource :preferences, only: [:show, :update]
-      resources :keys, except: [:new]
+      resources :keys
       resources :emails, only: [:index, :create, :destroy]
       resource :avatar, only: [:destroy]
       resource :two_factor_auth, only: [:new, :create, :destroy] do
@@ -394,6 +410,7 @@ Rails.application.routes.draw do
 
       resource :avatar, only: [:destroy]
       resources :milestones, constraints: { id: /[^\/]+/ }, only: [:index, :show, :update, :new, :create]
+      resource :notification_setting, only: [:update]
     end
   end
 
@@ -403,6 +420,7 @@ Rails.application.routes.draw do
 
   devise_scope :user do
     get '/users/auth/:provider/omniauth_error' => 'omniauth_callbacks#omniauth_error', as: :omniauth_error
+    get '/users/almost_there' => 'confirmations#almost_there'
   end
 
   root to: "root#index"
@@ -534,6 +552,7 @@ Rails.application.routes.draw do
             post :cancel_builds
             post :retry_builds
             post :revert
+            post :cherry_pick
           end
         end
 
@@ -563,6 +582,7 @@ Rails.application.routes.draw do
           # Order matters to give priority to these matches
           get '/wikis/git_access', to: 'wikis#git_access'
           get '/wikis/pages', to: 'wikis#pages', as: 'wiki_pages'
+          post '/wikis/markdown_preview', to:'wikis#markdown_preview'
           post '/wikis', to: 'wikis#create'
 
           get '/wikis/*id/history', to: 'wikis#history', as: 'wiki_history', constraints: WIKI_SLUG_ID
@@ -594,6 +614,7 @@ Rails.application.routes.draw do
 
         resources :forks, only: [:index, :new, :create]
         resource :import, only: [:new, :create, :show]
+        resource :notification_setting, only: [:update]
 
         resources :refs, only: [] do
           collection do
@@ -651,6 +672,7 @@ Rails.application.routes.draw do
             post :cancel
             post :retry
             post :erase
+            get :raw
           end
 
           resource :artifacts, only: [] do
@@ -686,6 +708,8 @@ Rails.application.routes.draw do
         resources :issues, constraints: { id: /\d+/ } do
           member do
             post :toggle_subscription
+            get :referenced_merge_requests
+            get :related_branches
           end
           collection do
             post  :bulk_update
@@ -737,10 +761,11 @@ Rails.application.routes.draw do
         end
 
         resources :runner_projects, only: [:create, :destroy]
-        resources :badges, only: [], path: 'badges/*ref',
-                           constraints: { ref: Gitlab::Regex.git_reference_regex } do
+        resources :badges, only: [:index] do
           collection do
-            get :build, constraints: { format: /svg/ }
+            scope '*ref', constraints: { ref: Gitlab::Regex.git_reference_regex } do
+              get :build, constraints: { format: /svg/ }
+            end
           end
         end
       end

@@ -22,7 +22,17 @@
 #= require cal-heatmap
 #= require turbolinks
 #= require autosave
-#= require bootstrap
+#= require bootstrap/affix
+#= require bootstrap/alert
+#= require bootstrap/button
+#= require bootstrap/collapse
+#= require bootstrap/dropdown
+#= require bootstrap/modal
+#= require bootstrap/scrollspy
+#= require bootstrap/tab
+#= require bootstrap/transition
+#= require bootstrap/tooltip
+#= require bootstrap/popover
 #= require select2
 #= require raphael
 #= require g.raphael
@@ -41,8 +51,10 @@
 #= require shortcuts_issuable
 #= require shortcuts_network
 #= require jquery.nicescroll
+#= require date.format
 #= require_tree .
 #= require fuzzaldrin-plus
+#= require cropper
 
 window.slugify = (text) ->
   text.replace(/[^-a-zA-Z0-9]+/g, '_').toLowerCase()
@@ -139,7 +151,7 @@ $ ->
 
   # Initialize tooltips
   $('body').tooltip(
-    selector: '.has_tooltip, [data-toggle="tooltip"]'
+    selector: '.has-tooltip, [data-toggle="tooltip"]'
     placement: (_, el) ->
       $el = $(el)
       $el.data('placement') || 'bottom'
@@ -162,7 +174,7 @@ $ ->
   $('.trigger-submit').on 'change', ->
     $(@).parents('form').submit()
 
-  $('abbr.timeago, .js-timeago').timeago()
+  gl.utils.localTimeAgo($('abbr.timeago, .js-timeago'), true)
 
   # Flash
   if (flash = $(".flash-container")).length > 0

@@ -56,7 +56,7 @@ class Label < ActiveRecord::Base
   # This pattern supports cross-project references.
   #
   def self.reference_pattern
-    %r{
+    @reference_pattern ||= %r{
       (#{Project.reference_pattern})?
       #{Regexp.escape(reference_prefix)}
       (?:
@@ -111,6 +111,10 @@ class Label < ActiveRecord::Base
 
   def template?
     template
+  end
+
+  def text_color
+    LabelsHelper::text_color_for_bg(self.color)
   end
 
   private

@@ -27,9 +27,9 @@ module BlobHelper
                                      link_opts)
 
     if !on_top_of_branch?(project, ref)
-      button_tag "Edit", class: "btn btn-default disabled has_tooltip", title: "You can only edit files when you are on a branch", data: { container: 'body' }
+      button_tag "Edit", class: "btn disabled has-tooltip btn-file-option", title: "You can only edit files when you are on a branch", data: { container: 'body' }
     elsif can_edit_blob?(blob, project, ref)
-      link_to "Edit", edit_path, class: 'btn'
+      link_to "Edit", edit_path, class: 'btn btn-file-option'
     elsif can?(current_user, :fork_project, project)
       continue_params = {
         to:     edit_path,
@@ -38,7 +38,7 @@ module BlobHelper
       }
       fork_path = namespace_project_forks_path(project.namespace, project, namespace_key: current_user.namespace.id, continue: continue_params)
 
-      link_to "Edit", fork_path, class: 'btn', method: :post
+      link_to "Edit", fork_path, class: 'btn btn-file-option', method: :post
     end
   end
 
@@ -50,9 +50,9 @@ module BlobHelper
     return unless blob
 
     if !on_top_of_branch?(project, ref)
-      button_tag label, class: "btn btn-#{btn_class} disabled has_tooltip", title: "You can only #{action} files when you are on a branch", data: { container: 'body' }
+      button_tag label, class: "btn btn-#{btn_class} disabled has-tooltip", title: "You can only #{action} files when you are on a branch", data: { container: 'body' }
     elsif blob.lfs_pointer?
-      button_tag label, class: "btn btn-#{btn_class} disabled has_tooltip", title: "It is not possible to #{action} files that are stored in LFS using the web interface", data: { container: 'body' }
+      button_tag label, class: "btn btn-#{btn_class} disabled has-tooltip", title: "It is not possible to #{action} files that are stored in LFS using the web interface", data: { container: 'body' }
     elsif can_edit_blob?(blob, project, ref)
       button_tag label, class: "btn btn-#{btn_class}", 'data-target' => "#modal-#{modal_type}-blob", 'data-toggle' => 'modal'
     elsif can?(current_user, :fork_project, project)
@@ -172,5 +172,16 @@ module BlobHelper
 
     response.etag = @blob.id
     !stale
+  end
+
+  def licenses_for_select
+    return @licenses_for_select if defined?(@licenses_for_select)
+
+    licenses = Licensee::License.all
+
+    @licenses_for_select = {
+      Popular: licenses.select(&:featured).map { |license| [license.name, license.key] },
+      Other: licenses.reject(&:featured).map { |license| [license.name, license.key] }
+    }
   end
 end

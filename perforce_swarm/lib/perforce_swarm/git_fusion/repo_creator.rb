@@ -123,10 +123,10 @@ module PerforceSwarm
 
           # Use the branch name as the git-fusion branch id, if we can
           # Else use a uuid for the branch id
-          branch_config << VALID_NAME_REGEX.match(name) ? "[#{name}]" : "[#{SecureRandom.uuid}]"
+          branch_config.push(VALID_NAME_REGEX.match(name) ? "[#{name}]" : "[#{SecureRandom.uuid}]")
 
           # add the branch mapping as a 'stream' or a 'view' depending on the depot type
-          branch_config << stream ? "stream = #{path}" : "view = \"#{path}/...\" ..."
+          branch_config.push(stream ? "stream = #{path}" : "view = \"#{path}/...\" ...")
           branch_config << "git-branch-name = #{name}"
 
           # Place the default branch at the start, otherwise append

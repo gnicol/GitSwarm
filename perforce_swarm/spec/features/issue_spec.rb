@@ -24,7 +24,7 @@ describe 'Issues', js: true, feature: true do
       end
 
       it 'should show the comment in the comment field' do
-        expect(find(:css, '.notes')).to have_content('Adding a comment in this issue.')
+        expect(find(:css, 'ul#notes-list')).to have_content('Adding a comment in this issue.')
       end
     end
   end

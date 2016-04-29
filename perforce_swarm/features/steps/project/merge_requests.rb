@@ -75,7 +75,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
     page.find('.dropdown-source-branch .dropdown-content a', text: 'fix').click
 
     page.find('.js-target-branch').click
-    page.find('.dropdown-target-branch .dropdown-content a', text: 'master').click
+    within('.dropdown-target-branch') { click_link('master') }
 
     page.find('.mr_source_commit').should have_selector('.commit')
     page.find('.mr_target_commit').should have_selector('.commit')

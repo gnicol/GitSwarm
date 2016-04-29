@@ -284,12 +284,12 @@ class Spinach::Features::Navbar < Spinach::FeatureSteps
 
   step 'I should see the "QAProject" page' do
     project = Project.find_by(name: 'QAProject')
-    expect(page).to have_link('ssh-selector', href: project.url_to_repo)
+    expect(page).to have_link('SSH', href: project.url_to_repo)
   end
 
   step 'I should see the "PerforceProject" page' do
     project = Project.find_by(name: 'PerforceProject')
-    expect(page).to have_link('ssh-selector', href: project.url_to_repo)
+    expect(page).to have_link('SSH', href: project.url_to_repo)
   end
 
   step 'I should see a project page' do

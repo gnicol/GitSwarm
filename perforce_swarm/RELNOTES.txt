@@ -167,6 +167,19 @@ Bugs fixed in 2016.1
 GitLab changelogs since GitLab 8.0
 
     GitLab 8.4
+        - Prevent privilege escalation via "impersonate" feature
+        - Prevent privilege escalation via notes API
+        - Prevent privilege escalation via project webhook API
+        - Prevent XSS via Git branch and tag names
+        - Prevent XSS via custom issue tracker URL
+        - Prevent XSS via `window.opener`
+        - Prevent information disclosure via snippet API
+        - Prevent information disclosure via project labels
+        - Prevent information disclosure via new merge request page
+        - Remove persistent XSS vulnerability in `commit_person_link` helper
+        - Fix a 2FA authentication spoofing vulnerability.
+        - Don't attempt to fetch any tags from a forked repo (Stan Hu).
+        - Bump Git version requirement to 2.7.4
         - Update omniauth-saml gem to 1.4.2
         - Prevent long-running backup tasks from timing out the database
           connection

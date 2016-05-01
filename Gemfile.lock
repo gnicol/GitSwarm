@@ -1,7 +1,7 @@
 PATH
   remote: perforce_swarm
   specs:
-    perforce_swarm (2016.1)
+    perforce_swarm (2016.1.pre.4)
       rails (~> 4.2.4)
 
 GEM
@@ -1067,4 +1067,4 @@ DEPENDENCIES
   wikicloth (= 0.8.1)
 
 BUNDLED WITH
-   1.11.2
+   1.12.0.rc

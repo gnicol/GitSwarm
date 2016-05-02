@@ -5,7 +5,6 @@
         %div.dropdown.dashboard-menu
           %h1.dropdown-toggle.title{'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', 'tabIndex' => '0' }
             = title
-            %span.caret
           %ul.dropdown-menu{role: 'menu',
               'aria-label' => 'Dashboard Menu',
               'data-recent-updated' => projects_to_simple_json(@recent_projects)}

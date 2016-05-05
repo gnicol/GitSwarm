@@ -22,35 +22,35 @@ class LoggedInPage < Page
   def goto_create_project_page
     # could either try navigating, or just go to the appropriate sub-url.
     uri = URI.parse @driver.current_url
-    newuri = "#{uri.scheme}://#{uri.host}/projects/new"
+    newuri = "#{uri.scheme}://#{uri.host}:#{uri.port}/projects/new"
     goto newuri
     CreateProjectPage.new(@driver)
   end
 
   def goto_project_page(namespace, project_name)
     uri = URI.parse @driver.current_url
-    newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}"
+    newuri = "#{uri.scheme}://#{uri.host}:#{uri.port}/#{namespace}/#{project_name}"
     goto newuri
     ProjectPage.new(@driver)
   end
 
   def goto_projects_page
     uri = URI.parse @driver.current_url
-    newuri = "#{uri.scheme}://#{uri.host}/dashboard/projects"
+    newuri = "#{uri.scheme}://#{uri.host}:#{uri.port}/dashboard/projects"
     goto newuri
     ProjectsPage.new(@driver)
   end
 
   def goto_branches_page(namespace, project_name)
     uri = URI.parse @driver.current_url
-    newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}/branches"
+    newuri = "#{uri.scheme}://#{uri.host}:#{uri.port}/#{namespace}/#{project_name}/branches"
     goto newuri
     BranchesPage.new(@driver)
   end
 
   def goto_merge_request_page(namespace, project_name, merge_request_name)
     uri = URI.parse @driver.current_url
-    newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}/merge_requests"
+    newuri = "#{uri.scheme}://#{uri.host}:#{uri.port}/#{namespace}/#{project_name}/merge_requests"
     goto newuri
     mr_links = @driver.find_elements(:link_text, merge_request_name)
     raise "unique merge request not found for #{merge_request_name} : #{mr_links}" unless mr_links.length == 1
@@ -60,7 +60,7 @@ class LoggedInPage < Page
 
   def goto_configure_mirroring_page(namespace, project_name)
     uri = URI.parse @driver.current_url
-    newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}/configure_helix_mirroring"
+    newuri = "#{uri.scheme}://#{uri.host}:#{uri.port}/#{namespace}/#{project_name}/configure_helix_mirroring"
     goto newuri
     ConfigureMirroringPage.new(@driver)
   end
@@ -71,7 +71,7 @@ class LoggedInPage < Page
   def goto_configure_mirroring_page_expecting_unauthorized(namespace, project_name)
     error_text = 'You do not have permissions to view or modify Helix mirroring settings on this project.'
     uri = URI.parse @driver.current_url
-    newuri = "#{uri.scheme}://#{uri.host}/#{namespace}/#{project_name}/configure_helix_mirroring"
+    newuri = "#{uri.scheme}://#{uri.host}:#{uri.port}/#{namespace}/#{project_name}/configure_helix_mirroring"
     goto newuri
     pp = ProjectPage.new(@driver) # validate we are redirected to the project page
     raise "Expected error not found : #{error_text}" unless page_has_text(error_text)

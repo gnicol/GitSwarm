@@ -63,9 +63,11 @@
       %h4 Components
       %hr
       %p
+        -# gitswarm changes start
         GitSwarm
         %span.pull-right
           #{PerforceSwarm::VERSION}/#{Gitlab::REVISION}
+        -# gitswarm changes end
       %p
         GitSwarm API
         %span.pull-right
@@ -87,6 +89,11 @@
         Rails
         %span.pull-right
           #{Rails::VERSION::STRING}
+
+      %p
+        = Gitlab::Database.adapter_name
+        %span.pull-right
+          = Gitlab::Database.version
   %hr
   .row
     .col-sm-4

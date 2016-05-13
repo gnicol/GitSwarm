@@ -37,7 +37,7 @@ class LOG
     elsif level=='DEBUG'
       @internal_log.level = Logger::DEBUG
     else
-      fail('Unknown log level supplied : ' + level)
+      raise 'Unknown log level supplied : ' + level
     end
     @internal_log.info("Log level set to #{level}")
   end

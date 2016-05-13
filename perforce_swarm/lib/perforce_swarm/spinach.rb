@@ -6,21 +6,9 @@ if ENV['RAILS_ENV'] == 'test'
   # Make sure the middleware is inserted first in middleware chain
   Rails.application.middleware.insert_before('Gitlab::Middleware::Static', 'RackRequestBlocker')
 
-  Spinach.hooks.around_scenario do |_scenario_data, feature, &block|
+  Spinach.hooks.around_scenario do |_scenario_data, _feature, &block|
     RackRequestBlocker.clear_active_requests
     block.call
-
-    # Cancel network requests by visiting the about:blank
-    # page when using the poltergeist driver
-    if ::Capybara.current_driver == :poltergeist
-      # Clear local storage after each scenario
-      # We should be able to drop this when the 1.6 release of poltergiest comes out
-      # where they will do it for us after each test
-      feature.page.execute_script('window.localStorage.clear()')
-      feature.visit 'about:blank'
-      feature.find(:css, 'body').text.should feature.eq('')
-      wait_for_requests
-    end
 
     # Clear sidekiq worker jobs
     Sidekiq::Worker.clear_all
@@ -37,8 +25,8 @@ if ENV['RAILS_ENV'] == 'test'
 
       feature_name = `grep 'Feature:' #{engine_file} |sed 's/Feature: *//g'`.strip
       local_skipped_scenarios = `grep -C 1 '@skip-parent' #{engine_file} |grep 'Scenario:'|sed 's/Scenario: *//g'`
-        .split("\n")
-        .each { |a| a.strip! if a.respond_to? :strip! }
+                                .split("\n")
+                                .each { |a| a.strip! if a.respond_to? :strip! }
       if local_skipped_scenarios.any?
         skipped_scenarios[feature_name] = local_skipped_scenarios
       end
@@ -55,7 +43,7 @@ if ENV['RAILS_ENV'] == 'test'
 
     # Add overridden steps from the engine to the parent application's path
     Dir.glob(
-      File.expand_path File.join(Rails.root, 'perforce_swarm', 'features', 'steps', '**', '*.rb')
+      File.expand_path(File.join(Rails.root, 'perforce_swarm', 'features', 'steps', '**', '*.rb'))
     ).sort { |a, b| [b.count(File::SEPARATOR), a] <=> [a.count(File::SEPARATOR), b] }.each do |file|
       require file
     end
@@ -63,7 +51,7 @@ if ENV['RAILS_ENV'] == 'test'
 
   def wait_for_requests
     RackRequestBlocker.block_requests!
-    Timeout.timeout(Capybara.default_wait_time * RackRequestBlocker.num_active_requests) do
+    Timeout.timeout(Capybara.default_max_wait_time * RackRequestBlocker.num_active_requests) do
       loop { break if RackRequestBlocker.num_active_requests == 0 }
     end
   ensure

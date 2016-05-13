@@ -72,6 +72,18 @@ ul.notes {
       }
     }
 
+    &.is-editting {
+      .note-header,
+      .note-text,
+      .edited-text {
+        display: none;
+      }
+
+      .note-edit-form {
+        display: block;
+      }
+    }
+
     .note-body {
       overflow: auto;
 

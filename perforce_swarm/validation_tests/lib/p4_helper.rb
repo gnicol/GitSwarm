@@ -9,7 +9,7 @@ class P4Helper
   attr_accessor :client_name
 
   def initialize(p4port, user, password, local_dir, depot_path)
-    fail("depot_path must end in /... : #{depot_path}") unless depot_path.end_with?('/...')
+    raise "depot_path must end in /... : #{depot_path}" unless depot_path.end_with?('/...')
 
     # Pointing the p4 environment variables to tmp-clients directory
     p4_home = tmp_client_dir
@@ -114,7 +114,7 @@ class P4Helper
   def user_exists?(username)
     @p4.at_exception_level(P4::RAISE_NONE) do
       result = @p4.run_users(username)
-      return result.length>0
+      return !result.empty?
     end
     false
   end

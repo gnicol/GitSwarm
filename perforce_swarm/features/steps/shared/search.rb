@@ -3,10 +3,10 @@ module SharedSearch
 
   step 'I search for "Perforce"' do
     fill_in 'search', with: 'Perforce'
-    click_button 'Go'
+    find(:css, 'form.navbar-form button').trigger('click')
   end
 
   step 'I should see the Search page' do
-    page.find(:css, '.btn-primary').should have_content('Search')
+    page.find(:css, '.btn-search').should have_content('Search')
   end
 end

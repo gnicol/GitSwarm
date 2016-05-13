@@ -8,7 +8,10 @@ class Spinach::Features::ProjectSnippets < Spinach::FeatureSteps
            file_name: 'snippet.rb',
            project: project,
            author: project.users.first)
-    # prime namespace
-    _foo = project.namespace
+    # the step 'I visit snippet page "Snippet one"' was failing due to project.namespace
+    # being nil. We found that by requesting project.namespace before that step runs
+    # makes it more likely to succeed
+    # GitSwarm 2016.2, Community 8.8.0pre
+    _namespace = project.namespace
   end
 end

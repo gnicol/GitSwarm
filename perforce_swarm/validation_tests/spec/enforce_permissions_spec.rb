@@ -615,7 +615,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     Dir.mktmpdir(nil, tmp_client_dir) do |dir|
       git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)
       git.clone # leave fail_on_error, this method should only be called for configurations with repo read permission
-      git.fail_on_error =f alse
+      git.fail_on_error = false
       create_file(File.join(dir, path))
       success = git.add_commit_push
       LOG.log("User #{user} failed to push to project #{project} at path #{path}") unless success

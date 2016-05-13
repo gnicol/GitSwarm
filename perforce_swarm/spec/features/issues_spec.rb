@@ -29,6 +29,8 @@ describe 'Issues', feature: true do
         bar.update(due_date: 6.days.from_now)
       end
 
+      # override the overdue test so it passes more consistently - the community test
+      # is 1 day overdue, which doesn't always work
       it 'filters by overdue', override: true do
         foo.update(due_date: Date.today + 2.days)
         bar.update(due_date: Date.today + 20.days)

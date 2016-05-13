@@ -1,6 +1,7 @@
 %header.navbar.navbar-fixed-top.navbar-gitlab{ class: nav_header_class }
   %div{ class: fluid_layout ? "container-fluid" : "container-fluid" }
     .header-content
+      -# gitswarm changes start
       - if !@recent_projects.nil?
         %div.dropdown.dashboard-menu
           %h1.dropdown-toggle.title{'data-toggle' => 'dropdown', 'aria-haspopup' => 'true', 'tabIndex' => '0' }
@@ -24,8 +25,9 @@
 
       %ul.nav.navbar-nav.pull-right
         - unless @disable_search_panel
+          -# gitswarm changes end
           %li.hidden-sm.hidden-xs
-            = render 'layouts/search'
+            = render 'layouts/search' unless current_controller?(:search)
         %li.visible-sm.visible-xs
           = link_to search_path, title: 'Search', data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do
             = icon('search')
@@ -38,6 +40,10 @@
             %li
               = link_to admin_root_path, title: 'Admin Area', data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do
                 = icon('wrench fw')
+            %li
+              = link_to dashboard_todos_path, title: 'Todos', data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do
+                %span.badge.todos-pending-count
+                  = todos_pending_count
           - if current_user.can_create_project?
             %li
               = link_to new_project_path, title: 'New project', data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do

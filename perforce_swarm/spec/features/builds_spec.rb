@@ -11,6 +11,8 @@ describe 'Builds' do
     @project.team << [@user, :developer]
   end
 
+  # override the cancel_all test to scope the "Cancel running" link click (there is more
+  # than one on the page)
   describe 'POST /:project/builds/:id/cancel_all', override: true do
     before do
       @build.run!

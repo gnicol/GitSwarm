@@ -5,22 +5,22 @@
 
 ## Known issues
 
-*   Helix Mirroring stops working when a GitSwarm project involves commits
+*   Helix Mirroring stops working when a $GitSwarm$ project involves commits
     that contain only tags and no file changes.
 
-*   GitSwarm project names can only contain letters, numbers, underscores,
+*   $GitSwarm$ project names can only contain letters, numbers, underscores,
     periods, and dashes, and must begin with a letter, number, or
     underscore.
 
     Since depot paths in the Helix Versioning Engine (P4D) can contain
     Unicode and other special characters, we recommend depot paths for
-    projects you intend on importing into GitSwarm via Git Fusion adhere to
+    projects you intend on importing into $GitSwarm$ via Git Fusion adhere to
     the naming convention described above.
 
     If you are using multi-byte characters in any of your Git Fusion
     repository names, you should use an SSH connection to Git Fusion.
 
-*   If a new project is created and GitSwarm is used to automatically
+*   If a new project is created and $GitSwarm$ is used to automatically
     mirror it (via convention-based mirroring), updating the project's
     namespace and/or project name does *not* change the location under
     Helix Versioning Engine (P4D). In order to move the project's files to
@@ -36,11 +36,11 @@
 
 *   Git Fusion, when installed on CentOS/RHEL 7.x, does not support HTTP(S)
     authentication. This issue prevents pushing new work to a Git Fusion
-    repo, including any updates in GitSwarm that would be mirrored to Git
+    repo, including any updates in $GitSwarm$ that would be mirrored to Git
     Fusion. Instead, use SSH connections when Git Fusion is hosted on
     CentOS/RHEL 7.x.
 
-*   The following error can be displayed when GitSwarm is attempting to
+*   The following error can be displayed when $GitSwarm$ is attempting to
     connect to a remote Helix Git Fusion server (running on Centos/RHEL
     6.6+) over SSH, as part of mirroring setup on the `Create Project`
     page.
@@ -81,11 +81,11 @@
 
     1.  Save the file.
 
-    1.  Refresh the `Create Project` page in GitSwarm. The error should be
+    1.  Refresh the `Create Project` page in $GitSwarm$. The error should be
         resolved.
 
 ## Problems?
 
 If you encounter problems with importing projects from Git Fusion, or with
-Helix Mirroring between GitSwarm and Git Fusion, please contact
+Helix Mirroring between $GitSwarm$ and Git Fusion, please contact
 Perforce support <support@perforce.com> for assistance.

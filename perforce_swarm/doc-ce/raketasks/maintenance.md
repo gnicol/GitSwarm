@@ -1,8 +1,8 @@
 # Maintenance
 
-## Gather information about GitSwarm and the system it runs on
+## Gather information about $GitSwarm$ and the system it runs on
 
-This command gathers information about your GitSwarm installation and the
+This command gathers information about your $GitSwarm$ installation and the
 System it runs on. These may be useful when asking for help or reporting
 issues.
 
@@ -42,7 +42,7 @@ Hooks:            /opt/gitswarm/embedded/service/gitlab-shell/hooks/
 Git:              /usr/bin/git
 ```
 
-## Check GitSwarm configuration
+## Check $GitSwarm$ configuration
 
 Runs the following rake tasks:
 

@@ -1,4 +1,4 @@
-# Importing projects into GitSwarm
+# Importing projects into $GitSwarm$
 
 1. [Bitbucket](import_projects_from_bitbucket.md)
 1. [Helix Mirroring](../helix_mirroring/README.md)

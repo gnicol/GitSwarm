@@ -1,6 +1,6 @@
 # Jenkins CI integration
 
-Since GitSwarm EE 2015.4, Jenkins integration using the [GitLab Hook
+Since $GitSwarm$ 2015.4, Jenkins integration using the [GitLab Hook
 Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitLab+Hook+Plugin)
 was deprecated in favor of the [GitLab
 Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitLab+Plugin).
@@ -25,13 +25,13 @@ Integration includes:
   Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitLab+Plugin)
 * [Jenkins Git
   Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin)
-* Git clone access for Jenkins from the GitSwarm EE repository
-* GitSwarm EE API access to report build status
+* Git clone access for Jenkins from the $GitSwarm$ repository
+* $GitSwarm$ API access to report build status
 
-### Configure GitSwarm EE users
+### Configure $GitSwarm$ users
 
 Create a user or choose an existing user that Jenkins will use to interact
-through the GitSwarm EE API. This user will need to be a global Admin or
+through the $GitSwarm$ API. This user will need to be a global Admin or
 added as a member to each Group/Project. Reporter permission is all that's
 required for cloning, building, and reporting build status. Some features
 of the GitLab Plugin may require additional privileges. For example, there
@@ -49,7 +49,7 @@ Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitLab+Plugin) and
 Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin).
 
 Go to Manage Jenkins -> Configure System and scroll down to the 'GitSwarm'
-section. Enter the GitSwarm EE server URL in the 'GitLab host URL' field
+section. Enter the $GitSwarm$ server URL in the 'GitLab host URL' field
 and paste the API token copied earlier in the 'API Token' field.
 
 ![Jenkins GitLab plugin configuration](jenkins_gitlab_plugin_config.png)
@@ -64,14 +64,14 @@ checkbox as described under the 'GitLab Configuration (>= 8.1)'.
 
 ### Configure a GitSwarrm EE project
 
-Create a new GitSwarm EE project or choose an existing one. Then, go to
+Create a new $GitSwarm$ project or choose an existing one. Then, go to
 **Services -> Jenkins CI**.
 
-Check the 'Active' box. Select whether you want GitSwarm EE to trigger a
+Check the 'Active' box. Select whether you want $GitSwarm$ to trigger a
 build on push, Merge Request creation, tag push, or any combination of
 these. We recommend unchecking 'Merge Request events' unless you have a
 specific use-case that requires re-building a commit when a merge request
-is created. With 'Push events' selected, GitSwarm EE will build the latest
+is created. With 'Push events' selected, $GitSwarm$ will build the latest
 commit on each push and the build status will be displayed in the merge
 request.
 
@@ -83,12 +83,12 @@ project.
 Optionally, enter a username and password if your Jenkins server requires
 authentication.
 
-![GitSwarm EE service settings](jenkins_gitlab_service_settings.png)
+![$GitSwarm$ service settings](jenkins_gitlab_service_settings.png)
 
 # Jenkins CI (Deprecated) Service
 
 This service is deprecated and may be removed in a future version of
-GitSwarm EE. Please see documentation for the new Jenkins CI service
+$GitSwarm$. Please see documentation for the new Jenkins CI service
 above.
 
 Integration includes:
@@ -96,7 +96,7 @@ Integration includes:
 * Trigger Jenkins build after push to repo
 * Show build status on Merge Request page
 
-Requirements: 
+Requirements:
 
 * [Jenkins GitLab Hook
   plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitLab+Hook+Plugin)
@@ -110,30 +110,30 @@ Requirements:
 
 ![screen](jenkins_project.png)
 
-## GitSwarm EE
+## $GitSwarm$
 
 ### Read access to repository
 
-Jenkins needs read access to the GitSwarm EE repository. We already
+Jenkins needs read access to the $GitSwarm$ repository. We already
 specified a private key to use in Jenkins, now we need to add a public one
-to the GitSwarm EE project. For that case we will need a Deploy key. Read
+to the $GitSwarm$ project. For that case we will need a Deploy key. Read
 the documentation on [how to setup a Deploy
 key](../../ssh/README.md#deploy-keys).
 
 ### Jenkins service
 
-Now navigate to GitSwarm EE services page and activate Jenkins
+Now navigate to $GitSwarm$ services page and activate Jenkins
 
 ![screen](jenkins_gitlab_service.png)
 
-Done! Now when you push to GitSwarm EE, it will create a build for Jenkins.
+Done! Now when you push to $GitSwarm$, it will create a build for Jenkins.
 And also you will be able to see merge request build status with a link to
 the Jenkins build.
 
 ### Multi-project Configuration
 
 The GitLab Hook plugin in Jenkins supports the automatic creation of a
-project for each feature branch. After configuration GitSwarm EE triggers
+project for each feature branch. After configuration $GitSwarm$ triggers
 feature branch builds and a corresponding project is created in Jenkins.
 
 Configure the GitLab Hook plugin in Jenkins. Go to 'Manage Jenkins' and
@@ -142,7 +142,7 @@ as shown below.
 
 ![Jenkins Multi-project Configuration](jenkins_multiproject_configuration.png)
 
-In the Jenkins service in GitSwarm EE, check the 'Multi-project setup
+In the Jenkins service in $GitSwarm$, check the 'Multi-project setup
 enabled?'.
 
 ![Jenkins Multi-project Enabled](jenkins_multiproject_enabled.png)
@@ -151,30 +151,30 @@ enabled?'.
 
 When using some plugins in Jenkins, an unstable build status will result
 when tests are not passing. In these cases the unstable status in Jenkins
-should register as a failure in GitSwarm EE on the merge request page. In
+should register as a failure in $GitSwarm$ on the merge request page. In
 other cases you may not want an unstable status to display as a build
-failure in GitSwarm EE. Control this behavior using the 'Should unstable
+failure in $GitSwarm$. Control this behavior using the 'Should unstable
 builds be treated as passing?' setting in the Jenkins service in GitSwarm
 EE.
 
 When checked, unstable builds will display as green or passing in GitSwarm
-EE. By default unstable builds display in GitSwarm EE as red or failed.
+EE. By default unstable builds display in $GitSwarm$ as red or failed.
 
 ![Jenkins Unstable Passing](jenkins_unstable_passing.png)
 
 ## Development
 
 An explanation of how this works in case anyone want to improve it or
-develop this service for another CI tool. In GitSwarm EE, there is no
+develop this service for another CI tool. In $GitSwarm$, there is no
 database table that lists the commits, these are always read from the
 repository. Therefore it is not possible to mark the build status of a
-commit in GitSwarm EE. Actually we believe this information should be
+commit in $GitSwarm$. Actually we believe this information should be
 stored in a single place, the CI tool itself. To show this information in a
-merge request you make a project service in GitSwarm EE. This project
+merge request you make a project service in $GitSwarm$. This project
 service does a (JSON) query to a URL of the CI tool with the SHA1 of the
 commit. The project service builds this url and payload based on project
 service settings and knowlegde of the CI tool. The response is parsed to
-give a response in GitSwarm EE (success/failed/pending). All this happens
+give a response in $GitSwarm$ (success/failed/pending). All this happens
 with AJAX requests on the merge request page. The Jenkins project service
-code is only available in GitSwarm EE. The GitLab CI project service code
-is available in the GitSwarm EE codebase.
+code is only available in $GitSwarm$. The GitLab CI project service code
+is available in the $GitSwarm$ codebase.

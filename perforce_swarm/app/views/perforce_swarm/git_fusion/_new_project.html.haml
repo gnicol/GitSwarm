@@ -31,14 +31,14 @@
               Will create a new Helix GitSwarm project in the Helix Versioning Engine (P4D) under:
               %div
                 %code.auto-create-path #{@path_template}
-            - elsif !@auto_create_errors.empty?
+            - elsif !@auto_create_errors.empty? && !helix_silence_config_errors?
               Convention-based repository creation is unavailable:
               %br
               = @auto_create_errors.first
               Please see
               = link_to ' this document ', help_page_path('workflow', 'helix_mirroring', 'configuration') + '#convention-based-mirroring-configuration'
               for help.
-            - elsif !@depot_exists
+            - elsif !@depot_exists && !helix_silence_config_errors?
               Configured project depot #{@project_depot.inspect} is missing.
               Please see
               = link_to ' this document ', help_page_path('workflow', 'helix_mirroring', 'configuration') + '#convention-based-mirroring-configuration'
@@ -109,14 +109,14 @@
                           %div Use the tree selector to pick a depot path, and give it a name in the field above.
                           %br
                         %ul.well-list.branch-list
-            - elsif !@auto_create_errors.empty?
+            - elsif !@auto_create_errors.empty? && !helix_silence_config_errors?
               Custom repository creation is unavailable:
               %br
               = @auto_create_errors.first
               Please see
               = link_to ' this document ', help_page_path('workflow', 'helix_mirroring', 'configuration') + '#convention-based-mirroring-configuration'
               for help.
-            - elsif !@depot_exists
+            - elsif !@depot_exists && !helix_silence_config_errors?
               Configured project depot #{@project_depot.inspect} is missing.
               Please see
               = link_to ' this document ', help_page_path('workflow', 'helix_mirroring', 'configuration') + '#convention-based-mirroring-configuration'

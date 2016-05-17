@@ -186,8 +186,8 @@ module ProjectsHelper
     return false
   end
 
-  def helix_silence_config_warnings?
-    gitlab_shell_config.git_fusion.silence_config_warnings?
+  def helix_silence_config_errors?
+    gitlab_shell_config.git_fusion.silence_config_errors?
   end
 
   def git_fusion_server_error

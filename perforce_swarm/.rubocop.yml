@@ -49,6 +49,3 @@ Style/SpaceAroundOperators:
 
 Style/Alias:
   Enabled: false
-
-Lint/LiteralInCondition:
-  Enabled: false

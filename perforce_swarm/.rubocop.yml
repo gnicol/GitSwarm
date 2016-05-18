@@ -47,9 +47,6 @@ Style/MultilineOperationIndentation:
 Style/SpaceAroundOperators:
   Enabled: false
 
-Style/MutableConstant:
-  Enabled: false
-
 Style/Alias:
   Enabled: false
 

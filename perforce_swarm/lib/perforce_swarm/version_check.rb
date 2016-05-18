@@ -5,7 +5,7 @@ require 'uri'
 
 module PerforceSwarm
   module VersionCheckSelf
-    VERSIONS_CACHE_KEY ||= 'perforce_swarm:versions'
+    VERSIONS_CACHE_KEY ||= 'perforce_swarm:versions'.freeze
 
     def version_uri
       "https://updates.perforce.com/static/GitSwarm/GitSwarm#{PerforceSwarm.ee? ? '-ee' : ''}.json"

@@ -7,18 +7,18 @@ require_relative 'select2_module'
 
 class CreateProjectPage < LoggedInPage
   include Select2Module
-  ID_REPO_SELECTOR              = 's2id_git_fusion_repo_name'
-  ID_SERVER_SELECTOR            = 's2id_git_fusion_entry'
-  ID_NAMESPACE_SELECTOR         = 's2id_project_namespace_id'
-  ID_MIRRORORING_DISABLED       = 'git_fusion_repo_create_type_disabled'
-  ID_MIRRORORING_AUTO_CREATE    = 'git_fusion_repo_create_type_auto-create'
-  ID_MIRRORORING_IMPORT         = 'git_fusion_repo_create_type_import-repo'
-  ID_GF_ENTRY                   = 'git_fusion_entry'
-  ID_PROJECT_PATH               = 'project_path'
-  NAME_COMMIT                   = 'commit'
-  ID_PROJECT_VIS_PRIVATE        = 'project_visibility_level_0'
-  ID_PROJECT_VIS_INTERNAL       = 'project_visibility_level_10'
-  ID_PROJECT_VIS_PUBLIC         = 'project_visibility_level_20'
+  ID_REPO_SELECTOR              = 's2id_git_fusion_repo_name'.freeze
+  ID_SERVER_SELECTOR            = 's2id_git_fusion_entry'.freeze
+  ID_NAMESPACE_SELECTOR         = 's2id_project_namespace_id'.freeze
+  ID_MIRRORORING_DISABLED       = 'git_fusion_repo_create_type_disabled'.freeze
+  ID_MIRRORORING_AUTO_CREATE    = 'git_fusion_repo_create_type_auto-create'.freeze
+  ID_MIRRORORING_IMPORT         = 'git_fusion_repo_create_type_import-repo'.freeze
+  ID_GF_ENTRY                   = 'git_fusion_entry'.freeze
+  ID_PROJECT_PATH               = 'project_path'.freeze
+  NAME_COMMIT                   = 'commit'.freeze
+  ID_PROJECT_VIS_PRIVATE        = 'project_visibility_level_0'.freeze
+  ID_PROJECT_VIS_INTERNAL       = 'project_visibility_level_10'.freeze
+  ID_PROJECT_VIS_PUBLIC         = 'project_visibility_level_20'.freeze
 
   def initialize(driver)
     super(driver)

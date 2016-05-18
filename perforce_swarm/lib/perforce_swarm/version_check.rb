@@ -116,7 +116,7 @@ module PerforceSwarm
     end
 
     def parse_version(version)
-      version += '-1' unless version.match(/\-.+$/)
+      version += '-1' unless version =~ /\-.+$/
       Gem::Version.new(version)
     end
 

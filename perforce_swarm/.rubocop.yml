@@ -50,8 +50,5 @@ Style/SpaceAroundOperators:
 Style/Alias:
   Enabled: false
 
-Performance/RedundantMatch:
-  Enabled: false
-
 Lint/LiteralInCondition:
   Enabled: false

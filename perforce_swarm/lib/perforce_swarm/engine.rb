@@ -55,6 +55,10 @@ module PerforceSwarm
         ::ActionDispatch::PublicExceptions.new("#{root}/public")
       )
     end
+
+    initializer :assets_precompile do |app|
+      app.config.assets.precompile += %w(favicon.ico application_overrides.js application_overrides.css)
+    end
   end
 
   def self.edition

@@ -12,5 +12,3 @@
 
 # define the swarm global variable
 @swarm = {}
-
-alert('Loaded!')

@@ -1,5 +1,5 @@
 #= require perforce_swarm/turbolinks
-#= require ../../../../app/assets/javascripts/application
+#= require application
 #= require js-routes
 #= require jstree
 #= require_self

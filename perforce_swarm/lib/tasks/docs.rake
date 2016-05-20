@@ -62,7 +62,7 @@ namespace :gitswarm do
         fail content unless status.success?
 
         content.gsub!(/href="(\S*)"/) do |result|   # Fetch all links in the HTML Document
-          if /http/.match(result).nil?              # Check if link is internal
+          if /https?:/.match(result).nil?           # Check if link is internal
             result.gsub!(/\.md/, '.html')           # Replace the extension if link is internal
           end
           result

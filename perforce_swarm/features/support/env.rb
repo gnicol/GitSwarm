@@ -31,9 +31,9 @@ WebMock.stub_request(:get, %r{https://updates\.perforce\.com/static/GitSwarm/Git
 require 'capybara/poltergeist'
 Capybara.javascript_driver = :poltergeist
 Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app, js_errors: false, timeout: 90, window_size: [1366, 768])
+  Capybara::Poltergeist::Driver.new(app, js_errors: false, timeout: 180, window_size: [1366, 768])
 end
-Capybara.default_max_wait_time  = 90
+Capybara.default_max_wait_time  = 180
 Capybara.ignore_hidden_elements = false
 
 DatabaseCleaner.strategy = :truncation

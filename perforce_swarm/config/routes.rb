@@ -1,8 +1,4 @@
 Rails.application.routes.draw do
-  devise_scope :user do
-    get 'user/recent_projects' => 'application#load_user_projects'
-  end
-
   project_routes = [:configure_helix_mirroring,
                     :enable_helix_mirroring,
                     :disable_helix_mirroring]

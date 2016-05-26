@@ -14,7 +14,7 @@ feature 'Project', feature: true do
     end
 
     it 'click toggle and show dropdown', js: true, override: true do
-      # TODO: Implement
+      # TODO: Test will likely pass once we remove our recent projects dropdown changes
       expect(page).to have_css('.js-projects-dropdown-toggle')
     end
   end
@@ -34,7 +34,7 @@ feature 'Project', feature: true do
       end
 
       it 'click toggle and show dropdown', override: true do
-        # TODO: Implement
+        # TODO: Test will likely pass once we remove our recent projects dropdown changes
         expect(page).to have_css('.js-projects-dropdown-toggle')
         expect(page).to have_content project.name
       end

@@ -22,9 +22,9 @@ $brand-info:     $gl-info;
 $brand-warning:  $gl-warning;
 $brand-danger:   $gl-danger;
 
-$border-radius-base:        2px !default;
-$border-radius-large:       2px !default;
-$border-radius-small:       2px !default;
+$border-radius-base:        3px !default;
+$border-radius-large:       3px !default;
+$border-radius-small:       3px !default;
 
 
 //== Scaffolding
@@ -56,8 +56,8 @@ $component-active-bg:       $brand-info;
 //##
 
 $input-color:                    $text-color;
-$input-border:                   #e7e9ed;
-$input-border-focus:             #7F8FA4;
+$input-border:                   $border-color;
+$input-border-focus:             $focus-border-color;
 $legend-color:                   $text-color;
 
 
@@ -66,20 +66,20 @@ $legend-color:                   $text-color;
 //##
 
 $pagination-color:                     $gl-gray;
-$pagination-bg:                        $background-color;
-$pagination-border:                    transparent;
+$pagination-bg:                        #fff;
+$pagination-border:                    $border-color;
 
-$pagination-hover-color:               #fff;
-$pagination-hover-bg:                  $brand-info;
-$pagination-hover-border:              transparent;
+$pagination-hover-color:               $gl-gray;
+$pagination-hover-bg:                  $row-hover;
+$pagination-hover-border:              $border-color;
 
-$pagination-active-color:              #fff;
-$pagination-active-bg:                 $brand-info;
-$pagination-active-border:             transparent;
+$pagination-active-color:              $blue-dark;
+$pagination-active-bg:                 #fff;
+$pagination-active-border:             $border-color;
 
-$pagination-disabled-color:            #fff;
-$pagination-disabled-bg:               lighten($brand-info, 15%);
-$pagination-disabled-border:           transparent;
+$pagination-disabled-color:            #cdcdcd;
+$pagination-disabled-bg:               $background-color;
+$pagination-disabled-border:           $border-color;
 
 
 //== Form states and alerts
@@ -125,8 +125,8 @@ $panel-inner-border:       $border-color;
 //
 //##
 
-$well-bg:                     #F9F9F9;
-$well-border:                 #EEE;
+$well-bg:                     #f9f9f9;
+$well-border:                 #eee;
 
 //== Code
 //
@@ -153,8 +153,8 @@ $nav-link-padding: 13px $gl-padding;
 //== Code
 //
 //##
-$pre-bg:           #f8fafc !default;
+$pre-bg:           $background-color !default;
 $pre-color:        $gl-gray !default;
-$pre-border-color: #e7e9ed;
+$pre-border-color: $border-color;
 
 $table-bg-accent: $background-color;

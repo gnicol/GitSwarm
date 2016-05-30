@@ -1,27 +1,6 @@
-# == Schema Information
-#
-# Table name: services
-#
-#  id                    :integer          not null, primary key
-#  type                  :string(255)
-#  title                 :string(255)
-#  project_id            :integer
-#  created_at            :datetime
-#  updated_at            :datetime
-#  active                :boolean          default(FALSE), not null
-#  properties            :text
-#  template              :boolean          default(FALSE)
-#  push_events           :boolean          default(TRUE)
-#  issues_events         :boolean          default(TRUE)
-#  merge_requests_events :boolean          default(TRUE)
-#  tag_push_events       :boolean          default(TRUE)
-#  note_events           :boolean          default(TRUE), not null
-#  build_events          :boolean          default(FALSE), not null
-#
-
 class JiraService < IssueTrackerService
   include HTTParty
-  include Gitlab::Application.routes.url_helpers
+  include Gitlab::Routing.url_helpers
 
   DEFAULT_API_VERSION = 2
 
@@ -110,7 +89,8 @@ class JiraService < IssueTrackerService
       },
       entity: {
         name: noteable_name.humanize.downcase,
-        url: entity_url
+        url: entity_url,
+        title: noteable.title
       }
     }
 
@@ -198,10 +178,11 @@ class JiraService < IssueTrackerService
     user_url = data[:user][:url]
     entity_name = data[:entity][:name]
     entity_url = data[:entity][:url]
+    entity_title = data[:entity][:title]
     project_name = data[:project][:name]
 
     message = {
-      body: "[#{user_name}|#{user_url}] mentioned this issue in [a #{entity_name} of #{project_name}|#{entity_url}]."
+      body: %Q{[#{user_name}|#{user_url}] mentioned this issue in [a #{entity_name} of #{project_name}|#{entity_url}]:\n'#{entity_title}'}
     }
 
     unless existing_comment?(issue_name, message[:body])

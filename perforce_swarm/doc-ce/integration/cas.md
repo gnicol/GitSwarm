@@ -1,13 +1,13 @@
 # CAS OmniAuth Provider
 
 To enable the CAS OmniAuth provider you must register your application with
-your CAS instance. This requires the service URL GitSwarm supplies to CAS.
+your CAS instance. This requires the service URL $GitSwarm$ supplies to CAS.
 It should be something like:
 `https://gitswarm.example.com:443/users/auth/cas3/callback?url`. By default
 handling for SLO is enabled, you only need to configure CAS for backchannel
 logout.
 
-1.  On your GitSwarm server, open the configuration file.
+1.  On your $GitSwarm$ server, open the configuration file.
 
     ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
@@ -42,6 +42,6 @@ logout.
 
 1.  Save the configuration file.
 
-1.  Restart GitSwarm for the changes to take effect.
+1.  Restart $GitSwarm$ for the changes to take effect.
 
 On the sign in page there should now be a CAS tab in the sign in form.

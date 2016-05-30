@@ -1,6 +1,6 @@
-# GitSwarm Configuration
+# $GitSwarm$ Configuration
 
-GitSwarm Performance Monitoring is disabled by default. To enable it and
+$GitSwarm$ Performance Monitoring is disabled by default. To enable it and
 change any of its settings, navigate to the Admin area in **Settings >
 Metrics** (`/admin/application_settings`).
 
@@ -10,11 +10,11 @@ save the changes.
 
 ---
 
-![GitSwarm Performance Monitoring Admin Settings](img/metrics_gitlab_configuration_settings.png)
+![$GitSwarm$ Performance Monitoring Admin Settings](img/metrics_gitlab_configuration_settings.png)
 
 ---
 
-Finally, a restart of all GitSwarm processes is required for the changes to
+Finally, a restart of all $GitSwarm$ processes is required for the changes to
 take effect:
 
 ```bash
@@ -30,6 +30,6 @@ migrations have been performed.
 
 Read more on:
 
-- [Introduction to GitSwarm Performance Monitoring](introduction.md)
+- [Introduction to $GitSwarm$ Performance Monitoring](introduction.md)
 - [InfluxDB Configuration](influxdb_configuration.md)
 - [InfluxDB Schema](influxdb_schema.md)

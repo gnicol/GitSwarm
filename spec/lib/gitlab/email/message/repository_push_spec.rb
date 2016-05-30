@@ -8,7 +8,7 @@ describe Gitlab::Email::Message::RepositoryPush do
   let!(:author) { create(:author, name: 'Author') }
 
   let(:message) do
-    described_class.new(Notify, project.id, 'recipient@example.com', opts)
+    described_class.new(Notify, project.id, opts)
   end
 
   context 'new commits have been pushed to repository' do
@@ -72,7 +72,7 @@ describe Gitlab::Email::Message::RepositoryPush do
 
     describe '#compare_timeout' do
       subject { message.compare_timeout }
-      it { is_expected.to eq compare.timeout }
+      it { is_expected.to eq compare.diffs.overflow? }
     end
 
     describe '#reverse_compare?' do

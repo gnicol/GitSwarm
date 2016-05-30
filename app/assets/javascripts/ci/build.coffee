@@ -1,8 +1,13 @@
 class CiBuild
   @interval: null
+  @state: null
 
-  constructor: (build_url, build_status) ->
+  constructor: (build_url, build_status, build_state) ->
     clearInterval(CiBuild.interval)
+
+    @state = build_state
+
+    @initScrollButtonAffix()
 
     if build_status == "running" || build_status == "pending"
       #
@@ -24,18 +29,33 @@ class CiBuild
       CiBuild.interval = setInterval =>
         if window.location.href.split("#").first() is build_url
           $.ajax
-            url: build_url
+            url: build_url + "/trace.json?state=" + encodeURIComponent(@state)
             dataType: "json"
-            success: (build) =>
-              if build.status == "running"
-                $('#build-trace code').html build.trace_html
-                $('#build-trace code').append '<i class="fa fa-refresh fa-spin"/>'
+            success: (log) =>
+              @state = log.state
+              if log.status is "running"
+                if log.append
+                  $('.fa-refresh').before log.html
+                else
+                  $('#build-trace code').html log.html
+                  $('#build-trace code').append '<i class="fa fa-refresh fa-spin"/>'
                 @checkAutoscroll()
-              else if build.status != build_status
+              else if log.status isnt build_status
                 Turbolinks.visit build_url
       , 4000
 
   checkAutoscroll: ->
     $("html,body").scrollTop $("#build-trace").height()  if "enabled" is $("#autoscroll-button").data("state")
+
+  initScrollButtonAffix: ->
+    $buildScroll = $('#js-build-scroll')
+    $body = $('body')
+    $buildTrace = $('#build-trace')
+
+    $buildScroll.affix(
+      offset:
+        bottom: ->
+          $body.outerHeight() - ($buildTrace.outerHeight() + $buildTrace.offset().top)
+    )
 
 @CiBuild = CiBuild

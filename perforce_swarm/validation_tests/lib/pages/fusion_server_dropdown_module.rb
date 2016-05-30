@@ -17,7 +17,7 @@ module FusionServerDropdownModule
   end
 
   def check_servers_exist
-    fail 'No GF servers have been configured, you cant interact with them' unless servers_exist?
+    raise 'No GF servers have been configured, you cant interact with them' unless servers_exist?
   end
 
   def server_selector
@@ -49,6 +49,6 @@ module FusionServerDropdownModule
       x.click
       return true
     end
-    fail('Did not find requested server in available servers dropdown: '+option)
+    raise 'Did not find requested server in available servers dropdown: ' + option
   end
 end

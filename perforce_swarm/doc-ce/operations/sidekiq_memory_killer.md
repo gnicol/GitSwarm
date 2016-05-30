@@ -1,11 +1,11 @@
 # Sidekiq MemoryKiller
 
-The GitSwarm application code suffers from memory leaks. For web requests
+The $GitSwarm$ application code suffers from memory leaks. For web requests
 this problem is made manageable using
 [unicorn-worker-killer](https://github.com/kzk/unicorn-worker-killer) which
 restarts Unicorn worker processes in between requests when needed. The
 Sidekiq MemoryKiller applies the same approach to the Sidekiq processes
-used by GitSwarm to process background jobs.
+used by $GitSwarm$ to process background jobs.
 
 With the default settings, the MemoryKiller causes a Sidekiq restart no
 more often than once every 15 minutes, with the restart causing about one

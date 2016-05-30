@@ -1,18 +1,3 @@
-# == Schema Information
-#
-# Table name: namespaces
-#
-#  id          :integer          not null, primary key
-#  name        :string(255)      not null
-#  path        :string(255)      not null
-#  owner_id    :integer
-#  created_at  :datetime
-#  updated_at  :datetime
-#  type        :string(255)
-#  description :string(255)      default(""), not null
-#  avatar      :string(255)
-#
-
 class Namespace < ActiveRecord::Base
   include Sortable
   include Gitlab::ShellAdapter
@@ -52,8 +37,18 @@ class Namespace < ActiveRecord::Base
       find_by("lower(path) = :path OR lower(name) = :path", path: path.downcase)
     end
 
+    # Searches for namespaces matching the given query.
+    #
+    # This method uses ILIKE on PostgreSQL and LIKE on MySQL.
+    #
+    # query - The search query as a String
+    #
+    # Returns an ActiveRecord::Relation
     def search(query)
-      where("name LIKE :query OR path LIKE :query", query: "%#{query}%")
+      t = arel_table
+      pattern = "%#{query}%"
+
+      where(t[:name].matches(pattern).or(t[:path].matches(pattern)))
     end
 
     def clean_path(path)

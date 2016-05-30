@@ -5,20 +5,41 @@ module Gitlab
 
       def initialize(project)
         @project = project
-        import_data = project.import_data.try(:data)
-        bb_session = import_data["bb_session"] if import_data
-        @client = Client.new(bb_session["bitbucket_access_token"],
-                             bb_session["bitbucket_access_token_secret"])
+        @client = Client.from_project(@project)
         @formatter = Gitlab::ImportFormatter.new
       end
 
       def execute
-        project_identifier = project.import_source
+        import_issues if has_issues?
 
-        return true unless client.project(project_identifier)["has_issues"]
+        true
+      rescue ActiveRecord::RecordInvalid => e
+        raise Projects::ImportService::Error.new, e.message
+      ensure
+        Gitlab::BitbucketImport::KeyDeleter.new(project).execute
+      end
 
-        #Issues && Comments
-        issues = client.issues(project_identifier)
+      private
+
+      def gl_user_id(project, bitbucket_id)
+        if bitbucket_id
+          user = User.joins(:identities).find_by("identities.extern_uid = ? AND identities.provider = 'bitbucket'", bitbucket_id.to_s)
+          (user && user.id) || project.creator_id
+        else
+          project.creator_id
+        end
+      end
+
+      def identifier
+        project.import_source
+      end
+
+      def has_issues?
+        client.project(identifier)["has_issues"]
+      end
+
+      def import_issues
+        issues = client.issues(identifier)
 
         issues.each do |issue|
           body = ''
@@ -33,7 +54,7 @@ module Gitlab
           body = @formatter.author_line(author)
           body += issue["content"]
 
-          comments = client.issue_comments(project_identifier, issue["local_id"])
+          comments = client.issue_comments(identifier, issue["local_id"])
 
           if comments.any?
             body += @formatter.comments_header
@@ -52,24 +73,13 @@ module Gitlab
           project.issues.create!(
             description: body,
             title: issue["title"],
-            state: %w(resolved invalid duplicate wontfix).include?(issue["status"]) ? 'closed' : 'opened',
+            state: %w(resolved invalid duplicate wontfix closed).include?(issue["status"]) ? 'closed' : 'opened',
             author_id: gl_user_id(project, reporter)
           )
         end
-
-        true
+      rescue ActiveRecord::RecordInvalid => e
+        raise Projects::ImportService::Error, e.message
       end
-
-      private
-
-      def gl_user_id(project, bitbucket_id)
-        if bitbucket_id
-          user = User.joins(:identities).find_by("identities.extern_uid = ? AND identities.provider = 'bitbucket'", bitbucket_id.to_s)
-          (user && user.id) || project.creator_id
-        else
-          project.creator_id
-        end
-       end
     end
   end
 end

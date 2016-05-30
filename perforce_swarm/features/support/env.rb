@@ -23,7 +23,7 @@ WebMock.allow_net_connect!
 
 # stub requests to updates.perforce.com for check for updates
 WebMock.stub_request(:get, %r{https://updates\.perforce\.com/static/GitSwarm/GitSwarm(\-ee)?\.json})
-  .to_return(status: 200, body: '{"versions":[]}', headers: {})
+       .to_return(status: 200, body: '{"versions":[]}', headers: {})
 
 #
 # JS driver
@@ -31,23 +31,12 @@ WebMock.stub_request(:get, %r{https://updates\.perforce\.com/static/GitSwarm/Git
 require 'capybara/poltergeist'
 Capybara.javascript_driver = :poltergeist
 Capybara.register_driver :poltergeist do |app|
-  Capybara::Poltergeist::Driver.new(app, js_errors: false, timeout: 90)
+  Capybara::Poltergeist::Driver.new(app, js_errors: false, timeout: 90, window_size: [1366, 768])
 end
-Spinach.hooks.on_tag('javascript') do
-  ::Capybara.current_driver = ::Capybara.javascript_driver
-end
-Capybara.default_wait_time = 90
+Capybara.default_max_wait_time  = 90
 Capybara.ignore_hidden_elements = false
 
 DatabaseCleaner.strategy = :truncation
-
-Spinach.hooks.before_scenario do
-  DatabaseCleaner.start
-end
-
-Spinach.hooks.after_scenario do
-  DatabaseCleaner.clean
-end
 
 unless ENV['CI'] || ENV['CI_SERVER']
   require 'capybara-screenshot/spinach'
@@ -60,6 +49,7 @@ Spinach.hooks.before_run do
   include RSpec::Mocks::ExampleMethods
   RSpec::Mocks.setup
   TestEnv.init(mailer: false)
+  TestEnv.warm_asset_cache
 
   # Include the test license helper if EE edition
   if PerforceSwarm.ee?
@@ -71,16 +61,18 @@ Spinach.hooks.before_run do
 end
 
 Spinach.hooks.before_scenario do
+  DatabaseCleaner.start
   RSpec::Mocks.setup
 end
 
 Spinach.hooks.after_scenario do
   RSpec::Mocks.verify
   RSpec::Mocks.teardown
+  DatabaseCleaner.clean
 end
 
 def wait_for_ajax
-  Timeout.timeout(Capybara.default_wait_time) do
+  Timeout.timeout(Capybara.default_max_wait_time) do
     loop do
       active = page.evaluate_script('jQuery.active').to_i
       break if active == 0

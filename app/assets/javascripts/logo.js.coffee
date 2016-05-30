@@ -1,4 +1,4 @@
-NProgress.configure(showSpinner: false)
+Turbolinks.enableProgressBar();
 
 defaultClass = 'tanuki-shape'
 pieces = [
@@ -42,3 +42,9 @@ work = ->
 
 $(document).on('page:fetch',  start)
 $(document).on('page:change', stop)
+
+$ ->
+  # Make logo clickable as part of a workaround for Safari visited
+  # link behaviour (See !2690).
+  $('#logo').on 'click', ->
+    $('#js-shortcuts-home').get(0).click()

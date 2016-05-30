@@ -1,4 +1,4 @@
-# Import bare repositories into your GitSwarm instance
+# Import bare repositories into your $GitSwarm$ instance
 
 ## Notes
 

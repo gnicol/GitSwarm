@@ -10,7 +10,7 @@ namespace :rspec do
     end
     cmds = [
       %w(rake gitlab:setup),
-      "#{@rspec_w_overrides_command} #{arglist_string(arglist)}".split("\s")
+      "#{@rspec_w_overrides_command} #{arglist_string(arglist)}".split(' ')
     ]
     run_commands(cmds)
   end
@@ -22,7 +22,7 @@ namespace :rspec do
     end
     cmds = [
       %w(rake gitlab:setup),
-      "#{@engine_command} #{arglist_string(arglist)}".split("\s")
+      "#{@engine_command} #{arglist_string(arglist)}".split(' ')
     ]
     run_commands(cmds)
   end
@@ -35,14 +35,14 @@ task :rspec do
   end
   cmds = [
     %w(rake gitlab:setup),
-    "#{@rspec_command} #{arglist_string(arglist)}".split("\s")
+    "#{@rspec_command} #{arglist_string(arglist)}".split(' ')
   ]
   run_commands(cmds)
 end
 
 def run_commands(cmds)
   cmds.each do |cmd|
-    system({ 'RAILS_ENV' => 'test', 'force' => 'yes' }, *cmd) || fail("#{cmd} failed!")
+    system({ 'RAILS_ENV' => 'test', 'force' => 'yes' }, *cmd) || raise("#{cmd} failed!")
   end
 end
 

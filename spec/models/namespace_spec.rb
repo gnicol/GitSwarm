@@ -1,18 +1,3 @@
-# == Schema Information
-#
-# Table name: namespaces
-#
-#  id          :integer          not null, primary key
-#  name        :string(255)      not null
-#  path        :string(255)      not null
-#  owner_id    :integer
-#  created_at  :datetime
-#  updated_at  :datetime
-#  type        :string(255)
-#  description :string(255)      default(""), not null
-#  avatar      :string(255)
-#
-
 require 'spec_helper'
 
 describe Namespace, models: true do
@@ -41,13 +26,32 @@ describe Namespace, models: true do
     it { expect(namespace.human_name).to eq(namespace.owner_name) }
   end
 
-  describe :search do
-    before do
-      @namespace = create :namespace
+  describe '.search' do
+    let(:namespace) { create(:namespace) }
+
+    it 'returns namespaces with a matching name' do
+      expect(described_class.search(namespace.name)).to eq([namespace])
     end
 
-    it { expect(Namespace.search(@namespace.path)).to eq([@namespace]) }
-    it { expect(Namespace.search('unknown')).to eq([]) }
+    it 'returns namespaces with a partially matching name' do
+      expect(described_class.search(namespace.name[0..2])).to eq([namespace])
+    end
+
+    it 'returns namespaces with a matching name regardless of the casing' do
+      expect(described_class.search(namespace.name.upcase)).to eq([namespace])
+    end
+
+    it 'returns namespaces with a matching path' do
+      expect(described_class.search(namespace.path)).to eq([namespace])
+    end
+
+    it 'returns namespaces with a partially matching path' do
+      expect(described_class.search(namespace.path[0..2])).to eq([namespace])
+    end
+
+    it 'returns namespaces with a matching path regardless of the casing' do
+      expect(described_class.search(namespace.path.upcase)).to eq([namespace])
+    end
   end
 
   describe :move_dir do

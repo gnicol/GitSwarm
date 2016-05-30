@@ -10,7 +10,7 @@ describe Issues::CreateService, services: true do
     context 'when params are valid' do
       let(:assignee) { create(:user) }
       let(:milestone) { create(:milestone, project: project) }
-      let(:labels) { [create(:label, title: 'foo', project: project), create(:label, title: 'bar', project: project)] }
+      let(:labels) { create_pair(:label, project: project) }
 
       before do
         project.team << [user, :master]
@@ -30,6 +30,20 @@ describe Issues::CreateService, services: true do
       it { expect(issue.assignee).to eq assignee }
       it { expect(issue.labels).to match_array labels }
       it { expect(issue.milestone).to eq milestone }
+
+      it 'creates a pending todo for new assignee' do
+        attributes = {
+          project: project,
+          author: user,
+          user: assignee,
+          target_id: issue.id,
+          target_type: issue.class.name,
+          action: Todo::ASSIGNED,
+          state: :pending
+        }
+
+        expect(Todo.where(attributes).count).to eq 1
+      end
 
       context 'when label belongs to different project' do
         let(:label) { create(:label) }

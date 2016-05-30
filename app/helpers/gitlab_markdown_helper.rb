@@ -50,6 +50,8 @@ module GitlabMarkdownHelper
 
     context[:project] ||= @project
 
+    text = Banzai.pre_process(text, context)
+
     html = Banzai.render(text, context)
 
     context.merge!(
@@ -66,6 +68,21 @@ module GitlabMarkdownHelper
 
   def asciidoc(text)
     Gitlab::Asciidoc.render(
+      text,
+      project:      @project,
+      current_user: (current_user if defined?(current_user)),
+
+      # RelativeLinkFilter
+      project_wiki:   @project_wiki,
+      requested_path: @path,
+      ref:            @ref,
+      commit:         @commit
+    )
+  end
+
+  def other_markup(file_name, text)
+    Gitlab::OtherMarkup.render(
+      file_name,
       text,
       project:      @project,
       current_user: (current_user if defined?(current_user)),
@@ -97,29 +114,6 @@ module GitlabMarkdownHelper
     else
       wiki_page.formatted_content.html_safe
     end
-  end
-
-  MARKDOWN_TIPS = [
-    "End a line with two or more spaces for a line-break, or soft-return",
-    "Inline code can be denoted by `surrounding it with backticks`",
-    "Blocks of code can be denoted by three backticks ``` or four leading spaces",
-    "Emoji can be added by :emoji_name:, for example :thumbsup:",
-    "Notify other participants using @user_name",
-    "Notify a specific group using @group_name",
-    "Notify the entire team using @all",
-    "Reference an issue using a hash, for example issue #123",
-    "Reference a merge request using an exclamation point, for example MR !123",
-    "Italicize words or phrases using *asterisks* or _underscores_",
-    "Bold words or phrases using **double asterisks** or __double underscores__",
-    "Strikethrough words or phrases using ~~two tildes~~",
-    "Make a bulleted list using + pluses, - minuses, or * asterisks",
-    "Denote blockquotes using > at the beginning of a line",
-    "Make a horizontal line using three or more hyphens ---, asterisks ***, or underscores ___"
-  ].freeze
-
-  # Returns a random markdown tip for use as a textarea placeholder
-  def random_markdown_tip
-    MARKDOWN_TIPS.sample
   end
 
   private

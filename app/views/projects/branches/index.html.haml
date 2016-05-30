@@ -1,7 +1,7 @@
 - page_title "Branches"
 = render "projects/commits/header_title"
 = render "projects/commits/head"
-.gray-content-block
+.row-content-block
   .pull-right
     - if can? current_user, :push_code, @project
       = link_to new_namespace_project_branch_path(@project.namespace, @project), class: 'btn btn-create' do
@@ -10,13 +10,13 @@
       &nbsp;
     .dropdown.inline
       %button.dropdown-toggle.btn{type: 'button', 'data-toggle' => 'dropdown'}
-        %span.light sort:
+        %span.light
         - if @sort.present?
           = @sort.humanize
         - else
           Name
         %b.caret
-      %ul.dropdown-menu
+      %ul.dropdown-menu.dropdown-menu-align-right
         %li
           = link_to namespace_project_branches_path(sort: nil) do
             Name

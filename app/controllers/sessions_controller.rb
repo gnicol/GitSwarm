@@ -2,8 +2,12 @@ class SessionsController < Devise::SessionsController
   include AuthenticatesWithTwoFactor
   include Recaptcha::ClientHelper
 
-  prepend_before_action :authenticate_with_two_factor, only: [:create]
+  skip_before_action :check_2fa_requirement, only: [:destroy]
+  prepend_before_action :check_initial_setup, only: [:new]
+  prepend_before_action :authenticate_with_two_factor,
+    if: :two_factor_enabled?, only: [:create]
   prepend_before_action :store_redirect_path, only: [:new]
+
   before_action :auto_sign_in_with_provider, only: [:new]
   before_action :load_recaptcha
 
@@ -31,15 +35,31 @@ class SessionsController < Devise::SessionsController
 
   private
 
+  # Handle an "initial setup" state, where there's only one user, it's an admin,
+  # and they require a password change.
+  def check_initial_setup
+    return unless User.count == 1
+
+    user = User.admins.last
+
+    return unless user && user.require_password?
+
+    token = user.generate_reset_token
+    user.save
+
+    redirect_to edit_user_password_path(reset_password_token: token),
+      notice: "Please create a password for your new account."
+  end
+
   def user_params
     params.require(:user).permit(:login, :password, :remember_me, :otp_attempt)
   end
 
   def find_user
-    if user_params[:login]
-      User.by_login(user_params[:login])
-    elsif user_params[:otp_attempt] && session[:otp_user_id]
+    if session[:otp_user_id]
       User.find(session[:otp_user_id])
+    elsif user_params[:login]
+      User.by_login(user_params[:login])
     end
   end
 
@@ -63,10 +83,12 @@ class SessionsController < Devise::SessionsController
     end
   end
 
+  def two_factor_enabled?
+    find_user.try(:two_factor_enabled?)
+  end
+
   def authenticate_with_two_factor
     user = self.resource = find_user
-
-    return unless user && user.two_factor_enabled?
 
     if user_params[:otp_attempt].present? && session[:otp_user_id]
       if valid_otp_attempt?(user)

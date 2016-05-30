@@ -19,7 +19,7 @@ describe Projects::ImportsController do
       end
 
       it 'sets flash.now if params is present' do
-        get :show, namespace_id: project.namespace.to_param, project_id: project.to_param, continue: { notice_now: 'Started' }
+        get :show, namespace_id: project.namespace.to_param, project_id: project.to_param, continue: { to: '/', notice_now: 'Started' }
 
         expect(flash.now[:notice]).to eq 'Started'
       end
@@ -45,7 +45,7 @@ describe Projects::ImportsController do
         end
 
         it 'sets flash.now if params is present' do
-          get :show, namespace_id: project.namespace.to_param, project_id: project.to_param, continue: { notice_now: 'In progress' }
+          get :show, namespace_id: project.namespace.to_param, project_id: project.to_param, continue: { to: '/', notice_now: 'In progress' }
 
           expect(flash.now[:notice]).to eq 'In progress'
         end
@@ -102,6 +102,18 @@ describe Projects::ImportsController do
             expect(flash[:notice]).to eq params[:notice]
             expect(response).to redirect_to params[:to]
           end
+        end
+      end
+
+      context 'when import never happened' do
+        before do
+          project.update_attribute(:import_status, :none)
+        end
+
+        it 'redirects to namespace_project_path' do
+          get :show, namespace_id: project.namespace.to_param, project_id: project.to_param
+
+          expect(response).to redirect_to namespace_project_path(project.namespace, project)
         end
       end
     end

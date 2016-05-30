@@ -22,7 +22,7 @@
 
 // Components
 @import "bootstrap/component-animations";
-@import "bootstrap/dropdowns";
+// @import "bootstrap/dropdowns";
 @import "bootstrap/button-groups";
 @import "bootstrap/input-groups";
 @import "bootstrap/navs";
@@ -43,7 +43,6 @@
 @import "bootstrap/modals";
 @import "bootstrap/tooltip";
 @import "bootstrap/popovers";
-@import "bootstrap/carousel";
 
 // Utility classes
 .clearfix {
@@ -82,7 +81,7 @@
 
 // Labels
 .label {
-  padding: 2px 4px;
+  padding: 4px 5px;
   font-size: 13px;
   font-style: normal;
   font-weight: normal;
@@ -95,7 +94,7 @@
   }
 
   &.label-inverse {
-    background-color: #333333;
+    background-color: #333;
   }
 }
 
@@ -114,21 +113,8 @@
  *
  */
 
-.container-blank .panel .panel-heading {
-  font-size: 17px;
-  line-height: 38px;
-}
-
 .panel {
   box-shadow: none;
-
-  .panel-heading {
-    .panel-head-actions {
-      position: relative;
-      top: -5px;
-      float: right;
-    }
-  }
 
   .panel-body {
     form, pre {
@@ -151,7 +137,7 @@
     }
 
     .btn-clipboard {
-      min-width: 0px;
+      min-width: 0;
     }
   }
 
@@ -178,12 +164,6 @@
     color: #fff;
     text-decoration: underline;
   }
-}
-
-.alert-help {
-  background-color: $background-color;
-  border: 1px solid $border-color;
-  color: $gl-gray;
 }
 
 // Typography =================================================================

@@ -29,7 +29,7 @@ class Page
       msg = "404 error found on #{current_url}"
       LOG.log(msg)
       screendump
-      fail(msg)
+      raise msg
     end
     elements = elements_for_validation
     LOG.debug('Verifying elements : ' + elements.inspect)
@@ -42,7 +42,7 @@ class Page
     end
     unless ok
       screendump
-      fail 'Could not find expected element(s) on page: ' +@driver.current_url
+      raise 'Could not find expected element(s) on page: ' + @driver.current_url
     end
   end
 

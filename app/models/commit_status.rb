@@ -1,62 +1,21 @@
-# == Schema Information
-#
-# Table name: ci_builds
-#
-#  id                 :integer          not null, primary key
-#  project_id         :integer
-#  status             :string(255)
-#  finished_at        :datetime
-#  trace              :text
-#  created_at         :datetime
-#  updated_at         :datetime
-#  started_at         :datetime
-#  runner_id          :integer
-#  coverage           :float
-#  commit_id          :integer
-#  commands           :text
-#  job_id             :integer
-#  name               :string(255)
-#  deploy             :boolean          default(FALSE)
-#  options            :text
-#  allow_failure      :boolean          default(FALSE), not null
-#  stage              :string(255)
-#  trigger_request_id :integer
-#  stage_idx          :integer
-#  tag                :boolean
-#  ref                :string(255)
-#  user_id            :integer
-#  type               :string(255)
-#  target_url         :string(255)
-#  description        :string(255)
-#  artifacts_file     :text
-#  gl_project_id      :integer
-#
-
 class CommitStatus < ActiveRecord::Base
+  include Statuseable
+
   self.table_name = 'ci_builds'
 
   belongs_to :project, class_name: '::Project', foreign_key: :gl_project_id
-  belongs_to :commit, class_name: 'Ci::Commit'
+  belongs_to :commit, class_name: 'Ci::Commit', touch: true
   belongs_to :user
 
   validates :commit, presence: true
-  validates :status, inclusion: { in: %w(pending running failed success canceled) }
 
   validates_presence_of :name
 
   alias_attribute :author, :user
 
-  scope :running, -> { where(status: 'running') }
-  scope :pending, -> { where(status: 'pending') }
-  scope :success, -> { where(status: 'success') }
-  scope :failed, -> { where(status: 'failed')  }
-  scope :running_or_pending, -> { where(status: [:running, :pending]) }
-  scope :finished, -> { where(status: [:success, :failed, :canceled]) }
-  scope :latest, -> { where(id: unscope(:select).select('max(id)').group(:name, :ref)) }
+  scope :latest, -> { where(id: unscope(:select).select('max(id)').group(:name, :commit_id)) }
   scope :ordered, -> { order(:ref, :stage_idx, :name) }
-  scope :for_ref, ->(ref) { where(ref: ref) }
-
-  AVAILABLE_STATUSES = ['pending', 'running', 'success', 'failed', 'canceled']
+  scope :ignored, -> { where(allow_failure: true, status: [:failed, :canceled]) }
 
   state_machine :status, initial: :pending do
     event :run do
@@ -75,69 +34,52 @@ class CommitStatus < ActiveRecord::Base
       transition [:pending, :running] => :canceled
     end
 
-    after_transition pending: :running do |build, transition|
-      build.update_attributes started_at: Time.now
+    after_transition pending: :running do |commit_status|
+      commit_status.update_attributes started_at: Time.now
     end
 
-    after_transition any => [:success, :failed, :canceled] do |build, transition|
-      build.update_attributes finished_at: Time.now
+    after_transition any => [:success, :failed, :canceled] do |commit_status|
+      commit_status.update_attributes finished_at: Time.now
     end
 
-    after_transition [:pending, :running] => :success do |build, transition|
-      MergeRequests::MergeWhenBuildSucceedsService.new(build.commit.project, nil).trigger(build)
+    after_transition [:pending, :running] => :success do |commit_status|
+      MergeRequests::MergeWhenBuildSucceedsService.new(commit_status.commit.project, nil).trigger(commit_status)
     end
-
-    state :pending, value: 'pending'
-    state :running, value: 'running'
-    state :failed, value: 'failed'
-    state :success, value: 'success'
-    state :canceled, value: 'canceled'
   end
 
-  delegate :sha, :short_sha, to: :commit, prefix: false
+  delegate :sha, :short_sha, to: :commit
 
-  # TODO: this should be removed with all references
   def before_sha
-    Gitlab::Git::BLANK_SHA
+    commit.before_sha || Gitlab::Git::BLANK_SHA
   end
 
-  def started?
-    !pending? && !canceled? && started_at
+  def self.stages
+    order_by = 'max(stage_idx)'
+    group('stage').order(order_by).pluck(:stage, order_by).map(&:first).compact
   end
 
-  def active?
-    running? || pending?
+  def self.stages_status
+    all.stages.inject({}) do |h, stage|
+      h[stage] = all.where(stage: stage).status
+      h
+    end
   end
 
-  def complete?
-    canceled? || success? || failed?
+  def ignored?
+    allow_failure? && (failed? || canceled?)
   end
 
   def duration
-    if started_at && finished_at
-      finished_at - started_at
-    elsif started_at
-      Time.now - started_at
-    end
+    duration =
+      if started_at && finished_at
+        finished_at - started_at
+      elsif started_at
+        Time.now - started_at
+      end
+    duration
   end
 
-  def cancel_url
-    nil
-  end
-
-  def retry_url
-    nil
-  end
-
-  def show_warning?
+  def stuck?
     false
-  end
-
-  def artifacts_download_url
-    nil
-  end
-
-  def artifacts_browse_url
-    nil
   end
 end

@@ -70,20 +70,37 @@ describe Banzai::Filter::GollumTagsFilter, lib: true do
   end
 
   context 'linking internal resources' do
-    it "the created link's text will be equal to the resource's text" do
+    it "the created link's text includes the resource's text and wiki base path" do
       tag = '[[wiki-slug]]'
       doc = filter("See #{tag}", project_wiki: project_wiki)
+      expected_path = ::File.join(project_wiki.wiki_base_path, 'wiki-slug')
 
       expect(doc.at_css('a').text).to eq 'wiki-slug'
-      expect(doc.at_css('a')['href']).to eq 'wiki-slug'
+      expect(doc.at_css('a')['href']).to eq expected_path
     end
 
     it "the created link's text will be link-text" do
       tag = '[[link-text|wiki-slug]]'
       doc = filter("See #{tag}", project_wiki: project_wiki)
+      expected_path = ::File.join(project_wiki.wiki_base_path, 'wiki-slug')
 
       expect(doc.at_css('a').text).to eq 'link-text'
-      expect(doc.at_css('a')['href']).to eq 'wiki-slug'
+      expect(doc.at_css('a')['href']).to eq expected_path
+    end
+  end
+
+  context 'table of contents' do
+    it 'replaces [[<em>TOC</em>]] with ToC result' do
+      doc = described_class.call("<p>[[<em>TOC</em>]]</p>", { project_wiki: project_wiki }, { toc: "FOO" })
+
+      expect(doc.to_html).to eq("FOO")
+    end
+
+    it 'handles an empty ToC result' do
+      input = "<p>[[<em>TOC</em>]]</p>"
+      doc = described_class.call(input, project_wiki: project_wiki)
+
+      expect(doc.to_html).to eq ''
     end
   end
 end

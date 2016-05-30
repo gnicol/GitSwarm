@@ -1,4 +1,5 @@
 class OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  include AuthenticatesWithTwoFactor
 
   protect_from_forgery except: [:kerberos, :saml, :cas3]
 
@@ -29,12 +30,38 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     # Do additional LDAP checks for the user filter and EE features
     if ldap_user.allowed?
-      log_audit_event(@user, with: :ldap)
-      sign_in_and_redirect(@user)
+      if @user.two_factor_enabled?
+        prompt_for_two_factor(@user)
+      else
+        log_audit_event(@user, with: :ldap)
+        sign_in_and_redirect(@user)
+      end
     else
       flash[:alert] = "Access denied for your LDAP account."
       redirect_to new_user_session_path
     end
+  end
+
+  def saml
+    if current_user
+      log_audit_event(current_user, with: :saml)
+      # Update SAML identity if data has changed.
+      identity = current_user.identities.find_by(extern_uid: oauth['uid'], provider: :saml)
+      if identity.nil?
+        current_user.identities.create(extern_uid: oauth['uid'], provider: :saml)
+        redirect_to profile_account_path, notice: 'Authentication method updated'
+      else
+        redirect_to after_sign_in_path_for(current_user)
+      end
+    else
+      saml_user = Gitlab::Saml::User.new(oauth)
+      saml_user.save if saml_user.changed?
+      @user = saml_user.gl_user
+
+      continue_login_process
+    end
+  rescue Gitlab::OAuth::SignupDisabledError
+    handle_signup_error
   end
 
   def omniauth_error
@@ -60,27 +87,35 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
       log_audit_event(current_user, with: oauth['provider'])
       redirect_to profile_account_path, notice: 'Authentication method updated'
     else
-      @user = Gitlab::OAuth::User.new(oauth)
-      @user.save
+      oauth_user = Gitlab::OAuth::User.new(oauth)
+      oauth_user.save
+      @user = oauth_user.gl_user
 
-      # Only allow properly saved users to login.
-      if @user.persisted? && @user.valid?
-        log_audit_event(@user.gl_user, with: oauth['provider'])
-        sign_in_and_redirect(@user.gl_user)
-      else
-        error_message =
-          if @user.gl_user.errors.any?
-            @user.gl_user.errors.map do |attribute, message|
-              "#{attribute} #{message}"
-            end.join(", ")
-          else
-            ''
-          end
-
-        redirect_to omniauth_error_path(oauth['provider'], error: error_message) and return
-      end
+      continue_login_process
     end
   rescue Gitlab::OAuth::SignupDisabledError
+    handle_signup_error
+  end
+
+  def handle_service_ticket provider, ticket
+    Gitlab::OAuth::Session.create provider, ticket
+    session[:service_tickets] ||= {}
+    session[:service_tickets][provider] = ticket
+  end
+
+  def continue_login_process
+    # Only allow properly saved users to login.
+    if @user.persisted? && @user.valid?
+      log_audit_event(@user, with: oauth['provider'])
+      sign_in_and_redirect(@user)
+    else
+      error_message = @user.errors.full_messages.to_sentence
+
+      redirect_to omniauth_error_path(oauth['provider'], error: error_message) and return
+    end
+  end
+
+  def handle_signup_error
     label = Gitlab::OAuth::Provider.label_for(oauth['provider'])
     message = "Signing in using your #{label} account without a pre-existing GitLab account is not allowed."
 
@@ -91,12 +126,6 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     flash[:notice] = message
 
     redirect_to new_user_session_path
-  end
-
-  def handle_service_ticket provider, ticket
-    Gitlab::OAuth::Session.create provider, ticket
-    session[:service_tickets] ||= {}
-    session[:service_tickets][provider] = ticket
   end
 
   def oauth

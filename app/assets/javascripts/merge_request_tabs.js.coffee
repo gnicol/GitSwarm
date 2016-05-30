@@ -3,6 +3,8 @@
 # Handles persisting and restoring the current tab selection and lazily-loading
 # content on the MergeRequests#show page.
 #
+#= require jquery.cookie
+#
 # ### Example Markup
 #
 #   <ul class="nav-links merge-request-tabs">
@@ -68,17 +70,25 @@ class @MergeRequestTabs
 
     if action == 'commits'
       @loadCommits($target.attr('href'))
+      @expandView()
     else if action == 'diffs'
       @loadDiff($target.attr('href'))
+      if bp? and bp.getBreakpointSize() isnt 'lg'
+        @shrinkView()
     else if action == 'builds'
       @loadBuilds($target.attr('href'))
+      @expandView()
+    else
+      @expandView()
 
     @setCurrentAction(action)
 
   scrollToElement: (container) ->
     if window.location.hash
-      $el = $("div#{container} #{window.location.hash}")
-      $('body').scrollTo($el.offset().top) if $el.length
+      navBarHeight = $('.navbar-gitlab').outerHeight()
+
+      $el = $("#{container} #{window.location.hash}:not(.match)")
+      $.scrollTo("#{container} #{window.location.hash}:not(.match)", offset: -navBarHeight) if $el.length
 
   # Activate a tab based on the current action
   activateTab: (action) ->
@@ -134,7 +144,7 @@ class @MergeRequestTabs
       url: "#{source}.json"
       success: (data) =>
         document.querySelector("div#commits").innerHTML = data.html
-        $('.js-timeago').timeago()
+        gl.utils.localTimeAgo($('.js-timeago', 'div#commits'))
         @commitsLoaded = true
         @scrollToElement("#commits")
 
@@ -144,10 +154,39 @@ class @MergeRequestTabs
     @_get
       url: "#{source}.json" + @_location.search
       success: (data) =>
-        document.querySelector("div#diffs").innerHTML = data.html
-        $('div#diffs .js-syntax-highlight').syntaxHighlight()
+        $('#diffs').html data.html
+        gl.utils.localTimeAgo($('.js-timeago', 'div#diffs'))
+        $('#diffs .js-syntax-highlight').syntaxHighlight()
+        @expandViewContainer() if @diffViewType() is 'parallel'
         @diffsLoaded = true
         @scrollToElement("#diffs")
+        @highlighSelectedLine()
+
+        $(document)
+          .off 'click', '.diff-line-num a'
+          .on 'click', '.diff-line-num a', (e) =>
+            e.preventDefault()
+            window.location.hash = $(e.currentTarget).attr 'href'
+            @highlighSelectedLine()
+            @scrollToElement("#diffs")
+
+  highlighSelectedLine: ->
+    $('.hll').removeClass 'hll'
+    locationHash = window.location.hash
+
+    if locationHash isnt ''
+      hashClassString = ".#{locationHash.replace('#', '')}"
+      $diffLine = $("#{locationHash}:not(.match)", $('#diffs'))
+
+      if not $diffLine.is 'tr'
+        $diffLine = $('#diffs').find("td#{locationHash}, td#{hashClassString}")
+      else
+        $diffLine = $diffLine.find('td')
+
+      if $diffLine.length
+        $diffLine.addClass 'hll'
+        diffLineTop = $diffLine.offset().top
+        navBarHeight = $('.navbar-gitlab').outerHeight()
 
   loadBuilds: (source) ->
     return if @buildsLoaded
@@ -156,7 +195,7 @@ class @MergeRequestTabs
       url: "#{source}.json"
       success: (data) =>
         document.querySelector("div#builds").innerHTML = data.html
-        $('.js-timeago').timeago()
+        gl.utils.localTimeAgo($('.js-timeago', 'div#builds'))
         @buildsLoaded = true
         @scrollToElement("#builds")
 
@@ -177,3 +216,33 @@ class @MergeRequestTabs
     options = $.extend({}, defaults, options)
 
     $.ajax(options)
+
+  # Returns diff view type
+  diffViewType: ->
+    $('.inline-parallel-buttons a.active').data('view-type')
+
+  expandViewContainer: ->
+    $('.container-fluid').removeClass('container-limited')
+
+  shrinkView: ->
+    $gutterIcon = $('.js-sidebar-toggle i:visible')
+
+    # Wait until listeners are set
+    setTimeout( ->
+      # Only when sidebar is expanded
+      if $gutterIcon.is('.fa-angle-double-right')
+        $gutterIcon.closest('a').trigger('click', [true])
+    , 0)
+
+  # Expand the issuable sidebar unless the user explicitly collapsed it
+  expandView: ->
+    return if $.cookie('collapsed_gutter') == 'true'
+
+    $gutterIcon = $('.js-sidebar-toggle i:visible')
+
+    # Wait until listeners are set
+    setTimeout( ->
+      # Only when sidebar is collapsed
+      if $gutterIcon.is('.fa-angle-double-left')
+        $gutterIcon.closest('a').trigger('click', [true])
+    , 0)

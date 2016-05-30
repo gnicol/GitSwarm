@@ -50,7 +50,7 @@ Versioning Engine prior to updating GitSwarm EE.
 
   $ sudo apt-get install helix-git-fusion-base helix-p4d
 
-* For CentOS:
+* For CentOS/RHEL:
 
   $ sudo yum install helix-git-fusion-base helix-p4d
 

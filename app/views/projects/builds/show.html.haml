@@ -1,8 +1,9 @@
 - page_title "#{@build.name} (##{@build.id})", "Builds"
 = render "header_title"
+- trace_with_state = @build.trace_with_state
 
 .build-page
-  .gray-content-block.top-block
+  .row-content-block.top-block
     Build ##{@build.id} for commit
     %strong.monospace= link_to @build.commit.short_sha, ci_status_path(@build.commit)
     from
@@ -10,12 +11,13 @@
     - merge_request = @build.merge_request
     - if merge_request
       via
-      = link_to "merge request ##{merge_request.iid}", merge_request_path(merge_request)
+      = link_to "merge request #{merge_request.to_reference}", merge_request_path(merge_request)
 
   #up-build-trace
-  - if @commit.matrix_for_ref?(@build.ref)
+  - builds = @build.commit.builds.latest.to_a
+  - if builds.size > 1
     %ul.nav-links.no-top.no-bottom
-      - @commit.latest_builds_for_ref(@build.ref).each do |build|
+      - builds.each do |build|
         %li{class: ('active' if build == @build) }
           = link_to namespace_project_build_path(@project.namespace, @project, build) do
             = ci_icon_for_status(build.status)
@@ -33,7 +35,7 @@
             %i.fa.fa-warning
             This build was retried.
 
-  .gray-content-block.middle-block
+  .row-content-block.middle-block
     .build-head
       .clearfix
         = ci_status_with_icon(@build.status)
@@ -44,7 +46,7 @@
         .pull-right
           #{time_ago_with_tooltip(@build.finished_at) if @build.finished_at}
 
-  - if @build.show_warning?
+  - if @build.stuck?
     - unless @build.any_runners_online?
       .bs-callout.bs-callout-warning
         %p
@@ -70,16 +72,24 @@
           .autoscroll-container
             %button.btn.btn-success.btn-sm#autoscroll-button{:type => "button", :data => {:state => 'disabled'}} enable autoscroll
           .clearfix
-      .scroll-controls
+      #js-build-scroll.scroll-controls
         = link_to '#up-build-trace', class: 'btn' do
           %i.fa.fa-angle-up
         = link_to '#down-build-trace', class: 'btn' do
           %i.fa.fa-angle-down
 
-      %pre.trace#build-trace
-        %code.bash
-          = preserve do
-            = raw @build.trace_html
+      - if @build.erased?
+        .erased.alert.alert-warning
+          - erased_by = "by #{link_to @build.erased_by.name, user_path(@build.erased_by)}" if @build.erased_by
+          Build has been erased #{erased_by.html_safe} #{time_ago_with_tooltip(@build.erased_at)}
+      - else
+        %pre.trace#build-trace
+          %code.bash
+            = preserve do
+              = raw trace_with_state[:html]
+              - if @build.active?
+                %i{:class => "fa fa-refresh fa-spin"}
+
       %div#down-build-trace
 
     .col-md-3
@@ -94,37 +104,58 @@
           %h4.title Build artifacts
           .center
             .btn-group{ role: :group }
-              = link_to "Download", @build.artifacts_download_url, class: 'btn btn-sm btn-primary'
-              - if @build.artifacts_metadata?
-                = link_to "Browse", @build.artifacts_browse_url, class: 'btn btn-sm btn-primary'
+              = link_to download_namespace_project_build_artifacts_path(@project.namespace, @project, @build), class: 'btn btn-sm btn-primary' do
+                = icon('download')
+                Download
 
-      .build-widget
+              - if @build.artifacts_metadata?
+                = link_to browse_namespace_project_build_artifacts_path(@project.namespace, @project, @build), class: 'btn btn-sm btn-primary' do
+                  = icon('folder-open')
+                  Browse
+
+      .build-widget.build-controls
         %h4.title
           Build ##{@build.id}
           - if can?(current_user, :update_build, @project)
-            .pull-right
-              - if @build.cancel_url
-                = link_to "Cancel", @build.cancel_url, class: 'btn btn-sm btn-danger', method: :post
-              - elsif @build.retry_url
-                = link_to "Retry", @build.retry_url, class: 'btn btn-sm btn-primary', method: :post
+            .center
+              .btn-group{ role: :group }
+                - if @build.active?
+                  = link_to "Cancel", cancel_namespace_project_build_path(@project.namespace, @project, @build), class: 'btn btn-sm btn-danger', method: :post
+                - elsif @build.retryable?
+                  = link_to "Retry", retry_namespace_project_build_path(@project.namespace, @project, @build), class: 'btn btn-sm btn-primary', method: :post
 
-        - if @build.duration
+                - if @build.erasable?
+                  = link_to erase_namespace_project_build_path(@project.namespace, @project, @build),
+                            class: 'btn btn-sm btn-warning', method: :post,
+                            data: { confirm: 'Are you sure you want to erase this build?' } do
+                    = icon('eraser')
+                    Erase
+                - if @build.has_trace?
+                  = link_to 'Raw', raw_namespace_project_build_path(@project.namespace, @project, @build),
+                            class: 'btn btn-sm btn-success', target: '_blank'
+
+        .clearfix
+          - if @build.duration
+            %p
+              %span.attr-name Duration:
+              #{duration_in_words(@build.finished_at, @build.started_at)}
           %p
-            %span.attr-name Duration:
-            #{duration_in_words(@build.finished_at, @build.started_at)}
-        %p
-          %span.attr-name Created:
-          #{time_ago_with_tooltip(@build.created_at)}
-        - if @build.finished_at
+            %span.attr-name Created:
+            #{time_ago_with_tooltip(@build.created_at)}
+          - if @build.finished_at
+            %p
+              %span.attr-name Finished:
+              #{time_ago_with_tooltip(@build.finished_at)}
+          - if @build.erased_at
+            %p
+              %span.attr-name Erased:
+              #{time_ago_with_tooltip(@build.erased_at)}
           %p
-            %span.attr-name Finished:
-            #{time_ago_with_tooltip(@build.finished_at)}
-        %p
-          %span.attr-name Runner:
-          - if @build.runner && current_user && current_user.admin
-            = link_to "##{@build.runner.id}", admin_runner_path(@build.runner.id)
-          - elsif @build.runner
-            \##{@build.runner.id}
+            %span.attr-name Runner:
+            - if @build.runner && current_user && current_user.admin
+              = link_to "##{@build.runner.id}", admin_runner_path(@build.runner.id)
+            - elsif @build.runner
+              \##{@build.runner.id}
 
       - if @build.trigger_request
         .build-widget
@@ -188,4 +219,4 @@
 
 
   :javascript
-    new CiBuild("#{namespace_project_build_url(@project.namespace, @project, @build)}", "#{@build.status}")
+    new CiBuild("#{namespace_project_build_url(@project.namespace, @project, @build)}", "#{@build.status}", "#{trace_with_state[:state]}")

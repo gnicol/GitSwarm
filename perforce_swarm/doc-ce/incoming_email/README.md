@@ -1,6 +1,6 @@
 # Reply by email
 
-GitSwarm can be set up to allow users to comment on issues and merge
+$GitSwarm$ can be set up to allow users to comment on issues and merge
 requests by replying to notification emails.
 
 ## Get a mailbox
@@ -97,7 +97,7 @@ To set up a basic Postfix mail server with IMAP access on Ubuntu, follow
     email sent here will end up in the mailbox for
     `incoming@gitswarm.example.com`/`gitswarm-incoming@gmail.com`.
 
-1.  Reconfigure GitSwarm and restart mailroom for the changes to take
+1.  Reconfigure $GitSwarm$ and restart mailroom for the changes to take
     effect:
 
     ```bash

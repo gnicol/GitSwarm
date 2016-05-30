@@ -11,6 +11,7 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
   subject { described_class.new(project, project.creator) }
 
   before do
+    project.team  << [project.creator, :developer]
     project2.team << [project.creator, :master]
   end
 
@@ -22,7 +23,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "Awesome commit (Closes: #{reference})"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Awesome commit (closes #{reference})"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Awesome commit (closes: #{reference})"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -37,7 +48,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "closed: #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Closing #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Closing: #{reference}"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -47,7 +68,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "closing: #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Close #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Close: #{reference}"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -57,7 +88,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "close: #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Awesome commit (Fixes #{reference})"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Awesome commit (Fixes: #{reference})"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -67,7 +108,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "Awesome commit (Fixes: #{reference})"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Fixed #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Fixed: #{reference}"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -77,7 +128,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "fixed: #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Fixing #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Fixing: #{reference}"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -87,7 +148,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "fixing: #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Fix #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Fix: #{reference}"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -97,7 +168,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "fix: #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Awesome commit (Resolves #{reference})"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Awesome commit (Resolves: #{reference})"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -107,7 +188,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "Awesome commit (resolves: #{reference})"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Resolved #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Resolved: #{reference}"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -117,7 +208,17 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "resolved: #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Resolving #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Resolving: #{reference}"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
@@ -127,13 +228,39 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
       end
 
       it do
+        message = "resolving: #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
         message = "Resolve #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "Resolve: #{reference}"
         expect(subject.closed_by_message(message)).to eq([issue])
       end
 
       it do
         message = "resolve #{reference}"
         expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      it do
+        message = "resolve: #{reference}"
+        expect(subject.closed_by_message(message)).to eq([issue])
+      end
+
+      context 'with an external issue tracker reference' do
+        it 'extracts the referenced issue' do
+          jira_project = create(:jira_project, name: 'JIRA_EXT1')
+          jira_issue = ExternalIssue.new("#{jira_project.name}-1", project: jira_project)
+          closing_issue_extractor = described_class.new jira_project
+          message = "Resolve #{jira_issue.to_reference}"
+
+          expect(closing_issue_extractor.closed_by_message(message)).to eq([jira_issue])
+        end
       end
     end
 
@@ -224,6 +351,6 @@ describe Gitlab::ClosingIssueExtractor, lib: true do
   end
 
   def urls
-    Gitlab::Application.routes.url_helpers
+    Gitlab::Routing.url_helpers
   end
 end

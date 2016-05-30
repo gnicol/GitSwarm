@@ -2,7 +2,7 @@
 
 ## List merge requests
 
-Get all merge requests for this project. 
+Get all merge requests for this project.
 The `state` parameter can be used to get only merge requests with a given state (`opened`, `closed`, or `merged`) or all of them (`all`).
 The pagination parameters `page` and `per_page` can be used to restrict the list of merge requests.
 
@@ -49,8 +49,26 @@ Parameters:
       "state": "active",
       "created_at": "2012-04-29T08:46:00Z"
     },
+    "source_project_id": "2",
+    "target_project_id": "3",
+    "labels": [ ],
     "description":"fixed login page css paddings",
-    "work_in_progress": false
+    "work_in_progress": false,
+    "milestone": {
+      "id": 5,
+      "iid": 1,
+      "project_id": 3,
+      "title": "v2.0",
+      "description": "Assumenda aut placeat expedita exercitationem labore sunt enim earum.",
+      "state": "closed",
+      "created_at": "2015-02-02T19:49:26.013Z",
+      "updated_at": "2015-02-02T19:49:26.013Z",
+      "due_date": null
+    },
+    "merge_when_build_succeeds": true,
+    "merge_status": "can_be_merged",
+    "subscribed" : false,
+    "user_notes_count": 1
   }
 ]
 ```
@@ -60,7 +78,7 @@ Parameters:
 Shows information about a single merge request.
 
 ```
-GET /projects/:id/merge_request/:merge_request_id
+GET /projects/:id/merge_requests/:merge_request_id
 ```
 
 Parameters:
@@ -95,8 +113,26 @@ Parameters:
     "state": "active",
     "created_at": "2012-04-29T08:46:00Z"
   },
+  "source_project_id": "2",
+  "target_project_id": "3",
+  "labels": [ ],
   "description":"fixed login page css paddings",
-  "work_in_progress": false
+  "work_in_progress": false,
+  "milestone": {
+    "id": 5,
+    "iid": 1,
+    "project_id": 3,
+    "title": "v2.0",
+    "description": "Assumenda aut placeat expedita exercitationem labore sunt enim earum.",
+    "state": "closed",
+    "created_at": "2015-02-02T19:49:26.013Z",
+    "updated_at": "2015-02-02T19:49:26.013Z",
+    "due_date": null
+  },
+  "merge_when_build_succeeds": true,
+  "merge_status": "can_be_merged",
+  "subscribed" : true,
+  "user_notes_count": 1
 }
 ```
 
@@ -105,7 +141,7 @@ Parameters:
 Get a list of merge request commits.
 
 ```
-GET /projects/:id/merge_request/:merge_request_id/commits
+GET /projects/:id/merge_requests/:merge_request_id/commits
 ```
 
 Parameters:
@@ -142,7 +178,7 @@ Parameters:
 Shows information about the merge request including its files and changes.
 
 ```
-GET /projects/:id/merge_request/:merge_request_id/changes
+GET /projects/:id/merge_requests/:merge_request_id/changes
 ```
 
 Parameters:
@@ -156,8 +192,6 @@ Parameters:
   "iid": 1,
   "project_id": 4,
   "title": "Blanditiis beatae suscipit hic assumenda et molestias nisi asperiores repellat et.",
-  "description": "Qui voluptatibus placeat ipsa alias quasi. Deleniti rem ut sint. Optio velit qui distinctio.",
-  "work_in_progress": false,
   "state": "reopened",
   "created_at": "2015-02-02T19:49:39.159Z",
   "updated_at": "2015-02-02T20:08:49.959Z",
@@ -182,6 +216,8 @@ Parameters:
   "source_project_id": 4,
   "target_project_id": 4,
   "labels": [ ],
+  "description": "Qui voluptatibus placeat ipsa alias quasi. Deleniti rem ut sint. Optio velit qui distinctio.",
+  "work_in_progress": false,
   "milestone": {
     "id": 5,
     "iid": 1,
@@ -193,6 +229,10 @@ Parameters:
     "updated_at": "2015-02-02T19:49:26.013Z",
     "due_date": null
   },
+  "merge_when_build_succeeds": true,
+  "merge_status": "can_be_merged",
+  "subscribed" : true,
+  "user_notes_count": 1,
   "changes": [
     {
     "old_path": "VERSION",
@@ -225,6 +265,7 @@ Parameters:
 - `description` (optional)       - Description of MR
 - `target_project_id` (optional) - The target project (numeric id)
 - `labels` (optional)            - Labels for MR as a comma-separated list
+- `milestone_id` (optional)      - Milestone ID
 
 ```json
 {
@@ -252,7 +293,26 @@ Parameters:
     "state": "active",
     "created_at": "2012-04-29T08:46:00Z"
   },
-  "description":"fixed login page css paddings"
+  "source_project_id": 4,
+  "target_project_id": 4,
+  "labels": [ ],
+  "description":"fixed login page css paddings",
+  "work_in_progress": false,
+  "milestone": {
+    "id": 5,
+    "iid": 1,
+    "project_id": 4,
+    "title": "v2.0",
+    "description": "Assumenda aut placeat expedita exercitationem labore sunt enim earum.",
+    "state": "closed",
+    "created_at": "2015-02-02T19:49:26.013Z",
+    "updated_at": "2015-02-02T19:49:26.013Z",
+    "due_date": null
+  },
+  "merge_when_build_succeeds": true,
+  "merge_status": "can_be_merged",
+  "subscribed" : true,
+  "user_notes_count": 0
 }
 ```
 
@@ -264,7 +324,7 @@ If an error occurs, an error number and a message explaining the reason is retur
 Updates an existing merge request. You can change the target branch, title, or even close the MR.
 
 ```
-PUT /projects/:id/merge_request/:merge_request_id
+PUT /projects/:id/merge_requests/:merge_request_id
 ```
 
 Parameters:
@@ -277,6 +337,7 @@ Parameters:
 - `description`                 - Description of MR
 - `state_event`                 - New state (close|reopen|merge)
 - `labels` (optional)           - Labels for MR as a comma-separated list
+- `milestone_id` (optional)     - Milestone ID
 
 ```json
 {
@@ -284,7 +345,6 @@ Parameters:
   "target_branch": "master",
   "project_id": 3,
   "title": "test1",
-  "description": "description1",
   "state": "opened",
   "upvotes": 0,
   "downvotes": 0,
@@ -303,12 +363,51 @@ Parameters:
     "name": "Administrator",
     "state": "active",
     "created_at": "2012-04-29T08:46:00Z"
-  }
+  },
+  "source_project_id": 4,
+  "target_project_id": 4,
+  "labels": [ ],
+  "description": "description1",
+  "work_in_progress": false,
+  "milestone": {
+    "id": 5,
+    "iid": 1,
+    "project_id": 4,
+    "title": "v2.0",
+    "description": "Assumenda aut placeat expedita exercitationem labore sunt enim earum.",
+    "state": "closed",
+    "created_at": "2015-02-02T19:49:26.013Z",
+    "updated_at": "2015-02-02T19:49:26.013Z",
+    "due_date": null
+  },
+  "merge_when_build_succeeds": true,
+  "merge_status": "can_be_merged",
+  "subscribed" : true,
+  "user_notes_count": 1
 }
 ```
 
 If the operation is successful, 200 and the updated merge request is returned.
 If an error occurs, an error number and a message explaining the reason is returned.
+
+## Delete a merge request
+
+Only for admins and project owners. Soft deletes the merge request in question.
+If the operation is successful, a status code `200` is returned. In case you cannot
+destroy this merge request, or it is not present, code `404` is given.
+
+```
+DELETE /projects/:id/merge_requests/:merge_request_id
+```
+
+| Attribute | Type | Required | Description |
+| --------- | ---- | -------- | ----------- |
+| `id`            | integer | yes | The ID of a project |
+| `merge_request_id` | integer | yes | The ID of a project's merge request |
+
+```bash
+curl -X DELETE -H "PRIVATE-TOKEN: 9koXpg98eAheJpvBs5tK" https://gitlab.example.com/api/v3/projects/4/merge_request/85
+```
 
 ## Accept MR
 
@@ -323,7 +422,7 @@ If merge request is already merged or closed - you get 405 and error message 'Me
 If you don't have permissions to accept this merge request - you'll get a 401
 
 ```
-PUT /projects/:id/merge_request/:merge_request_id/merge
+PUT /projects/:id/merge_requests/:merge_request_id/merge
 ```
 
 Parameters:
@@ -359,7 +458,27 @@ Parameters:
     "name": "Administrator",
     "state": "active",
     "created_at": "2012-04-29T08:46:00Z"
-  }
+  },
+  "source_project_id": 4,
+  "target_project_id": 4,
+  "labels": [ ],
+  "description":"fixed login page css paddings",
+  "work_in_progress": false,
+  "milestone": {
+    "id": 5,
+    "iid": 1,
+    "project_id": 4,
+    "title": "v2.0",
+    "description": "Assumenda aut placeat expedita exercitationem labore sunt enim earum.",
+    "state": "closed",
+    "created_at": "2015-02-02T19:49:26.013Z",
+    "updated_at": "2015-02-02T19:49:26.013Z",
+    "due_date": null
+  },
+  "merge_when_build_succeeds": true,
+  "merge_status": "can_be_merged",
+  "subscribed" : true,
+  "user_notes_count": 1
 }
 ```
 
@@ -373,7 +492,7 @@ If the merge request is already merged or closed - you get 405 and error message
 
 In case the merge request is not set to be merged when the build succeeds, you'll also get a 406 error.
 ```
-PUT /projects/:id/merge_request/:merge_request_id/cancel_merge_when_build_succeeds
+PUT /projects/:id/merge_requests/:merge_request_id/cancel_merge_when_build_succeeds
 ```
 Parameters:
 
@@ -387,7 +506,7 @@ Parameters:
   "source_branch": "test1",
   "project_id": 3,
   "title": "test1",
-  "state": "merged",
+  "state": "opened",
   "upvotes": 0,
   "downvotes": 0,
   "author": {
@@ -405,70 +524,241 @@ Parameters:
     "name": "Administrator",
     "state": "active",
     "created_at": "2012-04-29T08:46:00Z"
-  }
+  },
+  "source_project_id": 4,
+  "target_project_id": 4,
+  "labels": [ ],
+  "description":"fixed login page css paddings",
+  "work_in_progress": false,
+  "milestone": {
+    "id": 5,
+    "iid": 1,
+    "project_id": 4,
+    "title": "v2.0",
+    "description": "Assumenda aut placeat expedita exercitationem labore sunt enim earum.",
+    "state": "closed",
+    "created_at": "2015-02-02T19:49:26.013Z",
+    "updated_at": "2015-02-02T19:49:26.013Z",
+    "due_date": null
+  },
+  "merge_when_build_succeeds": true,
+  "merge_status": "can_be_merged",
+  "subscribed" : true,
+  "user_notes_count": 1
 }
 ```
 
-## Post comment to MR
+## Comments on merge requests
 
-Adds a comment to a merge request.
+Comments are done via the [notes](notes.md) resource.
 
-```
-POST /projects/:id/merge_request/:merge_request_id/comments
-```
+## List issues that will close on merge
 
-Parameters:
-
-- `id` (required)               - The ID of a project
-- `merge_request_id` (required) - ID of merge request
-- `note` (required)             - Text of comment
-
-```json
-{
-  "note": "text1"
-}
-```
-
-## Get the comments on a MR
-
-Gets all the comments associated with a merge request.
+Get all the issues that would be closed by merging the provided merge request.
 
 ```
-GET /projects/:id/merge_request/:merge_request_id/comments
+GET /projects/:id/merge_requests/:merge_request_id/closes_issues
 ```
 
-Parameters:
+| Attribute | Type | Required | Description |
+| --------- | ---- | -------- | ----------- |
+| `id`      | integer | yes   | The ID of a project |
+| `merge_request_id` | integer | yes   | The ID of the merge request |
 
-- `id` (required)               - The ID of a project
-- `merge_request_id` (required) - ID of merge request
+```bash
+curl -H "PRIVATE-TOKEN: 9koXpg98eAheJpvBs5tK" https://gitlab.example.com/api/v3/projects/76/merge_requests/1/closes_issues
+```
+
+Example response:
 
 ```json
 [
-  {
-    "note": "this is the 1st comment on the 2merge merge request",
-    "author": {
-      "id": 11,
-      "username": "admin",
-      "email": "admin@example.com",
-      "name": "Administrator",
-      "state": "active",
-      "created_at": "2014-03-06T08:17:35.000Z"
-    }
-  },
-  {
-    "note": "Status changed to closed",
-    "author": {
-      "id": 11,
-      "username": "admin",
-      "email": "admin@example.com",
-      "name": "Administrator",
-      "state": "active",
-      "created_at": "2014-03-06T08:17:35.000Z"
-    }
-  }
+   {
+      "state" : "opened",
+      "description" : "Ratione dolores corrupti mollitia soluta quia.",
+      "author" : {
+         "state" : "active",
+         "id" : 18,
+         "web_url" : "https://gitlab.example.com/u/eileen.lowe",
+         "name" : "Alexandra Bashirian",
+         "avatar_url" : null,
+         "username" : "eileen.lowe"
+      },
+      "milestone" : {
+         "project_id" : 1,
+         "description" : "Ducimus nam enim ex consequatur cumque ratione.",
+         "state" : "closed",
+         "due_date" : null,
+         "iid" : 2,
+         "created_at" : "2016-01-04T15:31:39.996Z",
+         "title" : "v4.0",
+         "id" : 17,
+         "updated_at" : "2016-01-04T15:31:39.996Z"
+      },
+      "project_id" : 1,
+      "assignee" : {
+         "state" : "active",
+         "id" : 1,
+         "name" : "Administrator",
+         "web_url" : "https://gitlab.example.com/u/root",
+         "avatar_url" : null,
+         "username" : "root"
+      },
+      "updated_at" : "2016-01-04T15:31:51.081Z",
+      "id" : 76,
+      "title" : "Consequatur vero maxime deserunt laboriosam est voluptas dolorem.",
+      "created_at" : "2016-01-04T15:31:51.081Z",
+      "iid" : 6,
+      "labels" : [],
+      "user_notes_count": 1
+   },
 ]
 ```
 
-## Comments on merge requets
+## Subscribe to a merge request
 
-Comments are done via the notes resource.
+Subscribes the authenticated user to a merge request to receive notification. If
+the operation is successful, status code `201` together with the updated merge
+request is returned. If the user is already subscribed to the merge request, the
+status code `304` is returned. If the project or merge request is not found,
+status code `404` is returned.
+
+```
+POST /projects/:id/merge_requests/:merge_request_id/subscription
+```
+
+| Attribute | Type | Required | Description |
+| --------- | ---- | -------- | ----------- |
+| `id` | integer | yes | The ID of a project |
+| `merge_request_id` | integer | yes   | The ID of the merge request |
+
+```bash
+curl -X POST -H "PRIVATE-TOKEN: 9koXpg98eAheJpvBs5tK" https://gitlab.example.com/api/v3/projects/5/merge_requests/17/subscription
+```
+
+Example response:
+
+```json
+{
+  "id": 17,
+  "iid": 1,
+  "project_id": 5,
+  "title": "Et et sequi est impedit nulla ut rem et voluptatem.",
+  "description": "Consequatur velit eos rerum optio autem. Quia id officia quaerat dolorum optio. Illo laudantium aut ipsum dolorem.",
+  "state": "opened",
+  "created_at": "2016-04-05T21:42:23.233Z",
+  "updated_at": "2016-04-05T22:11:52.900Z",
+  "target_branch": "ui-dev-kit",
+  "source_branch": "version-1-9",
+  "upvotes": 0,
+  "downvotes": 0,
+  "author": {
+    "name": "Eileen Skiles",
+    "username": "leila",
+    "id": 19,
+    "state": "active",
+    "avatar_url": "http://www.gravatar.com/avatar/39ce4a2822cc896933ffbd68c1470e55?s=80&d=identicon",
+    "web_url": "https://gitlab.example.com/u/leila"
+  },
+  "assignee": {
+    "name": "Celine Wehner",
+    "username": "carli",
+    "id": 16,
+    "state": "active",
+    "avatar_url": "http://www.gravatar.com/avatar/f4cd5605b769dd2ce405a27c6e6f2684?s=80&d=identicon",
+    "web_url": "https://gitlab.example.com/u/carli"
+  },
+  "source_project_id": 5,
+  "target_project_id": 5,
+  "labels": [],
+  "work_in_progress": false,
+  "milestone": {
+    "id": 7,
+    "iid": 1,
+    "project_id": 5,
+    "title": "v2.0",
+    "description": "Corrupti eveniet et velit occaecati dolorem est rerum aut.",
+    "state": "closed",
+    "created_at": "2016-04-05T21:41:40.905Z",
+    "updated_at": "2016-04-05T21:41:40.905Z",
+    "due_date": null
+  },
+  "merge_when_build_succeeds": false,
+  "merge_status": "cannot_be_merged",
+  "subscribed": true
+}
+```
+
+## Unsubscribe from a merge request
+
+Unsubscribes the authenticated user from a merge request to not receive
+notifications from that merge request. If the operation is successful, status
+code `200` together with the updated merge request is returned. If the user is
+not subscribed to the merge request, the status code `304` is returned. If the
+project or merge request is not found, status code `404` is returned.
+
+```
+DELETE /projects/:id/merge_requests/:merge_request_id/subscription
+```
+
+| Attribute | Type | Required | Description |
+| --------- | ---- | -------- | ----------- |
+| `id` | integer | yes | The ID of a project |
+| `merge_request_id` | integer | yes   | The ID of the merge request |
+
+```bash
+curl -X DELETE -H "PRIVATE-TOKEN: 9koXpg98eAheJpvBs5tK" https://gitlab.example.com/api/v3/projects/5/merge_requests/17/subscription
+```
+
+Example response:
+
+```json
+{
+  "id": 17,
+  "iid": 1,
+  "project_id": 5,
+  "title": "Et et sequi est impedit nulla ut rem et voluptatem.",
+  "description": "Consequatur velit eos rerum optio autem. Quia id officia quaerat dolorum optio. Illo laudantium aut ipsum dolorem.",
+  "state": "opened",
+  "created_at": "2016-04-05T21:42:23.233Z",
+  "updated_at": "2016-04-05T22:11:52.900Z",
+  "target_branch": "ui-dev-kit",
+  "source_branch": "version-1-9",
+  "upvotes": 0,
+  "downvotes": 0,
+  "author": {
+    "name": "Eileen Skiles",
+    "username": "leila",
+    "id": 19,
+    "state": "active",
+    "avatar_url": "http://www.gravatar.com/avatar/39ce4a2822cc896933ffbd68c1470e55?s=80&d=identicon",
+    "web_url": "https://gitlab.example.com/u/leila"
+  },
+  "assignee": {
+    "name": "Celine Wehner",
+    "username": "carli",
+    "id": 16,
+    "state": "active",
+    "avatar_url": "http://www.gravatar.com/avatar/f4cd5605b769dd2ce405a27c6e6f2684?s=80&d=identicon",
+    "web_url": "https://gitlab.example.com/u/carli"
+  },
+  "source_project_id": 5,
+  "target_project_id": 5,
+  "labels": [],
+  "work_in_progress": false,
+  "milestone": {
+    "id": 7,
+    "iid": 1,
+    "project_id": 5,
+    "title": "v2.0",
+    "description": "Corrupti eveniet et velit occaecati dolorem est rerum aut.",
+    "state": "closed",
+    "created_at": "2016-04-05T21:41:40.905Z",
+    "updated_at": "2016-04-05T21:41:40.905Z",
+    "due_date": null
+  },
+  "merge_when_build_succeeds": false,
+  "merge_status": "cannot_be_merged",
+  "subscribed": false
+}
+```

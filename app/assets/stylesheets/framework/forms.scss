@@ -2,16 +2,13 @@ textarea {
   resize: vertical;
 }
 
-input[type='search'].search-text-input {
-  background-image: image-url("icon-search.png");
-  background-repeat: no-repeat;
-  background-position: 10px;
-  padding-left: 25px;
+input {
+  border-radius: $border-radius-base;
 }
 
 input[type='text'].danger {
-  background: #F2DEDE!important;
-  border-color: #D66;
+  background: #f2dede!important;
+  border-color: #d66;
   text-shadow: 0 1px 1px #fff
 }
 
@@ -37,6 +34,10 @@ label {
 
   &.inline-label {
     margin: 0;
+  }
+
+  &.label-light {
+    font-weight: 600;
   }
 }
 
@@ -74,6 +75,25 @@ label {
 
 .form-control {
   @include box-shadow(none);
+  border-radius: 3px;
+}
+
+.select-wrapper {
+  position: relative;
+
+  .caret {
+    position: absolute;
+    right: 10px;
+    top: $gl-padding;
+    color: $gray-darkest;
+    pointer-events: none;
+  }
+}
+
+.select-control {
+  padding-left: 10px;
+  padding-right: 10px;
+  -webkit-appearance: none;
 }
 
 .form-control-inline {
@@ -89,7 +109,7 @@ label {
 }
 
 .form-control::-webkit-input-placeholder {
-  color: #7f8fa4;
+  color: $gl-placeholder-color;
 }
 
 .input-group {

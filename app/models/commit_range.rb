@@ -32,8 +32,8 @@ class CommitRange
   PATTERN = /#{REF_PATTERN}\.{2,3}#{REF_PATTERN}/
 
   # In text references, the beginning and ending refs can only be SHAs
-  # between 6 and 40 hex characters.
-  STRICT_PATTERN = /\h{6,40}\.{2,3}\h{6,40}/
+  # between 7 and 40 hex characters.
+  STRICT_PATTERN = /\h{7,40}\.{2,3}\h{7,40}/
 
   def self.reference_prefix
     '@'
@@ -43,14 +43,14 @@ class CommitRange
   #
   # This pattern supports cross-project references.
   def self.reference_pattern
-    %r{
+    @reference_pattern ||= %r{
       (?:#{Project.reference_pattern}#{reference_prefix})?
       (?<commit_range>#{STRICT_PATTERN})
     }x
   end
 
   def self.link_reference_pattern
-    super("compare", /(?<commit_range>#{PATTERN})/)
+    @link_reference_pattern ||= super("compare", /(?<commit_range>#{PATTERN})/)
   end
 
   # Initialize a CommitRange

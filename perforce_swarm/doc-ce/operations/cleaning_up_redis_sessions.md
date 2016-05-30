@@ -1,17 +1,17 @@
 # Cleaning up stale Redis sessions
 
-GitSwarm stores web user sessions as key-value pairs in Redis. Prior to
-GitSwarm 2015.3, user sessions did not automatically expire from Redis. If
-you have been running a large GitSwarm server (thousands of users) since
-before GitSwarm 2015.3, we recommend cleaning up stale sessions to compact
-the Redis database after you upgrade to GitSwarm 2015.3 or newer. You can
-also perform a cleanup while still running GitSwarm 2015.2 or older, but in
+$GitSwarm$ stores web user sessions as key-value pairs in Redis. Prior to
+$GitSwarm$ 2015.3, user sessions did not automatically expire from Redis. If
+you have been running a large $GitSwarm$ server (thousands of users) since
+before $GitSwarm$ 2015.3, we recommend cleaning up stale sessions to compact
+the Redis database after you upgrade to $GitSwarm$ 2015.3 or newer. You can
+also perform a cleanup while still running $GitSwarm$ 2015.2 or older, but in
 that case new stale sessions will start building up again after you clean
 up.
 
-In GitSwarm versions prior to 2015.4, the session keys in Redis are 16-byte
+In $GitSwarm$ versions prior to 2015.4, the session keys in Redis are 16-byte
 hexadecimal values such as '976aa289e2189b17d7ef525a6702ace9'. Starting with
-GitSwarm 2015.4, the keys are prefixed with 'session:gitlab:', so they
+$GitSwarm$ 2015.4, the keys are prefixed with 'session:gitlab:', so they
 would look like 'session:gitlab:976aa289e2189b17d7ef525a6702ace9'. Below we
 describe how to remove the keys in the old format.
 
@@ -45,5 +45,5 @@ rcli keys '*' | grep '^[a-f0-9]\{32\}$' | awk '{ print "expire", $0, 600 }' | rc
 
 Over the next 15 minutes (10 minutes expiry time plus 5 minutes Redis
 background save interval) your Redis database will be compacted. If you are
-still using GitSwarm 2015.3, users who are not clicking around in GitSWarm
-during the 10 minute expiry window are signed out of GitSwarm.
+still using $GitSwarm$ 2015.3, users who are not clicking around in $GitSwarm$
+during the 10 minute expiry window are signed out of $GitSwarm$.

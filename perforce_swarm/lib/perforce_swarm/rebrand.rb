@@ -8,9 +8,9 @@ module PerforceSwarm
       # ensure GitLab B.V. (post processing GitSwarm B.V.) turns into Perforce Software
       # ensure _gitlab_backup.tar gets replaced with _gitswarm_backup.tar (for help files)
       text.gsub(REPLACE_REGEX, 'GitSwarm')
-        .gsub('$GitLab$', 'GitLab')
-        .gsub('GitSwarm B.V.', 'Perforce Software')
-        .gsub('_gitlab_backup.tar', '_gitswarm_backup.tar')
+          .gsub('$GitLab$', 'GitLab')
+          .gsub('GitSwarm B.V.', 'Perforce Software')
+          .gsub('_gitlab_backup.tar', '_gitswarm_backup.tar')
     end
   end
 end

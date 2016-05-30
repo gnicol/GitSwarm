@@ -4,6 +4,8 @@
   namespaces_path: "/api/:version/namespaces.json"
   group_projects_path: "/api/:version/groups/:id/projects.json"
   projects_path: "/api/:version/projects.json"
+  labels_path: "/api/:version/projects/:id/labels"
+  license_path: "/api/:version/licenses/:key"
 
   group: (group_id, callback) ->
     url = Api.buildUrl(Api.group_path)
@@ -47,7 +49,7 @@
       callback(namespaces)
 
   # Return projects list. Filtered by query
-  projects: (query, callback) ->
+  projects: (query, order, callback) ->
     url = Api.buildUrl(Api.projects_path)
 
     $.ajax(
@@ -55,10 +57,26 @@
       data:
         private_token: gon.api_token
         search: query
+        order_by: order
         per_page: 20
       dataType: "json"
     ).done (projects) ->
       callback(projects)
+
+  newLabel: (project_id, data, callback) ->
+    url = Api.buildUrl(Api.labels_path)
+    url = url.replace(':id', project_id)
+
+    data.private_token = gon.api_token
+    $.ajax(
+      url: url
+      type: "POST"
+      data: data
+      dataType: "json"
+    ).done (label) ->
+      callback(label)
+    .error (message) ->
+      callback(message.responseJSON)
 
   # Return group projects list. Filtered by query
   groupProjects: (group_id, query, callback) ->
@@ -74,6 +92,16 @@
       dataType: "json"
     ).done (projects) ->
       callback(projects)
+
+  # Return text for a specific license
+  licenseText: (key, data, callback) ->
+    url = Api.buildUrl(Api.license_path).replace(':key', key)
+
+    $.ajax(
+      url: url
+      data: data
+    ).done (license) ->
+      callback(license)
 
   buildUrl: (url) ->
     url = gon.relative_url_root + url if gon.relative_url_root?

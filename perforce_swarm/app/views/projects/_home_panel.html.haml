@@ -5,26 +5,27 @@
 .project-home-panel.cover-block.clearfix{:class => ("empty-project" if empty_repo)}
   .project-identicon-holder
     = project_icon(@project, alt: '', class: 'project-avatar avatar s90')
-  .project-home-desc
-    %h1= @project.name
+  .cover-title.project-home-desc
+    %h1
+      = @project.name
+      %span.visibility-icon.has-tooltip{data: { container: 'body' }, title: visibility_icon_description(@project)}
+
     - if @project.description.present?
-      = markdown(@project.description, pipeline: :description)
+      .cover-desc.project-home-desc
+        = markdown(@project.description, pipeline: :description)
 
     - if forked_from_project = @project.forked_from_project
-      %p
+      .cover-desc.project-home-desc
         Forked from
         = link_to project_path(forked_from_project) do
           = forked_from_project.namespace.try(:name)
+  -# gitswarm changes start
   .cover-controls.left
-    .visibility-level-label.has_tooltip{title: project_visibility_level_description(@project.visibility_level), data: { container: 'body' } }
-      = visibility_level_icon(@project.visibility_level, fw: false)
-      = visibility_level_label(@project.visibility_level)
-    -# gitswarm changes start
     - mirrored = @project.git_fusion_mirrored?
     .helix-mirrored-status-label.btn.btn-gray{ data: { container: 'body', toggle: 'tooltip', html: 'true', title: helix_mirroring_tooltip(@project, current_user)}}
       = (mirrored ? '' : 'Not ') + 'Mirrored in Helix'
       = icon('fw question-circle') unless mirrored
-    -# gitswarm changes end
+  -# gitswarm changes end
 
   .cover-controls
     - if current_user

@@ -1,3 +1,3 @@
 # Installation (old)
 
-Refer to the [GitSwarm installation instructions](README.md)
+Refer to the [$GitSwarm$ installation instructions](README.md)

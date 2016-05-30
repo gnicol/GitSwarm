@@ -1,25 +1,5 @@
-# == Schema Information
-#
-# Table name: members
-#
-#  id                 :integer          not null, primary key
-#  access_level       :integer          not null
-#  source_id          :integer          not null
-#  source_type        :string(255)      not null
-#  user_id            :integer
-#  notification_level :integer          not null
-#  type               :string(255)
-#  created_at         :datetime
-#  updated_at         :datetime
-#  created_by_id      :integer
-#  invite_email       :string(255)
-#  invite_token       :string(255)
-#  invite_accepted_at :datetime
-#
-
 class Member < ActiveRecord::Base
   include Sortable
-  include Notifiable
   include Gitlab::Access
 
   attr_accessor :raw_invite_token
@@ -39,7 +19,6 @@ class Member < ActiveRecord::Base
       if: :invite?
     },
     email: {
-      strict_mode: true,
       allow_nil: true
     },
     uniqueness: {
@@ -57,11 +36,14 @@ class Member < ActiveRecord::Base
 
   before_validation :generate_invite_token, on: :create, if: -> (member) { member.invite_email.present? }
   after_create :send_invite, if: :invite?
+  after_create :create_notification_setting, unless: :invite?
   after_create :post_create_hook, unless: :invite?
   after_update :post_update_hook, unless: :invite?
   after_destroy :post_destroy_hook, unless: :invite?
 
   delegate :name, :username, :email, to: :user, prefix: true
+
+  default_value_for :notification_level, NotificationSetting.levels[:global]
 
   class << self
     def find_by_invite_token(invite_token)
@@ -159,6 +141,14 @@ class Member < ActiveRecord::Base
     generate_invite_token! unless @raw_invite_token
 
     send_invite
+  end
+
+  def create_notification_setting
+    user.notification_settings.find_or_create_for(source)
+  end
+
+  def notification_setting
+    @notification_setting ||= user.notification_settings_for(source)
   end
 
   private

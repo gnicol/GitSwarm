@@ -8,7 +8,7 @@
 - CentOS 6.6 or higher, or 7.0 or higher
 - Red Hat Enterprise Linux (RHEL) 6.6 or higher, or 7.0 or higher
 
-> Note: GitSwarm is only available for 64-bit systems.
+> Note: $GitSwarm$ is only available for 64-bit systems.
 
 See the [installation instructions](README.md).
 
@@ -22,14 +22,14 @@ See the [installation instructions](README.md).
 
 ### Non-Unix operating systems such as Windows
 
-GitSwarm is developed for Unix operating systems. GitSwarm does **not** run
+$GitSwarm$ is developed for Unix operating systems. $GitSwarm$ does **not** run
 on Windows and we have no plans of supporting it in the near future.
-Please consider using a virtual machine to run GitSwarm.
+Please consider using a virtual machine to run $GitSwarm$.
 
 ## Ruby versions
 
-GitSwarm requires Ruby (MRI) 2.1 You will have to use the standard MRI
-implementation of Ruby. We love JRuby and Rubinius but GitSwarm needs
+$GitSwarm$ requires Ruby (MRI) 2.1 You will have to use the standard MRI
+implementation of Ruby. We love JRuby and Rubinius but $GitSwarm$ needs
 several Gems that have native extensions.
 
 ## Hardware requirements
@@ -37,7 +37,7 @@ several Gems that have native extensions.
 ### Storage
 
 The necessary hard drive space largely depends on the size of the repos you
-want to store in GitSwarm but as a *rule of thumb* you should have at least
+want to store in $GitSwarm$ but as a *rule of thumb* you should have at least
 twice as much free space as all your repos combined take up.
 
 Note that if you are mirroring projects to Helix Server using the [locally
@@ -53,46 +53,45 @@ network file system (NFS) protocol. This volume might be located on a file
 server, a network attached storage (NAS) device, a storage area network
 (SAN) or on an Amazon Web Services (AWS) Elastic Block Store (EBS) volume.
 
-If you have enough RAM memory and a recent CPU the speed of GitSwarm is
+If you have enough RAM memory and a recent CPU the speed of $GitSwarm$ is
 mainly limited by hard drive seek times. Having a fast drive (7200 RPM and
 up) or a solid state drive (SSD) will improve the responsiveness of
-GitSwarm.
+$GitSwarm$.
 
 ### CPU
 
-For production use, it is recommended GitSwarm be run on a dedicated server.
+For production use, it is recommended $GitSwarm$ be run on a dedicated server.
 The Helix Server and Helix Git Fusion products should ideally be installed
 on their own independent machines. In that configuration:
 
-- 1 core works supports up to 100 users, but performance may suffer as
-  all workers and background jobs running on the same core
-- **2 cores** is the **recommended** number of cores and supports up to 500 users
+- 1 core supports up to 100 users, but performance may suffer as all
+  workers and background jobs run on the same core
+- **2 cores** is the **recommended minimum** number of cores and supports
+  up to 500 users
 - 4 cores supports up to 2,000 users
 - 8 cores supports up to 5,000 users
 - 16 cores supports up to 10,000 users
 - 32 cores supports up to 20,000 users
 - 64 cores supports up to 40,000 users
 
-By default, GitSwarm will attempt to automatically provision an instance
+By default, $GitSwarm$ will attempt to automatically provision an instance
 of Helix Server and Helix Git Fusion all on the local system. When running
 all components on the same machine, we suggest a minimum of 4 cores.
 
 ### Memory
 
 You need at least 2GB of addressable memory (RAM + swap) to install and use
-GitSwarm! With less memory GitSwarm will give strange errors during the
+$GitSwarm$! With less memory, $GitSwarm$ will give strange errors during the
 reconfigure run and 500 errors during usage.
 
-For production use, it is recommended GitSwarm be run on a dedicated server.
+For production use, it is recommended $GitSwarm$ be run on a dedicated server.
 The Helix Server and Helix Git Fusion products should ideally be installed
 on their own independent machines. In that configuration:
 
-- 512MB RAM + 1.5GB of swap is the absolute minimum but we strongly
-  **advise against** this amount of memory. See the unicorn worker section
-  below for more advise.
-- 1GB RAM + 1GB swap supports up to 100 users
-- **2GB RAM** is the **recommended** memory size and supports up to 100 users
-- 4GB RAM supports up to 1,000 users
+- 2GB RAM is the absolute minimum, but we strongly **advise against** this
+  amount of memory. See the Unicorn Workers section below for more advice.
+- **4GB RAM** is the **recommended** memory size and supports up to 1,000
+  users
 - 8GB RAM supports up to 2,000 users
 - 16GB RAM supports up to 4,000 users
 - 32GB RAM supports up to 8,000 users
@@ -113,7 +112,8 @@ increase the ability to handle parallel requests.
 For most instances we recommend using: CPU cores + 1 = unicorn workers. So
 for a machine with 2 cores, 3 unicorn workers is ideal.
 
-A **minimum** of **3** unicorn workers is required for concurrent use of the system.
+A **minimum** of **3** unicorn workers is required for concurrent use of
+the system.
 
 For all machines that have 1GB and up we recommend a minimum of three
 unicorn workers. If you have a 512MB machine with a magnetic (non-SSD) swap

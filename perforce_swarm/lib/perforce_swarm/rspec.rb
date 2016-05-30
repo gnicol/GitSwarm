@@ -27,7 +27,7 @@ if ENV['RAILS_ENV'] == 'test'
     # the nested it, context, and describe blocks for the test
     # each level of description is joined with a slash (/)
     def test_description(metadata)
-      if metadata[:example_group].nil? || metadata[:example_group][:description_args].length == 0
+      if metadata[:example_group].nil? || metadata[:example_group][:description_args].empty?
         return metadata[:description_args][0].to_s.strip
       end
       (test_description(metadata[:example_group]) + '/' + metadata[:description_args][0].to_s).strip
@@ -58,7 +58,7 @@ if ENV['RAILS_ENV'] == 'test'
     # in webmock/rspec, stubs are reset after each run. Set a gloabl stub here for our version updates
     config.before(:each) do
       WebMock.stub_request(:get, %r{https://updates\.perforce\.com/static/GitSwarm/GitSwarm(\-ee)?\.json})
-        .to_return(status: 200, body: '{"versions":[]}', headers: {})
+             .to_return(status: 200, body: '{"versions":[]}', headers: {})
     end
 
     # Clear sidekiq worker jobs

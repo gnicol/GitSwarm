@@ -96,7 +96,7 @@ describe 'New Mirrored Project', browser: true, Mirroring: true do
     end
     it 'is visible in the list of available repos' do
       create_project_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
-        .login(user.name, user.password).goto_create_project_page
+                                     .login(user.name, user.password).goto_create_project_page
       available_repos = create_project_page.repo_names
       expect(available_repos.include?(expected_gf_repo_name)).to be true
     end
@@ -121,7 +121,7 @@ describe 'New Mirrored Project', browser: true, Mirroring: true do
       @p4.submit
 
       create_project_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
-        .login(user.name, user.password).goto_create_project_page
+                                     .login(user.name, user.password).goto_create_project_page
       create_project_page.project_name(another_project.name)
       create_project_page.select_mirrored_specific
       create_project_page.select_repo(expected_gf_repo_name)
@@ -329,14 +329,14 @@ describe 'New Mirrored Project', browser: true, Mirroring: true do
 
   def create_new_project(mirrored = true, public_project = false)
     create_project_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
-      .login(user.name, user.password).goto_create_project_page
+                                   .login(user.name, user.password).goto_create_project_page
     create_project_page.project_name(project.name)
     create_project_page.select_mirrored_auto if mirrored
     create_project_page.select_public if public_project
     create_project_page.create_project_and_wait_for_clone
     create_project_page.logout
     GitSwarmAPIHelper.new(CONFIG.get(CONFIG::GS_URL), user.name, user.password)
-      .add_user_to_project(dev_user.name, project.name, GitSwarmAPIHelper::DEVELOPER)
+                     .add_user_to_project(dev_user.name, project.name, GitSwarmAPIHelper::DEVELOPER)
   end
 
   def delete_project(project)

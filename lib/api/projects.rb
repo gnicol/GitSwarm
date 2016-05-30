@@ -44,7 +44,7 @@ module API
       # Example Request:
       #   GET /projects/starred
       get '/starred' do
-        @projects = current_user.starred_projects
+        @projects = current_user.viewable_starred_projects
         @projects = filter_projects(@projects)
         @projects = paginate @projects
         present @projects, with: Entities::Project
@@ -94,6 +94,7 @@ module API
       #   builds_enabled (optional)
       #   wiki_enabled (optional)
       #   snippets_enabled (optional)
+      #   container_registry_enabled (optional)
       #   shared_runners_enabled (optional)
       #   namespace_id (optional) - defaults to user namespace
       #   public (optional) - if true same as setting visibility_level = 20
@@ -112,6 +113,7 @@ module API
                                      :builds_enabled,
                                      :wiki_enabled,
                                      :snippets_enabled,
+                                     :container_registry_enabled,
                                      :shared_runners_enabled,
                                      :namespace_id,
                                      :public,
@@ -143,6 +145,7 @@ module API
       #   builds_enabled (optional)
       #   wiki_enabled (optional)
       #   snippets_enabled (optional)
+      #   container_registry_enabled (optional)
       #   shared_runners_enabled (optional)
       #   public (optional) - if true same as setting visibility_level = 20
       #   visibility_level (optional)
@@ -191,7 +194,7 @@ module API
         else
           present @forked_project, with: Entities::Project,
                                    user_can_admin_project: can?(current_user, :admin_project, @forked_project)
-         end
+        end
       end
 
       # Update an existing project
@@ -206,6 +209,7 @@ module API
       #   builds_enabled (optional)
       #   wiki_enabled (optional)
       #   snippets_enabled (optional)
+      #   container_registry_enabled (optional)
       #   shared_runners_enabled (optional)
       #   public (optional) - if true same as setting visibility_level = 20
       #   visibility_level (optional) - visibility level of a project
@@ -222,6 +226,7 @@ module API
                                      :builds_enabled,
                                      :wiki_enabled,
                                      :snippets_enabled,
+                                     :container_registry_enabled,
                                      :shared_runners_enabled,
                                      :public,
                                      :visibility_level,
@@ -244,6 +249,68 @@ module API
         end
       end
 
+      # Archive project
+      #
+      # Parameters:
+      #   id (required) - The ID of a project
+      # Example Request:
+      #   PUT /projects/:id/archive
+      post ':id/archive' do
+        authorize!(:archive_project, user_project)
+
+        user_project.archive!
+
+        present user_project, with: Entities::Project
+      end
+
+      # Unarchive project
+      #
+      # Parameters:
+      #   id (required) - The ID of a project
+      # Example Request:
+      #   PUT /projects/:id/unarchive
+      post ':id/unarchive' do
+        authorize!(:archive_project, user_project)
+
+        user_project.unarchive!
+
+        present user_project, with: Entities::Project
+      end
+
+      # Star project
+      #
+      # Parameters:
+      #   id (required) - The ID of a project
+      # Example Request:
+      #   POST /projects/:id/star
+      post ':id/star' do
+        if current_user.starred?(user_project)
+          not_modified!
+        else
+          current_user.toggle_star(user_project)
+          user_project.reload
+
+          present user_project, with: Entities::Project
+        end
+      end
+
+      # Unstar project
+      #
+      # Parameters:
+      #   id (required) - The ID of a project
+      # Example Request:
+      #   DELETE /projects/:id/star
+      delete ':id/star' do
+        if current_user.starred?(user_project)
+          current_user.toggle_star(user_project)
+          user_project.reload
+
+          present user_project, with: Entities::Project
+        else
+          not_modified!
+        end
+      end
+
       # Remove project
       #
       # Parameters:
@@ -252,7 +319,7 @@ module API
       #   DELETE /projects/:id
       delete ":id" do
         authorize! :remove_project, user_project
-        ::Projects::DestroyService.new(user_project, current_user, {}).execute
+        ::Projects::DestroyService.new(user_project, current_user, {}).pending_delete!
       end
 
       # Mark this project as forked from another
@@ -287,6 +354,33 @@ module API
         authorize! :remove_fork_project, user_project
         if user_project.forked?
           user_project.forked_project_link.destroy
+        end
+      end
+
+      # Share project with group
+      #
+      # Parameters:
+      #   id (required) - The ID of a project
+      #   group_id (required) - The ID of a group
+      #   group_access (required) - Level of permissions for sharing
+      #
+      # Example Request:
+      #   POST /projects/:id/share
+      post ":id/share" do
+        authorize! :admin_project, user_project
+        required_attributes! [:group_id, :group_access]
+
+        unless user_project.allowed_to_share_with_group?
+          return render_api_error!("The project sharing with group is disabled", 400)
+        end
+
+        link = user_project.project_group_links.new
+        link.group_id = params[:group_id]
+        link.group_access = params[:group_access]
+        if link.save
+          present link, with: Entities::ProjectGroupLink
+        else
+          render_api_error!(link.errors.full_messages.first, 409)
         end
       end
 

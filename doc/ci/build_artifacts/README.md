@@ -1,7 +1,10 @@
 # Introduction to build artifacts
 
 Artifacts is a list of files and directories which are attached to a build
-after it completes successfully.
+after it completes successfully.  This feature is enabled by default in all GitLab installations.
+
+_If you are searching for ways to use artifacts, jump to
+[Defining artifacts in `.gitlab-ci.yml`](#defining-artifacts-in-gitlab-ciyml)._
 
 Since GitLab 8.2 and [GitLab Runner] 0.7.0, build artifacts that are created by
 GitLab Runner are uploaded to GitLab and are downloadable as a single archive
@@ -11,15 +14,14 @@ Starting from GitLab 8.4 and GitLab Runner 1.0, the artifacts archive format
 changed to `ZIP`, and it is now possible to browse its contents, with the added
 ability of downloading the files separately.
 
-## Enabling build artifacts
+**Note:**
+The artifacts browser will be available only for new artifacts that are sent
+to GitLab using GitLab Runner version 1.0 and up. It will not be possible to
+browse old artifacts already uploaded to GitLab.
 
-If you are searching for ways to use the artifacts feature, jump to
-[Defining artifacts in `.gitlab-ci.yml`](#defining-artifacts-in-gitlab-ciyml).
+## Disabling build artifacts
 
-The artifacts feature is enabled by default in all GitLab installations.
-
-If by any chance you want to disable the artifacts feature on your GitLab
-instance, follow the steps below.
+To disable artifacts site-wide, follow the steps below.
 
 ---
 
@@ -154,7 +156,7 @@ inside GitLab that make that possible.
 1. While inside a specific build, you are presented with a download button
    along with the one that browses the archive
 
-1. And finally, when browsing and archive you can see the download button at
+1. And finally, when browsing an archive you can see the download button at
    the top right corner
 
 ---

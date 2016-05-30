@@ -1,7 +1,8 @@
 // Common
 .diff-file {
   border: 1px solid $border-color;
-  border-top: none;
+  margin-bottom: $gl-padding;
+  border-radius: 3px;
 
   .diff-header {
     position: relative;
@@ -10,6 +11,7 @@
     padding: 10px 16px;
     color: #555;
     z-index: 10;
+    border-radius: 3px 3px 0 0;
 
     .diff-title {
       font-family: $monospace_font;
@@ -29,8 +31,10 @@
   .diff-content {
     overflow: auto;
     overflow-y: hidden;
-    background: #FFF;
+    background: #fff;
     color: #333;
+    border-radius: 0 0 3px 3px;
+    -webkit-overflow-scrolling: auto;
 
     .unfold {
       cursor: pointer;
@@ -56,11 +60,35 @@
       width: 100%;
       font-family: $monospace_font;
       border: none;
-      margin: 0px;
-      padding: 0px;
+      border-collapse: separate;
+      margin: 0;
+      padding: 0;
+
       .line_holder td {
         line-height: $code_line_height;
         font-size: $code_font_size;
+
+        &.noteable_line {
+          position: relative;
+
+          &.old {
+            &:before {
+              content: '-';
+              position: absolute;
+            }
+          }
+
+          &.new {
+            &:before {
+              content: '+';
+              position: absolute;
+            }
+          }
+        }
+
+        span {
+          white-space: pre-wrap;
+        }
       }
     }
 
@@ -70,15 +98,19 @@
       }
 
       td.line_content.parallel {
-        width: 50%;
+        width: 46%;
+      }
+
+      .add-diff-note {
+        margin-left: -65px;
       }
     }
 
     .old_line, .new_line {
-      margin: 0px;
-      padding: 0px;
+      margin: 0;
+      padding: 0;
       border: none;
-      padding: 0px 5px;
+      padding: 0 5px;
       border-right: 1px solid;
       text-align: right;
       min-width: 35px;
@@ -96,12 +128,21 @@
     }
     .line_content {
       display: block;
-      margin: 0px;
-      padding: 0px 0.5em;
+      margin: 0;
+      padding: 0 0.5em;
       border: none;
+
       &.parallel {
         display: table-cell;
+
+        span {
+          word-break: break-all;
+        }
       }
+    }
+
+    .text-file.diff-wrap-lines table .line_holder td span {
+      white-space: pre-wrap;
     }
   }
   .image {
@@ -117,7 +158,7 @@
       background-color: #fff;
       line-height: 0;
       img {
-        border: 1px solid #FFF;
+        border: 1px solid #fff;
         background: image-url('trans_bg.gif');
         max-width: 100%;
       }
@@ -131,7 +172,7 @@
     }
     .image-info {
       font-size: 12px;
-      margin: 5px 0 0 0;
+      margin: 5px 0 0;
       color: grey;
     }
 
@@ -182,7 +223,7 @@
           height: 14px;
           width: 15px;
           position: absolute;
-          top: 0px;
+          top: 0;
           background: image-url('swipemode_sprites.gif') 0 3px no-repeat;
         }
         .bottom-handle {
@@ -190,7 +231,7 @@
           height: 14px;
           width: 15px;
           position: absolute;
-          bottom: 0px;
+          bottom: 0;
           background: image-url('swipemode_sprites.gif') 0 -11px no-repeat;
         }
       }
@@ -205,8 +246,8 @@
       .frame.added, .frame.deleted {
         position: absolute;
         display: block;
-        top: 0px;
-        left: 0px;
+        top: 0;
+        left: 0;
       }
       .controls {
         display: block;
@@ -214,7 +255,7 @@
         width: 300px;
         z-index: 100;
         position: absolute;
-        bottom: 0px;
+        bottom: 0;
         left: 50%;
         margin-left: -150px;
 
@@ -230,11 +271,11 @@
         .dragger {
           display: block;
           position: absolute;
-          left: 0px;
-          top: 0px;
+          left: 0;
+          top: 0;
           height: 14px;
           width: 14px;
-          background: image-url('onion_skin_sprites.gif') 0px -34px repeat-x;
+          background: image-url('onion_skin_sprites.gif') 0 -34px repeat-x;
           cursor: pointer;
         }
 
@@ -242,17 +283,17 @@
           display: block;
           position: absolute;
           top: 2px;
-          right: 0px;
+          right: 0;
           height: 10px;
           width: 10px;
-          background: image-url('onion_skin_sprites.gif') -2px 0px no-repeat;
+          background: image-url('onion_skin_sprites.gif') -2px 0 no-repeat;
         }
 
         .opaque {
           display: block;
           position: absolute;
           top: 2px;
-          left: 0px;
+          left: 0;
           height: 10px;
           width: 10px;
           background: image-url('onion_skin_sprites.gif') -2px -10px no-repeat;
@@ -264,7 +305,7 @@
   .view-modes {
     padding: 10px;
     text-align: center;
-    background: #EEE;
+    background: #eee;
 
     ul, li {
       list-style: none;
@@ -304,7 +345,7 @@
 }
 
 .diff-file .line_content {
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
 .diff-wrap-lines .line_content {
@@ -313,6 +354,16 @@
 
 .inline-parallel-buttons {
   float: right;
+}
+
+.diffs {
+  .content-block {
+    border-bottom: none;
+  }
+}
+
+.files-changed {
+  border-bottom: none;
 }
 
 // Mobile
@@ -358,5 +409,33 @@
 
   &.diff-line-num {
     border-color: $border;
+  }
+}
+
+.files {
+  margin-top: -1px;
+
+  .diff-file:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.file-holder {
+  .diff-line-num:not(.js-unfold-bottom) {
+    a {
+      &:before {
+        content: attr(data-linenumber);
+      }
+    }
+  }
+}
+
+.discussion {
+  .diff-content {
+    .diff-line-num {
+      &:before {
+        content: attr(data-linenumber);
+      }
+    }
   }
 }

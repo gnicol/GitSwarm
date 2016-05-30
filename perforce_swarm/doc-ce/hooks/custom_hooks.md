@@ -1,7 +1,7 @@
 # Custom Git Hooks
 
 **Note: Custom git hooks must be configured on the filesystem of the
-GitSwarm server. Only GitSwarm server administrators will be able to
+$GitSwarm$ server. Only $GitSwarm$ server administrators will be able to
 complete these tasks. Please explore [webhooks](../web_hooks/web_hooks.md)
 as an option if you do not have filesystem access.**
 
@@ -11,19 +11,19 @@ update. See [Git SCM Server-Side
 Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks#Server-Side-Hooks)
 for more information about each hook type.
 
-GitSwarm administrators can add custom git hooks to any GitSwarm project.
+$GitSwarm$ administrators can add custom git hooks to any $GitSwarm$ project.
 
 ## Setup
 
 Normally, git hooks are placed in the repository or project's `hooks`
-directory. GitSwarm creates a symlink from each project's `hooks` directory
+directory. $GitSwarm$ creates a symlink from each project's `hooks` directory
 to the gitswarm-shell `hooks` directory for ease of maintenance between
 gitswarm-shell upgrades. As such, custom hooks are implemented a little
 differently. Behavior is exactly the same once the hook is created, though.
 Follow these steps to set up a custom hook.
 
 1. Pick a project that needs a custom git hook.
-1. On the GitSwarm server, navigate to the project's repository directory.
+1. On the $GitSwarm$ server, navigate to the project's repository directory.
    The path is usually
    `/var/opt/gitswarm/git-data/repositories/<group>/<project>.git`.
 1. Create a new directory in this location called `custom_hooks`.

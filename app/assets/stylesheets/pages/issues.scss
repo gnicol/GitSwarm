@@ -3,14 +3,8 @@
     padding: 10px $gl-padding;
     position: relative;
 
-    .issue-title {
-      margin-bottom: 5px;
-      font-size: $list-font-size;
-      font-weight: 600;
-    }
-
-    .issue-info {
-      color: $gl-gray;
+    .title {
+      margin-bottom: 2px;
     }
 
     .issue-check {
@@ -49,18 +43,13 @@
 .issue-search-form {
   margin: 0;
   height: 24px;
-
-  .issue_search {
-    border: 1px solid #DDD !important;
-    background-color: #f4f4f4;
-  }
 }
 
 form.edit-issue {
   margin: 0;
 }
 
-.merge-requests-title {
+.merge-requests-title, .related-branches-title {
   font-size: 16px;
   font-weight: 600;
 }
@@ -68,10 +57,6 @@ form.edit-issue {
 .merge-request-id {
   display: inline-block;
   width: 3em;
-}
-
-.merge-request-info {
-  padding-left: 5px;
 }
 
 .merge-request-status {
@@ -83,60 +68,27 @@ form.edit-issue {
 .merge-request,
 .issue {
   &.today {
-    background: #EFE;
-    border-color: #CEC;
+    background: #efe;
+    border-color: #cec;
   }
 
   &.closed {
-    background: #F9F9F9;
-    border-color: #E5E5E5;
+    background: #f9f9f9;
+    border-color: #e5e5e5;
   }
 
   &.merged {
-    background: #F9F9F9;
-    border-color: #E5E5E5;
+    background: #f9f9f9;
+    border-color: #e5e5e5;
   }
 }
 
 @media (max-width: $screen-xs-max) {
   .issue-btn-group {
     width: 100%;
-    margin-top: 5px;
-
-    .btn-group {
-      width: 100%;
-
-      ul {
-        width: 100%;
-        text-align: center;
-      }
-    }
 
     .btn {
       width: 100%;
-      margin-top: -1px;
-
-      &:first-child:not(:last-child) {
-        border-radius: 4px 4px 0 0;
-      }
-
-      &:not(:first-child):not(:last-child) {
-        border-radius: 0;
-      }
-
-      &:last-child:not(:first-child) {
-        border-radius: 0 0 4px 4px;
-      }
-    }
-  }
-
-  .issue {
-    &:hover  .issue-actions {
-      display: none !important;
-    }
-
-    .issue-updated-at {
-      display: none;
     }
   }
 }
@@ -146,6 +98,6 @@ form.edit-issue {
 }
 
 .issue-closed-by-widget {
-  color: $secondary-text;
+  color: $gl-text-color;
   margin-left: 52px;
 }

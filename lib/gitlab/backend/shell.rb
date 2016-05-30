@@ -36,7 +36,7 @@ module Gitlab
     #   import_repository("gitlab/gitlab-ci", "https://github.com/randx/six.git")
     #
     def import_repository(name, url)
-      output, status = Popen::popen([gitlab_shell_projects_path, 'import-project', "#{name}.git", url, '240'])
+      output, status = Popen::popen([gitlab_shell_projects_path, 'import-project', "#{name}.git", url, '900'])
       raise Error, output unless status.zero?
       true
     end
@@ -47,24 +47,11 @@ module Gitlab
     # new_path - new project path with namespace
     #
     # Ex.
-    #   mv_repository("gitlab/gitlab-ci", "randx/gitlab-ci-new.git")
+    #   mv_repository("gitlab/gitlab-ci", "randx/gitlab-ci-new")
     #
     def mv_repository(path, new_path)
       Gitlab::Utils.system_silent([gitlab_shell_projects_path, 'mv-project',
                                    "#{path}.git", "#{new_path}.git"])
-    end
-
-    # Update HEAD for repository
-    #
-    # path - project path with namespace
-    # branch - repository branch name
-    #
-    # Ex.
-    #  update_repository_head("gitlab/gitlab-ci", "3-1-stable")
-    #
-    def update_repository_head(path, branch)
-      Gitlab::Utils.system_silent([gitlab_shell_projects_path, 'update-head',
-                                   "#{path}.git", branch])
     end
 
     # Fork repository to new namespace
@@ -90,64 +77,6 @@ module Gitlab
     def remove_repository(name)
       Gitlab::Utils.system_silent([gitlab_shell_projects_path,
                                    'rm-project', "#{name}.git"])
-    end
-
-    # Add repository branch from passed ref
-    #
-    # path - project path with namespace
-    # branch_name - new branch name
-    # ref - HEAD for new branch
-    #
-    # Ex.
-    #   add_branch("gitlab/gitlab-ci", "4-0-stable", "master")
-    #
-    def add_branch(path, branch_name, ref)
-      Gitlab::Utils.system_silent([gitlab_shell_projects_path, 'create-branch',
-                                   "#{path}.git", branch_name, ref])
-    end
-
-    # Remove repository branch
-    #
-    # path - project path with namespace
-    # branch_name - branch name to remove
-    #
-    # Ex.
-    #   rm_branch("gitlab/gitlab-ci", "4-0-stable")
-    #
-    def rm_branch(path, branch_name)
-      Gitlab::Utils.system_silent([gitlab_shell_projects_path, 'rm-branch',
-                                   "#{path}.git", branch_name])
-    end
-
-    # Add repository tag from passed ref
-    #
-    # path - project path with namespace
-    # tag_name - new tag name
-    # ref - HEAD for new tag
-    # message - optional message for tag (annotated tag)
-    #
-    # Ex.
-    #   add_tag("gitlab/gitlab-ci", "v4.0", "master")
-    #   add_tag("gitlab/gitlab-ci", "v4.0", "master", "message")
-    #
-    def add_tag(path, tag_name, ref, message = nil)
-      cmd = %W(#{gitlab_shell_path}/bin/gitlab-projects create-tag #{path}.git
-               #{tag_name} #{ref})
-      cmd << message unless message.nil? || message.empty?
-      Gitlab::Utils.system_silent(cmd)
-    end
-
-    # Remove repository tag
-    #
-    # path - project path with namespace
-    # tag_name - tag name to remove
-    #
-    # Ex.
-    #   rm_tag("gitlab/gitlab-ci", "v4.0")
-    #
-    def rm_tag(path, tag_name)
-      Gitlab::Utils.system_silent([gitlab_shell_projects_path, 'rm-tag',
-                                   "#{path}.git", tag_name])
     end
 
     # Gc repository
@@ -251,7 +180,7 @@ module Gitlab
     #   exists?('gitlab/cookies.git')
     #
     def exists?(dir_name)
-      File.exists?(full_path(dir_name))
+      File.exist?(full_path(dir_name))
     end
 
     protected

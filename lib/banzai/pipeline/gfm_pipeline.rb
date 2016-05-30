@@ -2,11 +2,12 @@ module Banzai
   module Pipeline
     class GfmPipeline < BasePipeline
       def self.filters
-        @filters ||= [
+        @filters ||= FilterArray[
           Filter::SyntaxHighlightFilter,
           Filter::SanitizationFilter,
 
           Filter::UploadLinkFilter,
+          Filter::ImageLinkFilter,
           Filter::EmojiFilter,
           Filter::TableOfContentsFilter,
           Filter::AutolinkFilter,

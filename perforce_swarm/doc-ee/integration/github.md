@@ -1,6 +1,6 @@
 # Integrate your server with GitHub
 
-Import projects from GitHub and login to your GitSwarm EE instance with
+Import projects from GitHub and login to your $GitSwarm$ instance with
 your GitHub account.
 
 To enable the GitHub OmniAuth provider you must register your application
@@ -20,9 +20,9 @@ use.
 
 1.  Provide the required details.
     - Application name: This can be anything. Consider something like
-      "\<Organization\>'s GitSwarm EE" or "\<Your Name\>'s GitSwarm EE" or
+      "\<Organization\>'s $GitSwarm$" or "\<Your Name\>'s $GitSwarm$" or
       something else descriptive.
-    - Homepage URL: The URL to your GitSwarm EE installation.
+    - Homepage URL: The URL to your $GitSwarm$ installation.
       `https://gitswarm.company.com`
     - Application description: Fill this in if you wish.
     - Authorization callback URL: `https://gitswarm.company.com/`
@@ -35,7 +35,7 @@ use.
 
     ![GitHub app](github_app.png)
 
-1.  On your GitSwarm EE server, open the configuration file.
+1.  On your $GitSwarm$ server, open the configuration file.
 
     ```bash
     sudo editor /etc/gitswarm/gitswarm.rb
@@ -67,7 +67,7 @@ use.
       url: "https://github.example.com/",
       args: { scope: 'user:email' } }
     ```
-    
+
     __Replace `https://github.example.com/` with your GitHub URL__
 
 1.  Change 'YOUR_APP_ID' to the client ID from the GitHub application page
@@ -78,9 +78,9 @@ use.
 
 1.  Save the configuration file.
 
-1.  Restart GitSwarm EE for the changes to take effect.
+1.  Restart $GitSwarm$ for the changes to take effect.
 
 On the sign in page there should now be a GitHub icon below the regular
 sign in form. Click the icon to begin the authentication process. GitHub
-asks the user to sign in and authorize the GitSwarm EE application. If
-everything goes well the user is returned to GitSwarm EE and is signed in.
+asks the user to sign in and authorize the $GitSwarm$ application. If
+everything goes well the user is returned to $GitSwarm$ and is signed in.

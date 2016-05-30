@@ -584,6 +584,7 @@ v 8.4.10
 
 v 8.4.9
   - Fix persistent XSS vulnerability in `commit_person_link` helper
+  - Remove persistent XSS vulnerability in `commit_person_link` helper
 
 v 8.4.8
   - Fix a 2FA authentication spoofing vulnerability.

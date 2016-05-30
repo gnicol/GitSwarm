@@ -29,12 +29,12 @@ describe 'Issues', feature: true do
         bar.update(due_date: 6.days.from_now)
       end
 
-      # override the overdue test so it passes more consistently - the community test
-      # is 1 day overdue, which doesn't always work
+      # note that we override Date.today to Date.current which respects timezones
+      # if we don't, this test will fail due to the discrepancy between UTC and local time
       it 'filters by overdue', override: true do
-        foo.update(due_date: Date.today + 2.days)
-        bar.update(due_date: Date.today + 20.days)
-        baz.update(due_date: Date.today - 10.days)
+        foo.update(due_date: Date.current + 1.day)
+        bar.update(due_date: Date.current + 20.days)
+        baz.update(due_date: Date.current - 10.days)
 
         visit namespace_project_issues_path(project.namespace, project, due_date: Issue::Overdue.name)
 

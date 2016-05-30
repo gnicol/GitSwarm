@@ -1,44 +1,3 @@
-# == Schema Information
-#
-# Table name: projects
-#
-#  id                     :integer          not null, primary key
-#  name                   :string(255)
-#  path                   :string(255)
-#  description            :text
-#  created_at             :datetime
-#  updated_at             :datetime
-#  creator_id             :integer
-#  issues_enabled         :boolean          default(TRUE), not null
-#  wall_enabled           :boolean          default(TRUE), not null
-#  merge_requests_enabled :boolean          default(TRUE), not null
-#  wiki_enabled           :boolean          default(TRUE), not null
-#  namespace_id           :integer
-#  issues_tracker         :string(255)      default("gitlab"), not null
-#  issues_tracker_id      :string(255)
-#  snippets_enabled       :boolean          default(TRUE), not null
-#  last_activity_at       :datetime
-#  import_url             :string(255)
-#  visibility_level       :integer          default(0), not null
-#  archived               :boolean          default(FALSE), not null
-#  avatar                 :string(255)
-#  import_status          :string(255)
-#  repository_size        :float            default(0.0)
-#  star_count             :integer          default(0), not null
-#  import_type            :string(255)
-#  import_source          :string(255)
-#  commit_count           :integer          default(0)
-#  import_error           :text
-#  ci_id                  :integer
-#  builds_enabled         :boolean          default(TRUE), not null
-#  shared_runners_enabled :boolean          default(TRUE), not null
-#  runners_token          :string
-#  build_coverage_regex   :string
-#  build_allow_git_fetch  :boolean          default(TRUE), not null
-#  build_timeout          :integer          default(3600), not null
-#  pending_delete         :boolean
-#
-
 require 'carrierwave/orm/activerecord'
 
 class Project < ActiveRecord::Base
@@ -62,8 +21,8 @@ class Project < ActiveRecord::Base
   default_value_for :merge_requests_enabled, gitlab_config_features.merge_requests
   default_value_for :builds_enabled, gitlab_config_features.builds
   default_value_for :wiki_enabled, gitlab_config_features.wiki
-  default_value_for :wall_enabled, false
   default_value_for :snippets_enabled, gitlab_config_features.snippets
+  default_value_for :container_registry_enabled, gitlab_config_features.container_registry
   default_value_for(:shared_runners_enabled) { current_application_settings.shared_runners_enabled }
 
   # set last_activity_at to the same as created_at
@@ -90,6 +49,8 @@ class Project < ActiveRecord::Base
 
   attr_accessor :new_default_branch
   attr_accessor :old_path_with_namespace
+
+  alias_attribute :title, :name
 
   # Relations
   belongs_to :creator, foreign_key: 'creator_id', class_name: 'User'
@@ -367,6 +328,12 @@ class Project < ActiveRecord::Base
 
   def repository
     @repository ||= Repository.new(path_with_namespace, self)
+  end
+
+  def container_registry_url
+    if container_registry_enabled? && Gitlab.config.registry.enabled
+      "#{Gitlab.config.registry.host_with_port}/#{path_with_namespace}"
+    end
   end
 
   def commit(id = 'HEAD')
@@ -735,19 +702,17 @@ class Project < ActiveRecord::Base
   end
 
   def open_branches
-    all_branches = repository.branches
+    # We're using a Set here as checking values in a large Set is faster than
+    # checking values in a large Array.
+    protected_set = Set.new(protected_branch_names)
 
-    if protected_branches.present?
-      all_branches.reject! do |branch|
-        protected_branches_names.include?(branch.name)
-      end
+    repository.branches.reject do |branch|
+      protected_set.include?(branch.name)
     end
-
-    all_branches
   end
 
-  def protected_branches_names
-    @protected_branches_names ||= protected_branches.map(&:name)
+  def protected_branch_names
+    @protected_branch_names ||= protected_branches.pluck(:name)
   end
 
   def root_ref?(branch)
@@ -764,7 +729,7 @@ class Project < ActiveRecord::Base
 
   # Check if current branch name is marked as protected in the system
   def protected_branch?(branch_name)
-    protected_branches_names.include?(branch_name)
+    protected_branch_names.include?(branch_name)
   end
 
   def developers_can_push_to_protected_branch?(branch_name)
@@ -901,6 +866,7 @@ class Project < ActiveRecord::Base
     repository.rugged.references.create('HEAD',
                                         "refs/heads/#{branch}",
                                         force: true)
+    repository.copy_gitattributes(branch)
     reload_default_branch
   end
 
@@ -1034,5 +1000,12 @@ class Project < ActiveRecord::Base
 
   def wiki
     @wiki ||= ProjectWiki.new(self, self.owner)
+  end
+
+  def schedule_delete!(user_id, params)
+    # Queue this task for after the commit, so once we mark pending_delete it will run
+    run_after_commit { ProjectDestroyWorker.perform_async(id, user_id, params) }
+
+    update_attribute(:pending_delete, true)
   end
 end

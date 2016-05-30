@@ -15,11 +15,11 @@ module API
 
     namespace 'internal' do
       get '/discover' do
-        if params[:key_id] && params[:key_id].start_with?('user-')
-          user = User.find_by(id: params[:key_id].gsub(/^user\-/, ''))
-        else
-          user = Key.find(params[:key_id]).user
-        end
+        user = if params[:key_id] && params[:key_id].start_with?('user-')
+                 User.find_by(id: params[:key_id].gsub(/^user\-/, ''))
+               else
+                 Key.find(params[:key_id]).user
+               end
 
         present user, with: Entities::UserSafe
       end

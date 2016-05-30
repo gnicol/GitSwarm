@@ -8,9 +8,11 @@ class RegistrationsController < Devise::RegistrationsController
 
   def create
     if !Gitlab::Recaptcha.load_configurations! || verify_recaptcha
-      if Gitlab::IpCheck.new(request.remote_ip).spam?
-        flash[:alert] = 'Could not create an account. This IP is listed for spam.'
-        return render action: 'new'
+      # To avoid duplicate form fields on the login page, the registration form
+      # names fields using `new_user`, but Devise still wants the params in
+      # `user`.
+      if params["new_#{resource_name}"].present? && params[resource_name].blank?
+        params[resource_name] = params.delete(:"new_#{resource_name}")
       end
 
       super
@@ -35,12 +37,12 @@ class RegistrationsController < Devise::RegistrationsController
     super
   end
 
-  def after_sign_up_path_for(_resource)
-    new_user_session_path
+  def after_sign_up_path_for(user)
+    user.confirmed_at.present? ? dashboard_projects_path : users_almost_there_path
   end
 
   def after_inactive_sign_up_path_for(_resource)
-    new_user_session_path
+    users_almost_there_path
   end
 
   private

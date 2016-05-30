@@ -1,8 +1,7 @@
-class ProjectsController < ApplicationController
+class ProjectsController < Projects::ApplicationController
   include ExtractsPath
 
-  prepend_before_action :render_go_import, only: [:show]
-  skip_before_action :authenticate_user!, only: [:show, :activity]
+  before_action :authenticate_user!, except: [:show, :activity]
   before_action :project, except: [:new, :create]
   before_action :repository, except: [:new, :create]
   before_action :assign_ref_vars, :tree, only: [:show], if: :repo_exists?
@@ -41,6 +40,9 @@ class ProjectsController < ApplicationController
   def update
     status = ::Projects::UpdateService.new(@project, current_user, project_params).execute
 
+    # Refresh the repo in case anything changed
+    @repository = project.repository
+
     respond_to do |format|
       if status
         flash[:notice] = "Project '#{@project.name}' was successfully updated."
@@ -72,7 +74,7 @@ class ProjectsController < ApplicationController
   def remove_fork
     return access_denied! unless can?(current_user, :remove_fork_project, @project)
 
-    if @project.unlink_fork
+    if ::Projects::UnlinkForkService.new(@project, current_user).execute
       flash[:notice] = 'The fork relationship has been removed.'
     end
   end
@@ -93,16 +95,24 @@ class ProjectsController < ApplicationController
       return
     end
 
+    if @project.pending_delete?
+      flash[:alert] = "Project queued for delete."
+    end
+
     respond_to do |format|
       format.html do
+        if current_user
+          @membership = @project.team.find_member(current_user.id)
+
+          if @membership
+            @notification_setting = current_user.notification_settings_for(@project)
+          end
+        end
+
         if @project.repository_exists?
           if @project.empty_repo?
             render 'projects/empty'
           else
-            if current_user
-              @membership = @project.team.find_member(current_user.id)
-            end
-
             render :show
           end
         else
@@ -120,8 +130,8 @@ class ProjectsController < ApplicationController
   def destroy
     return access_denied! unless can?(current_user, :remove_project, @project)
 
-    ::Projects::DestroyService.new(@project, current_user, {}).execute
-    flash[:alert] = "Project '#{@project.name}' was deleted."
+    ::Projects::DestroyService.new(@project, current_user, {}).pending_delete!
+    flash[:alert] = "Project '#{@project.name}' will be deleted."
 
     redirect_to dashboard_projects_path
   rescue Projects::DestroyService::DestroyError => ex
@@ -131,11 +141,11 @@ class ProjectsController < ApplicationController
   def autocomplete_sources
     note_type = params['type']
     note_id = params['type_id']
-    autocomplete = ::Projects::AutocompleteService.new(@project)
+    autocomplete = ::Projects::AutocompleteService.new(@project, current_user)
     participants = ::Projects::ParticipantsService.new(@project, current_user).execute(note_type, note_id)
 
     @suggestions = {
-      emojis: autocomplete_emojis,
+      emojis: AwardEmoji.urls,
       issues: autocomplete.issues,
       mergerequests: autocomplete.merge_requests,
       members: participants
@@ -169,10 +179,15 @@ class ProjectsController < ApplicationController
   def housekeeping
     ::Projects::HousekeepingService.new(@project).execute
 
-    respond_to do |format|
-      flash[:notice] = "Housekeeping successfully started."
-      format.html { redirect_to project_path(@project) }
-    end
+    redirect_to(
+      project_path(@project),
+      notice: "Housekeeping successfully started"
+    )
+  rescue ::Projects::HousekeepingService::LeaseTaken => ex
+    redirect_to(
+      edit_project_path(@project),
+      alert: ex.to_s
+    )
   end
 
   def toggle_star
@@ -220,32 +235,12 @@ class ProjectsController < ApplicationController
   def project_params
     params.require(:project).permit(
       :name, :path, :description, :issues_tracker, :tag_list, :runners_token,
-      :issues_enabled, :merge_requests_enabled, :snippets_enabled, :issues_tracker_id, :default_branch,
+      :issues_enabled, :merge_requests_enabled, :snippets_enabled, :container_registry_enabled,
+      :issues_tracker_id, :default_branch,
       :wiki_enabled, :visibility_level, :import_url, :last_activity_at, :namespace_id, :avatar,
       :builds_enabled, :build_allow_git_fetch, :build_timeout_in_minutes, :build_coverage_regex,
       :public_builds,
     )
-  end
-
-  def autocomplete_emojis
-    Rails.cache.fetch("autocomplete-emoji-#{Gemojione::VERSION}") do
-      Emoji.emojis.map do |name, emoji|
-        {
-          name: name,
-          path: view_context.image_url("emoji/#{emoji["unicode"]}.png")
-        }
-      end
-    end
-  end
-
-  def render_go_import
-    return unless params["go-get"] == "1"
-
-    @namespace = params[:namespace_id]
-    @id = params[:project_id] || params[:id]
-    @id = @id.gsub(/\.git\Z/, "")
-
-    render "go_import", layout: false
   end
 
   def repo_exists?

@@ -5,8 +5,8 @@ class PerforceSwarm::GitFusionController < ApplicationController
     begin
       # get the desired project and throw if it is already mirrored
       @project = Project.find(params['project_id'])
-      fail 'This project is already mirrored in Helix.' if @project.git_fusion_mirrored?
-      fail 'This project is already associated to a Helix Git Fusion repository.' if @project.git_fusion_repo.present?
+      raise 'This project is already mirrored in Helix.' if @project.git_fusion_mirrored?
+      raise 'This project is already associated to a Helix Git Fusion repository.' if @project.git_fusion_repo.present?
 
       # first verify we can talk to git-fusion successfully, add error out with details if we cannot
       begin
@@ -148,11 +148,11 @@ class PerforceSwarm::GitFusionController < ApplicationController
 
     # ensure that we have a logged-in user, and that they have permission to re-enable the project
     if !current_user || !current_user.can?(:admin_project, @project)
-      fail 'You do not have permissions to re-enable Helix mirroring on this project.'
+      raise 'You do not have permissions to re-enable Helix mirroring on this project.'
     end
 
     # ensure that there is a git fusion repo that we want to re-enable
-    fail 'Project is not associated with a Helix Git Fusion repository.' unless @project.git_fusion_repo.present?
+    raise 'Project is not associated with a Helix Git Fusion repository.' unless @project.git_fusion_repo.present?
   end
 
   def init_auto_create

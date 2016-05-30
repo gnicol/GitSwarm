@@ -1,24 +1,3 @@
-# == Schema Information
-#
-# Table name: services
-#
-#  id                    :integer          not null, primary key
-#  type                  :string(255)
-#  title                 :string(255)
-#  project_id            :integer
-#  created_at            :datetime
-#  updated_at            :datetime
-#  active                :boolean          default(FALSE), not null
-#  properties            :text
-#  template              :boolean          default(FALSE)
-#  push_events           :boolean          default(TRUE)
-#  issues_events         :boolean          default(TRUE)
-#  merge_requests_events :boolean          default(TRUE)
-#  tag_push_events       :boolean          default(TRUE)
-#  note_events           :boolean          default(TRUE), not null
-#  build_events          :boolean          default(FALSE), not null
-#
-
 class BambooService < CiService
   include HTTParty
 
@@ -82,17 +61,17 @@ class BambooService < CiService
   end
 
   def build_info(sha)
-    url = URI.parse("#{bamboo_url}/rest/api/latest/result?label=#{sha}")
+    url = URI.join(bamboo_url, "/rest/api/latest/result?label=#{sha}").to_s
 
     if username.blank? && password.blank?
-      @response = HTTParty.get(parsed_url.to_s, verify: false)
+      @response = HTTParty.get(url, verify: false)
     else
-      get_url = "#{url}&os_authType=basic"
+      url << '&os_authType=basic'
       auth = {
-          username: username,
-          password: password,
+        username: username,
+        password: password
       }
-      @response = HTTParty.get(get_url, verify: false, basic_auth: auth)
+      @response = HTTParty.get(url, verify: false, basic_auth: auth)
     end
   end
 
@@ -101,11 +80,11 @@ class BambooService < CiService
 
     if @response.code != 200 || @response['results']['results']['size'] == '0'
       # If actual build link can't be determined, send user to build summary page.
-      "#{bamboo_url}/browse/#{build_key}"
+      URI.join(bamboo_url, "/browse/#{build_key}").to_s
     else
       # If actual build link is available, go to build result page.
       result_key = @response['results']['results']['result']['planResultKey']['key']
-      "#{bamboo_url}/browse/#{result_key}"
+      URI.join(bamboo_url, "/browse/#{result_key}").to_s
     end
   end
 
@@ -134,7 +113,7 @@ class BambooService < CiService
     return unless supported_events.include?(data[:object_kind])
 
     # Bamboo requires a GET and does not take any data.
-    self.class.get("#{bamboo_url}/updateAndBuild.action?buildKey=#{build_key}",
-                   verify: false)
+    url = URI.join(bamboo_url, "/updateAndBuild.action?buildKey=#{build_key}").to_s
+    self.class.get(url, verify: false)
   end
 end

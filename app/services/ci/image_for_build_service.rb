@@ -1,29 +1,25 @@
 module Ci
   class ImageForBuildService
-    def execute(project, params)
-      sha = params[:sha]
-      sha ||=
-        if params[:ref]
-          project.commit(params[:ref]).try(:sha)
-        end
+    def execute(project, opts)
+      sha = opts[:sha] || ref_sha(project, opts[:ref])
 
-      commit = project.ci_commits.ordered.find_by(sha: sha)
-      image_name = image_for_commit(commit)
+      ci_commits = project.ci_commits.where(sha: sha)
+      ci_commits = ci_commits.where(ref: opts[:ref]) if opts[:ref]
+      image_name = image_for_status(ci_commits.status)
 
       image_path = Rails.root.join('public/ci', image_name)
-
-      OpenStruct.new(
-        path: image_path,
-        name: image_name
-      )
+      OpenStruct.new(path: image_path, name: image_name)
     end
 
     private
 
-    def image_for_commit(commit)
-      return 'build-unknown.svg' unless commit
+    def ref_sha(project, ref)
+      project.commit(ref).try(:sha) if ref
+    end
 
-      'build-' + commit.status + ".svg"
+    def image_for_status(status)
+      status ||= 'unknown'
+      'build-' + status + ".svg"
     end
   end
 end

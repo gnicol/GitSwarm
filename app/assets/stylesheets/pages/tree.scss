@@ -16,12 +16,12 @@
 
     tr {
       > td, > th {
-        line-height: 26px;
+        line-height: 23px;
       }
 
       &:hover {
         td {
-          background: $hover;
+          background: $row-hover;
         }
         cursor: pointer;
       }
@@ -41,12 +41,12 @@
       vertical-align: middle;
 
       i, a {
-        color: $gl-link-color;
+        color: $gl-dark-link-color;
       }
 
       img {
         position: relative;
-        top:-1px;
+        top: -1px;
       }
     }
 

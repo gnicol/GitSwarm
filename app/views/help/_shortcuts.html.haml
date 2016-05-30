@@ -21,7 +21,15 @@
               %tr
                 %td.shortcut
                   .key ?
-                %td Show this dialog
+                %td Show/hide this dialog
+              %tr
+                %td.shortcut
+                  - if browser.mac?
+                    .key &#8984; shift p
+                  - else
+                    .key ctrl shift p
+
+                %td Toggle Markdown preview
             %tbody
               %tr
                 %th
@@ -40,10 +48,6 @@
                 %td.shortcut
                   .key enter
                 %td Open Selection
-              %tr
-                %td.shortcut
-                  .key t
-                %td Go to finding file
             %tbody
               %tr
                 %th
@@ -161,6 +165,14 @@
                   .key s
                 %td
                   Go to snippets
+              %tr
+                %td.shortcut
+                  .key t
+                %td Go to finding file
+              %tr
+                %td.shortcut
+                  .key i
+                %td New issue
         .col-lg-4
           %table.shortcut-mappings
             %tbody{ class: 'hidden-shortcut network', style: 'display:none' }
@@ -229,6 +241,14 @@
                 %td.shortcut
                   .key r
                 %td Reply (quoting selected text)
+              %tr
+                %td.shortcut
+                  .key e
+                %td Edit issue
+              %tr
+                %td.shortcut
+                  .key l
+                %td Change Label
             %tbody{ class: 'hidden-shortcut merge_requests', style: 'display:none' }
               %tr
                 %th
@@ -245,3 +265,11 @@
                 %td.shortcut
                   .key r
                 %td Reply (quoting selected text)
+              %tr
+                %td.shortcut
+                  .key e
+                %td Edit merge request
+              %tr
+                %td.shortcut
+                  .key l
+                %td Change Label

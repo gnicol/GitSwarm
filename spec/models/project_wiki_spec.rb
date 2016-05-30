@@ -38,7 +38,8 @@ describe ProjectWiki, models: true do
 
   describe "#wiki_base_path" do
     it "returns the wiki base path" do
-      wiki_base_path = "/#{project.path_with_namespace}/wikis"
+      wiki_base_path = "#{Gitlab.config.gitlab.relative_url_root}/#{project.path_with_namespace}/wikis"
+
       expect(subject.wiki_base_path).to eq(wiki_base_path)
     end
   end
@@ -241,6 +242,18 @@ describe ProjectWiki, models: true do
       expect(subject).to receive(:update_project_activity)
 
       subject.delete_page(@page)
+    end
+  end
+
+  describe '#create_repo!' do
+    it 'creates a repository' do
+      expect(subject).to receive(:init_repo).
+        with(subject.path_with_namespace).
+        and_return(true)
+
+      expect(subject.repository).to receive(:after_create)
+
+      expect(subject.create_repo!).to be_an_instance_of(Gollum::Wiki)
     end
   end
 

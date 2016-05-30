@@ -343,15 +343,6 @@ Feature: Project Issues
     Then I should see issue with no milestone
 
   @automated @javascript @PGL-521
-  Scenario: I click the "Close" button on a single issue page
-    Given I visit issue page "Tumblr control"
-    And I click the "Close" button
-    Then I should see the issue closed
-    When I visit project "PerforceProject" issues page
-    Then I should not see "Tumblr control" in issues
-    And I should see "HipChat" in issues
-
-  @automated @javascript @PGL-521
   Scenario: I click the "Close Issue" button on a single issue page
     Given I visit issue page "Tumblr control"
     And I click the "Close Issue" button

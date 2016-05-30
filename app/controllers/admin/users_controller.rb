@@ -31,6 +31,24 @@ class Admin::UsersController < Admin::ApplicationController
     user
   end
 
+  def impersonate
+    if user.blocked?
+      flash[:alert] = "You cannot impersonate a blocked user"
+
+      redirect_to admin_user_path(user)
+    else
+      session[:impersonator_id] = current_user.id
+
+      warden.set_user(user, scope: :user)
+
+      Gitlab::AppLogger.info("User #{current_user.username} has started impersonating #{user.username}")
+
+      flash[:alert] = "You are now impersonating #{user.username}"
+
+      redirect_to root_path
+    end
+  end
+
   def block
     if user.block
       redirect_back_or_admin_user(notice: "Successfully blocked")
@@ -101,6 +119,7 @@ class Admin::UsersController < Admin::ApplicationController
       user_params_with_pass.merge!(
         password: params[:user][:password],
         password_confirmation: params[:user][:password_confirmation],
+        password_expires_at: Time.now
       )
     end
 
@@ -119,10 +138,10 @@ class Admin::UsersController < Admin::ApplicationController
   end
 
   def destroy
-    DeleteUserService.new(current_user).execute(user)
+    DeleteUserWorker.perform_async(current_user.id, user.id)
 
     respond_to do |format|
-      format.html { redirect_to admin_users_path }
+      format.html { redirect_to admin_users_path, notice: "The user is being deleted." }
       format.json { head :ok }
     end
   end
@@ -150,7 +169,7 @@ class Admin::UsersController < Admin::ApplicationController
       :email, :remember_me, :bio, :name, :username,
       :skype, :linkedin, :twitter, :website_url, :color_scheme_id, :theme_id, :force_random_password,
       :extern_uid, :provider, :password_expires_at, :avatar, :hide_no_ssh_key, :hide_no_password,
-      :projects_limit, :can_create_group, :admin, :key_id
+      :projects_limit, :can_create_group, :admin, :key_id, :external
     )
   end
 

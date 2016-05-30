@@ -29,7 +29,9 @@
 
 ## GitLab Flavored Markdown (GFM)
 
-For GitLab we developed something we call "GitLab Flavored Markdown" (GFM). It extends the standard Markdown in a few significant ways to add some useful functionality.
+_GitLab uses the [Redcarpet Ruby library][redcarpet] for Markdown processing._
+
+GitLab uses "GitLab Flavored Markdown" (GFM). It extends the standard Markdown in a few significant ways to add some useful functionality. It was inspired by [GitHub Flavored Markdown](https://help.github.com/articles/basic-writing-and-formatting-syntax/).
 
 You can use GFM in
 
@@ -45,10 +47,10 @@ You can also use other rich text files in GitLab. You might have to install a de
 
 GFM honors the markdown specification in how [paragraphs and line breaks are handled](https://daringfireball.net/projects/markdown/syntax#p).
 
-A paragraph is simply one or more consecutive lines of text, separated by one or more blank lines.  
+A paragraph is simply one or more consecutive lines of text, separated by one or more blank lines.
 Line-breaks, or softreturns, are rendered if you end a line with two or more spaces
 
-    Roses are red [followed by two or more spaces]  
+    Roses are red [followed by two or more spaces]
     Violets are blue
 
     Sugar is sweet
@@ -65,7 +67,7 @@ It is not reasonable to italicize just _part_ of a word, especially when you're 
     perform_complicated_task
     do_this_and_do_that_and_another_thing
 
-perform_complicated_task  
+perform_complicated_task
 do_this_and_do_that_and_another_thing
 
 ## URL auto-linking
@@ -87,6 +89,9 @@ GFM will autolink almost any URL you copy and paste into your text.
 * http://localhost:3000
 
 ## Code and Syntax Highlighting
+
+_GitLab uses the [Rouge Ruby library][rouge] for syntax highlighting. For a
+list of supported languages visit the Rouge website._
 
 Blocks of code are either fenced by lines with three back-ticks <code>```</code>, or are indented with four spaces. Only the fenced code blocks support syntax highlighting.
 
@@ -204,6 +209,7 @@ GFM also recognizes certain cross-project references:
 | `namespace/project$123`                 | snippet                 |
 | `namespace/project@9ba12248`            | specific commit         |
 | `namespace/project@9ba12248...b19a04f5` | commit range comparison |
+| `namespace/project~"Some label"`        | issues with given label |
 
 ## Task Lists
 
@@ -421,24 +427,24 @@ will point the link to `wikis/style` when the link is inside of a wiki markdown 
     Here's our logo (hover to see the title text):
 
     Inline-style:
-    ![alt text](assets/logo-white.png)
+    ![alt text](img/logo.png)
 
     Reference-style:
     ![alt text1][logo]
 
-    [logo]: assets/logo-white.png
+    [logo]: img/logo.png
 
 Here's our logo:
 
 Inline-style:
 
-![alt text](/assets/logo-white.png)
+![alt text](img/logo.png)
 
 Reference-style:
 
 ![alt text][logo]
 
-[logo]: /assets/logo-white.png
+[logo]: img/logo.png
 
 ## Blockquotes
 
@@ -585,3 +591,6 @@ By including colons in the header row, you can align the text within that column
 - This document leveraged heavily from the [Markdown-Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet).
 - The [Markdown Syntax Guide](https://daringfireball.net/projects/markdown/syntax) at Daring Fireball is an excellent resource for a detailed explanation of standard markdown.
 - [Dillinger.io](http://dillinger.io) is a handy tool for testing standard markdown.
+
+[rouge]: http://rouge.jneen.net/ "Rouge website"
+[redcarpet]: https://github.com/vmg/redcarpet "Redcarpet website"

@@ -15,9 +15,8 @@ class GitHelper
   def self.http_helper(local_dir, http_url, user, password, email)
     helper     = new(local_dir, user, email)
     url        = URI(http_url)
-
     # now add the username and password into the url
-    helper.url = url.scheme + '://' + user + ':' + password + '@' + url.host + url.path
+    helper.url = url.scheme + '://' + user + ':' + password + '@' + url.host + ':' + url.port.to_s + url.path
     helper
   end
 
@@ -110,7 +109,7 @@ class GitHelper
     LOG.debug(command)
     command = Shellwords.join(command) if command.is_a?(Array)
     success = system(command)
-    fail "system command failed: #{command}" if !success && @fail_on_error
+    raise "system command failed: #{command}" if !success && @fail_on_error
     success
   end
 end

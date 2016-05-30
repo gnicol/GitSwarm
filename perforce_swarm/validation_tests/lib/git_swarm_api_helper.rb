@@ -160,7 +160,7 @@ class GitSwarmAPIHelper
   def search(data_type, value)
     results = RestClient.get(@base_url + data_type, params: { private_token: @admin_token, search: value })
     json_array = JSON.parse(results)
-    fail("Unique result not found searching #{data_type} for #{value} : #{results}") if json_array.length !=1
+    raise "Unique result not found searching #{data_type} for #{value} : #{results}" if json_array.length != 1
     json_array.first
   end
 end

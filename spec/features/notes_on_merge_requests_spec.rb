@@ -4,6 +4,20 @@ describe 'Comments', feature: true do
   include RepoHelpers
   include WaitForAjax
 
+  describe 'On merge requests page', feature: true do
+    it 'excludes award_emoji from comment count' do
+      merge_request = create(:merge_request)
+      project = merge_request.source_project
+      create(:upvote_note, noteable: merge_request, project: project)
+
+      login_as :admin
+      visit namespace_project_merge_requests_path(project.namespace, project)
+
+      expect(merge_request.mr_and_commit_notes.count).to eq 1
+      expect(page.all('.merge-request-no-comments').first.text).to eq "0"
+    end
+  end
+
   describe 'On a merge request', js: true, feature: true do
     let!(:merge_request) { create(:merge_request) }
     let!(:project) { merge_request.source_project }
@@ -22,7 +36,7 @@ describe 'Comments', feature: true do
       it 'should be valid' do
         is_expected.to have_css('.js-main-target-form', visible: true, count: 1)
         expect(find('.js-main-target-form input[type=submit]').value).
-          to eq('Add Comment')
+          to eq('Comment')
         page.within('.js-main-target-form') do
           expect(page).not_to have_link('Cancel')
         end
@@ -49,7 +63,7 @@ describe 'Comments', feature: true do
         page.within('.js-main-target-form') do
           fill_in 'note[note]', with: 'This is awsome!'
           find('.js-md-preview-button').click
-          click_button 'Add Comment'
+          click_button 'Comment'
         end
       end
 
@@ -129,6 +143,17 @@ describe 'Comments', feature: true do
         end
       end
     end
+
+    describe 'comment info' do
+      it 'excludes award_emoji from comment count' do
+        create(:upvote_note, noteable: merge_request, project: project)
+
+        visit namespace_project_merge_request_path(project.namespace, project, merge_request)
+
+        expect(merge_request.mr_and_commit_notes.count).to eq 2
+        expect(find('.notes-tab span.badge').text).to eq "1"
+      end
+    end
   end
 
   describe 'On a merge request diff', js: true, feature: true do
@@ -152,7 +177,7 @@ describe 'Comments', feature: true do
 
         it 'has .new_note css class' do
           page.within('.js-temp-notes-holder') do
-            expect(subject).to have_css('.new_note')
+            expect(subject).to have_css('.new-note')
           end
         end
       end
@@ -167,7 +192,7 @@ describe 'Comments', feature: true do
         end
 
         it 'should be removed when canceled' do
-          page.within(".diff-file form[rel$='#{line_code}']") do
+          page.within(".diff-file form[id$='#{line_code}-true']") do
             find('.js-close-discussion-note-form').trigger('click')
           end
 
@@ -202,7 +227,7 @@ describe 'Comments', feature: true do
         before do
           page.within("tr[id='#{line_code_2}'] + .js-temp-notes-holder") do
             fill_in 'note[note]', with: 'Another comment on line 10'
-            click_button('Add Comment')
+            click_button('Comment')
           end
         end
 
@@ -210,7 +235,7 @@ describe 'Comments', feature: true do
           is_expected.to have_content('Another comment on line 10')
           is_expected.to have_css('.notes_holder')
           is_expected.to have_css('.notes_holder .note', count: 1)
-          is_expected.to have_button('Reply')
+          is_expected.to have_button('Reply...')
         end
       end
     end
@@ -225,6 +250,6 @@ describe 'Comments', feature: true do
   end
 
   def click_diff_line(data = line_code)
-    page.find(%Q{button[data-line-code="#{data}"]}, visible: false).click
+    execute_script("$('button[data-line-code=\"#{data}\"]').click()")
   end
 end

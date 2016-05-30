@@ -132,16 +132,16 @@ class CreateProjectPage < LoggedInPage
 
   def servers_exist?
     wait_for(:id, ID_GF_ENTRY)
-    @driver.find_elements(:id, ID_GF_ENTRY).length > 0
+    !@driver.find_elements(:id, ID_GF_ENTRY).empty?
   end
 
   def check_servers_exist
-    fail 'No GF servers have been configured, you can\'t interact with them' unless servers_exist?
+    raise 'No GF servers have been configured, you can\'t interact with them' unless servers_exist?
   end
 
   def repos_exist?
     wait_for_gf_options_to_load
-    @driver.find_elements(:id, ID_REPO_SELECTOR).length > 0
+    !@driver.find_elements(:id, ID_REPO_SELECTOR).empty?
   end
 
   def wait_for_gf_options_to_load

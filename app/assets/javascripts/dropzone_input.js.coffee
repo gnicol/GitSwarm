@@ -15,10 +15,12 @@ class @DropzoneInput
     project_uploads_path = window.project_uploads_path or null
     max_file_size = gon.max_file_size or 10
 
-    form_textarea = $(form).find("textarea.markdown-area")
+    form_textarea = $(form).find(".js-gfm-input")
     form_textarea.wrap "<div class=\"div-dropzone\"></div>"
     form_textarea.on 'paste', (event) =>
       handlePaste(event)
+
+    $mdArea = $(form_textarea).closest('.md-area')
 
     $(form).setupMarkdownPreview()
 
@@ -49,24 +51,23 @@ class @DropzoneInput
         $(".div-dropzone-alert").alert "close"
 
       dragover: ->
-        form_textarea.addClass "div-dropzone-focus"
+        $mdArea.addClass 'is-dropzone-hover'
         form.find(".div-dropzone-hover").css "opacity", 0.7
         return
 
       dragleave: ->
-        form_textarea.removeClass "div-dropzone-focus"
+        $mdArea.removeClass 'is-dropzone-hover'
         form.find(".div-dropzone-hover").css "opacity", 0
         return
 
       drop: ->
-        form_textarea.removeClass "div-dropzone-focus"
+        $mdArea.removeClass 'is-dropzone-hover'
         form.find(".div-dropzone-hover").css "opacity", 0
         form_textarea.focus()
         return
 
       success: (header, response) ->
-        child = $(dropzone[0]).children("textarea")
-        $(child).val $(child).val() + response.link.markdown + "\n"
+        pasteText response.link.markdown
         return
 
       error: (temp, errorMessage) ->
@@ -128,6 +129,7 @@ class @DropzoneInput
       beforeSelection = $(child).val().substring 0, caretStart
       afterSelection = $(child).val().substring caretEnd, textEnd
       $(child).val beforeSelection + text + afterSelection
+      child.get(0).setSelectionRange caretStart + text.length, caretEnd + text.length
       form_textarea.trigger "input"
 
     getFilename = (e) ->

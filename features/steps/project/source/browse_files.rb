@@ -52,7 +52,7 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   end
 
   step 'I should see raw file content' do
-    expect(source).to eq sample_blob.data
+    expect(source).to eq '' # Body is filled in by gitlab-workhorse
   end
 
   step 'I click button "Edit"' do
@@ -213,13 +213,12 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
   end
 
   step 'I see Browse file link' do
-    expect(page).to have_link 'Browse File »'
-    expect(page).not_to have_link 'Browse Files »'
+    expect(page).to have_link 'Browse File'
+    expect(page).not_to have_link 'Browse Files'
   end
 
   step 'I see Browse code link' do
-    expect(page).to have_link 'Browse Files »'
-    expect(page).not_to have_link 'Browse File »'
+    expect(page).to have_link 'Browse Files'
     expect(page).not_to have_link 'Browse Directory »'
   end
 
@@ -283,8 +282,8 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     click_link 'Create empty bare repository'
   end
 
-  step 'I click on "add a file" link' do
-    click_link 'adding README'
+  step 'I click on "README" link' do
+    click_link 'README'
 
     # Remove pre-receive hook so we can push without auth
     FileUtils.rm_f(File.join(@project.repository.path, 'hooks', 'pre-receive'))
@@ -351,6 +350,19 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
     expect(page).to have_content "You're not allowed to make changes to this project directly. A fork of this project has been created that you can make changes in, so you can submit a merge request."
   end
 
+  # SVG files
+  step 'I upload a new SVG file' do
+    drop_in_dropzone test_svg_file
+  end
+
+  step 'I visit the SVG file' do
+    visit namespace_project_blob_path(@project.namespace, @project, 'new_branch_name/logo_sample.svg')
+  end
+
+  step 'I can see the new rendered SVG image' do
+    expect(page).to have_css('.file-content img')
+  end
+
   private
 
   def set_new_content
@@ -409,5 +421,9 @@ class Spinach::Features::ProjectSourceBrowseFiles < Spinach::FeatureSteps
 
   def test_image_file
     File.join(Rails.root, 'spec', 'fixtures', 'banana_sample.gif')
+  end
+
+  def test_svg_file
+    File.join(Rails.root, 'spec', 'fixtures', 'logo_sample.svg')
   end
 end

@@ -11,14 +11,14 @@ module PerforceSwarm
 
     # actually performs the task of mirroring on the specified project and repo server
     def enable_helix_mirroring
-      fail 'No project specified.' unless @project
+      raise 'No project specified.' unless @project
       check_helix_mirroring_permissions
-      fail 'Project is already mirrored in Helix.' if @project.git_fusion_mirrored?
-      fail 'This project is already associated to a Helix Git Fusion repository.' if @project.git_fusion_repo.present?
+      raise 'Project is already mirrored in Helix.' if @project.git_fusion_mirrored?
+      raise 'This project is already associated to a Helix Git Fusion repository.' if @project.git_fusion_repo.present?
 
       # create the p4gf_config file, which creates the repo in Git Fusion
       fusion_server = params['fusion_server']
-      fail 'No Git Fusion server specified.' unless fusion_server
+      raise 'No Git Fusion server specified.' unless fusion_server
       repo_creator = PerforceSwarm::GitFusion::AutoCreateRepoCreator.new(fusion_server)
       repo_creator.namespace(@project.namespace.name).project_path(@project.path).save
       PerforceSwarm::GitFusion::RepoAccess.clear_cache(server: fusion_server)
@@ -44,9 +44,9 @@ module PerforceSwarm
     end
 
     def disable_helix_mirroring
-      fail 'No project specified.' unless @project
+      raise 'No project specified.' unless @project
       check_helix_mirroring_permissions
-      fail 'Project is not mirrored in Helix.' unless @project.git_fusion_mirrored?
+      raise 'Project is not mirrored in Helix.' unless @project.git_fusion_mirrored?
 
       # disable mirroring in GitSwarm, log, and redirect to project details page
       @project.disable_git_fusion_mirroring!
@@ -95,13 +95,13 @@ module PerforceSwarm
     def check_helix_mirroring_permissions
       # ensure that we have a logged-in user, and that they have permission to re-enable the project
       if !current_user || !current_user.can?(:admin_project, @project)
-        fail 'You do not have permissions to view or modify Helix mirroring settings on this project.'
+        raise 'You do not have permissions to view or modify Helix mirroring settings on this project.'
       end
     end
   end
 end
 
-class ProjectsController < ApplicationController
+class ProjectsController < Projects::ApplicationController
   prepend PerforceSwarm::ProjectsControllerExtension
   prepend PerforceSwarm::ProjectsControllerHelper
   include ActionView::Helpers::SanitizeHelper

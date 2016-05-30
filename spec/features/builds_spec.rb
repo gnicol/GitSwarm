@@ -18,7 +18,7 @@ describe "Builds" do
         visit namespace_project_builds_path(@project.namespace, @project, scope: :running)
       end
 
-      it { expect(page).to have_selector('.project-issuable-filter li.active', text: 'Running') }
+      it { expect(page).to have_selector('.nav-links li.active', text: 'Running') }
       it { expect(page).to have_link 'Cancel running' }
       it { expect(page).to have_content @build.short_sha }
       it { expect(page).to have_content @build.ref }
@@ -31,7 +31,7 @@ describe "Builds" do
         visit namespace_project_builds_path(@project.namespace, @project, scope: :finished)
       end
 
-      it { expect(page).to have_selector('.project-issuable-filter li.active', text: 'Finished') }
+      it { expect(page).to have_selector('.nav-links li.active', text: 'Finished') }
       it { expect(page).to have_content 'No builds to show' }
       it { expect(page).to have_link 'Cancel running' }
     end
@@ -42,7 +42,8 @@ describe "Builds" do
         visit namespace_project_builds_path(@project.namespace, @project)
       end
 
-      it { expect(page).to have_selector('.project-issuable-filter li.active', text: 'All') }
+      it { expect(page).to have_selector('.nav-links li.active', text: 'All') }
+      it { expect(page).to have_selector('.row-content-block', text: 'All builds from this project') }
       it { expect(page).to have_content @build.short_sha }
       it { expect(page).to have_content @build.ref }
       it { expect(page).to have_content @build.name }
@@ -57,7 +58,7 @@ describe "Builds" do
       click_link "Cancel running"
     end
 
-    it { expect(page).to have_selector('.project-issuable-filter li.active', text: 'All') }
+    it { expect(page).to have_selector('.nav-links li.active', text: 'All') }
     it { expect(page).to have_content 'canceled' }
     it { expect(page).to have_content @build.short_sha }
     it { expect(page).to have_content @build.ref }
@@ -83,6 +84,20 @@ describe "Builds" do
       it 'has button to download artifacts' do
         page.within('.artifacts') do
           expect(page).to have_content 'Download'
+        end
+      end
+    end
+
+    context 'Build raw trace' do
+      before do
+        @build.run!
+        @build.trace = 'BUILD TRACE'
+        visit namespace_project_build_path(@project.namespace, @project, @build)
+      end
+
+      it do
+        page.within('.build-controls') do
+          expect(page).to have_link 'Raw'
         end
       end
     end
@@ -119,5 +134,21 @@ describe "Builds" do
     end
 
     it { expect(page.response_headers['Content-Type']).to eq(artifacts_file.content_type) }
+  end
+
+  describe "GET /:project/builds/:id/raw" do
+    before do
+      Capybara.current_session.driver.header('X-Sendfile-Type', 'X-Sendfile')
+      @build.run!
+      @build.trace = 'BUILD TRACE'
+      visit namespace_project_build_path(@project.namespace, @project, @build)
+    end
+
+    it 'sends the right headers' do
+      page.within('.build-controls') { click_link 'Raw' }
+
+      expect(page.response_headers['Content-Type']).to eq('text/plain; charset=utf-8')
+      expect(page.response_headers['X-Sendfile']).to eq(@build.path_to_trace)
+    end
   end
 end

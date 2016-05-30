@@ -26,7 +26,7 @@ class LoginPage < Page
   def login(user, password)
     enter_credentials(user, password)
     click_login
-    if @driver.find_elements(:id, 'user_password_confirmation').length !=0
+    unless @driver.find_elements(:id, 'user_password_confirmation').empty?
       # it's probably a password reset page
       password_set_page = PasswordResetPage.new(@driver)
       password_set_page.set_password(password) # set the password to be the current password

@@ -27,7 +27,7 @@ module PerforceSwarm
         connection.input(password)
         connection.run('passwd', 'root')
       rescue P4Exception => ex
-        message = ex.message.match(/\[Error\]: (?<error>.*)$/) ? Regexp.last_match(:error) : ex.message
+        message = ex.message =~ /\[Error\]: (?<error>.*)$/ ? Regexp.last_match(:error) : ex.message
         raise ex, message
       ensure
         connection.disconnect if connection

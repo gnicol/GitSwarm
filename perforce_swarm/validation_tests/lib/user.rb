@@ -1,6 +1,6 @@
 class User
-  DEFAULT_PASSWORD     = 'Passw0rd'
-  DEFAULT_EMAIL_DOMAIN = '@test.com'
+  DEFAULT_PASSWORD     = 'Passw0rd'.freeze
+  DEFAULT_EMAIL_DOMAIN = '@test.com'.freeze
 
   attr_reader :name
   attr_reader :password

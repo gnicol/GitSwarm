@@ -1,9 +1,9 @@
 require_relative 'logged_in_page'
 
 class MergeRequestPage < LoggedInPage
-  OPEN         = 'Open'
-  CLOSED       = 'Closed'
-  MERGED       = 'Merged'
+  OPEN         = 'Open'.freeze
+  CLOSED       = 'Closed'.freeze
+  MERGED       = 'Merged'.freeze
 
   def initialize(driver)
     super(driver)

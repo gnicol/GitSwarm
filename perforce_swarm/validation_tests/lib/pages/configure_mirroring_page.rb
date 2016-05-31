@@ -6,13 +6,13 @@ require_relative 'fusion_server_dropdown_module'
 class ConfigureMirroringPage < LoggedInPage
   include FusionServerDropdownModule
 
-  DISABLED_TEXT           = 'Mirroring for this project has been disabled.'
-  ENABLED_TEXT            = 'This project is currently mirrored to'
-  NEVER_MIRRORED_TEXT     = 'Select a Helix server to mirror the project to'
-  MIRRORING_DISABLED_TEXT = 'GitSwarm\'s Helix Git Fusion integration is disabled.'
-  REENABLE_BUTTON_TEXT    = 'Re-enable Helix Mirroring'
-  ENABLE_BUTTON_TEXT      = 'Launch Mirroring'
-  DISABLE_BUTTON_TEXT     = 'Disable Helix Mirroring'
+  DISABLED_TEXT           = 'Mirroring for this project has been disabled.'.freeze
+  ENABLED_TEXT            = 'This project is currently mirrored to'.freeze
+  NEVER_MIRRORED_TEXT     = 'Select a Helix server to mirror the project to'.freeze
+  MIRRORING_DISABLED_TEXT = 'GitSwarm\'s Helix Git Fusion integration is disabled.'.freeze
+  REENABLE_BUTTON_TEXT    = 'Re-enable Helix Mirroring'.freeze
+  ENABLE_BUTTON_TEXT      = 'Launch Mirroring'.freeze
+  DISABLE_BUTTON_TEXT     = 'Disable Helix Mirroring'.freeze
 
   def initialize(driver)
     super(driver)

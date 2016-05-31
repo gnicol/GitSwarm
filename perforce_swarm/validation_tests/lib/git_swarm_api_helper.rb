@@ -4,14 +4,14 @@ require 'json'
 class GitSwarmAPIHelper
   attr_accessor :raise_errors_on_delete
 
-  TOKEN_PARAM = 'private_token'
-  APP         = 'api/v3/'
+  TOKEN_PARAM = 'private_token'.freeze
+  APP         = 'api/v3/'.freeze
 
-  GUEST       = '10'
-  REPORTER    = '20'
-  DEVELOPER   = '30'
-  MASTER      = '40'
-  OWNER       = '50'
+  GUEST       = '10'.freeze
+  REPORTER    = '20'.freeze
+  DEVELOPER   = '30'.freeze
+  MASTER      = '40'.freeze
+  OWNER       = '50'.freeze
 
   #
   # Log in as the admin user and get and hold onto the Admin user's security token
@@ -113,8 +113,8 @@ class GitSwarmAPIHelper
   # ssh_url_to_repo and http_url_to_repo are probably useful data from the return hash
   # and will be used by tests to get the correct url's to use after creating projects
   #
-  HTTP_URL = 'http_url_to_repo'
-  SSH_URL = 'SSH_url_to_repo'
+  HTTP_URL = 'http_url_to_repo'.freeze
+  SSH_URL = 'SSH_url_to_repo'.freeze
   def get_project_info(project)
     LOG.debug('Getting info for project ' + project)
     search('projects', project)

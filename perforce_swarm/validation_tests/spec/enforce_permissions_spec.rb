@@ -6,8 +6,8 @@ require_relative '../lib/user'
 require_relative '../lib/project'
 
 describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
-  PRIVATE = 'private'
-  PUBLIC  = 'public'
+  PRIVATE = 'private'.freeze
+  PUBLIC  = 'public'.freeze
 
   # before(:all) does the setup just once before the entire group
   # https://www.relishapp.com/rspec/rspec-core/v/2-2/docs/hooks/before-and-after-hooks

@@ -6,6 +6,10 @@ module AuthHelper
     Gitlab.config.ldap.enabled
   end
 
+  def omniauth_enabled?
+    Gitlab.config.omniauth.enabled
+  end
+
   def provider_has_icon?(name)
     PROVIDERS_WITH_ICONS.include?(name.to_s)
   end
@@ -32,6 +36,16 @@ module AuthHelper
 
   def button_based_providers
     auth_providers.reject { |provider| form_based_provider?(provider) }
+  end
+
+  def enabled_button_based_providers
+    disabled_providers = current_application_settings.disabled_oauth_sign_in_sources || []
+
+    button_based_providers.map(&:to_s) - disabled_providers
+  end
+
+  def button_based_providers_enabled?
+    enabled_button_based_providers.any?
   end
 
   def provider_image_tag(provider, size = 64)

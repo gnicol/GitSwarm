@@ -8,7 +8,7 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
   include LoginHelpers
 
   step 'I click link "New Merge Request"' do
-    ancestor = page.find('.issue-search-form + div')
+    ancestor = page.find('.nav-controls')
     ancestor.should have_link 'New Merge Request'
     ancestor.click_link 'New Merge Request'
   end
@@ -71,11 +71,13 @@ class Spinach::Features::ProjectMergeRequests < Spinach::FeatureSteps
 
   step 'I fill out a "Compare branches for new Merge Request"' do
     page.find('.page-title').should have_content 'New Merge Request'
-    select @project.path_with_namespace, from: 'merge_request_source_project_id'
-    select @project.path_with_namespace, from: 'merge_request_target_project_id'
-    select 'fix', from: 'merge_request_source_branch'
+    page.find('.js-source-branch').click
+    page.find('.dropdown-source-branch .dropdown-content a', text: 'fix').click
+
+    page.find('.js-target-branch').click
+    within('.dropdown-target-branch') { click_link('master') }
+
     page.find('.mr_source_commit').should have_selector('.commit')
-    select 'master', from: 'merge_request_target_branch'
     page.find('.mr_target_commit').should have_selector('.commit')
     click_button 'Compare branches'
   end

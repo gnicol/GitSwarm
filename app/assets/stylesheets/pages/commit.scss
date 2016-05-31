@@ -1,15 +1,15 @@
-.commit-title{
+.commit-title {
   display: block;
 }
 
-.commit-author, .commit-committer{
+.commit-author, .commit-committer {
   display: block;
   color: #999;
   font-weight: normal;
   font-style: italic;
 }
 
-.commit-author strong, .commit-committer strong{
+.commit-author strong, .commit-committer strong {
   font-weight: bold;
   font-style: normal;
 }
@@ -20,6 +20,8 @@
   margin: 0;
   padding: 0;
   margin-top: 10px;
+  word-break: normal;
+  white-space: pre-wrap;
 }
 
 .commit-info-row {
@@ -29,8 +31,22 @@
   }
   .commit-committer-link,
   .commit-author-link {
-    color: #444;
+    color: $gl-gray;
     font-weight: bold;
+  }
+
+  .time_ago {
+    margin-left: 8px;
+  }
+
+  .fa-clipboard {
+    color: $dropdown-title-btn-color;
+  }
+
+  .commit-info {
+    &.branches {
+      margin-left: 8px;
+    }
   }
 }
 
@@ -40,7 +56,7 @@
   .commit-title {
     margin: 0;
     font-size: 23px;
-    color: #313236;
+    color: $gl-gray-dark;
   }
 
   .commit-description {
@@ -55,7 +71,7 @@
     padding: 10px 0;
 
     li {
-      padding: 3px 0px;
+      padding: 3px 0;
       line-height: 20px;
     }
   }
@@ -74,10 +90,18 @@
       color: $gl-text-red;
     }
   }
-  .edit-file{
+  .edit-file {
     a {
       color: $gl-text-color;
     }
+  }
+}
+
+.commit-action-buttons {
+  i {
+    color: $gl-icon-color;
+    font-size: 13px;
+    margin-right: 3px;
   }
 }
 
@@ -90,6 +114,7 @@
   position: relative;
   font-family: $monospace_font;
   $left: 12px;
+  overflow: hidden; // See https://gitlab.com/gitlab-org/gitlab-ce/issues/13987
   .max-width-marker {
     width: 72ch;
     color: rgba(0, 0, 0, 0.0);

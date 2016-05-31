@@ -5,7 +5,7 @@ module PerforceSwarm
     def pack
       # saving additional informations
       s = {}
-      s[:db_version]         = "#{ActiveRecord::Migrator.current_version}"
+      s[:db_version]         = ActiveRecord::Migrator.current_version.to_s
       s[:backup_created_at]  = Time.now
       s[:gitswarm_version]   = PerforceSwarm::VERSION
       s[:tar_version]        = tar_version
@@ -90,7 +90,7 @@ module PerforceSwarm
         exit 1
       end
 
-      ENV['VERSION'] = "#{settings[:db_version]}" if settings[:db_version].to_i > 0
+      ENV['VERSION'] = settings[:db_version].to_s if settings[:db_version].to_i > 0
 
       # check for neither gitlab nor gitswarm version
       unless settings[:gitlab_version] || settings[:gitswarm_version]

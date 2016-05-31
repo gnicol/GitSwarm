@@ -6,14 +6,22 @@ module Projects
 
     DELETED_FLAG = '+deleted'
 
+    def pending_delete!
+      project.schedule_delete!(current_user.id, params)
+    end
+
     def execute
       return false unless can?(current_user, :remove_project, project)
 
       project.team.truncate
-      project.repository.expire_cache unless project.empty_repo?
 
       repo_path = project.path_with_namespace
       wiki_path = repo_path + '.wiki'
+
+      # Flush the cache for both repositories. This has to be done _before_
+      # removing the physical repositories as some expiration code depends on
+      # Git data (e.g. a list of branch names).
+      flush_caches(project, wiki_path)
 
       Project.transaction do
         project.destroy!
@@ -27,7 +35,7 @@ module Projects
         end
       end
 
-      log_info("Project \"#{project.name}\" was removed")
+      log_info("Project \"#{project.path_with_namespace}\" was removed")
       system_hook_service.execute_hooks_for(project, :destroy)
       true
     end
@@ -63,6 +71,12 @@ module Projects
     #
     def removal_path(path)
       "#{path}+#{project.id}#{DELETED_FLAG}"
+    end
+
+    def flush_caches(project, wiki_path)
+      project.repository.before_delete
+
+      Repository.new(wiki_path, project).before_delete
     end
   end
 end

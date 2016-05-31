@@ -124,19 +124,6 @@ Feature: Project Source Browse Files
     And I can see the replacement commit message
 
   @javascript
-  Scenario: I can create file in empty repo
-    Given I own an empty project
-    And I visit my empty project page
-    And I create bare repo
-    When I click on "add a file" link
-    And I edit code
-    And I fill the new file name
-    And I fill the commit message
-    And I click on "Commit Changes"
-    Then I am redirected to the new file
-    And I should see its new content
-
-  @javascript
   Scenario: If I enter an illegal file name I see an error message
     Given I click on "New file" link in repo
     And I fill the new file name with an illegal name
@@ -320,3 +307,13 @@ Feature: Project Source Browse Files
     Then I should see download link and object size
     And I should not see lfs pointer details
     And I should see buttons for allowed commands
+
+  @javascript
+  Scenario: I preview an SVG file
+    Given I click on "Upload file" link in repo
+    And I upload a new SVG file
+    And I fill the upload file commit message
+    And I fill the new branch name
+    And I click on "Upload file"
+    Given I visit the SVG file
+    Then I can see the new rendered SVG image

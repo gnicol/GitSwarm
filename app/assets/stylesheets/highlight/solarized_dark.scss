@@ -21,6 +21,12 @@
 
   // Diff line
   .line_holder {
+    td.diff-line-num.hll:not(.empty-cell),
+    td.line_content.hll:not(.empty-cell) {
+      background-color: #174652;
+      border-color: darken(#174652, 15%);
+    }
+
     .diff-line-num.new, .line_content.new {
       @include diff_background(rgba(133, 153, 0, 0.15), rgba(133, 153, 0, 0.25), #113b46);
     }
@@ -96,7 +102,7 @@
   .m { color: #2aa198 } /* Literal.Number */
   .s { color: #2aa198 } /* Literal.String */
   .na { color: #93a1a1 } /* Name.Attribute */
-  .nb { color: #B58900 } /* Name.Builtin */
+  .nb { color: #b58900 } /* Name.Builtin */
   .nc { color: #268bd2 } /* Name.Class */
   .no { color: #cb4b16 } /* Name.Constant */
   .nd { color: #268bd2 } /* Name.Decorator */

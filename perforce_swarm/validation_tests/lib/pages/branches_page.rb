@@ -36,7 +36,7 @@ class BranchesPage < LoggedInPage
     LOG.log('Creating merge request for '+branch)
     @driver.find_element(:class, 'js-branch-'+branch).find_element(:class, 'btn').click
     nmrp = NewMergeRequestPage.new(@driver)
-    fail('There are no changes to merge') unless nmrp.changes?
+    raise 'There are no changes to merge' unless nmrp.changes?
     nmrp.create_merge_request(title)
   end
 

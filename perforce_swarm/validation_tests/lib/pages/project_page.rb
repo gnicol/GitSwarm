@@ -1,7 +1,7 @@
 require_relative 'logged_in_page'
 
 class ProjectPage < LoggedInPage
-  HELIX_MIRRORING = 'helix-mirroring'
+  HELIX_MIRRORING = 'helix-mirroring'.freeze
 
   def initialize(driver)
     super(driver)
@@ -18,8 +18,8 @@ class ProjectPage < LoggedInPage
   # This looks for a link to add the README on the page.  The exact text can change if there are other files in
   # the repo, so using partial_link_text.  Will fail if a readme already exists in the project
   def add_readme
-    fail 'No README link on this project page - README probably already exists' unless
-        page_has_element(:partial_link_text, 'README')
+    raise 'No README link on this project page - README probably already exists' unless
+      page_has_element(:partial_link_text, 'README')
     @driver.find_element(:partial_link_text, 'README').click
     EditFilePage.new(@driver)
   end
@@ -36,7 +36,7 @@ class ProjectPage < LoggedInPage
     return false if txt == 'Not Mirrored in Helix'
     screendump
     LOG.debug("Text of status label was #{txt}")
-    fail('Cannot determine if project is Mirrored in Helix - check the screendump to work out why not!')
+    raise 'Cannot determine if project is Mirrored in Helix - check the screendump to work out why not!'
   end
 
   def can_configure_mirroring?

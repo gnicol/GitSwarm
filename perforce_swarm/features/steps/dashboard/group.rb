@@ -14,7 +14,7 @@ class Spinach::Features::DashboardGroup < Spinach::FeatureSteps
   end
 
   step 'I should not see the "Leave" button for groupr "Guest"' do
-    find(:css, '.content li', text: 'Guest').should_not have_selector(:css,  'i.fa.fa-sign-out')
+    find(:css, '.content li', text: 'Guest').should_not have_selector(:css, 'i.fa.fa-sign-out')
   end
 
   step 'I should see group "Owned" in group list' do

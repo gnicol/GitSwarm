@@ -7,7 +7,7 @@ module PerforceSwarm
       if merge_request.should_remove_source_branch
         merge_request.should_remove_source_branch = false
         DeleteBranchService.new(merge_request.source_project, current_user)
-          .execute(merge_request.source_branch)
+                           .execute(merge_request.source_branch)
         merge_request.source_project.repository.expire_branch_names
       end
 

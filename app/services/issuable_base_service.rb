@@ -11,7 +11,10 @@ class IssuableBaseService < BaseService
       issuable, issuable.project, current_user, issuable.milestone)
   end
 
-  def create_labels_note(issuable, added_labels, removed_labels)
+  def create_labels_note(issuable, old_labels)
+    added_labels = issuable.labels - old_labels
+    removed_labels = old_labels - issuable.labels
+
     SystemNoteService.change_label(
       issuable, issuable.project, current_user, added_labels, removed_labels)
   end
@@ -34,8 +37,9 @@ class IssuableBaseService < BaseService
   end
 
   def filter_params(issuable_ability_name = :issue)
-    params[:assignee_id]  = "" if params[:assignee_id] == IssuableFinder::NONE
-    params[:milestone_id] = "" if params[:milestone_id] == IssuableFinder::NONE
+    filter_assignee
+    filter_milestone
+    filter_labels
 
     ability = :"admin_#{issuable_ability_name}"
 
@@ -46,6 +50,29 @@ class IssuableBaseService < BaseService
     end
   end
 
+  def filter_assignee
+    if params[:assignee_id] == IssuableFinder::NONE
+      params[:assignee_id] = ''
+    end
+  end
+
+  def filter_milestone
+    milestone_id = params[:milestone_id]
+    return unless milestone_id
+
+    if milestone_id == IssuableFinder::NONE ||
+        project.milestones.find_by(id: milestone_id).nil?
+      params[:milestone_id] = ''
+    end
+  end
+
+  def filter_labels
+    return if params[:label_ids].to_a.empty?
+
+    params[:label_ids] =
+      project.labels.where(id: params[:label_ids]).pluck(:id)
+  end
+
   def update(issuable)
     change_state(issuable)
     filter_params
@@ -54,7 +81,7 @@ class IssuableBaseService < BaseService
     if params.present? && issuable.update_attributes(params.merge(updated_by: current_user))
       issuable.reset_events_cache
       handle_common_system_notes(issuable, old_labels: old_labels)
-      handle_changes(issuable)
+      handle_changes(issuable, old_labels: old_labels)
       issuable.create_new_cross_references!(current_user)
       execute_hooks(issuable, 'update')
     end
@@ -71,7 +98,19 @@ class IssuableBaseService < BaseService
     end
   end
 
-  def handle_common_system_notes(issuable, options = {})
+  def has_changes?(issuable, old_labels: [])
+    valid_attrs = [:title, :description, :assignee_id, :milestone_id, :target_branch]
+
+    attrs_changed = valid_attrs.any? do |attr|
+      issuable.previous_changes.include?(attr.to_s)
+    end
+
+    labels_changed = issuable.labels != old_labels
+
+    attrs_changed || labels_changed
+  end
+
+  def handle_common_system_notes(issuable, old_labels: [])
     if issuable.previous_changes.include?('title')
       create_title_change_note(issuable, issuable.previous_changes['title'].first)
     end
@@ -80,9 +119,6 @@ class IssuableBaseService < BaseService
       create_task_status_note(issuable)
     end
 
-    old_labels = options[:old_labels]
-    if old_labels && (issuable.labels != old_labels)
-      create_labels_note(issuable, issuable.labels - old_labels, old_labels - issuable.labels)
-    end
+    create_labels_note(issuable, old_labels) if issuable.labels != old_labels
   end
 end

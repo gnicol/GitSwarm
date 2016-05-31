@@ -6,8 +6,8 @@ require_relative '../lib/user'
 require_relative '../lib/project'
 
 describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
-  PRIVATE = 'private'
-  PUBLIC  = 'public'
+  PRIVATE = 'private'.freeze
+  PUBLIC  = 'public'.freeze
 
   # before(:all) does the setup just once before the entire group
   # https://www.relishapp.com/rspec/rspec-core/v/2-2/docs/hooks/before-and-after-hooks
@@ -27,7 +27,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     # These two config properties are required for these tests - fail immediately unless they are configured
 
     [CONFIG::SECURE_GF, CONFIG::SECURE_GF_DEPOT_ROOT].each do |property|
-      fail("Required config.yml property does not exist: #{property}") unless CONFIG.get(property)
+      raise "Required config.yml property does not exist: #{property}" unless CONFIG.get(property)
     end
 
     @p4_admin_dir = Dir.mktmpdir('enf-perms-p4-', tmp_client_dir)
@@ -179,7 +179,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
         @users.each do |usr|
           @p4_admin.delete_user(usr.name) unless usr == @user_gs_master_p4_notexist
         end
-        @p4_admin.protects =(@initial_protects) if @initial_protects
+        @p4_admin.protects = @initial_protects if @initial_protects
         @p4_admin.disconnect
 
         @git_fusion_helper.apply_gf_global_config('read-permission-check' => '')
@@ -399,7 +399,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       Dir.mktmpdir(nil, tmp_client_dir) do |dir|
         git = GitHelper.http_helper(dir, @read_all_write_partial.http_url, user.name, user.password, user.email)
         git.clone # leave fail_on_error, this method should only be called for configurations with repo read permission
-        git.fail_on_error=false
+        git.fail_on_error = false
         create_file(File.join(dir, PUBLIC))  # add one file that should be pushable
         create_file(File.join(dir, PRIVATE)) # add one file that should NOT be pushable
         expect(git.add_commit_push).to be false
@@ -520,7 +520,8 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
       begin
         LOG.debug('Create GitSwarm project for enforce protections disable/enable test')
         unrestricted_create_proj_page = LoginPage.new(@driver, CONFIG.get(CONFIG::GS_URL))
-          .login(CONFIG.get(CONFIG::GS_USER), CONFIG.get(CONFIG::GS_PASSWORD)).goto_create_project_page
+                                                 .login(CONFIG.get(CONFIG::GS_USER), CONFIG
+                                                 .get(CONFIG::GS_PASSWORD)).goto_create_project_page
         unrestricted_create_proj_page.project_name(project.name)
         unrestricted_create_proj_page.namespace(project.namespace)
         unrestricted_create_proj_page.select_server(CONFIG.get(CONFIG::SECURE_GF))
@@ -531,7 +532,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
 
         LOG.debug('check a restricted user cannot see the project')
         restricted_projects_page = LoginPage.new(restricted_user_browser, CONFIG.get(CONFIG::GS_URL))
-          .login(restricted_user.name, restricted_user.password).goto_projects_page
+                                            .login(restricted_user.name, restricted_user.password).goto_projects_page
         expect(restricted_projects_page.projects).to_not include project.name
 
         LOG.debug('now disable mirroring')
@@ -601,7 +602,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     success = false
     Dir.mktmpdir do |dir|
       git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)
-      git.fail_on_error=false
+      git.fail_on_error = false
       success = git.clone
       create_file(dir) unless success # workaround for mktmpdir failure to unlink_internal if clone fails
     end
@@ -614,7 +615,7 @@ describe 'EnforcePermissionsTests', browser: true, EnforcePermission: true do
     Dir.mktmpdir(nil, tmp_client_dir) do |dir|
       git = GitHelper.http_helper(dir, project.http_url, user.name, user.password, user.email)
       git.clone # leave fail_on_error, this method should only be called for configurations with repo read permission
-      git.fail_on_error=false
+      git.fail_on_error = false
       create_file(File.join(dir, path))
       success = git.add_commit_push
       LOG.log("User #{user} failed to push to project #{project} at path #{path}") unless success

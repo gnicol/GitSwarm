@@ -19,12 +19,12 @@ describe 'Issues', js: true, feature: true do
       before do
         within('.js-main-target-form') do
           fill_in 'note[note]', with: 'Adding a comment in this issue.'
-          click_button 'Add Comment'
+          click_button 'Comment'
         end
       end
 
       it 'should show the comment in the comment field' do
-        expect(find(:css, '.notes')).to have_content('Adding a comment in this issue.')
+        expect(find(:css, 'ul#notes-list')).to have_content('Adding a comment in this issue.')
       end
     end
   end

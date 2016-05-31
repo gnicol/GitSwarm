@@ -6,6 +6,7 @@ describe 'gitlab:app namespace rake task' do
     Rake.application.rake_require 'tasks/gitlab/task_helpers'
     Rake.application.rake_require 'tasks/gitlab/backup'
     Rake.application.rake_require 'tasks/gitlab/shell'
+    Rake.application.rake_require 'tasks/gitlab/db'
     # empty task as env is already loaded
     Rake::Task.define_task :environment
   end
@@ -16,9 +17,7 @@ describe 'gitlab:app namespace rake task' do
   end
 
   def reenable_backup_sub_tasks
-    folder_list = %w(db repo uploads builds artifacts lfs)
-    folder_list += %w(pages) if PerforceSwarm.ee?
-    folder_list.each do |subtask|
+    %w(db repo uploads builds artifacts lfs).each do |subtask|
       Rake::Task["gitlab:backup:#{subtask}:create"].reenable
     end
   end
@@ -39,6 +38,7 @@ describe 'gitlab:app namespace rake task' do
         allow(FileUtils).to receive(:cp_r).and_return(true)
         allow(FileUtils).to receive(:mv).and_return(true)
         allow(Rake::Task['gitlab:shell:setup']).to receive(:invoke).and_return(true)
+        ENV['force'] = 'yes'
       end
 
       let(:gitswarm_version) { PerforceSwarm::VERSION }
@@ -138,11 +138,11 @@ describe 'gitlab:app namespace rake task' do
     end
 
     it 'should delete temp directories', override: true do
-      if PerforceSwarm.ee?
-        dirs = '{db,repositories,uploads,builds,artifacts,pages,lfs}'
-      else
-        dirs = '{db,repositories,uploads,builds,artifacts,lfs}'
-      end
+      dirs = if PerforceSwarm.ee?
+               '{db,repositories,uploads,builds,artifacts,pages,lfs}'
+             else
+               '{db,repositories,uploads,builds,artifacts,lfs}'
+             end
       temp_dirs = Dir.glob(File.join(Gitlab.config.backup.path, dirs))
 
       expect(temp_dirs).to be_empty

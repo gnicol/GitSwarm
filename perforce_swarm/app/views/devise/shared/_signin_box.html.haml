@@ -1,4 +1,5 @@
 .login-box
+  -# gitswarm changes start
   .login-heading.sign-in
     %h3 Log in to #{brand_title}
     = render 'layouts/flash'
@@ -14,6 +15,7 @@
       - if signin_enabled?
         %li
           = link_to 'Standard', '#tab-signin', 'data-toggle' => 'tab'
+  -# gitswarm changes end
   .login-body
     - if form_based_providers.any?
       .tab-content

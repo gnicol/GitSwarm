@@ -18,11 +18,13 @@
 
             - if extra_sign_in_text.present?
               = markdown(extra_sign_in_text)
+            -# gitswarm changes start
             - if PerforceSwarm.ee? && help_text.present?
               %h3 Need help?
               %hr
               %p.slead
                 = markdown(help_text)
+            -# gitswarm changes end
           .col-sm-5.login-holder
             = yield
             .footer-links

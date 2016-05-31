@@ -10,7 +10,7 @@ namespace :gitswarm do
     ARGV.shift if ARGV[0] == '--'
 
     output_dir = ARGV[0]
-    fail 'You must specify an output directory' unless output_dir
+    raise 'You must specify an output directory' unless output_dir
     output_dir = output_dir.gsub(%r{/$}, '')
 
     PerforceSwarm::Help.render do |content, file|
@@ -30,10 +30,11 @@ namespace :gitswarm do
     ARGV.shift if ARGV[0] == '--'
 
     output_dir = ARGV[0]
-    fail 'You must specify an output directory' unless output_dir
+    raise 'You must specify an output directory' unless output_dir
     output_dir = output_dir.gsub(%r{/$}, '')
 
-    fail 'It does not appear pandoc is installed; kindly install it.' unless `pandoc -v` && $CHILD_STATUS.success?
+    pandoc_version = `pandoc -v`
+    raise 'It does not appear pandoc is installed; kindly install it.' unless pandoc_version && $CHILD_STATUS.success?
 
     template_path = File.join(__dir__, 'docs', 'template.html')
     PerforceSwarm::Help.render do |content, file|
@@ -51,7 +52,7 @@ namespace :gitswarm do
         content.gsub!(%r{\[([^\]]+)\]\(/[^)]+\)}, '\1') unless file.end_with?('markdown.md')
 
         # Some files already have a table of contents, don't add another table of contents to them.
-        toc = file.end_with?('README.md') || file.end_with?('markdown.md') ? nil : '--toc'
+        toc = file.end_with?('README.md', 'markdown.md') ? nil : '--toc'
 
         # Calculate the required flags for pandoc
         pandoc  = "pandoc #{toc} --template #{template_path} --from markdown_github-hard_line_breaks "
@@ -59,10 +60,10 @@ namespace :gitswarm do
         pandoc += "-V #{'root-path=' + root_path}"
 
         content, status = Open3.capture2e(pandoc, stdin_data: content)
-        fail content unless status.success?
+        raise content unless status.success?
 
         content.gsub!(/href="(\S*)"/) do |result|   # Fetch all links in the HTML Document
-          if /http/.match(result).nil?              # Check if link is internal
+          if /https?:/.match(result).nil?           # Check if link is internal
             result.gsub!(/\.md/, '.html')           # Replace the extension if link is internal
           end
           result

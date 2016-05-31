@@ -1,10 +1,8 @@
 class Projects::BuildsController < Projects::ApplicationController
   before_action :build, except: [:index, :cancel_all]
-
   before_action :authorize_read_build!, except: [:cancel, :cancel_all, :retry]
-  before_action :authorize_update_build!, except: [:index, :show, :status]
-
-  layout "project"
+  before_action :authorize_update_build!, except: [:index, :show, :status, :raw]
+  layout 'project'
 
   def index
     @scope = params[:scope]
@@ -24,7 +22,6 @@ class Projects::BuildsController < Projects::ApplicationController
 
   def cancel_all
     @project.builds.running_or_pending.each(&:cancel)
-
     redirect_to namespace_project_builds_path(project.namespace, project)
   end
 
@@ -41,24 +38,44 @@ class Projects::BuildsController < Projects::ApplicationController
     end
   end
 
+  def trace
+    respond_to do |format|
+      format.json do
+        render json: @build.trace_with_state(params[:state]).merge!(id: @build.id, status: @build.status)
+      end
+    end
+  end
+
   def retry
     unless @build.retryable?
       return render_404
     end
 
     build = Ci::Build.retry(@build)
-
     redirect_to build_path(build)
+  end
+
+  def cancel
+    @build.cancel
+    redirect_to build_path(@build)
   end
 
   def status
     render json: @build.to_json(only: [:status, :id, :sha, :coverage], methods: :sha)
   end
 
-  def cancel
-    @build.cancel
+  def erase
+    @build.erase(erased_by: current_user)
+    redirect_to namespace_project_build_path(project.namespace, project, @build),
+                notice: "Build has been sucessfully erased!"
+  end
 
-    redirect_to build_path(@build)
+  def raw
+    if @build.has_trace?
+      send_file @build.path_to_trace, type: 'text/plain; charset=utf-8', disposition: 'inline'
+    else
+      render_404
+    end
   end
 
   private

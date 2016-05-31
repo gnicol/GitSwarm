@@ -203,11 +203,11 @@ Devise.setup do |config|
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
   #
-  # config.warden do |manager|
-  #   manager.failure_app   = AnotherApp
-  #   manager.intercept_401 = false
-  #   manager.default_strategies(scope: :user).unshift :some_external_strategy
-  # end
+  config.warden do |manager|
+    manager.failure_app = Gitlab::DeviseFailure
+    # manager.intercept_401 = false
+    # manager.default_strategies(scope: :user).unshift :some_external_strategy
+  end
 
   if Gitlab::LDAP::Config.enabled?
     Gitlab.config.ldap.servers.values.each do |server|
@@ -243,7 +243,7 @@ Devise.setup do |config|
     when Hash
       # Add procs for handling SLO
       if provider['name'] == 'cas3'
-        provider['args'][:on_single_sign_out]  = lambda do |request|
+        provider['args'][:on_single_sign_out] = lambda do |request|
           ticket = request.params[:session_index]
           raise "Service Ticket not found." unless Gitlab::OAuth::Session.valid?(:cas3, ticket)
           Gitlab::OAuth::Session.destroy(:cas3, ticket)

@@ -1,7 +1,7 @@
 require_relative '../../../spec_helper'
 
 describe PerforceSwarm::GitFusion::AutoCreateRepoCreator do
-  DEFAULT_REPO_NAME_TEMPLATE = 'gitswarm-{namespace}-{project-path}'
+  DEFAULT_REPO_NAME_TEMPLATE = 'gitswarm-{namespace}-{project-path}'.freeze
   EXPECTED_EXCEPTION         = PerforceSwarm::GitFusion::RepoCreatorError
 
   before(:all) do

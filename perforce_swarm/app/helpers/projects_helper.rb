@@ -1,38 +1,6 @@
 require Rails.root.join('app', 'helpers', 'projects_helper')
 
 module ProjectsHelper
-  # Don't linkify the last section of the title, so there is a larger click
-  # area for the dropdown. Plus the link would just take you to your current page.
-  def project_title(project, name = nil, _url = nil)
-    namespace_link =
-      if project.group
-        link_to(simple_sanitize(project.group.name), group_path(project.group))
-      else
-        owner = project.namespace.owner
-        link_to(simple_sanitize(owner.name), user_path(owner))
-      end
-
-    project_link = link_to(project_path(project), class: 'project-item-select-holder') do
-      link_output = simple_sanitize(project.name)
-
-      if current_user
-        link_output += project_select_tag :project_path,
-                                          class: 'project-item-select js-projects-dropdown',
-                                          data: { include_groups: false, order_by: 'last_activity_at' }
-      end
-
-      link_output
-    end
-    project_link += icon('chevron-down', class: 'dropdown-toggle-caret js-projects-dropdown-toggle') if current_user
-
-    full_title  = namespace_link + ' / ' + project_link
-    full_title += ' &middot; '.html_safe + simple_sanitize(name) if name
-
-    content_tag :span do
-      full_title
-    end
-  end
-
   def helix_missing_config_error(project)
     gitlab_shell_config.git_fusion.entry(project.git_fusion_server_id)
     return nil

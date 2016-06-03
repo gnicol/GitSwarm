@@ -59,8 +59,9 @@ module PerforceSwarm
 
     def unpack
       Dir.chdir(Gitlab.config.backup.path)
+
       # check for existing backups in the backup dir
-      file_list = Dir.glob('*_git{swarm,lab}_backup.tar')
+      file_list = Dir.glob('*_git{swarm,lab}_backup.tar').each.map { |f| f.split(/_/).first.to_i }
       puts 'no backups found' if file_list.empty?
 
       if file_list.count > 1 && ENV['BACKUP'].nil?
@@ -69,12 +70,9 @@ module PerforceSwarm
         exit 1
       end
 
-      if ENV['BACKUP'].nil?
-        tar_file = file_list.first
-      else
-        tar_file = File.join(ENV['BACKUP'] + '_gitswarm_backup.tar')
-        tar_file = File.join(ENV['BACKUP'] + '_gitlab_backup.tar') unless File.exist?(tar_file)
-      end
+      backup   = ENV['BACKUP'].nil? ? file_list.first : ENV['BACKUP']
+      tar_file = File.join("#{backup}_gitswarm_backup.tar")
+      tar_file = File.join("#{backup}_gitlab_backup.tar") unless File.exist?(tar_file)
 
       unless File.exist?(tar_file)
         puts "The specified backup doesn't exist!"

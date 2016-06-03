@@ -22,7 +22,7 @@
   -# gitswarm changes start
   .cover-controls.left
     - mirrored = @project.git_fusion_mirrored?
-    .helix-mirrored-status-label.btn.btn-gray{ data: { container: 'body', toggle: 'tooltip', html: 'true', title: mirroring_tooltip(@project, current_user)}}
+    .helix-mirrored-status-label.btn.btn-gray{ data: { container: 'body', toggle: 'tooltip', html: 'true', title: helix_mirroring_tooltip(@project, current_user)}}
       = (mirrored ? '' : 'Not ') + 'Mirrored in Helix'
       = icon('fw question-circle') unless mirrored
   -# gitswarm changes end

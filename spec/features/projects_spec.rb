@@ -99,7 +99,7 @@ feature 'Project', feature: true do
     end
 
     it 'click toggle and show dropdown', js: true do
-      find('.js-projects-dropdown-toggle').trigger('click')
+      find('.js-projects-dropdown-toggle').click
       expect(page).to have_css('.dropdown-menu-projects .dropdown-content li', count: 1)
     end
   end

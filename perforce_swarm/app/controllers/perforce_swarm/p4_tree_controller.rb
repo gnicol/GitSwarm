@@ -1,7 +1,7 @@
 module PerforceSwarm
   class P4TreeController < ApplicationController
-    DEPOT_TYPE_WHITELIST ||= %w(local stream)
-    DEPOT_NAME_BLACKLIST ||= %w(.git-fusion)
+    DEPOT_TYPE_WHITELIST ||= %w(local stream).freeze
+    DEPOT_NAME_BLACKLIST ||= %w(.git-fusion).freeze
 
     def show
       return render_404 unless params['fusion_server'] && params['path']

@@ -1,5 +1,5 @@
 %p
-- can_disable      = mirroring_permitted?(@project, current_user) && mirroring_configured?
+- can_disable      = helix_mirroring_permitted?(@project, current_user) && helix_mirroring_configured?
 - button_class     = 'btn btn-save' + (can_disable ? '' : ' disabled')
 - git_fusion_url   = git_fusion_url(@project)
 This project is currently mirrored to the

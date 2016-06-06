@@ -1,9 +1,9 @@
 - git_fusion_url   = git_fusion_url(@project)
 - has_fusion_url   = git_fusion_url && !git_fusion_url.empty?
-- can_reenable     = mirroring_permitted?(@project, current_user) && mirroring_configured? && has_fusion_url
+- can_reenable     = helix_mirroring_permitted?(@project, current_user) && helix_mirroring_configured? && has_fusion_url
 - button_class     = 'btn btn-save helix-mirroring' + (can_reenable ? '' : ' disabled')
 - reenable_tooltip = helix_reenable_mirroring_tooltip(@project)
-- error            = git_fusion_server_error || mirroring_errors(@project, current_user)
+- error            = git_fusion_server_error || helix_mirroring_errors(@project, current_user)
 - error            = nil unless error && !error.empty?
 %p
   Mirroring for this project has been disabled.

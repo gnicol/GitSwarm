@@ -1,7 +1,7 @@
 require_relative 'logged_in_page'
 
 class ProjectPage < LoggedInPage
-  HELIX_MIRRORING = 'helix-mirroring'
+  HELIX_MIRRORING = 'helix-mirroring'.freeze
 
   def initialize(driver)
     super(driver)

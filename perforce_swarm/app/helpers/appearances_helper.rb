@@ -1,7 +1,7 @@
 require Rails.root.join('app', 'helpers', 'appearances_helper')
 
 module AppearancesHelper
-  BRAND_TITLE_VALUE = 'GitSwarm'
+  BRAND_TITLE_VALUE = 'GitSwarm'.freeze
 
   def brand_title
     return brand_item.title if PerforceSwarm.ee? && brand_item

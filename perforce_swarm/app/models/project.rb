@@ -81,15 +81,15 @@ module PerforceSwarm
       elsif git_fusion_mirrored?
         return GIT_FUSION_REENABLE_MIRRORED
       else
-        error = git_fusion_reenable_error
+        error = git_fusion_enable_error
         return error ? GIT_FUSION_REENABLE_ERROR : GIT_FUSION_REENABLE_UNMIRRORED
       end
     rescue
       return GIT_FUSION_REENABLE_ERROR
     end
 
-    def git_fusion_reenable_error
-      PerforceSwarm::Mirror.reenable_error(repository.path_to_repo)
+    def git_fusion_enable_error
+      PerforceSwarm::Mirror.enable_error(repository.path_to_repo)
     end
 
     def git_fusion_repo_segments

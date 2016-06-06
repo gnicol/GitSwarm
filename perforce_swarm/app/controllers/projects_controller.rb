@@ -26,13 +26,13 @@ module PerforceSwarm
       # enable mirroring on the project and create the mirror remote
       @project.enable_git_fusion_mirroring!(fusion_server, repo_creator.repo_name)
 
-      # kick off and background initial push
-      push_job = fork do
+      # kick off and background mirror enable task
+      enable_job = fork do
         gitlab_shell  = File.expand_path(Gitlab.config.gitlab_shell.path)
         mirror_script = File.join(gitlab_shell, 'perforce_swarm', 'bin', 'gitswarm-mirror')
-        exec Shellwords.shelljoin([mirror_script, 'push', @project.path_with_namespace + '.git'])
+        exec Shellwords.shelljoin([mirror_script, 'enable_mirroring', @project.path_with_namespace + '.git'])
       end
-      Process.detach(push_job)
+      Process.detach(enable_job)
       logger.info("Helix Mirroring enable started on project '#{@project.name_with_namespace}' " \
                   "by user '#{current_user.username}'")
       redirect_to(project_path(@project), notice: 'Helix mirroring successful!')

@@ -132,7 +132,7 @@ module PerforceSwarm
     end
 
     def safe_import_url
-      super if import_url
+      return super if import_url
       import_url
     end
   end

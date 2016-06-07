@@ -3,16 +3,16 @@ require Rails.root.join('app', 'models', 'project')
 module PerforceSwarm
   module ProjectExtension
     # Git Fusion re-enable constants
-    GIT_FUSION_REENABLE_IN_PROGRESS = 'in_progress'
-    GIT_FUSION_REENABLE_ERROR       = 'error'
-    GIT_FUSION_REENABLE_MIRRORED    = 'mirrored'
-    GIT_FUSION_REENABLE_UNMIRRORED  = 'unmirrored'
+    GIT_FUSION_REENABLE_IN_PROGRESS = 'in_progress'.freeze
+    GIT_FUSION_REENABLE_ERROR       = 'error'.freeze
+    GIT_FUSION_REENABLE_MIRRORED    = 'mirrored'.freeze
+    GIT_FUSION_REENABLE_UNMIRRORED  = 'unmirrored'.freeze
 
     # Git Fusion repo creation types
-    GIT_FUSION_REPO_CREATION_DISABLED    = 'disabled'
-    GIT_FUSION_REPO_CREATION_AUTO_CREATE = 'auto-create'
-    GIT_FUSION_REPO_CREATION_IMPORT_REPO = 'import-repo'
-    GIT_FUSION_REPO_CREATION_FILE_SELECT = 'file-selector'
+    GIT_FUSION_REPO_CREATION_DISABLED    = 'disabled'.freeze
+    GIT_FUSION_REPO_CREATION_AUTO_CREATE = 'auto-create'.freeze
+    GIT_FUSION_REPO_CREATION_IMPORT_REPO = 'import-repo'.freeze
+    GIT_FUSION_REPO_CREATION_FILE_SELECT = 'file-selector'.freeze
 
     def import_in_progress?
       return true if git_fusion_mirrored? && import_status == 'started'
@@ -81,15 +81,15 @@ module PerforceSwarm
       elsif git_fusion_mirrored?
         return GIT_FUSION_REENABLE_MIRRORED
       else
-        error = git_fusion_reenable_error
+        error = git_fusion_enable_error
         return error ? GIT_FUSION_REENABLE_ERROR : GIT_FUSION_REENABLE_UNMIRRORED
       end
     rescue
       return GIT_FUSION_REENABLE_ERROR
     end
 
-    def git_fusion_reenable_error
-      PerforceSwarm::Mirror.reenable_error(repository.path_to_repo)
+    def git_fusion_enable_error
+      PerforceSwarm::Mirror.enable_error(repository.path_to_repo)
     end
 
     def git_fusion_repo_segments

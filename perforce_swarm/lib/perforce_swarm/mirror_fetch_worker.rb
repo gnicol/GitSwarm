@@ -80,7 +80,7 @@ module PerforceSwarm
                      last_fetched:   PerforceSwarm::Mirror.last_fetched(repo_path),
                      active:         active,
                      reenabling:     PerforceSwarm::Mirror.reenabling?(repo_path),
-                     reenable_error: project.git_fusion_reenable_error
+                     reenable_error: project.git_fusion_enable_error
                     )
         end
 

@@ -33,7 +33,7 @@ module PerforceSwarm
       return true if !complete || project.git_fusion_mirrored?
 
       # errors were encountered, so let's ensure that mirroring is completely off
-      if project.git_fusion_reenable_error
+      if project.git_fusion_enable_error
         project.disable_git_fusion_mirroring!
         return false
       end

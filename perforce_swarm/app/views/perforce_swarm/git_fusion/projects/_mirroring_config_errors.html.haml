@@ -1,4 +1,4 @@
-- error = git_fusion_server_error || mirroring_errors(@project, current_user)
+- error = git_fusion_server_error || helix_mirroring_errors(@project, current_user)
 - if error && !error.empty?
   .helix-error
     %h4 Configuration Error:

@@ -33,7 +33,8 @@ namespace :gitswarm do
     raise 'You must specify an output directory' unless output_dir
     output_dir = output_dir.gsub(%r{/$}, '')
 
-    raise 'It does not appear pandoc is installed; kindly install it.' unless `pandoc -v` && $CHILD_STATUS.success?
+    pandoc_version = `pandoc -v`
+    raise 'It does not appear pandoc is installed; kindly install it.' unless pandoc_version && $CHILD_STATUS.success?
 
     template_path = File.join(__dir__, 'docs', 'template.html')
     PerforceSwarm::Help.render do |content, file|

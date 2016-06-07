@@ -19,6 +19,13 @@ module PerforceSwarm
       super
     end
 
+    def import?
+      return super unless git_fusion_mirrored?
+      # project is mirrored in fusion, and we set the status ourselves via
+      # the redis event and mirror fetch worker
+      !import_finished?
+    end
+
     # disables Git Fusion mirroring on the project, and removes the mirror remote
     # on the bare GitSwarm repo
     def disable_git_fusion_mirroring!
@@ -122,6 +129,12 @@ module PerforceSwarm
       # gitlab_git caches it's repo_head so we need to regrab the raw repository to have it update
       repository.reload_raw_repository
       super
+    end
+
+    def safe_import_url
+      return super if import_url
+      # show the git fusion mirror URL, minus the password
+      PerforceSwarm::GitFusionRepo.resolve_url(git_fusion_repo).to_s
     end
   end
 end

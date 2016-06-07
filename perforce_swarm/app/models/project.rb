@@ -133,7 +133,8 @@ module PerforceSwarm
 
     def safe_import_url
       return super if import_url
-      import_url
+      # show the git fusion mirror URL, minus the password
+      PerforceSwarm::GitFusionRepo.resolve_url(git_fusion_repo).to_s
     end
   end
 end

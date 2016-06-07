@@ -231,7 +231,7 @@ module PerforceSwarm
         end
 
         # generate our file and attempt to add it
-        p4.with_temp_client do |tmpdir|
+        p4.with_temp_client('.git-fusion') do |tmpdir|
           file = local_p4gf_config_path(tmpdir)
           FileUtils.mkdir_p(File.dirname(file))
           File.write(file, p4gf_config(stream))

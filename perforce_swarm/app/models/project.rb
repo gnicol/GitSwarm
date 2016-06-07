@@ -123,6 +123,11 @@ module PerforceSwarm
       repository.reload_raw_repository
       super
     end
+
+    def safe_import_url
+      super if import_url
+      import_url
+    end
   end
 end
 

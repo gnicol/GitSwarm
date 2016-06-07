@@ -19,6 +19,13 @@ module PerforceSwarm
       super
     end
 
+    def import?
+      return super unless git_fusion_mirrored?
+      # project is mirrored in fusion, and we set the status ourselves via
+      # the redis event and mirror fetch worker
+      !import_finished?
+    end
+
     # disables Git Fusion mirroring on the project, and removes the mirror remote
     # on the bare GitSwarm repo
     def disable_git_fusion_mirroring!

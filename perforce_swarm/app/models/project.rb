@@ -163,8 +163,13 @@ class Project < ActiveRecord::Base
     # no git fusion repo, so carry on with normal import behaviour
     return add_import_job_super unless git_fusion_mirrored?
 
-    # we have a git fusion import request- ensure project is marked as imported from git fusion
-    update_column(:import_type, 'git_fusion')
+    # we have a git fusion import request - ensure project is marked as imported from git fusion,
+    # and set the import URL to unknown so GitLab will simply create the repo and we do our
+    # own import task after
+    update_columns(import_type: 'git_fusion', import_url: Project::UNKNOWN_IMPORT_URL)
+
+    # called with an 'unknown' import URL to create the git repo on disk
+    RepositoryImportWorker.new.perform(id)
 
     # create mirror remote
     PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo

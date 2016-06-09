@@ -19,6 +19,13 @@ module PerforceSwarm
       super
     end
 
+    def import?
+      return super unless git_fusion_mirrored?
+      # project is mirrored in fusion, and we set the status ourselves via
+      # the redis event and mirror fetch worker
+      !import_finished?
+    end
+
     # disables Git Fusion mirroring on the project, and removes the mirror remote
     # on the bare GitSwarm repo
     def disable_git_fusion_mirroring!
@@ -123,6 +130,12 @@ module PerforceSwarm
       repository.reload_raw_repository
       super
     end
+
+    def safe_import_url
+      return super if import_url
+      # show the git fusion mirror URL, minus the password
+      PerforceSwarm::GitFusionRepo.resolve_url(git_fusion_repo).to_s
+    end
   end
 end
 
@@ -150,8 +163,13 @@ class Project < ActiveRecord::Base
     # no git fusion repo, so carry on with normal import behaviour
     return add_import_job_super unless git_fusion_mirrored?
 
-    # we have a git fusion import request- ensure project is marked as imported from git fusion
-    update_column(:import_type, 'git_fusion')
+    # we have a git fusion import request - ensure project is marked as imported from git fusion,
+    # and set the import URL to unknown so GitLab will simply create the repo and we do our
+    # own import task after
+    update_columns(import_type: 'git_fusion', import_url: Project::UNKNOWN_IMPORT_URL)
+
+    # called with an 'unknown' import URL to create the git repo on disk
+    RepositoryImportWorker.new.perform(id)
 
     # create mirror remote
     PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo

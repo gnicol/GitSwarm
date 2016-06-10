@@ -48,8 +48,8 @@ module PerforceSwarm
       content.gsub!(/our website/i, "GitLab's website")
 
       # redirect external help links to our site
-      content.gsub!('http://doc.gitlab.com/ce/', 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm/')
-      content.gsub!('http://doc.gitlab.com/ee/', 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/')
+      content.gsub!(/http:\/\/docs?.gitlab.com\/ce\//, 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm/')
+      content.gsub!(/http:\/\/docs?.gitlab.com\/ee\//, 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/')
 
       # fix example links value
       content.gsub!(/(your-)?gitlab\.example\.com/, '\1gitswarm.example.com')
@@ -90,7 +90,39 @@ module PerforceSwarm
         content.gsub!(/Omnibus-packages/, 'GitSwarm packages')
       end
       content.gsub!(%r{(omnibus)-gitlab(?!/)}i, 'gitswarm')
-      content.gsub!(/Omnibus Installation/, 'Package Installation')
+
+      content.gsub!('(Omnibus)', '(package installation)')
+      content.gsub!('(Omnibus-only)', '(package installations only)')
+      content.gsub!("by omnibus\nwith", "by the package installation\nwith")
+      content.gsub!('Configure using Omnibus', 'Configure the package installation')
+      content.gsub!('Consider the Omnibus package installation', 'Consider the package installation')
+      content.gsub!('If using Omnibus', 'If using the package installation')
+      content.gsub!('in Omnibus,', 'in package installations,')
+      content.gsub!('Omnibus allows', 'Package installations allow')
+      content.gsub!('The omnibus design', 'The design of the package installation')
+      content.gsub!(/Omnibus(\n| )configuration/i, 'package installation configuration')
+      content.gsub!('Omnibus documentation', 'package installation documentation')
+      content.gsub!('Omnibus Installation', 'Package Installation')
+      content.gsub!(/Omnibus(\n| )installation/i, 'package\1installation')
+      content.gsub!(/omnibus installs/i, 'package installations')
+      content.gsub!(/(^|>)# Omnibus( install)?$/, '\1# Package installations')
+      content.gsub!(/# Omnibus package( installation)?/, '# Package installation')
+      content.gsub!('Omnibus Package', 'Package Installation')
+      content.gsub!(/Omnibus(\n| )package/i, 'package\1installation')
+      content.gsub!('omnibus version', 'package installation')
+      content.gsub!('The omnibus reconfigure', "The package installation's reconfigure")
+      content.gsub!('Updating Omnibus from', 'Updating the package installation from')
+      content.gsub!("without using\nOmnibus", "without using\nthe package installation")
+      content.gsub!('Omnibus Trusted Chain', PerforceSwarm.short_name + ' Trusted Chain')
+      content.gsub!('Omnibus 7.14', PerforceSwarm.short_name + ' 2016.1')
+      content.gsub!('GitSwarm Omnibus', 'GitSwarm package installation')
+      content.gsub!('GitSwarm EE Omnibus', 'GitSwarm EE package installation')
+
+      # say 'source installations' consistently
+      content.gsub!('# Installations from source', '# Source installations')
+      content.gsub!(/installations(\n| )from( the)? source/, 'source\1installations')
+      content.gsub!(/installation from( the)? source/, 'source installation')
+      content.gsub!(/(^|>)# Source$/, '\1# Source installations')
 
       # do a variety of page specific touch-ups
 

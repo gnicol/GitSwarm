@@ -10,7 +10,7 @@ module AppearancesHelper
   end
 
   def brand_header_logo
-    if PerforceSwarm.ee? && brand_item
+    if PerforceSwarm.ee? && brand_item && brand_item.header_logo?
       image_tag brand_item.header_logo, class: 'brand-logo'
     else
       content_tag :div, nil, class: 'brand-logo'

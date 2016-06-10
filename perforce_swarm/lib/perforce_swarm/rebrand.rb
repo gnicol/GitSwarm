@@ -1,6 +1,6 @@
 module PerforceSwarm
   module Branding
-    REPLACE_REGEX = /GitLab(?!\.com|\s+[Ff]lavored [Mm]arkdown| [Ff]low| [Ww]orkflow| CI| [Rr]unner| Shell|\$)/
+    REPLACE_REGEX = /GitLab(?!\.com|\s+CI|\s+[Ff]lavored [Mm]arkdown|\s+[Ff]low|\s+[Mm]ail[Rr]oom|\s+[Rr]unner|\s+Shell|\s+[Ss]idekiq|\s+[Uu]nicorn|\s+[Ww]orkflow|\s+[Ww]orkhorse|\$)/
 
     def self.rebrand(text)
       # replace safe looking instances of GitLab with GitSwarm (skipping .com, Flavored Markdown, Literal instances)

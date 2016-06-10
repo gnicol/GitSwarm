@@ -37,14 +37,14 @@ namespace :gitswarm do
     raise 'It does not appear pandoc is installed; kindly install it.' unless pandoc_version && $CHILD_STATUS.success?
 
     template_path = File.join(__dir__, 'docs', 'template.html')
-    current_dir = ""
+    current_dir = ''
     file_count = 0
-    print "Rendering documentation to HTML..."
+    print 'Rendering documentation to HTML...'
     PerforceSwarm::Help.render do |content, file|
       output_file = File.join(output_dir, file)
       FileUtils.mkdir_p(File.dirname(output_file))
       dir_name = File.dirname(file)
-      if (dir_name != current_dir)
+      if dir_name != current_dir
         print "\n#{dir_name} "
         current_dir = dir_name
       end
@@ -87,8 +87,8 @@ namespace :gitswarm do
       end
 
       File.write(output_file, content)
-      print "."
-      file_count = file_count + 1
+      print '.'
+      file_count += 1
     end
 
     FileUtils.cp_r(File.join(__dir__, 'docs', 'stylesheets'), File.join(output_dir, 'stylesheets'))

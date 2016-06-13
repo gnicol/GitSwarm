@@ -124,6 +124,9 @@ module PerforceSwarm
       content.gsub!(/installation from( the)? source/, 'source installation')
       content.gsub!(/(^|>)# Source$/, '\1# Source installations')
 
+      # fix incoming email addresses
+      content.gsub!('gitlab-incoming', 'gitswarm-incoming')
+
       # do a variety of page specific touch-ups
 
       content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure'

@@ -122,6 +122,7 @@ module PerforceSwarm
       content.gsub!('# Installations from source', '# Source installations')
       content.gsub!(/installations(\n| )from( the)? source/, 'source\1installations')
       content.gsub!(/installation from( the)? source/, 'source installation')
+      content.gsub!(/manual install(ation)?s/, 'source install\1s')
       content.gsub!(/(^|>)# Source$/, '\1# Source installations')
 
       # fix incoming email addresses

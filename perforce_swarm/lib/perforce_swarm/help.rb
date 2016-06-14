@@ -89,6 +89,7 @@ module PerforceSwarm
         content.gsub!(/Omnibus-gitlab /, 'GitSwarm ')
         content.gsub!(/Omnibus-packages/, 'GitSwarm packages')
       end
+      content.gsub!(/# omnibus-gitlab/, '# package installations')
       content.gsub!(%r{(omnibus)-gitlab(?!/)}i, 'gitswarm')
 
       content.gsub!('(Omnibus)', '(package installation)')

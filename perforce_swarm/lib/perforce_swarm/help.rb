@@ -75,7 +75,7 @@ module PerforceSwarm
       content.gsub!(%r{(?<!/)gitlab\-(ctl|rake|rails)}, 'gitswarm-\1')
 
       # rename the various rake tasks e.g. rake gitlab:check to rake gitswarm:check
-      content.gsub!(%r{(?<!exec )(gitswarm-)?rake(\s+)gitlab:}, '\1rake\2gitswarm:')
+      content.gsub!(/(?<!exec )(gitswarm-)?rake(\s+)gitlab:/, '\1rake\2gitswarm:')
       content.gsub!(/gitlab:(env|gitlab_shell|sidekiq|app):/, 'gitswarm:\1:')
       content.gsub!(/gitlab:check /, 'gitswarm:check ')
 

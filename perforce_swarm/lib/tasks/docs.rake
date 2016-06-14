@@ -37,9 +37,17 @@ namespace :gitswarm do
     raise 'It does not appear pandoc is installed; kindly install it.' unless pandoc_version && $CHILD_STATUS.success?
 
     template_path = File.join(__dir__, 'docs', 'template.html')
+    current_dir = ''
+    file_count = 0
+    print 'Rendering documentation to HTML...'
     PerforceSwarm::Help.render do |content, file|
       output_file = File.join(output_dir, file)
       FileUtils.mkdir_p(File.dirname(output_file))
+      dir_name = File.dirname(file)
+      if dir_name != current_dir
+        print "\n#{dir_name} "
+        current_dir = dir_name
+      end
 
       # md files need to be converted to HTML. non-md files just flow through as-is
       if file.end_with?('.md')
@@ -50,6 +58,11 @@ namespace :gitswarm do
 
         # de-link absolute links, since they don't play nice with our static docs
         content.gsub!(%r{\[([^\]]+)\]\(/[^)]+\)}, '\1') unless file.end_with?('markdown.md')
+
+        # apply substitutions for product markers
+        content.gsub!('$GitSwarm$', PerforceSwarm.short_name)
+        content.gsub!('$GitSwarmPackage$', PerforceSwarm.package_name)
+        content.gsub!('$GitLab$', PerforceSwarm.gitlab_name)
 
         # Some files already have a table of contents, don't add another table of contents to them.
         toc = file.end_with?('README.md', 'markdown.md') ? nil : '--toc'
@@ -74,8 +87,11 @@ namespace :gitswarm do
       end
 
       File.write(output_file, content)
+      print '.'
+      file_count += 1
     end
 
     FileUtils.cp_r(File.join(__dir__, 'docs', 'stylesheets'), File.join(output_dir, 'stylesheets'))
+    puts "\nDone. Rendered #{file_count} files!"
   end
 end

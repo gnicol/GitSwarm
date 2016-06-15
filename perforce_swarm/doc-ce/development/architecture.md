@@ -7,10 +7,16 @@ There are two editions of GitSwarm: 'GitSwarm', based upon
 and 'GitSwarm Enterprise Edition (EE)', which is based upon
 [GitLab's Enterprise Edition](https://gitlab.com/gitlab-org/gitlab-ee/tree/master).
 
-Both editions of GitSwarm are only available via packages.
+Both editions of GitSwarm are available as packages or source install
+(via git).
 
-Both editions of GitSwarm require a component called gitlab-shell.
-It is included in the GitSwarm packages.
+Both editions of GitSwarm require an add-on component called gitlab-shell.
+It is included in the GitSwarm packages. For source installs, it is
+obtained from the ['gitlab-shell` repository](FIXME
+https://gitlab.com/perforce/gitlab-shell/tree/master). New versions are
+usually tags, but staying on the master bnranch gives you the latest stable
+version. New releases are generally around the same time as $GitSwarm$
+releases, with exception for informal security updates deemed critical.
 
 ## Physical office analogy
 
@@ -51,7 +57,8 @@ practices that the office is run by.
 ## System Layout
 
 When referring to `~git` in the pictures it means the home directory of the
-git user which is typically `/var/opt/gitswarm`.
+git user which is typically `/var/opt/gitswarm` for package installs, and
+`/home/git` for source installs.
 
 $GitSwarm$ is primarily installed within the `/opt/gitswarm` directory as the
 `root` user. Working data, including repositories, databases, nginx
@@ -60,6 +67,9 @@ repositories are located in `/var/opt/gitswarm/git-data/repositories`.
 
 $GitSwarm$ is a Ruby on Rails application, so the particulars of the inner
 workings can be learned by studying how a Ruby on Rails application works.
+
+To serve respositories over SSH there's an add-on application called
+gitlab-shell, which is installed in `/home/git/gitlab-shell`.
 
 ### Components
 
@@ -83,11 +93,12 @@ When serving repositories over HTTP/HTTPS, $GitSwarm$ utilizes the $GitSwarm$
 API to resolve authorization and access as well as serving git objects.
 
 The add-on component gitlab-shell serves repositories over SSH. It manages
-the SSH keys within `/var/opt/gitswarm/.ssh/authorized_keys` which should
-not be manually edited. gitlab-shell accesses the bare repositories
-directly to serve git objects and communicates with Redis to submit jobs to
-Sidekiq for $GitSwarm$ to process. gitlab-shell queries the $GitSwarm$ API to
-determine authorization and access.
+the SSH keys within `/var/opt/gitswarm/.ssh/authorized_keys` for package
+installs, or `/home/git/.ssh/authorized_keys`, which should not be manually
+edited. gitlab-shell accesses the bare repositories directly to serve git
+objects and communicates with Redis to submit jobs to Sidekiq for
+$GitSwarm$ to process. gitlab-shell queries the $GitSwarm$ API to determine
+authorization and access.
 
 ### Installation Folder Summary
 

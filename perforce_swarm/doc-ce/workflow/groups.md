@@ -32,8 +32,8 @@ You can use the 'New project' button to add a project to the new group.
 You can transfer an existing project into a group you own from the project
 settings page.
 
-First scroll down to 'Transfer project'. Now you can pick any of the
-groups you manage as the new namespace for the group.
+First scroll down to the 'Dangerous settings' and click 'Show them to me'. Now
+you can pick any of the groups you manage as the new namespace for the group.
 
 ![Transfer a project to a new namespace](groups/transfer_project.png)
 
@@ -49,25 +49,28 @@ Suppose we have a group with two projects.
 
 ![Group with two projects](groups/group_with_two_projects.png)
 
-On the 'Group Members' page we can now add a new user Joan Funk to the
+On the 'Group Members' page we can now add a new user Barry to the group.
+
+![Add user Barry to the group](groups/add_member_to_group.png)
+
+Now because Barry is a 'Developer' member of the 'Open Source' group, he
+automatically gets 'Developer' access to all projects in the 'Open Source'
 group.
 
-![Add user Joan Funk to the group](groups/add_member_to_group.png)
-
-Now, because Joan Funk is a 'Developer' member of the 'Open Source' group,
-she automatically gets 'Developer' access to all projects in the 'Open
-Source' group.
-
-![Joan Funk has 'Developer' access to $GitSwarm$](groups/project_members_via_group.png)
+![Barry has 'Developer' access to GitLab CI](groups/project_members_via_group.png)
 
 If necessary, you can increase the access level of an individual user for a
 specific project, by adding them as a Member to the project.
 
-![Joan Funk effectively has 'Master' access to $GitSwarm$ now](groups/override_access_level.png)
+![Barry effectively has 'Master' access to GitLab CI
+now](groups/override_access_level.png)
 
 ## Managing group memberships via LDAP
 
-In $GitSwarm$ Enterprise Edition, it is possible to manage $GitSwarm$ group memberships using LDAP groups.
+In GitSwarm Enterprise Edition, it is possible to manage $GitSwarm$ group
+memberships using LDAP groups. See [the GitSwarm EE
+documentation](https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/integration/ldap.html)
+for more information.
 
 ## Allowing only admins to create groups
 
@@ -76,7 +79,10 @@ disabled for individual users from the admin panel. It is also possible to
 configure $GitSwarm$ so that new users default to not being able to create
 groups:
 
-```ruby
-# Put the following in /etc/gitswarm/gitswarm.rb
+```
+# For package installations, put the following in /etc/gitswarm/gitswarm.rb
 gitlab_rails['gitlab_default_can_create_group'] = false
+
+# For source installations, uncomment the 'default_can_create_group'
+# line in /home/git/gitlab/config/gitlab.yml
 ```

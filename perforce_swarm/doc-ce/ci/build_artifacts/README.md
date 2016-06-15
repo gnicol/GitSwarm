@@ -1,28 +1,32 @@
 # Introduction to build artifacts
 
 Artifacts is a list of files and directories which are attached to a build
-after it completes successfully.
+after it completes successfully. This feature is enabled by default in all
+$GitSwarm$ installations.
+
+_If you are searching for ways to use artifacts, jump to [Defining
+artifacts in `.gitlab-ci.yml`](#defining-artifacts-in-gitlab-ciyml)._
 
 Since $GitSwarm$ 2015.4 and [GitLab Runner] 0.7.0, build artifacts that are
-created by GitLab Runner are uploaded to $GitSwarm$ and are downloadable as a
-single archive (`tar.gz`) using $GitSwarm$.
+created by GitLab Runner are uploaded to $GitSwarm$ and are downloadable as
+a single archive (`tar.gz`) using the GitLab UI.
 
-Starting with $GitSwarm$ 2016.1 and GitLab Runner 1.0, the artifacts archive
-format changed to `ZIP`, and it is now possible to browse its contents,
-with the added ability of downloading the files separately.
+Starting with $GitSwarm$ 2016.1 and GitLab Runner 1.0, the artifacts
+archive format changed to `ZIP`, and it is now possible to browse its
+contents, with the added ability of downloading the files separately.
 
-## Enabling build artifacts
+> **Note:** The artifacts browser will be available only for new artifacts
+> that are sent to $GitSwarm$ using GitLab Runner version 1.0 and up. It
+> will not be possible to browse old artifacts already uploaded to
+> $GitSwarm$.
 
-If you are searching for ways to use the artifacts feature, jump to
-[Defining artifacts in
-`.gitlab-ci.yml`](#defining-artifacts-in-gitlab-ciyml).
+## Disabling build artifacts
 
-The artifacts feature is enabled by default in all $GitSwarm$ installations.
-
-If by any chance you want to disable the artifacts feature on your $GitSwarm$
-instance, follow the steps below.
+To disable artifacts site-wide, follow the steps below.
 
 ---
+
+**In package installations:**
 
 1.  Edit `/etc/gitswarm/gitswarm.rb` and add the following line:
 
@@ -30,9 +34,22 @@ instance, follow the steps below.
     gitlab_rails['artifacts_enabled'] = false
     ```
 
-1. Save the file and [reconfigure $GitSwarm$] for the changes to take effect.
+1.  Save the file and [reconfigure $GitSwarm$] for the changes to take
+    effect.
 
 ---
+
+**In source installations:**
+
+1.  Edit `/home/git/gitlab/config/gitlab.yml` and add or amend the
+    following lines:
+
+    ```yaml
+    artifacts:
+      enabled: false
+    ```
+
+1.  Save the file and [restart $GitSwarm$] for the changes to take effect.
 
 ## Defining artifacts in `.gitlab-ci.yml`
 
@@ -53,8 +70,8 @@ which in turn are defined with the `paths` keyword. All paths to files and
 directories are relative to the repository that was cloned during the
 build.
 
-For more examples on artifacts, follow the
-[separate artifacts YAML documentation](../yaml/README.md#artifacts).
+For more examples on artifacts, follow the [separate artifacts YAML
+documentation](../yaml/README.md#artifacts).
 
 ## Storing build artifacts
 
@@ -66,11 +83,13 @@ below.
 
 ---
 
+**In package installations:**
+
 _The artifacts are stored by default in
 `/var/opt/gitswarm/gitlab-rails/shared/artifacts`._
 
-1.  To change the storage path for example to `/mnt/storage/artifacts`,
-    edit `/etc/gitswarm/gitswarm.rb` and add the following line:
+1.  To change the storage path for example to `/mnt/storage/artifacts`, edit
+    `/etc/gitswarm/gitswarm.rb` and add the following line:
 
     ```ruby
     gitlab_rails['artifacts_path'] = "/mnt/storage/artifacts"
@@ -80,6 +99,23 @@ _The artifacts are stored by default in
     effect.
 
 ---
+
+**In source installations:**
+
+_The artifacts are stored by default in
+`/home/git/gitlab/shared/artifacts`._
+
+1.  To change the storage path for example to `/mnt/storage/artifacts`,
+    edit `/home/git/gitlab/config/gitlab.yml` and add or amend the
+    following lines:
+
+    ```yaml
+    artifacts:
+      enabled: true
+      path: /mnt/storage/artifacts
+    ```
+
+1.  Save the file and [restart $GitSwarm$] for the changes to take effect.
 
 ## Browsing build artifacts
 
@@ -121,14 +157,14 @@ directories.
 If you need to download the whole archive, there are buttons in various
 places inside $GitSwarm$ that make that possible.
 
-1. While on the builds page, you can see the download icon for each build's
-   artifacts archive in the right corner.
+1.  While on the builds page, you can see the download icon for each
+    build's artifacts archive in the right corner.
 
-1. While inside a specific build, you are presented with a download button
-   along with the one that browses the archive.
+1.  While inside a specific build, you are presented with a download button
+    along with the one that browses the archive.
 
-1. And finally, when browsing and archive you can see the download button
-   at the top right corner.
+1.  And finally, when browsing an archive you can see the download button
+    at the top right corner.
 
 ---
 

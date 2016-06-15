@@ -18,7 +18,8 @@ hidden from the left sidebar menu.
 
 GitLab CI is enabled by default on new installations and can be disabled
 either individually under each project's settings, or site-wide by
-modifying the settings in `/etc/gitswarm/gitswarm.rb`.
+modifying the settings in `gitlab.yml` and `gitlab.rb` for source and
+package installations respectively.
 
 ### Per-project user setting
 
@@ -34,7 +35,8 @@ deselect the checkbox and hit **Save** for the settings to take effect.
 ### Site-wide administrator setting
 
 You can disable GitLab CI site-wide, by modifying the settings in
-`/etc/gitswarm/gitswarm.rb`.
+`gitlab.yml` and `gitlab.rb` for source and package installations
+respectively.
 
 Two things to note:
 
@@ -45,10 +47,34 @@ Two things to note:
 
 ---
 
-Edit `/etc/gitswarm/gitswarm.rb` and add the line:
+For source installations, open `gitlab.yml` with your editor and set
+`builds` to `false`:
 
-```ruby
-gitlab-rails['gitlab_default_projects_features_builds'] = false
+```yaml
+## Default project features settings
+default_projects_features:
+  issues: true
+  merge_requests: true
+  wiki: true
+  snippets: false
+  builds: false
 ```
 
-Save the file and reconfigure $GitSwarm$: `sudo gitswarm-ctl reconfigure`.
+Save the file and restart $GitSwarm$:
+
+```bash
+sudo service gitlab restart
+```
+
+For package installations, edit `/etc/gitswarm/gitswarm.rb` and add the
+line:
+
+```
+gitlab_rails['gitlab_default_projects_features_builds'] = false
+```
+
+Save the file and reconfigure $GitSwarm$:
+
+```bash
+sudo gitswarm-ctl reconfigure
+```

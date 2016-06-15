@@ -1,8 +1,9 @@
 - if git_fusion_server_error
   .description.slead
-    %h4 Configuration Error:
-    %p
-      = git_fusion_server_error
+    - if !helix_silence_config_errors?
+      %h4 Configuration Error:
+      %p
+        = git_fusion_server_error
     %p
       For help on configuring your Helix Git Fusion instances, have an admin
       = link_to 'see these directions.', help_page_path('workflow', 'helix_mirroring', 'configuration'), target: '_blank'

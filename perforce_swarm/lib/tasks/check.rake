@@ -24,15 +24,21 @@ namespace :gitlab do
       end
       op.parse!(ARGV)
 
-      PerforceSwarm::GitlabConfig.new.git_fusion.validate_entries(min_version) do |result|
-        if !result[:valid] && result[:outdated]
-          display_outdated_version_info(result[:config]['url'], result[:version], min_version)
-          outdated = true
-        elsif !result[:valid]
-          display_warning(result[:config]['url'], result[:error])
-        else
-          display_success_info(result[:config]['url'], result[:version]) unless quiet
+      begin
+        config = PerforceSwarm::GitlabConfig.new.git_fusion
+        config.validate_entries(min_version) do |result|
+          if !result[:valid] && result[:outdated] && !config.silence_config_errors?
+            display_outdated_version_info(result[:config]['url'], result[:version], min_version)
+            outdated = true
+          elsif !result[:valid] && !config.silence_config_errors?
+            display_warning(result[:config]['url'], result[:error])
+          else
+            display_success_info(result[:config]['url'], result[:version]) unless quiet
+          end
         end
+      rescue => e
+        # re-throw if we're showing config errors
+        raise e unless config.silence_config_errors?
       end
       exit(66) if outdated
     end

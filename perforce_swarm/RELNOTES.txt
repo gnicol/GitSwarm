@@ -55,6 +55,8 @@ Upgrading
 
 Known Issues
 
+    * Git LFS is not supported on GitSwarm projects mirrored in Git Fusion.
+
     * Helix Mirroring stops working when a GitSwarm project involves
       commits that contain only tags and no file changes.
 
@@ -119,6 +121,10 @@ Minor new functionality in 2016.2
         Incorporate GitLab's new password create on initial install with our
         auto-provisioned Helix Git Fusion instance
 
+    #852d0453, #273ce8ae (Bug #86455)
+        Add a configurable that allows admins to suppresses Git Fusion configuration
+        errors both on the new project page and the reconfigure output
+
 Bugs fixed in 2016.2
 
     #df2dc6cc, #b2a50c08 (Bug #85902)
@@ -127,6 +133,12 @@ Bugs fixed in 2016.2
     #65779263 (Bug #85761)
         Ensure mapped streams exist before creating a new project with the custom repo
         creator tool
+
+    #846ba34e (Bug #84059)
+        Fix UI when all of GitLab's import (e.g. GitHub) sources are disabled
+
+    #13c8dc56, #045070fa (Bug #86267)
+        Add the //.git-fusion depot to an client template if one is present
 
 GitLab changelogs since GitLab 8.4
 

@@ -6,7 +6,7 @@ class GitFusionImportWorker < RepositoryImportWorker
 
     # not a Git Fusion import
     unless project.import_type && project.import_type == 'git_fusion'
-      raise Error, 'Git Fusion import requested against a project of the wrong type.'
+      raise Error, 'Git Fusion import requested against a project of the wrong import type.'
     end
 
     # project is mirrored in Git Fusion, so create the repository first and perform
@@ -28,7 +28,7 @@ class GitFusionImportWorker < RepositoryImportWorker
     end
     Process.detach(import_job)
   rescue => e
-    project.update(import_error: Gitlab::UrlSanitizer.sanitize(e.message))
+    project.update(import_error: e.message)
     project.import_fail
     return
   end

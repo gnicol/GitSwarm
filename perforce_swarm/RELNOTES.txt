@@ -143,6 +143,17 @@ Bugs fixed in 2016.2
 GitLab changelogs since GitLab 8.4
 
     GitLab 8.8
+        - Import GitHub repositories respecting the API rate limit !4166
+        - Fix todos page throwing errors when you have a project pending deletion !4300
+        - Disable Webhooks before proceeding with the GitHub import !4470
+        - Fix importer for GitHub comments on diff !4488
+        - Adjust the SAML control flow to allow LDAP identities to be added to an existing
+          SAML user !4498
+        - Fix incremental trace upload API when using multi-byte UTF-8 chars in trace
+          !4541
+        - Prevent unauthorized access for projects build traces
+        - Forbid scripting for wiki files
+        - Only show notes through JSON on confidential issues that the user has access to
         - Fix LDAP-based login for users with 2FA enabled. !4493
         - Fix 404 page when viewing TODOs that contain milestones or labels in different
           projects. !4312

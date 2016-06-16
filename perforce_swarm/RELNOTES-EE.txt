@@ -153,6 +153,7 @@ Bugs fixed in 2016.2
 GitLab EE changelogs since GitLab EE 8.4
 
     GitLab EE 8.8
+        - Make sure OAuth routes that we generate for Geo matches with the ones in Rails routes !444
         - Remove license overusage message
         - Add standard web hook headers to Jenkins CI post. !374
         - Gracefully handle malformed DNs in LDAP group sync. !392

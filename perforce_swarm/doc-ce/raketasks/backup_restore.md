@@ -51,9 +51,9 @@ sudo -u git -H bundle exec rake gitlab:backup:create RAILS_ENV=production
 ```
 
 Also you can choose what should be backed up by adding environment variable
-SKIP. Available options: db, uploads (attachments), repositories, builds(CI
-build output logs), artifacts (CI build artifacts), lfs (LFS objects).  Use
-a comma to specify several options at the same time.
+SKIP. Available options: db, uploads (attachments), repositories, builds
+(CI build output logs), artifacts (CI build artifacts), lfs (LFS objects).
+Use a comma to specify several options at the same time.
 
 ```bash
 sudo gitswarm-rake gitswarm:backup:create SKIP=db,uploads

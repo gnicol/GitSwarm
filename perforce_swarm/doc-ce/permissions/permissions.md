@@ -9,8 +9,8 @@ permission level is used.
 If a user is a $GitSwarm$ administrator they receive all permissions.
 
 On public and internal projects the Guest role is not enforced. All users
-will be able to create issues, leave comments, and pull or download the
-project code.
+are able to create issues, leave comments, and pull or download the project
+code.
 
 If you are mirroring a project into Helix Git Fusion, you can [enforce Git
 Fusion permissions](git_fusion.md).

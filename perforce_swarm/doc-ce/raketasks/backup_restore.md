@@ -183,8 +183,8 @@ etc.) by using the [`Local`](https://github.com/fog/fog-local#usage)
 storage provider.  The directory pointed to by the `local_root` key
 **must** be owned by the `git` user **when mounted** (mounting with the
 `uid=` of the `git` user for `CIFS` and `SMB`) or the user that you are
-executing the backup tasks under (for omnibus packages, this is the `git`
-user).
+executing the backup tasks under (for package installations, this is the
+`git` user).
 
 The `backup_upload_remote_directory` **must** be set in addition to the
 `local_root` key. This is the sub directory inside the mounted directory
@@ -247,7 +247,7 @@ for two-factor authentication. Storing encrypted information along with
 its key in the same place defeats the purpose of using encryption in the
 first place!
 
-If you use a package installation,please see the [instructions in the
+If you use a package installation, please see the [instructions in the
 readme to backup your
 configuration](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md#backup-and-restore-omnibus-gitlab-configuration).
 If you have a source installation, please consider backing up your
@@ -419,9 +419,9 @@ backups using all your disk space. To do this add the following lines to
 gitlab_rails['backup_keep_time'] = 604800
 ```
 
-> **Note:** This cron job does not [backup your
-> $GitSwarm$configuration](#backup-and-restore-omnibus-gitlab-configuration)
-> or [SSH host
+> **Note:** This cron job does not [backup your $GitSwarm$
+> configuration](#backup-and-restore-omnibus-gitlab-configuration) or [SSH
+> host
 > keys](https://superuser.com/questions/532040/copy-ssh-keys-from-one-server-to-another-server/532079#532079).
 
 ## Alternative backup strategies
@@ -456,7 +456,7 @@ approach is probably of limited practical use.
 
 ## Troubleshooting
 
-### Restoring database backup using omnibus packages outputs warnings
+### Restoring database backup using package installation outputs warnings
 
 If you are using backup restore procedures you might encounter the
 following warnings:

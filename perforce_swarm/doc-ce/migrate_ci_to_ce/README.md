@@ -341,7 +341,7 @@ restoration](../raketasks/backup_restore.md) guide.
 
 ### Troubleshooting
 
-#### show:secrets problem (Omnibus-only)
+#### show:secrets problem (package installations only)
 
 If you see errors like this:
 
@@ -351,8 +351,9 @@ rake aborted!
 Errno::EACCES: Permission denied @ rb_sysopen - config/secrets.yml
 ```
 
-This can happen if you are updating from versions prior to 7.13 straight to 8.0.
-The fix for this is to update to Omnibus 7.14 first and then update it to 8.0.
+This can happen if you are updating from versions prior to 7.13 straight to
+8.0. The fix for this is to update to $GitSwarm$ 2015.3 first and then
+update to 2015.4.
 
 #### Permission denied when accessing /var/opt/gitswarm/gitlab-ci/builds
 

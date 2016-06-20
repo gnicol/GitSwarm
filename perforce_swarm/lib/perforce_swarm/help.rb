@@ -28,6 +28,19 @@ module PerforceSwarm
     def self.preprocess(category, file)
       content = File.read(Rails.root.join('doc', category, "#{file}.md"))
 
+      # map GitLab version declarations to GitSwarm versions
+      content.gsub!(/GitLab 9\.[x0-9](\.\d+)?/, 'GitSwarm 2016.3')
+      content.gsub!(/GitLab 8\.[5678](\.\d+)?/, 'GitSwarm 2016.2')
+      content.gsub!(/GitLab 8\.[1234](\.\d+)?/, 'GitSwarm 2016.1')
+      content.gsub!(/GitLab 8\.0(\.\d+)?/, 'GitSwarm 2015.4')
+      content.gsub!(/GitLab 7\.13(\.\d+)?/, 'GitSwarm 2015.3')
+      content.gsub!(/GitLab 7\.12(\.\d+)?/, 'GitSwarm 2015.2')
+      content.gsub!(/GitLab 7\.11(\.\d+)?/, 'GitSwarm 2015.2')
+      content.gsub!(/GitLab 7\.10(\.\d+)?/, 'GitSwarm 2015.2')
+      content.gsub!(/GitLab 7\.[.2-9]*\d/, 'GitSwarm 2015.2')
+      content.gsub!(/GitLab [1-6](\.[x0-9](\.\d+)?)?/, 'GitSwarm 2015.2')
+      content.gsub!(/\[introduced\]\[(c|e)e-\d+\]/, 'introduced')
+
       # replace GitLab attribution with our own
       content.gsub!(/GitLab B\.V\./, 'Perforce Software')
 
@@ -48,8 +61,8 @@ module PerforceSwarm
       content.gsub!(/our website/i, "GitLab's website")
 
       # redirect external help links to our site
-      content.gsub!(%r{http:\/\/docs?.gitlab.com\/ce\/}, 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm/')
-      content.gsub!(%r{http:\/\/docs?.gitlab.com\/ee\/}, 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/')
+      content.gsub!(%r{http://docs?.gitlab.com/ce/}, 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm/')
+      content.gsub!(%r{http://docs?.gitlab.com/ee/}, 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/')
 
       # fix example links value
       content.gsub!(/(your-)?gitlab\.example\.com/, '\1gitswarm.example.com')

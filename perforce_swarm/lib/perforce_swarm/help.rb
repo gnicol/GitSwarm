@@ -29,16 +29,16 @@ module PerforceSwarm
       content = File.read(Rails.root.join('doc', category, "#{file}.md"))
 
       # map GitLab version declarations to GitSwarm versions
-      content.gsub!(/GitLab( |\n\s*)9\.[x0-9](\.\d+)?/, 'GitSwarm 2016.3')
-      content.gsub!(/GitLab( |\n\s*)8\.[5678](\.\d+)?/, 'GitSwarm 2016.2')
-      content.gsub!(/GitLab( |\n\s*)8\.[1234](\.\d+)?/, 'GitSwarm 2016.1')
-      content.gsub!(/GitLab( |\n\s*)8\.0(\.\d+)?/, 'GitSwarm 2015.4')
-      content.gsub!(/GitLab( |\n\s*)7\.13(\.\d+)?/, 'GitSwarm 2015.3')
-      content.gsub!(/GitLab( |\n\s*)7\.12(\.\d+)?/, 'GitSwarm 2015.2')
-      content.gsub!(/GitLab( |\n\s*)7\.11(\.\d+)?/, 'GitSwarm 2015.2')
-      content.gsub!(/GitLab( |\n\s*)7\.10(\.\d+)?/, 'GitSwarm 2015.2')
-      content.gsub!(/GitLab( |\n\s*)7\.[.2-9]*\d/, 'GitSwarm 2015.2')
-      content.gsub!(/GitLab( |\n\s*)[1-6](\.[x0-9](\.\d+)?)?/, 'GitSwarm 2015.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)9\.[x0-9](\.\d+)?/, 'GitSwarm 2016.3')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)8\.[5678](\.\d+)?/, 'GitSwarm 2016.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)8\.[1234](\.\d+)?/, 'GitSwarm 2016.1')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)8\.0(\.\d+)?/, 'GitSwarm 2015.4')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.13(\.\d+)?/, 'GitSwarm 2015.3')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.12(\.\d+)?/, 'GitSwarm 2015.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.11(\.\d+)?/, 'GitSwarm 2015.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.10(\.\d+)?/, 'GitSwarm 2015.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.[.2-9]*\d/, 'GitSwarm 2015.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)[1-6](\.[x0-9](\.\d+)?)?/, 'GitSwarm 2015.2')
       content.gsub!(/\[introduced\]\[(c|e)e-\d+\]/, 'introduced')
 
       # replace GitLab attribution with our own

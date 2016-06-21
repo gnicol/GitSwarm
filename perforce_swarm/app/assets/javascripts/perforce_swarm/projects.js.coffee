@@ -58,7 +58,7 @@ class @GitFusionProject
       original_repo_selection = $(@original_settings_selector).data('repo')
 
       # only replace the value if there is an existing original.
-      if original_repo_selection != ""
+      if original_repo_selection
         this.$(@repo_name_selector).val(original_repo_selection).select2()
 
 

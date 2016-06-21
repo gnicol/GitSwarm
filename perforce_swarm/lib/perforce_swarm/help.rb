@@ -75,6 +75,7 @@ module PerforceSwarm
       # also get gitlab-secrets.json
       content.gsub!(%r{(etc|gitswarm)/gitlab.rb}, '\1/gitswarm.rb')
       content.gsub!(%r{/etc/gitswarm/gitlab\-secrets\.json}, '/etc/gitswarm/gitswarm-secrets.json')
+      content.gsub!('`gitlab.rb`', '`/etc/gitswarm/gitswarm.rb`')
 
       # rename /opt/gitlab and /var/opt/gitlab
       content.gsub!('/opt/gitlab', '/opt/gitswarm')

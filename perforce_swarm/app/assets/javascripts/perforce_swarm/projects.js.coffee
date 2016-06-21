@@ -56,7 +56,12 @@ class @GitFusionProject
       original_repo_create_type = $(@original_settings_selector).data('repo-create-type')
       $('input#git_fusion_repo_create_type_' + original_repo_create_type).prop('checked', true)
       original_repo_selection = $(@original_settings_selector).data('repo')
-      this.$(@repo_name_selector).val(original_repo_selection).select2()
+
+      # only replace the value if there is an existing original.
+      if original_repo_selection != ""
+        this.$(@repo_name_selector).val(original_repo_selection).select2()
+
+
       existing_mappings = $(@original_settings_selector).data('branch-mappings')
       default_branch    = $(@original_settings_selector).data('default-branch')
 

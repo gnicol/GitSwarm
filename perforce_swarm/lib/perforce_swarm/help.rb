@@ -144,6 +144,10 @@ module PerforceSwarm
       # fix incoming email addresses
       content.gsub!('gitlab-incoming', 'gitswarm-incoming')
 
+      # fix escaped <> so that Pandoc's Markdown can display them correctly
+      content.gsub!('\<', '&lt;')
+      content.gsub!('\>', '&gt;')
+
       # do a variety of page specific touch-ups
 
       content.gsub!(/To see a more in-depth overview see the.*$/, '') if file == 'structure'

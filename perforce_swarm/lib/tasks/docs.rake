@@ -68,7 +68,7 @@ namespace :gitswarm do
         toc = file.end_with?('README.md', 'markdown.md') ? nil : '--toc'
 
         # Calculate the required flags for pandoc
-        pandoc  = "pandoc #{toc} --template #{template_path} --from markdown_github-hard_line_breaks "
+        pandoc  = "pandoc #{toc} --template #{template_path} --from markdown_github-hard_line_breaks+footnotes "
         pandoc += "-V #{'version=' + PerforceSwarm::VERSION} -V #{'edition=' + (PerforceSwarm.ee? ? '-EE' : '')} "
         pandoc += "-V #{'root-path=' + root_path}"
 

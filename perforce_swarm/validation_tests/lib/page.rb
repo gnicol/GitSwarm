@@ -67,17 +67,17 @@ class Page
     []
   end
 
-  def wait_for(by, value, timeout = 30)
+  def wait_for(by, value, timeout = 180)
     wait = Selenium::WebDriver::Wait.new(timeout: timeout) # seconds
     wait.until { @driver.find_element(by, value) }
   end
 
-  def wait_for_text(type, locator, text, timeout = 30)
+  def wait_for_text(type, locator, text, timeout = 180)
     wait = Selenium::WebDriver::Wait.new(timeout: timeout) # seconds
     wait.until { @driver.find_element(type, locator).text.include?(text) }
   end
 
-  def wait_for_no_text(type, locator, text, timeout = 30)
+  def wait_for_no_text(type, locator, text, timeout = 180)
     wait = Selenium::WebDriver::Wait.new(timeout: timeout) # seconds
     wait.until { !@driver.find_element(type, locator) || !@driver.find_element(type, locator).text.include?(text) }
   end

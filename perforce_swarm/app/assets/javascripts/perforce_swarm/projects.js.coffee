@@ -61,7 +61,6 @@ class @GitFusionProject
       if original_repo_selection
         this.$(@repo_name_selector).val(original_repo_selection).select2()
 
-
       existing_mappings = $(@original_settings_selector).data('branch-mappings')
       default_branch    = $(@original_settings_selector).data('default-branch')
 

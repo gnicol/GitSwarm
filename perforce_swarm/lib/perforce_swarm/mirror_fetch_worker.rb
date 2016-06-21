@@ -31,6 +31,7 @@ module PerforceSwarm
       # normally a redis task cleans this up but a crash or other unexpected event could
       # leave it hung.
       repo_stats.import_hung.each do |stat|
+        stat[:project].repository.after_import
         stat[:project].import_finish
         stat[:project].save
       end

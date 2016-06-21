@@ -30,6 +30,7 @@ module PerforceSwarm
         # Set the default branch
         default_branch = project.default_branch
         project.change_head(default_branch) if default_branch
+        project.repository.after_import
         project.import_finish
         project.save
       end

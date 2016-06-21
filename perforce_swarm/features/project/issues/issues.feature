@@ -1080,10 +1080,6 @@ Feature: Project Issues
     And I click the back button
     Then I should be on the issues list page
 
-  @skip-parent
-  Scenario: I submit new unassigned issue as guest
-    Given ...
-
   @automated
   Scenario: I submit a new unassigned issue as guest
     Given public project "Community"

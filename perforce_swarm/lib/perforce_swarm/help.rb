@@ -144,6 +144,9 @@ module PerforceSwarm
       # fix incoming email addresses
       content.gsub!('gitlab-incoming', 'gitswarm-incoming')
 
+      # fixup reference links that include the label GitLab
+      content.gsub!(/\[(restart|reconfigure) gitlab\]/, '[\1 ' + PerforceSwarm.short_name + ']')
+
       # fix escaped <> so that Pandoc's Markdown can display them correctly
       content.gsub!('\<', '&lt;')
       content.gsub!('\>', '&gt;')

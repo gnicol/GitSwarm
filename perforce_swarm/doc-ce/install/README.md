@@ -97,7 +97,10 @@ GitSwarm:
     $GitSwarm$ is a web application, which uses port 80 (for HTTP) or port
     443 (for HTTPS) by default. $GitSwarm$ cannot operate without exclusive
     access to its port, so make sure no other service is using its
-    intended port.
+    intended port. [Learn how to discover which processes are listening
+    on specific
+    ports](http://www.cyberciti.biz/faq/what-process-has-open-linux-port/).
+
 
 ## Quick install
 

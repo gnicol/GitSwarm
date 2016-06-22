@@ -136,8 +136,9 @@ Perform the [post-installation](#post-installation) steps.
     ```ruby
     external_url "http://gitswarm.example.com:12345"
     ```
-    > If you do use a non-standard port, see above for instructions on
-    > adjusting the firewall for CentOS/RHEL systems.
+    > If you do use a non-standard port, see
+    > [above](#pre-installation-steps) for instructions on adjusting the
+    > firewall for CentOS/RHEL systems.
 
 1.  **Set the timezone for your GitSwarm instance:**
 

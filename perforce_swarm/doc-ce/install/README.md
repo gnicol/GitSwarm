@@ -25,6 +25,23 @@ GitSwarm:
         sudo systemctl reload firewalld
         ```
 
+    If you intend to run $GitSwarm$ on a non-standard port, you must adjust
+    the firewall rules accordingly. For example, to allow $GitSwarm$ to
+    accept connections on port `12345`:
+
+    1.  **For CentOS/RHEL 6.6+:**
+
+        ```bash
+        sudo lokkit -p 12345:tcp
+        ```
+
+    1.  **For CentOS/RHEL 7:**
+
+        ```bash
+        sudo firewall-cmd --zone=public --add-port=12345/tcp --permanent
+        sudo systemctl reload firewalld
+        ```
+
 1.  Optional: **Ensure that your system is up-to-date.**
 
     We advise installing GitSwarm on a fully up-to-date operating system:
@@ -75,6 +92,13 @@ GitSwarm:
         sudo systemctl start postfix
         ```
 
+1.  **Ensure that $GitSwarm$'s port is not in use.**
+
+    $GitSwarm$ is a web application, which uses port 80 (for HTTP) or port
+    443 (for HTTPS) by default. $GitSwarm$ cannot operate without exclusive
+    access to its port, so make sure no other service is using its
+    intended port.
+
 ## Quick install
 
 ```bash
@@ -103,6 +127,14 @@ Perform the [post-installation](#post-installation) steps.
     ```
 
     Edit the setting if necessary.
+
+    > **Note:** It is possible to run $GitSwarm$ on a non-standard port
+    > by specifying the port as part of the `external_url`:
+    ```ruby
+    external_url "http://gitswarm.example.com:12345"
+    ```
+    > If you do use a non-standard port, see above for instructions on
+    > adjusting the firewall for CentOS/RHEL systems.
 
 1.  **Set the timezone for your GitSwarm instance:**
 

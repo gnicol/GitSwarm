@@ -1,13 +1,13 @@
 # Git LFS
 
-Managing large files such as audio, video and graphics files has always been one
-of the shortcomings of Git. The general recommendation is to not have Git repositories
-larger than 1GB to preserve performance.
+Managing large files such as audio, video and graphics files has always
+been one of the shortcomings of Git. The general recommendation is to not
+have Git repositories larger than 1GB to preserve performance.
 
 $GitSwarm$ already supports [managing large files with git
-annex](https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/workflow/git_annex.html)
-(EE only), however in certain environments it is not always convenient to
-use different commands to differentiate between the large files and regular
+annex](http://docs.gitlab.com/ee/workflow/git_annex.html) (EE only),
+however in certain environments it is not always convenient to use
+different commands to differentiate between the large files and regular
 ones.
 
 Git LFS makes this simpler for the end user by removing the requirement to
@@ -22,7 +22,8 @@ where to push the large file.
 
 ## $GitSwarm$ server configuration
 
-Documentation for $GitSwarm$ instance administrators is under [LFS administration doc](lfs_administration.md).
+Documentation for $GitSwarm$ instance administrators is under [LFS
+administration doc](lfs_administration.md).
 
 ## Requirements
 
@@ -34,11 +35,14 @@ Documentation for $GitSwarm$ instance administrators is under [LFS administratio
 * Git LFS v1 original API is not supported since it was deprecated early in
   LFS development
 * When SSH is set as a remote, Git LFS objects still go through HTTPS
-* Any Git LFS request will ask for HTTPS credentials to be provided so good
+* Any Git LFS request asks for HTTPS credentials to be provided so good
   Git credentials store is recommended
 * Git LFS always assumes HTTPS so if you have $GitSwarm$ server on HTTP you
-  need to add the URL to Git config manually (see
+  have to add the URL to Git config manually (see
   [troubleshooting](#troubleshooting))
+
+> **Important:** Git LFS is not compatible with [Helix
+> mirroring](../helix_mirroring/README.md), and is currently not supported.
 
 ## Using Git LFS
 
@@ -48,8 +52,8 @@ large file and check it into your Git repository:
 
 ```bash
 git clone git@gitswarm.example.com:group/project.git
-git lfs install                       # initialize the Git LFS project project
-git lfs track "*.iso"                 # select the file extensions that you want to treat as large files
+git lfs install                   # initialize the Git LFS project project
+git lfs track "*.iso"             # select the file extensions that you want to treat as large files
 ```
 
 Once a certain file extension is marked for tracking as a LFS object you
@@ -60,8 +64,7 @@ with the same extension:
 cp ~/tmp/debian.iso ./            # copy a large file into the current directory
 git add .                         # add the large file to the project
 git commit -am "Added Debian iso" # commit the file meta data
-git push origin master            # sync the git repo and large file to the
-                                  # $GitSwarm$ server
+git push origin master            # push the git repo and large file to the $GitSwarm$ server
 ```
 
 Cloning the repository works the same as before. Git automatically detects
@@ -88,12 +91,14 @@ There are a couple of reasons why this error can occur:
 
 * You don't have permissions to access certain LFS object
 
-Check if you have permissions to push to the project or fetch from the project.
+Check if you have permissions to push to the project or fetch from the
+project.
 
 * Project is not allowed to access the LFS object
 
-LFS object you are trying to push to the project or fetch from the project is not
-available to the project anymore. Probably the object was removed from the server.
+LFS object you are trying to push to the project or fetch from the project
+is not available to the project anymore. Probably the object was removed
+from the server.
 
 * Local git repository is using deprecated LFS API
 
@@ -122,9 +127,9 @@ If the status `error 501` is shown, it is because:
 ### getsockopt: connection refused
 
 If you push a LFS object to a project and you receive an error similar to:
-`Post <URL>/info/lfs/objects/batch: dial tcp IP: getsockopt: connection refused`,
-the LFS client is trying to reach $GitSwarm$ through HTTPS. However, your
-$GitSwarm$ instance is being served on HTTP.
+`Post <URL>/info/lfs/objects/batch: dial tcp IP: getsockopt: connection
+refused`, the LFS client is trying to reach $GitSwarm$ through HTTPS.
+However, your $GitSwarm$ instance is being served on HTTP.
 
 This behaviour is caused by Git LFS using HTTPS connections by default when
 a `lfsurl` is not set in the Git config.
@@ -152,8 +157,8 @@ in which you expect to push the objects:
 git config --global credential.helper 'cache --timeout=3600'
 ```
 
-This will remember the credentials for an hour after which Git operations
-will require re-authentication.
+This remembers the credentials for an hour after which Git operations
+require re-authentication.
 
 If you are using OS X you can use `osxkeychain` to store and encrypt your
 credentials. For Windows, you can use `wincred` or Microsoft's [Git

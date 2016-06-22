@@ -1,6 +1,6 @@
 # $GitSwarm$ Container Registry Administration
 
-> **Note:** This feature was [introduced][ce-4040] in GitSwarm 2016.2.
+> **Note:** This feature was introduced in GitSwarm 2016.2.
 
 With the Docker Container Registry integrated into $GitSwarm$, every
 project can have its own space to store its Docker images.
@@ -327,7 +327,7 @@ This path is accessible to:
 
 **Package installations**
 
-The default location where images are stored, is
+The default location where images are stored in package installations is
 `/var/opt/gitswarm/gitlab-rails/shared/registry`. To change it:
 
 1.  Edit `/etc/gitswarm/gitswarm.rb`:
@@ -343,7 +343,7 @@ The default location where images are stored, is
 
 **Source Installations**
 
-The default location where images are stored in source installations, is
+The default location where images are stored in source installations is
 `/home/git/gitlab/shared/registry`. To change it:
 
 1.  Open `/home/git/gitlab/config/gitlab.yml`, find the `registry` entry
@@ -362,21 +362,13 @@ Currently, there is no storage limitation, which means a user can upload an
 infinite amount of Docker images with arbitrary sizes. This setting will be
 configurable in future releases.
 
-## Changelog
-
-**$GitSwarm$ 2016.2 ([source docs][8-8-docs])**
-
-- $GitSwarm$ Container Registry feature was introduced.
-
-[reconfigure $GitSwarmPackage$]: restart_gitlab.md#omnibus-gitlab-reconfigure
-[restart $GitSwarmPackage$]: restart_gitlab.md#installations-from-source
+[reconfigure $GitSwarmPackage$]: restart_gitlab.md#package-reconfigure
+[restart $GitSwarmPackage$]: restart_gitlab.md#source-restart
 [wildcard certificate]: https://en.wikipedia.org/wiki/Wildcard_certificate
-[ce-4040]: https://gitlab.com/gitlab-org/gitlab-ce/merge_requests/4040
 [docker-insecure]: https://docs.docker.com/registry/insecure/
 [registry-deploy]: https://docs.docker.com/registry/deploying/
 [storage-config]: https://docs.docker.com/registry/configuration/#storage
 [token-config]: https://docs.docker.com/registry/configuration/#token
-[8-8-docs]: https://gitlab.com/gitlab-org/gitlab-ce/blob/8-8-stable/doc/administration/container_registry.md
 [registry-ssl]: https://gitlab.com/gitlab-org/gitlab-ce/blob/master/lib/support/nginx/registry-ssl
 [existing-domain]: #configure-container-registry-under-an-existing-$GitSwarmPackage$-domain
 [new-domain]: #configure-container-registry-under-its-own-domain

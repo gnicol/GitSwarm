@@ -71,7 +71,7 @@ describe Projects::ImportService, services: true do
 
     def stub_github_omniauth_provider
       # remove any existing providers
-      Gitlab.config.omniauth.providers.replace([])
+      # Gitlab.config.omniauth.providers.replace([])
 
       provider = OpenStruct.new(
         'name' => 'github',

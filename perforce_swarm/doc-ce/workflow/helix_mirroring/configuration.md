@@ -238,7 +238,7 @@ To permit $GitSwarm$ to connect to Git Fusion via SSH, follow these steps:
 1.  **Ensure that the "git" user has a public SSH key.**
 
     ```bash
-    sudo -u git -c ssh-keygen FIXME
+    sudo -u git ssh-keygen
     ```
 
 1.  **Make this configuration change active:**

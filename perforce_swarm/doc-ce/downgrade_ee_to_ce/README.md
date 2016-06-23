@@ -1,30 +1,30 @@
 # Downgrading from GitSwarm EE to GitSwarm
 
-If you ever decide to downgrade your $GitSwarm$ back to GitSwarm, there
+If you ever decide to downgrade your GitSwarm EE back to GitSwarm, there
 are a few steps you need take before installing the GitSwarm package on top
-of the $GitSwarm$ package, or, if you are in an installation from source,
-before you change remotes and fetch the latest CE code.
+of the GitSwarm EE package, or, if you are in an installation from source,
+before you change remotes and fetch the latest GitSwarm code.
 
-## Disable $GitSwarm$-only features
+## Disable GitSwarm EE-only features
 
 First thing to do is to disable the following features.
 
 ### Authentication mechanisms
 
-Kerberos and Atlassian Crowd are only available for $GitSwarm$, so you
+Kerberos and Atlassian Crowd are only available for GitSwarm EE, so you
 should disable these mechanisms before downgrading and you should provide
 alternative authentication methods to your users.
 
 ### Git Annex
 
-Git Annex is also only available for $GitSwarm$. This means that if you
+Git Annex is also only available for GitSwarm EE. This means that if you
 have repositories that use Git Annex to store large files, these files will
 no longer be easily available via Git. You should consider migrating these
 repositories to use Git LFS before downgrading to GitSwarm.
 
 ### Remove Jenkins CI Service entries from the database
 
-The `JenkinsService` class is only available for $GitSwarm$, so if you
+The `JenkinsService` class is only available for GitSwarm EE, so if you
 downgrade to GitSwarm, you'll come across the following error:
 
 ```
@@ -55,7 +55,7 @@ bundle exec rails runner "Service.where(type: 'JenkinsService').delete_all" prod
 ## Downgrade to GitSwarm
 
 After performing the above mentioned steps, you are now ready to downgrade
-your $GitSwarm$ installation to GitSwarm.
+your GitSwarm EE installation to GitSwarm.
 
 **Package Installations**
 
@@ -65,8 +65,8 @@ GitSwarm package on top of the currently installed one. You can do this
 
 **Source Installations**
 
-To downgrade a source installation, you need to replace the current remote of
-your GitLab installation with the Community Edition's remote, fetch the latest
+To downgrade a source installation, you need to replace the current remote
+of your GitSwarm EE installation with the GitSwarm remote, fetch the latest
 changes, and checkout the latest stable branch:
 
 ```bash

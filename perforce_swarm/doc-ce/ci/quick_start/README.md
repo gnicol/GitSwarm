@@ -1,6 +1,6 @@
 # Quick Start
 
-> **Note:** Starting from version 2015.4, GitLab [Continuous
+> **Note:** Starting from version $GitSwarm$ 2015.4, GitLab [Continuous
 > Integration][ci] (CI) is fully integrated into $GitSwarm$ itself and is
 > [enabled] by default on all projects.
 

@@ -56,15 +56,16 @@ This configuration should appear in `gitlab.yml`:
 ```yaml
 git-fusion:
   global:
-    user: 'global-user'
-    password: '<password for "global-user" user>'
+    user: global-user
+    password: <password for "global-user" user>
   local:
-    url: 'http://gitswarm@gitfusion.host/'
-    password: '<password for "gitswarm" user'
+    url: http://gitswarm@gitfusion.host/
+    password: <password for "gitswarm" user
   development:
-    url: 'http://dev-gitfusion.host/'
+    url: http://dev-gitfusion.host/
   production:
-    url: 'http://prod-gitfusion.host/'
+    url: http://prod-gitfusion.host/
+```
 
 In the above example, the user `global-user` is used to log in to the
 `development` and `production` Git Fusion servers. The user for the `local`
@@ -132,14 +133,12 @@ Git Fusion server remains as `gitswarm`.
 
 1.  **Edit the following configuration in `gitlab.yml`:**
 
-    After the `gitswarm['git-fusion']['enabled']` section:
-
     ```yaml
     git-fusion:
       enabled: true
       my_entry:
-        url: 'http://gitswarm@gitfusion.host/'
-        password: '<password for "gitswarm" user>'
+        url: http://gitswarm@gitfusion.host/
+        password: <password for "gitswarm" user>
     ```
 
     > **Note:** The "gitswarm" user needs to exist in the Helix Versioning
@@ -154,11 +153,11 @@ Git Fusion server remains as `gitswarm`.
     ```yaml
     git-fusion:
       local:
-        url: 'http://gitswarm@gitfusion.host/'
-        password: '<password for "gitswarm" user>'
+        url: http://gitswarm@gitfusion.host/
+        password: <password for "gitswarm" user>
       other:
-        url: 'http://other-user@other-gitfusion.host/'
-        password: '<password for "other-user" user>'
+        url: http://other-user@other-gitfusion.host/
+        password: <password for "other-user" user>
     ```
 
     > **Note:** While we do not recommend using self-signed SSL certificates
@@ -169,7 +168,7 @@ Git Fusion server remains as `gitswarm`.
     ```yaml
     git-fusion:
       my_entry:
-        git_config_params: 'http.sslVerify=false'
+        git_config_params: http.sslVerify=false
     ```
 
     > **Note:** the key `my_entry` can be replaced with a unique value of
@@ -232,8 +231,8 @@ To permit $GitSwarm$ to connect to Git Fusion via SSH, follow these steps:
     git-fusion:
       enabled: true
       my_entry:
-        url: 'git@gitfusion.host'
-        password: '<password for "gitswarm" user>'
+        url: git@gitfusion.host
+        password: <password for "gitswarm" user>
     ```
 
 1.  **Ensure that the "git" user has a public SSH key.**
@@ -298,9 +297,9 @@ present. When using SSH, you may need to add the settings:
     git-fusion:
       enabled: true
       my_entry:
-        url: 'git@gitfusion.host'
-        user: '<perforce-user-id>'
-        password: '<password for "gitswarm" user>'
+        url: git@gitfusion.host
+        user: <perforce-user-id>
+        password: <password for "gitswarm" user>
     ```
 
 > **Note:** If no `port` is specified under the `perforce` key, $GitSwarm$
@@ -322,7 +321,7 @@ gitswarm['git-fusion']['my_entry']['perforce']['port']  = 'ssl:my-fusion:1666'
     git-fusion:
       my_entry:
         perforce:
-          port: 'ssl:my-fusion:1666'
+          port: ssl:my-fusion:1666
     ```
 
 > **Note:** $GitSwarm$ uses the following priority for determining
@@ -361,8 +360,8 @@ gitswarm['git-fusion']['global']['auto_create']['repo_name_template'] = 'gitswar
     git-fusion:
       global:
         auto_create:
-          path_template: '//gitswarm/projects/{namespace}/{project-path}'
-          repo_name_template: 'gitswarm-{namespace}-{project-path}'
+          path_template: //gitswarm/projects/{namespace}/{project-path}
+          repo_name_template: gitswarm-{namespace}-{project-path}
     ```
 
 > **Note:** `{namespace}` and `{project-path}` are substituted for the
@@ -397,12 +396,12 @@ Versioning Engine integration, and convention-based mirroring settings
     git-fusion:
       enabled: true
       my_entry:
-        url: 'git@gitfusion.host'
-        user: '<perforce-user-id>'
-        password: '<password for "gitswarm" user>'
+        url: git@gitfusion.host
+        user: <perforce-user-id>
+        password: <password for "gitswarm" user>
         perforce:
-          port: 'ssl:my-fusion:1666'
+          port: ssl:my-fusion:1666
         auto_create:
-          path_template: '//gitswarm/projects/{namespace}/{project-path}'
-          repo_name_template: 'gitswarm-{namespace}-{project-path}'
+          path_template: //gitswarm/projects/{namespace}/{project-path}
+          repo_name_template: gitswarm-{namespace}-{project-path}
     ```

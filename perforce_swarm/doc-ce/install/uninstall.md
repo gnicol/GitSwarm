@@ -2,15 +2,22 @@
 
 To uninstall $GitSwarm$, follow these steps:
 
-1.  Optional: **Remove $GitSwarm$ data.**
+1.  **Decide whether to keep $GitSwarm$ data, or not:**
 
-    If you want to **completely remove** all $GitSwarm$ data, run:
+    1.  **To keep $GitSwarm$ data after uninstall, run:**
 
-    ```bash
-    sudo gitswarm-ctl cleanse
-    ```
+        ```bash
+        sudo gitswarm-ctl-uninstall
+        ```
 
-    > **Warning: this permanently removes all $GitSwarm$ related data.**
+    1.  **To completely remove all $GitSwarm$ data, run:**
+
+        ```bash
+        sudo gitswarm-ctl cleanse
+        ```
+
+        > **Warning:** without a backup, this operation permanently
+        > remove all $GitSwarm$ related data.
 
 1.  **Uninstall the $GitSwarm$ package.**
 

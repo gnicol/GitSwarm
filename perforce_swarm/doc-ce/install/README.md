@@ -160,10 +160,11 @@ Perform the [post-installation](#post-installation) steps.
     sudo gitswarm-ctl reconfigure
     ```
 
-1.  **Browse to the hostname, specify a password, and login.**
+1.  **Browse to the hostname.**
 
-    > **Note:** Prior to $GitSwarm$ 2016.2, a standard password was used.
-    > In 2016.2, you now need to specify a password for the root user.
+    $GitSwarm$ 2016.2 now asks for a password for the root user (previous
+    releases used a standard password). Once you have specified a password,
+    you can login.
 
 1.  **Tweet about it!**
 

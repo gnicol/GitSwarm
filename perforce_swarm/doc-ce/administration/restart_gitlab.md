@@ -95,8 +95,8 @@ It also restarts $GitSwarm$ components where needed, if any of their
 configuration files have changed.
 
 If you manually edit any files in `/var/opt/gitswarm` that are managed by
-Chef, running reconfigure reverts the changes AND restart the services that
-depend on those files.
+Chef, running reconfigure reverts the changes AND restarts the services
+that depend on those files.
 
 ## Source restart
 

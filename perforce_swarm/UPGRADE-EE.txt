@@ -1,2 +1,2 @@
 To upgrade GitSwarm EE, see the instructions available here:
-https://www.perforce.com/perforce/doc.current/manuals/gitswarm/update/README.html
+https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/update/README.html

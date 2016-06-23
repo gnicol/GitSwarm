@@ -38,7 +38,8 @@ administration doc](lfs_administration.md).
 * Any Git LFS request asks for HTTPS credentials to be provided so good
   Git credentials store is recommended
 * Git LFS always assumes HTTPS so if you have $GitSwarm$ server on HTTP you
-  have to add the URL to Git config manually (see #troubleshooting)
+  have to add the URL to Git config manually (see
+  [troubleshooting](#troubleshooting))
 
 > **Important:** Git LFS is not compatible with [Helix
 > mirroring](../helix_mirroring/README.md), and is currently not supported.

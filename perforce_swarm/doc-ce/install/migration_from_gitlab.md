@@ -72,7 +72,7 @@ Perforce Helix as the master for all assets.
 1.  **Perform a backup of your source $GitLab$ instance**
 
     Follow [these
-    instructions](http://doc.gitlab.com/ce/raketasks/backup_restore.html)
+    instructions](http://docs.gitlab.com/ce/raketasks/backup_restore.html)
     to perform a backup on the $GitLab$ instance from which you are
     migrating.
 

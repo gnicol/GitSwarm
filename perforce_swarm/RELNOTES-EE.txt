@@ -50,11 +50,13 @@ Supported Client Browsers
 
 Installation and Supported Platforms
 
-    Please see the separate "install" file, a peer to this file.
+    Please see the instructions here:
+    https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/install/README.html
 
 Upgrading
 
-    Please see the separate "upgrade" file, a peer to this file.
+    Please see the instructions here:
+    https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/update/README.html
 
 Known Issues
 

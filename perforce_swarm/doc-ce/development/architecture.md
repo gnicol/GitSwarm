@@ -12,11 +12,11 @@ Both editions of GitSwarm are available as packages or source install
 
 Both editions of GitSwarm require an add-on component called gitlab-shell.
 It is included in the GitSwarm packages. For source installs, it is
-obtained from the ['gitlab-shell` repository](FIXME
-https://gitlab.com/perforce/gitlab-shell/tree/master). New versions are
-usually tags, but staying on the `release` branch gives you the latest
-stable version. New releases are generally around the same time as
-$GitSwarm$ releases, with exception for informal security updates deemed
+obtained from the ['gitlab-shell`
+repository](https://gitlab.com/perforce/gitlab-shell/tree/release). New
+versions are usually tags, but staying on the `release` branch gives you
+the latest stable version. New releases are generally around the same time
+as $GitSwarm$ releases, with exception for informal security updates deemed
 critical.
 
 ## Physical office analogy

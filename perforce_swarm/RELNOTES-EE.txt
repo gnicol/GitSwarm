@@ -50,15 +50,17 @@ Supported Client Browsers
 
 Installation and Supported Platforms
 
-    Please see the separate "install" file, a peer to this file.
+    Please see the instructions here:
+    https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/install/README.html
 
 Upgrading
 
-    Please see the separate "upgrade" file, a peer to this file.
+    Please see the instructions here:
+    https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/update/README.html
 
 Known Issues
 
-    * Git LFS is not supported on GitSwarm projects mirrored in Git Fusion.
+    * Git LFS is not supported on GitSwarm EE projects mirrored in Git Fusion.
 
     * Helix Mirroring stops working when a GitSwarm EE project involves
       commits that contain only tags and no file changes.

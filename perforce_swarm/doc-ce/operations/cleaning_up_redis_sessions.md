@@ -6,8 +6,7 @@ you have been running a large $GitSwarm$ server (thousands of users) since
 before $GitSwarm$ 2015.3, we recommend cleaning up stale sessions to compact
 the Redis database after you upgrade to $GitSwarm$ 2015.3 or newer. You can
 also perform a cleanup while still running $GitSwarm$ 2015.2 or older, but in
-that case new stale sessions will start building up again after you clean
-up.
+that case new stale sessions will start building up again after you clean up.
 
 In $GitSwarm$ versions prior to 2015.4, the session keys in Redis are 16-byte
 hexadecimal values such as '976aa289e2189b17d7ef525a6702ace9'. Starting with
@@ -19,6 +18,9 @@ First we define a shell function with the proper Redis connection details.
 
 ```bash
 rcli() {
+  # This example works for package installations of GitLab 2015.4 or newer.
+  # For a source installation you have to change the socket path and the path
+  # to redis-cli.
   sudo /opt/gitswarm/embedded/bin/redis-cli -s /var/opt/gitswarm/redis/redis.socket "$@"
 }
 

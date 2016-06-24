@@ -1,7 +1,7 @@
                             Release Notes for
                      Helix GitSwarm Enterprise Edition
 
-                             Version 2016.1
+                             Version 2016.2
 
 Introduction
 

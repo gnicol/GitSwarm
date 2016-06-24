@@ -1,11 +1,11 @@
 # Enable HTTPS
 
 > **Warning:** The NGINX config tells browsers and clients to only
-> communicate with your GitSwarm instance over a secure connection for the
-> next 24 months. By enabling HTTPS you'll need to provide a secure
+> communicate with your $GitSwarm$ instance over a secure connection for
+> the next 24 months. By enabling HTTPS you'll need to provide a secure
 > connection to your instance for at least the next 24 months.
 
-By default, GitSwarm does not use HTTPS. If you want to enable HTTPS
+By default, $GitSwarm$ does not use HTTPS. If you want to enable HTTPS
 for `gitswarm.example.com`, add the following statement to
 `/etc/gitswarm/gitswarm.rb`:
 
@@ -14,7 +14,7 @@ for `gitswarm.example.com`, add the following statement to
 external_url "https://gitswarm.example.com"
 ```
 
-Because the hostname in our example is 'gitswarm.example.com', GitSwarm
+Because the hostname in our example is 'gitswarm.example.com', $GitSwarm$
 looks for the key and certificate files called
 `/etc/gitswarm/ssl/gitswarm.example.com.key` and
 `/etc/gitswarm/ssl/gitswarm.example.com.crt`, respectively. Create the
@@ -27,7 +27,7 @@ sudo cp gitswarm.example.com.key gitswarm.example.com.crt /etc/gitswarm/ssl/
 ```
 
 Now run `sudo gitswarm-ctl reconfigure`. When the reconfigure finishes, your
-GitSwarm instance should be reachable at `https://gitswarm.example.com`.
+$GitSwarm$ instance should be reachable at `https://gitswarm.example.com`.
 
 If you are using a firewall you may have to open port 443 to allow inbound
 HTTPS traffic.
@@ -70,7 +70,7 @@ directory, place the `.crt` and `.key` files in the directory and specify
 the following configuration in `/etc/gitswarm/gitswarm.rb`:
 
 ```ruby
-# For GitSwarm
+# For $GitSwarm$
 nginx['ssl_certificate'] = "/etc/gitswarm/ssl/gitswarm.example.crt"
 nginx['ssl_certificate_key'] = "/etc/gitswarm/ssl/gitswarm.example.com.key"
 ```
@@ -79,10 +79,10 @@ Run `sudo gitswarm-ctl reconfigure` for the change to take effect.
 
 ## Change the default proxy headers
 
-By default, when you specify `external_url` GitSwarm sets a few
+By default, when you specify `external_url` $GitSwarm$ sets a few
 NGINX proxy headers that are assumed to be sane in most environments.
 
-For example, GitSwarm sets:
+For example, $GitSwarm$ sets:
 
 ```
   "X-Forwarded-Proto" => "https",
@@ -91,7 +91,7 @@ For example, GitSwarm sets:
 
 if you have specified `https` schema in the `external_url`.
 
-However, if you have a situation where your GitSwarm is in a more complex
+However, if you have a situation where your $GitSwarm$ is in a more complex
 setup like behind a reverse proxy, you need to tweak the proxy headers in
 order to avoid errors like `The change you wanted was rejected` or `Can't
 verify CSRF token authenticity Completed 422 Unprocessable`.
@@ -113,17 +113,17 @@ This way you can specify any header supported by NGINX you require.
 
 ## Configuring HTTP2 protocol
 
-By default, when you specify that your GitSwarm instance should be
+By default, when you specify that your $GitSwarm$ instance should be
 reachable through HTTPS by specifying `external_url
 "https://gitswarm.example.com"`, [http2 protocol] is also enabled.
 
-GitSwarm sets the required `ssl_ciphers` that are compatible with the
+$GitSwarm$ sets the required `ssl_ciphers` that are compatible with the
 http2 protocol.
 
 If you are specifying custom `ssl_ciphers` in your configuration and a
-cipher is in [http2 cipher blacklist], once you try to reach your GitSwarm
-instance you should be presented with `INADEQUATE_SECURITY` error in your
-browser.
+cipher is in [http2 cipher blacklist], once you try to reach your
+$GitSwarm$ instance you should be presented with `INADEQUATE_SECURITY`
+error in your browser.
 
 Consider removing the offending ciphers from the cipher list. Changing
 ciphers is only necessary if you have a very specific custom setup.
@@ -143,10 +143,10 @@ take effect.
 
 ## Using a non-bundled web-server
 
-By default, GitSwarm bundles NGINX. GitSwarm allows webserver access
+By default, $GitSwarm$ bundles NGINX. $GitSwarm$ allows webserver access
 through user `gitlab-www` which resides in the group with the same name. To
-allow an external webserver access to GitSwarm, the external webserver user
-needs to be added `gitlab-www` group.
+allow an external webserver access to $GitSwarm$, the external webserver
+user needs to be added `gitlab-www` group.
 
 To use another web server like Apache or an existing NGINX installation you
 have to perform the following steps:
@@ -161,13 +161,13 @@ have to perform the following steps:
 
 1. **Set the username of the non-bundled web-server user**
 
-    By default, GitSwarm has no default setting for the external webserver
-    user, you have to specify it in the configuration. For Debian/Ubuntu
-    the default user is `www-data` for both Apache/NGINX whereas for
-    RHEL/CentOS the NGINX user is `nginx`.
+    By default, $GitSwarm$ has no default setting for the external
+    webserver user, you have to specify it in the configuration. For
+    Debian/Ubuntu the default user is `www-data` for both Apache/NGINX
+    whereas for RHEL/CentOS the NGINX user is `nginx`.
 
     > **Note:** Make sure you have first installed Apache/NGINX so the
-    > webserver user is created, otherwise GitSwarm's reconfigure fails.
+    > webserver user is created, otherwise $GitSwarm$'s reconfigure fails.
 
     Let's say for example that the webserver user is `www-data`.
     In `/etc/gitswarm/gitswarm.rb` set:
@@ -192,7 +192,7 @@ have to perform the following steps:
 
 1. **(Optional) Set the right gitlab-workhorse settings if using Apache**
 
-    > **Note:** The values below were added in GitSwarm 2015.4, make sure
+    > **Note:** The values below were added in $GitSwarm$ 2015.4, make sure
     > you have the latest version installed.
 
     Apache cannot connect to a UNIX socket but instead needs to connect to
@@ -211,7 +211,7 @@ have to perform the following steps:
     Go to the [GitLab recipes repository][recipes-web] and look for the
     webserver configs in the webserver directory of your choice. Make sure
     you pick the right configuration file depending whether you choose to
-    serve GitSwarm with SSL or not. The only thing you need to change is
+    serve $GitSwarm$ with SSL or not. The only thing you need to change is
     `YOUR_SERVER_FQDN` with your own FQDN and if you use SSL, the location
     where your SSL keys currently reside. You also might need to change the
     location of your log files.
@@ -230,7 +230,7 @@ nginx['listen_addresses'] = ["0.0.0.0", "[::]"]
 
 By default, NGINX listens on the port specified in `external_url` or
 implicitly use the right port (80 for HTTP, 443 for HTTPS). If you are
-running GitSwarm behind a reverse proxy, you may want to override the
+running $GitSwarm$ behind a reverse proxy, you may want to override the
 listen port to something else. For example, to use port 8080:
 
 ```ruby
@@ -240,7 +240,7 @@ nginx['listen_port'] = 8080
 ## Supporting proxied SSL
 
 By default, NGINX auto-detects whether to use SSL if `external_url`
-contains `https://`. If you are running GitSwarm behind a reverse proxy,
+contains `https://`. If you are running $GitSwarm$ behind a reverse proxy,
 you may wish to terminate SSL at another proxy server or load balancer. To
 do this, be sure the `external_url` contains `https://` and apply the
 following configuration to `/etc/gitswarm/gitswarm.rb`:
@@ -256,7 +256,7 @@ nginx['proxy_set_headers'] = {
 
 Note that you may need to configure your reverse proxy or load balancer to
 forward certain headers (e.g. `Host`, `X-Forwarded-Ssl`, `X-Forwarded-For`,
-`X-Forwarded-Port`) to GitSwarm. You may see improper redirections or
+`X-Forwarded-Port`) to $GitSwarm$. You may see improper redirections or
 errors (e.g. "422 Unprocessable Entity", "Can't verify CSRF token
 authenticity") if you forget this step. For more information, see:
 
@@ -265,7 +265,7 @@ authenticity") if you forget this step. For more information, see:
 
 ## Using custom SSL ciphers
 
-By default GitSwarm uses best practices SSL ciphers. However, you can
+By default $GitSwarm$ uses best practices SSL ciphers. However, you can
 change the ssl ciphers by adding to `/etc/gitswarm/gitswarm.rb`:
 
 ```ruby
@@ -291,10 +291,10 @@ nginx['ssl_dhparam'] = "/etc/gitswarm/ssl/dhparams.pem"
 
 After the change run `sudo gitswarm-ctl reconfigure`.
 
-## Inserting custom NGINX settings into the GitSwarm server block
+## Inserting custom NGINX settings into the $GitSwarm$ server block
 
 If you need to add custom settings into the NGINX `server` block for
-GitSwarm for some reason you can use the following setting.
+$GitSwarm$ for some reason you can use the following setting.
 
 ```ruby
 # Example: block raw file downloads from a specific repository
@@ -319,9 +319,9 @@ restart NGINX.
 
 ## Using an existing Passenger/Nginx installation
 
-In some cases you may want to host GitSwarm using an existing
+In some cases you may want to host $GitSwarm$ using an existing
 Passenger/NGINX installation but still have the convenience of updating and
-installing using the GitSwarm packages.
+installing using the $GitSwarm$ packages.
 
 ### Configuration
 
@@ -467,7 +467,7 @@ sudo usermod -aG gitlab-www www-data
 
 Other than the Passenger configuration in place of Unicorn and the lack of
 HTTPS (although this could be enabled) these files are mostly identical to
-the bundled GitSwarm NGINX configuration (in
+the bundled $GitSwarm$ NGINX configuration (in
 `/opt/gitswarm/embedded/cookbooks/gitlab/templates/default/nginx-gitlab-http.conf.erb`).
 
 Don't forget to restart NGINX to load the new configuration (on

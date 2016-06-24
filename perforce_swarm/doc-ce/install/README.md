@@ -3,7 +3,7 @@
 ## Pre-installation steps
 
 Use the following steps to prepare your system for installation of
-GitSwarm:
+$GitSwarm$:
 
 1.  **Check if your server meets the [requirements](requirements.md).**
 
@@ -44,7 +44,7 @@ GitSwarm:
 
 1.  Optional: **Ensure that your system is up-to-date.**
 
-    We advise installing GitSwarm on a fully up-to-date operating system:
+    We advise installing $GitSwarm$ on a fully up-to-date operating system:
 
     1.  **For Ubuntu (12.04 and 14.04):**
 
@@ -61,12 +61,12 @@ GitSwarm:
 
 1.  **Install a mail server and curl.**
 
-    GitSwarm requires a local mail server to facilitate delivery of
+    $GitSwarm$ requires a local mail server to facilitate delivery of
     notifications via email, and `curl` is used in the [Quick
     install](#quick-install).
 
     Note: If you install Postfix, select `Internet Site` during setup. Do
-    not use Exim to send email from GitSwarm.
+    not use Exim to send email from $GitSwarm$.
 
     Then install your selected mail server. For example:
 
@@ -105,7 +105,7 @@ GitSwarm:
 ## Quick install
 
 ```bash
-curl -s https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -
+curl -s https://package.perforce.com/bootstrap/$GitSwarmPackage$.sh | sudo sh -
 ```
 
 Perform the [post-installation](#post-installation) steps.
@@ -120,10 +120,10 @@ Perform the [post-installation](#post-installation) steps.
 
 ## Post-installation
 
-1.  **Verify the external URL for your GitSwarm instance:**
+1.  **Verify the external URL for your $GitSwarm$ instance:**
 
     View `/etc/gitswarm/gitswarm.rb`, and verify that the following
-    setting is set to the URL that your GitSwarm users should use:
+    setting is set to the URL that your $GitSwarm$ users should use:
 
     ```ruby
     external_url "http://gitswarm.example.com"
@@ -140,7 +140,7 @@ Perform the [post-installation](#post-installation) steps.
     > [above](#pre-installation-steps) for instructions on adjusting the
     > firewall for CentOS/RHEL systems.
 
-1.  **Set the timezone for your GitSwarm instance:**
+1.  **Set the timezone for your $GitSwarm$ instance:**
 
     Edit `/etc/gitswarm/gitswarm.rb`, and edit the line:
 
@@ -151,12 +151,12 @@ Perform the [post-installation](#post-installation) steps.
     Replace `UTC` with an [appropriate
     timezone](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones), and uncomment the line.
 
-1.  **Configure GitSwarm.**
+1.  **Configure $GitSwarm$.**
 
     If you have made changes to `/etc/gitswarm/gitswarm.rb`, then you will
     want to run `reconfigure` for them to take effect.
 
-    ```ruby
+    ```bash
     sudo gitswarm-ctl reconfigure
     ```
 
@@ -168,24 +168,24 @@ Perform the [post-installation](#post-installation) steps.
 
 1.  **Tweet about it!**
 
-If you are interested, [learn about the GitSwarm directory
+If you are interested, [learn about the $GitSwarm$ directory
 structure](structure.md).
 
 If you prefer to use HTTPS with GitSwarm, [learn how to configure
 HTTPS](https.md).
 
-To uninstall GitSwarm, follow the [uninstall steps](uninstall.md).
+To uninstall $GitSwarm$, follow the [uninstall steps](uninstall.md).
 
 ###  Additional Setup Options
 
 *   **Set up the connection to your Helix Server:**
 
-    GitSwarm automatically provisions a Helix Server and connects Helix Git
-    Fusion for you when you initially install the GitSwarm packages.
+    $GitSwarm$ automatically provisions a Helix Server and connects Helix
+    Git Fusion for you when you initially install the $GitSwarm$ packages.
     [Learn more about the provisioned server](auto_provision.md).
 
     In production, you will likely already have your own Helix Server
-    already setup and will want to configure GitSwarm to talk to it in
+    already setup and will want to configure $GitSwarm$ to talk to it in
     order to enable [Helix
     Mirroring](../workflow/helix_mirroring/overview.md).
 

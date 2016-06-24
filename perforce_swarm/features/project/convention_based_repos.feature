@@ -90,6 +90,120 @@ Feature: Convention Based Repos
     And I should see a link to the convention-based mirroring help section
 
   #############################
+  # Convention-based mirroring unavailable (but mirroring existing possibly available), errors explicitly allowed
+  #############################
+  @automated @javascript
+  Scenario: Having silence_config_errors set to false and Git Fusion returning an empty list of managed repos, results in a disabled radio button to select convention-based mirroring.
+    Given I sign in as a user
+    And Git Fusion returns an empty list of managed repos
+    And Helix config errors are explicitly not silenced
+    When I visit new project page
+    Then I should see a message saying Git Fusion has no repos available for import
+    And I should not see a Git Fusion repo dropdown
+    And I should see a disabled convention-based mirroring radio button
+
+  @automated @javascript
+  Scenario: Having silence_config_errors set to false and Git Fusion returning a list of repos, selecting one that does not have a valid convention-based mirroring configured results in a message telling me that convention-based mirroring is not available.
+    Given I sign in as a user
+    And Git Fusion returns a list containing repos without convention-based mirroring
+    And Helix config errors are explicitly not silenced
+    When I visit new project page
+    And I select the default Git Fusion server
+    Then I should see a populated Git Fusion server dropdown
+    And I should see a disabled convention-based mirroring radio button
+    And I should see a link to the convention-based mirroring help section
+
+  @automated @javascript
+  Scenario: Having silence_config_errors set to false and Git Fusion returning a list of repos, selecting one that has an invalid path_template results in a message telling me that convention-based mirroring is not available.
+    Given I sign in as a user
+    And Git Fusion returns a list containing repos with an invalid path_template
+    And Helix config errors are explicitly not silenced
+    When I visit new project page
+    And I select the default Git Fusion server
+    Then I should see a populated Git Fusion server dropdown
+    And I should see a disabled convention-based mirroring radio button
+    And I should see a link to the convention-based mirroring help section
+
+  @automated @javascript
+  Scenario: Having silence_config_errors set to false and Git Fusion returning a list of repos, selecting one that has a non-existent Perforce depot results in a message telling me that convention-based mirroring is not available.
+    Given I sign in as a user
+    And Git Fusion returns a list containing repos with a path_template referencing a non-existent Perforce depot
+    And Helix config errors are explicitly not silenced
+    When I visit new project page
+    And I select the default Git Fusion server
+    Then I should see a populated Git Fusion server dropdown
+    And I should see a disabled convention-based mirroring radio button
+    And I should see a link to the convention-based mirroring help section
+
+  @automated @javascript
+  Scenario: Having silence_config_errors set to false and Git Fusion returning a list of repos, selecting one that has the wrong Perforce credentials results in a message telling me that convention-based mirroring is not available, and shows the error message from Perforce.
+    Given I sign in as a user
+    And Git Fusion returns a list containing repos that have incorrect Perforce credentials
+    And Helix config errors are explicitly not silenced
+    When I visit new project page
+    And I select the default Git Fusion server
+    Then I should see a populated Git Fusion server dropdown
+    And I should see a disabled convention-based mirroring radio button
+    And I should see a link to the convention-based mirroring help section
+
+  #############################
+  # Convention-based mirroring unavailable, with silence_config_errors turned on
+  #############################
+  @automated @javascript
+  Scenario: Having silence_config_errors set to true and Git Fusion returning an empty list of managed repos, results in a disabled radio button to select convention-based mirroring.
+    Given I sign in as a user
+    And Git Fusion returns an empty list of managed repos
+    And Helix config errors are silenced
+    When I visit new project page
+    Then I should see a message saying Git Fusion has no repos available for import
+    And I should not see a Git Fusion repo dropdown
+    And I should see a disabled convention-based mirroring radio button
+
+  @automated @javascript
+  Scenario: Having silence_config_errors set to true and Git Fusion returning a list of repos, selecting one that does not have a valid convention-based mirroring configured results in a disabled convention-based mirroring button, but no error message.
+    Given I sign in as a user
+    And Git Fusion returns a list containing repos without convention-based mirroring
+    And Helix config errors are silenced
+    When I visit new project page
+    And I select the default Git Fusion server
+    Then I should see a populated Git Fusion server dropdown
+    And I should see a disabled convention-based mirroring radio button
+    And I should not see a link to the convention-based mirroring help section
+
+  @automated @javascript
+  Scenario: Having silence_config_errors set to true and Git Fusion returning a list of repos, selecting one that has an invalid path_template results in a disabled convention-based mirroring button, but no error message.
+    Given I sign in as a user
+    And Git Fusion returns a list containing repos with an invalid path_template
+    And Helix config errors are silenced
+    When I visit new project page
+    And I select the default Git Fusion server
+    Then I should see a populated Git Fusion server dropdown
+    And I should see a disabled convention-based mirroring radio button
+    And I should not see a link to the convention-based mirroring help section
+
+  @automated @javascript
+  Scenario: Having silence_config_errors set to true and Git Fusion returning a list of repos, selecting one that has a non-existent Perforce depot results in a disabled convention-based mirroring button, but no error message.
+    Given I sign in as a user
+    And Git Fusion returns a list containing repos with a path_template referencing a non-existent Perforce depot
+    And Helix config errors are silenced
+    When I visit new project page
+    And I select the default Git Fusion server
+    Then I should see a populated Git Fusion server dropdown
+    And I should see a disabled convention-based mirroring radio button
+    And I should not see a link to the convention-based mirroring help section
+
+  @automated @javascript
+  Scenario: With Git Fusion returning a list of repos, selecting one that has the wrong Perforce credentials results in a disabled convention-based mirroring button, but no error message.
+    Given I sign in as a user
+    And Git Fusion returns a list containing repos that have incorrect Perforce credentials
+    And Helix config errors are silenced
+    When I visit new project page
+    And I select the default Git Fusion server
+    Then I should see a populated Git Fusion server dropdown
+    And I should see a disabled convention-based mirroring radio button
+    And I should not see a link to the convention-based mirroring help section
+
+  #############################
   # Convention-based mirroring available
   #############################
   @automated @javascript

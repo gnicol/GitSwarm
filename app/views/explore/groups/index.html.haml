@@ -6,7 +6,7 @@
 - else
   = render 'explore/head'
 
-.gray-content-block.clearfix
+.row-content-block.clearfix
   .pull-left
     = form_tag explore_groups_path, method: :get, class: 'form-inline form-tiny' do |f|
       = hidden_field_tag :sort, @sort
@@ -18,7 +18,7 @@
   .pull-right
     .dropdown.inline
       %button.dropdown-toggle.btn{type: 'button', 'data-toggle' => 'dropdown'}
-        %span.light sort:
+        %span.light
         - if @sort.present?
           = sort_options_hash[@sort]
         - else

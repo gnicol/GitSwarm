@@ -8,17 +8,38 @@ describe ProjectsController do
   let(:txt)     { fixture_file_upload(Rails.root + 'spec/fixtures/doc_sample.txt', 'text/plain') }
 
   describe "GET show" do
+    context "user not project member" do
+      before { sign_in(user) }
 
-    context "when requested by `go get`" do
-      render_views
+      context "user does not have access to project" do
+        let(:private_project) { create(:project, :private) }
 
-      it "renders the go-import meta tag" do
-        get :show, "go-get" => "1", namespace_id: "bogus_namespace", id: "bogus_project"
+        it "does not initialize notification setting" do
+          get :show, namespace_id: private_project.namespace.path, id: private_project.path
+          expect(assigns(:notification_setting)).to be_nil
+        end
+      end
 
-        expect(response.body).to include("name='go-import'")
+      context "user has access to project" do
+        context "and does not have notification setting" do
+          it "initializes notification as disabled" do
+            get :show, namespace_id: public_project.namespace.path, id: public_project.path
+            expect(assigns(:notification_setting).level).to eq("global")
+          end
+        end
 
-        content = "localhost/bogus_namespace/bogus_project git http://localhost/bogus_namespace/bogus_project.git"
-        expect(response.body).to include("content='#{content}'")
+        context "and has notification setting" do
+          before do
+            setting = user.notification_settings_for(public_project)
+            setting.level = :watch
+            setting.save
+          end
+
+          it "shows current notification setting" do
+            get :show, namespace_id: public_project.namespace.path, id: public_project.path
+            expect(assigns(:notification_setting).level).to eq("watch")
+          end
+        end
       end
     end
 
@@ -85,6 +106,36 @@ describe ProjectsController do
           end
         end
       end
+    end
+
+    context "when the url contains .atom" do
+      let(:public_project_with_dot_atom) { build(:project, :public, name: 'my.atom', path: 'my.atom') }
+
+      it 'expect an error creating the project' do
+        expect(public_project_with_dot_atom).not_to be_valid
+      end
+    end
+  end
+
+  describe "#update" do
+    render_views
+
+    let(:admin) { create(:admin) }
+
+    it "sets the repository to the right path after a rename" do
+      new_path = 'renamed_path'
+      project_params = { path: new_path }
+      controller.instance_variable_set(:@project, project)
+      sign_in(admin)
+
+      put :update,
+          namespace_id: project.namespace.to_param,
+          id: project.id,
+          project: project_params
+
+      expect(project.repository.path).to include(new_path)
+      expect(assigns(:repository).path).to eq(project.repository.path)
+      expect(response.status).to eq(200)
     end
   end
 

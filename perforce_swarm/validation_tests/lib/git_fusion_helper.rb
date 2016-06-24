@@ -15,7 +15,7 @@ class GitFusionHelper
       begin
         p4 = P4Helper.new(@p4port, @user, @password, local_workspace, "//.git-fusion/repos/#{gf_repo_name}/...")
         p4.connect_and_sync
-        fail("Config file already exists for GF repo #{gf_repo_name}") if File.exist?(path)
+        raise "Config file already exists for GF repo #{gf_repo_name}" if File.exist?(path)
         File.write(path, gf_config_contents(depot_path))
         p4.add(path)
         p4.submit
@@ -36,7 +36,7 @@ class GitFusionHelper
         content = File.read(file)
         properties_hash.each do |name, value|
           regex = /^#{name}[ =].*$/
-          fail "property not found in p4gf_config file : #{name}" unless content =~ regex
+          raise "property not found in p4gf_config file : #{name}" unless content =~ regex
           content.gsub!(regex, "#{name} = #{value}")
         end
         p4.edit(file)

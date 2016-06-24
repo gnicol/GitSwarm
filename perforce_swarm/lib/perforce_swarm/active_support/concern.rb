@@ -42,7 +42,7 @@ module ActiveSupport::Concern
   # This is an addition to support tracking prepend calls
   def prepended(base = nil, &block)
     if base.nil?
-      fail MultipleIncludedBlocks if instance_variable_defined?('@_prepended_block')
+      raise MultipleIncludedBlocks if instance_variable_defined?('@_prepended_block')
 
       @_prepended_block = block
     else

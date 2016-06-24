@@ -2,12 +2,19 @@ require 'spec_helper'
 require 'rake'
 
 describe 'gitlab:app namespace rake task' do
+  let(:enable_registry) { true }
+
   before :all do
     Rake.application.rake_require 'tasks/gitlab/task_helpers'
     Rake.application.rake_require 'tasks/gitlab/backup'
     Rake.application.rake_require 'tasks/gitlab/shell'
+    Rake.application.rake_require 'tasks/gitlab/db'
     # empty task as env is already loaded
     Rake::Task.define_task :environment
+  end
+
+  before do
+    stub_container_registry_config(enabled: enable_registry)
   end
 
   def run_rake_task(task_name)
@@ -16,11 +23,10 @@ describe 'gitlab:app namespace rake task' do
   end
 
   def reenable_backup_sub_tasks
-    folder_list = %w(db repo uploads builds artifacts lfs)
-    folder_list += %w(pages) if PerforceSwarm.ee?
-    folder_list.each do |subtask|
+    %w(db repo uploads builds artifacts lfs registry).each do |subtask|
       Rake::Task["gitlab:backup:#{subtask}:create"].reenable
     end
+    Rake::Task['gitlab:backup:pages:create'].reenable if PerforceSwarm.ee?
   end
 
   describe 'backup_restore' do
@@ -39,6 +45,7 @@ describe 'gitlab:app namespace rake task' do
         allow(FileUtils).to receive(:cp_r).and_return(true)
         allow(FileUtils).to receive(:mv).and_return(true)
         allow(Rake::Task['gitlab:shell:setup']).to receive(:invoke).and_return(true)
+        ENV['force'] = 'yes'
       end
 
       let(:gitswarm_version) { PerforceSwarm::VERSION }
@@ -59,6 +66,7 @@ describe 'gitlab:app namespace rake task' do
         expect(Rake::Task['gitlab:backup:artifacts:restore']).to receive(:invoke)
         expect(Rake::Task['gitlab:backup:pages:restore']).to receive(:invoke) if PerforceSwarm.ee?
         expect(Rake::Task['gitlab:backup:lfs:restore']).to receive(:invoke)
+        expect(Rake::Task['gitlab:backup:registry:restore']).to receive(:invoke)
         expect(Rake::Task['gitlab:shell:setup']).to receive(:invoke)
         expect { run_rake_task('gitlab:backup:restore') }.not_to raise_error
       end
@@ -115,7 +123,8 @@ describe 'gitlab:app namespace rake task' do
 
     it 'should set correct permissions on the tar contents', override: true do
       archive_files =
-        %W(tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz lfs.tar.gz)
+        %W(tar -tvf #{@backup_tar} db uploads.tar.gz repositories builds.tar.gz artifacts.tar.gz
+           lfs.tar.gz registry.tar.gz)
       archive_files += %w(pages.tar.gz) if PerforceSwarm.ee?
       tar_contents, exit_status = Gitlab::Popen.popen(archive_files)
       expect(exit_status).to eq(0)
@@ -126,26 +135,43 @@ describe 'gitlab:app namespace rake task' do
       expect(tar_contents).to match('artifacts.tar.gz')
       expect(tar_contents).to match('pages.tar.gz') if PerforceSwarm.ee?
       expect(tar_contents).to match('lfs.tar.gz')
+      expect(tar_contents).to match('registry.tar.gz')
 
       if PerforceSwarm.ee?
         content_regex =
-          %r{^.{4,9}[rwx].* (database.sql.gz|uploads.tar.gz|repositories|builds.tar.gz|pages.tar.gz|artifacts.tar.gz)/$}
+          %r{^.{4,9}[rwx].* (database.sql.gz|uploads.tar.gz|
+             repositories|builds.tar.gz|pages.tar.gz|artifacts.tar.gz|registry.tar.gz)
+             /$}x
       else
         content_regex =
-          %r{^.{4,9}[rwx].* (database.sql.gz|uploads.tar.gz|repositories|builds.tar.gz|artifacts.tar.gz)/$}
+          %r{^.{4,9}[rwx].* (database.sql.gz|uploads.tar.gz|
+             repositories|builds.tar.gz|artifacts.tar.gz|registry.tar.gz)
+             /$}x
       end
       expect(tar_contents).not_to match(content_regex)
     end
 
     it 'should delete temp directories', override: true do
-      if PerforceSwarm.ee?
-        dirs = '{db,repositories,uploads,builds,artifacts,pages,lfs}'
-      else
-        dirs = '{db,repositories,uploads,builds,artifacts,lfs}'
-      end
+      dirs = if PerforceSwarm.ee?
+               '{db,repositories,uploads,builds,artifacts,pages,lfs,registry}'
+             else
+               '{db,repositories,uploads,builds,artifacts,lfs,registry}'
+             end
       temp_dirs = Dir.glob(File.join(Gitlab.config.backup.path, dirs))
 
       expect(temp_dirs).to be_empty
+    end
+
+    context 'registry disabled', override: true do
+      let(:enable_registry) { false }
+
+      it 'should not create registry.tar.gz' do
+        tar_contents, exit_status = Gitlab::Popen.popen(
+          %W(tar -tvf #{@backup_tar})
+        )
+        expect(exit_status).to eq(0)
+        expect(tar_contents).not_to match('registry.tar.gz')
+      end
     end
   end # backup_create task
 
@@ -202,6 +228,7 @@ describe 'gitlab:app namespace rake task' do
       expect(Rake::Task['gitlab:backup:artifacts:restore']).to receive :invoke
       expect(Rake::Task['gitlab:backup:pages:restore']).to receive :invoke if PerforceSwarm.ee?
       expect(Rake::Task['gitlab:backup:lfs:restore']).to receive :invoke
+      expect(Rake::Task['gitlab:backup:registry:restore']).to receive :invoke
       expect(Rake::Task['gitlab:shell:setup']).to receive :invoke
       expect { run_rake_task('gitlab:backup:restore') }.not_to raise_error
     end

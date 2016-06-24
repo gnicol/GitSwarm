@@ -1,6 +1,6 @@
 class Projects::ProjectMembersController < Projects::ApplicationController
   # Authorize
-  before_action :authorize_admin_project_member!, except: :leave
+  before_action :authorize_admin_project_member!, except: [:leave, :index]
 
   def index
     @project_members = @project.project_members
@@ -27,6 +27,7 @@ class Projects::ProjectMembersController < Projects::ApplicationController
     end
 
     @project_member = @project.project_members.new
+    @project_group_links = @project.project_group_links
   end
 
   def create
@@ -54,7 +55,7 @@ class Projects::ProjectMembersController < Projects::ApplicationController
       format.html do
         redirect_to namespace_project_project_members_path(@project.namespace, @project)
       end
-      format.js { render nothing: true }
+      format.js { head :ok }
     end
   end
 
@@ -80,7 +81,7 @@ class Projects::ProjectMembersController < Projects::ApplicationController
 
       respond_to do |format|
         format.html { redirect_to dashboard_projects_path, notice: "You left the project." }
-        format.js { render nothing: true }
+        format.js { head :ok }
       end
     else
       if current_user == @project.owner
@@ -93,9 +94,14 @@ class Projects::ProjectMembersController < Projects::ApplicationController
   end
 
   def apply_import
-    giver = Project.find(params[:source_project_id])
-    status = @project.team.import(giver, current_user)
-    notice = status ? "Successfully imported" : "Import failed"
+    source_project = Project.find(params[:source_project_id])
+
+    if can?(current_user, :read_project_member, source_project)
+      status = @project.team.import(source_project, current_user)
+      notice = status ? "Successfully imported" : "Import failed"
+    else
+      return render_404
+    end
 
     redirect_to(namespace_project_project_members_path(project.namespace, project),
                 notice: notice)

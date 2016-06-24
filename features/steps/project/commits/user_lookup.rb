@@ -29,6 +29,7 @@ class Spinach::Features::ProjectCommitsUserLookup < Spinach::FeatureSteps
 
   def check_author_link(email, user)
     author_link = find('.commit-author-link')
+
     expect(author_link['href']).to eq user_path(user)
     expect(author_link['title']).to eq email
     expect(find('.commit-author-name').text).to eq user.name

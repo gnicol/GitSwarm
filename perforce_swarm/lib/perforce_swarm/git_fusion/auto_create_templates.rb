@@ -3,7 +3,7 @@ module PerforceSwarm
     module AutoCreateTemplates
       def path_template
         unless @config.auto_create['path_template']
-          fail ConfigValidationError, 'Path template is not set in the auto create config.'
+          raise ConfigValidationError, 'Path template is not set in the auto create config.'
         end
 
         @config.auto_create['path_template']
@@ -15,7 +15,7 @@ module PerforceSwarm
       end
 
       def repo_name(*args)
-        if args.length > 0
+        unless args.empty?
           @repo_name = args[0]
           return self
         end
@@ -24,14 +24,14 @@ module PerforceSwarm
 
       def repo_name_template
         unless @config.auto_create['repo_name_template']
-          fail ConfigValidationError, 'Repo name template is not set in the auto create config.'
+          raise ConfigValidationError, 'Repo name template is not set in the auto create config.'
         end
 
         @config.auto_create['repo_name_template']
       end
 
       def namespace(*args)
-        if args.length > 0
+        unless args.empty?
           @namespace = args[0]
           return self
         end
@@ -39,7 +39,7 @@ module PerforceSwarm
       end
 
       def project_path(*args)
-        if args.length > 0
+        unless args.empty?
           @project_path = args[0]
           return self
         end
@@ -49,20 +49,20 @@ module PerforceSwarm
       # validates substitutions are valid and renders the given template
       def render_template(template)
         unless project_path && project_path.is_a?(String) && !project_path.empty?
-          fail PerforceSwarm::GitFusion::RepoCreatorError, 'Project-path must be non-empty.'
+          raise PerforceSwarm::GitFusion::RepoCreatorError, 'Project-path must be non-empty.'
         end
 
         unless namespace && namespace.is_a?(String) && !namespace.empty?
-          fail PerforceSwarm::GitFusion::RepoCreatorError, 'Namespace must be non-empty.'
+          raise PerforceSwarm::GitFusion::RepoCreatorError, 'Namespace must be non-empty.'
         end
 
         unless namespace =~ RepoCreator::VALID_NAME_REGEX
-          fail PerforceSwarm::GitFusion::RepoCreatorError, "Namespace contains invalid characters: '#{namespace}'."
+          raise PerforceSwarm::GitFusion::RepoCreatorError, "Namespace contains invalid characters: '#{namespace}'."
         end
 
         unless project_path =~ RepoCreator::VALID_NAME_REGEX
-          fail PerforceSwarm::GitFusion::RepoCreatorError,
-               "Project-path contains invalid characters: '#{project_path}'."
+          raise PerforceSwarm::GitFusion::RepoCreatorError,
+                "Project-path contains invalid characters: '#{project_path}'."
         end
 
         template.gsub('{project-path}', project_path).gsub('{namespace}', namespace)

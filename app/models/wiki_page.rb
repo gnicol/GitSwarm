@@ -29,6 +29,10 @@ class WikiPage
   # new Page values before writing to the Gollum repository.
   attr_accessor :attributes
 
+  def hook_attrs
+    attributes
+  end
+
   def initialize(wiki, page = nil, persisted = false)
     @wiki       = wiki
     @page       = page
@@ -62,7 +66,7 @@ class WikiPage
   # The raw content of this page.
   def content
     @attributes[:content] ||= if @page
-                                @page.raw_data
+                                @page.text_data
                               end
   end
 
@@ -110,7 +114,7 @@ class WikiPage
   # Returns boolean True or False if this instance
   # is an old version of the page.
   def historical?
-    @page.historical?
+    @page.historical? && versions.first.sha != version.sha
   end
 
   # Returns boolean True or False if this instance

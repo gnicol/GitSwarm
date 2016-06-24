@@ -15,10 +15,14 @@ class @Notes
     @last_fetched_at = last_fetched_at
     @view = view
     @noteable_url = document.URL
-    @initRefresh()
-    @setupMainTargetNoteForm()
+    @notesCountBadge ||= $(".issuable-details").find(".notes-tab .badge")
+    @basePollingInterval = 15000
+    @maxPollingSteps = 4
+
     @cleanBinding()
     @addBinding()
+    @setPollingInterval()
+    @setupMainTargetNoteForm()
     @initTaskList()
 
   addBinding: ->
@@ -26,8 +30,11 @@ class @Notes
     $(document).on "ajax:success", ".js-main-target-form", @addNote
     $(document).on "ajax:success", ".js-discussion-note-form", @addDiscussionNote
 
+    # catch note ajax errors
+    $(document).on "ajax:error", ".js-main-target-form", @addNoteError
+
     # change note in UI after update
-    $(document).on "ajax:success", "form.edit_note", @updateNote
+    $(document).on "ajax:success", "form.edit-note", @updateNote
 
     # Edit note link
     $(document).on "click", ".js-note-edit", @showEditForm
@@ -35,7 +42,7 @@ class @Notes
 
     # Reopen and close actions for Issue/MR combined with note form submit
     $(document).on "click", ".js-comment-button", @updateCloseButton
-    $(document).on "keyup", ".js-note-text", @updateTargetButtons
+    $(document).on "keyup input", ".js-note-text", @updateTargetButtons
 
     # remove a note (in general)
     $(document).on "click", ".js-note-delete", @removeNote
@@ -46,6 +53,9 @@ class @Notes
     # reset main target form after submit
     $(document).on "ajax:complete", ".js-main-target-form", @reenableTargetFormSubmitButton
     $(document).on "ajax:success", ".js-main-target-form", @resetMainTargetForm
+
+    # reset main target form when clicking discard
+    $(document).on "click", ".js-note-discard", @resetMainTargetForm
 
     # update the file name when an attachment is selected
     $(document).on "change", ".js-note-attachment-input", @updateFormAttachment
@@ -62,10 +72,16 @@ class @Notes
     # fetch notes when tab becomes visible
     $(document).on "visibilitychange", @visibilityChange
 
+    # when issue status changes, we need to refresh data
+    $(document).on "issuable:change", @refresh
+
+    # when a key is clicked on the notes
+    $(document).on "keydown", ".js-note-text", @keydownNoteText
+
   cleanBinding: ->
     $(document).off "ajax:success", ".js-main-target-form"
     $(document).off "ajax:success", ".js-discussion-note-form"
-    $(document).off "ajax:success", "form.edit_note"
+    $(document).off "ajax:success", "form.edit-note"
     $(document).off "click", ".js-note-edit"
     $(document).off "click", ".note-edit-cancel"
     $(document).off "click", ".js-note-delete"
@@ -78,18 +94,30 @@ class @Notes
     $(document).off "keyup", ".js-note-text"
     $(document).off "click", ".js-note-target-reopen"
     $(document).off "click", ".js-note-target-close"
+    $(document).off "click", ".js-note-discard"
+    $(document).off "keydown", ".js-note-text"
 
     $('.note .js-task-list-container').taskList('disable')
     $(document).off 'tasklist:changed', '.note .js-task-list-container'
+
+  keydownNoteText: (e) ->
+    $this = $(this)
+    if $this.val() is '' and e.which is 38 #aka the up key
+      myLastNote = $("li.note[data-author-id='#{gon.current_user_id}'][data-editable]:last")
+      if myLastNote.length
+        myLastNoteEditBtn = myLastNote.find('.js-note-edit')
+        myLastNoteEditBtn.trigger('click', [true, myLastNote])
 
   initRefresh: ->
     clearInterval(Notes.interval)
     Notes.interval = setInterval =>
       @refresh()
-    , 15000
+    , @pollingInterval
 
   refresh: ->
-    unless document.hidden or (@noteable_url != document.URL)
+    return if @refreshing is true
+    refreshing = true
+    if not document.hidden and document.URL.indexOf(@noteable_url) is 0
       @getContent()
 
   getContent: ->
@@ -100,9 +128,31 @@ class @Notes
       success: (data) =>
         notes = data.notes
         @last_fetched_at = data.last_fetched_at
+        @setPollingInterval(data.notes.length)
         $.each notes, (i, note) =>
-          @renderNote(note)
+          if note.discussion_with_diff_html?
+            @renderDiscussionNote(note)
+          else
+            @renderNote(note)
+      always: =>
+        @refreshing = false
 
+  ###
+  Increase @pollingInterval up to 120 seconds on every function call,
+  if `shouldReset` has a truthy value, 'null' or 'undefined' the variable
+  will reset to @basePollingInterval.
+
+  Note: this function is used to gradually increase the polling interval
+  if there aren't new notes coming from the server
+  ###
+  setPollingInterval: (shouldReset = true) ->
+    nthInterval = @basePollingInterval * Math.pow(2, @maxPollingSteps - 1)
+    if shouldReset
+      @pollingInterval = @basePollingInterval
+    else if @pollingInterval < nthInterval
+      @pollingInterval *= 2
+
+    @initRefresh()
 
   ###
   Render note in main comments area.
@@ -116,18 +166,27 @@ class @Notes
         flash.pinTo('.header-content')
       return
 
+    if note.award
+      awardsHandler.addAwardToEmojiBar(note.note)
+      awardsHandler.scrollToAwards()
+
     # render note if it not present in loaded list
     # or skip if rendered
-    if @isNewNote(note) && !note.award
+    else if @isNewNote(note)
       @note_ids.push(note.id)
-      $('ul.main-notes-list').
-        append(note.html).
-        syntaxHighlight()
-      @initTaskList()
 
-    if note.award
-      awards_handler.addAwardToEmojiBar(note.note)
-      awards_handler.scrollToAwards()
+      $notesList = $('ul.main-notes-list')
+
+      $notesList
+        .append(note.html)
+        .syntaxHighlight()
+
+      # Update datetime format on the recent note
+      gl.utils.localTimeAgo($notesList.find("#note_#{note.id} .js-timeago"), false)
+
+      @initTaskList()
+      @updateNotesCount(1)
+
 
   ###
   Check if note does not exists on page
@@ -144,34 +203,41 @@ class @Notes
   Note: for rendering inline notes use renderDiscussionNote
   ###
   renderDiscussionNote: (note) ->
+    return unless @isNewNote(note)
+
     @note_ids.push(note.id)
-    form = $("form[rel='" + note.discussion_id + "']")
+    form = $("#new-discussion-note-form-#{note.discussion_id}")
     row = form.closest("tr")
     note_html = $(note.html)
     note_html.syntaxHighlight()
 
     # is this the first note of discussion?
-    if row.is(".js-temp-notes-holder")
+    discussionContainer = $(".notes[data-discussion-id='" + note.discussion_id + "']")
+    if discussionContainer.length is 0
       # insert the note and the reply button after the temp row
       row.after note.discussion_html
 
       # remove the note (will be added again below)
       row.next().find(".note").remove()
 
+      # Before that, the container didn't exist
+      discussionContainer = $(".notes[data-discussion-id='" + note.discussion_id + "']")
+
       # Add note to 'Changes' page discussions
-      $(".notes[rel='" + note.discussion_id + "']").append note_html
+      discussionContainer.append note_html
 
       # Init discussion on 'Discussion' page if it is merge request page
-      if $('body').attr('data-page').indexOf('projects:merge_request') == 0
-        discussion_html = $(note.discussion_with_diff_html)
-        discussion_html.syntaxHighlight()
-        $('ul.main-notes-list').append(discussion_html)
+      if $('body').attr('data-page').indexOf('projects:merge_request') is 0
+        $('ul.main-notes-list')
+          .append(note.discussion_with_diff_html)
+          .syntaxHighlight()
     else
       # append new note to all matching discussions
-      $(".notes[rel='" + note.discussion_id + "']").append note_html
+      discussionContainer.append note_html
 
-    # cleanup after successfully creating a diff/discussion note
-    @removeDiscussionNoteForm(form)
+    gl.utils.localTimeAgo($('.js-timeago', note_html), false)
+
+    @updateNotesCount(1)
 
   ###
   Called in response the main target form has been successfully submitted.
@@ -180,7 +246,7 @@ class @Notes
   Resets text and preview.
   Resets buttons.
   ###
-  resetMainTargetForm: ->
+  resetMainTargetForm: (e) =>
     form = $(".js-main-target-form")
 
     # remove validation errors
@@ -191,6 +257,8 @@ class @Notes
     form.find(".js-note-text").val("").trigger "input"
 
     form.find(".js-note-text").data("autosave").reset()
+
+    @updateTargetButtons(e)
 
   reenableTargetFormSubmitButton: ->
     form = $(".js-main-target-form")
@@ -203,13 +271,11 @@ class @Notes
   Sets some hidden fields in the form.
   ###
   setupMainTargetNoteForm: ->
-
     # find the form
     form = $(".js-new-note-form")
 
-    # insert the form after the button
-    form.clone().replaceAll $(".js-main-target-form")
-    form = form.prev("form")
+    # Set a global clone of the form for later cloning
+    @formClone = form.clone()
 
     # show the form
     @setupNoteForm(form)
@@ -218,9 +284,8 @@ class @Notes
     form.removeClass "js-new-note-form"
     form.addClass "js-main-target-form"
 
-    # remove unnecessary fields and buttons
     form.find("#note_line_code").remove()
-    form.find(".js-close-discussion-note-form").remove()
+    form.find("#note_type").remove()
 
   ###
   General note form setup.
@@ -231,23 +296,10 @@ class @Notes
   show the form
   ###
   setupNoteForm: (form) ->
-    disableButtonIfEmptyField form.find(".js-note-text"), form.find(".js-comment-button")
-    form.removeClass "js-new-note-form"
-    form.find('.div-dropzone').remove()
-
-    # setup preview buttons
-    form.find(".js-md-write-button, .js-md-preview-button").tooltip placement: "left"
-    previewButton = form.find(".js-md-preview-button")
+    new GLForm form
 
     textarea = form.find(".js-note-text")
 
-    textarea.on "input", ->
-      if $(this).val().trim() isnt ""
-        previewButton.removeClass("turn-off").addClass "turn-on"
-      else
-        previewButton.removeClass("turn-on").addClass "turn-off"
-
-    autosize(textarea)
     new Autosave textarea, [
       "Note"
       form.find("#note_commit_id").val()
@@ -255,12 +307,6 @@ class @Notes
       form.find("#note_noteable_type").val()
       form.find("#note_noteable_id").val()
     ]
-
-    # remove notify commit author checkbox for non-commit notes
-    form.find(".js-notify-commit-author").remove()  if form.find("#note_noteable_type").val() isnt "Commit"
-    GitLab.GfmAutoComplete.setup()
-    new DropzoneInput(form)
-    form.show()
 
   ###
   Called in response to the new note form being submitted
@@ -270,6 +316,10 @@ class @Notes
   addNote: (xhr, note, status) =>
     @renderNote(note)
 
+  addNoteError: (xhr, note, status) =>
+    flash = new Flash('Your comment could not be submitted! Please check your network connection and try again.', 'alert')
+    flash.pinTo('.md-area')
+
   ###
   Called in response to the new note form being submitted
 
@@ -277,6 +327,9 @@ class @Notes
   ###
   addDiscussionNote: (xhr, note, status) =>
     @renderDiscussionNote(note)
+
+    # cleanup after successfully creating a diff/discussion note
+    @removeDiscussionNoteForm($(xhr.target))
 
   ###
   Called in response to the edit note form being submitted
@@ -286,6 +339,9 @@ class @Notes
   updateNote: (_xhr, note, _status) =>
     # Convert returned HTML to a jQuery object so we can modify it further
     $html = $(note.html)
+
+    gl.utils.localTimeAgo($('.js-timeago', $html))
+
     $html.syntaxHighlight()
     $html.find('.js-task-list-container').taskList('enable')
 
@@ -300,35 +356,38 @@ class @Notes
   Adds a hidden div with the original content of the note to fill the edit note form with
   if the user cancels
   ###
-  showEditForm: (e) ->
+  showEditForm: (e, scrollTo, myLastNote) ->
     e.preventDefault()
     note = $(this).closest(".note")
-    note.find(".note-body > .note-text").hide()
-    note.find(".note-header").hide()
-    base_form = note.find(".note-edit-form")
-    form = base_form.clone().insertAfter(base_form)
-    form.addClass('current-note-edit-form gfm-form')
-    form.find('.div-dropzone').remove()
+    note.addClass "is-editting"
+    form = note.find(".note-edit-form")
+
+    form.addClass('current-note-edit-form')
 
     # Show the attachment delete link
     note.find(".js-note-attachment-delete").show()
 
-    # Setup markdown form
-    GitLab.GfmAutoComplete.setup()
-    new DropzoneInput(form)
+    done = ($noteText) ->
+      # Neat little trick to put the cursor at the end
+      noteTextVal = $noteText.val()
+      $noteText.val('').val(noteTextVal);
 
-    form.show()
-    textarea = form.find("textarea")
-    textarea.focus()
-
-    # HACK (rspeicher/DouweM): Work around a Chrome 43 bug(?).
-    # The textarea has the correct value, Chrome just won't show it unless we
-    # modify it, so let's clear it and re-set it!
-    value = textarea.val()
-    textarea.val ""
-    textarea.val value
-
-    disableButtonIfEmptyField textarea, form.find(".js-comment-button")
+    new GLForm form
+    if scrollTo? and myLastNote?
+      # scroll to the bottom
+      # so the open of the last element doesn't make a jump
+      $('html, body').scrollTop($(document).height());
+      $('html, body').animate({
+        scrollTop: myLastNote.offset().top - 150
+      }, 500, ->
+        $noteText = form.find(".js-note-text")
+        $noteText.focus()
+        done($noteText)
+      );
+    else
+      $noteText = form.find('.js-note-text')
+      $noteText.focus()
+      done($noteText)
 
   ###
   Called in response to clicking the edit note link
@@ -338,9 +397,9 @@ class @Notes
   cancelEdit: (e) ->
     e.preventDefault()
     note = $(this).closest(".note")
-    note.find(".note-body > .note-text").show()
-    note.find(".note-header").show()
-    note.find(".current-note-edit-form").remove()
+    note.removeClass "is-editting"
+    note.find(".current-note-edit-form")
+      .removeClass("current-note-edit-form")
 
   ###
   Called in response to deleting a note of any kind.
@@ -348,29 +407,31 @@ class @Notes
   Removes the actual note from view.
   Removes the whole discussion if the last note is being removed.
   ###
-  removeNote: ->
-    note = $(this).closest(".note")
-    note_id = note.attr('id')
+  removeNote: (e) =>
+    noteId = $(e.currentTarget)
+               .closest(".note")
+               .attr("id")
 
-    $('.note[id="' + note_id + '"]').each ->
-      note = $(this)
+    # A same note appears in the "Discussion" and in the "Changes" tab, we have
+    # to remove all. Using $(".note[id='noteId']") ensure we get all the notes,
+    # where $("#noteId") would return only one.
+    $(".note[id='#{noteId}']").each (i, el) =>
+      note  = $(el)
       notes = note.closest(".notes")
-      count = notes.closest(".issuable-details").find(".notes-tab .badge")
 
       # check if this is the last note for this line
       if notes.find(".note").length is 1
 
-        # for discussions
-        notes.closest(".discussion").remove()
+        # "Discussions" tab
+        notes.closest(".timeline-entry").remove()
 
-        # for diff lines
+        # "Changes" tab / commit view
         notes.closest("tr").remove()
 
-      # update notes count
-      oldNum = parseInt(count.text())
-      count.text(oldNum - 1)
-
       note.remove()
+
+    # Decrement the "Discussions" counter only once
+    @updateNotesCount(-1)
 
   ###
   Called in response to clicking the delete attachment link
@@ -391,15 +452,15 @@ class @Notes
   Shows the note form below the notes.
   ###
   replyToDiscussionNote: (e) =>
-    form = $(".js-new-note-form")
+    form = @formClone.clone()
     replyLink = $(e.target).closest(".js-discussion-reply-button")
     replyLink.hide()
 
     # insert the form after the button
-    form.clone().insertAfter replyLink
+    replyLink.after form
 
     # show the form
-    @setupDiscussionNoteForm(replyLink, replyLink.next("form"))
+    @setupDiscussionNoteForm(replyLink, form)
 
   ###
   Shows the diff or discussion form and does some setup on it.
@@ -411,15 +472,23 @@ class @Notes
   ###
   setupDiscussionNoteForm: (dataHolder, form) =>
     # setup note target
-    form.attr "rel", dataHolder.data("discussionId")
+    form.attr 'id', "new-discussion-note-form-#{dataHolder.data("discussionId")}"
+    form.find("#note_type").val dataHolder.data("noteType")
     form.find("#line_type").val dataHolder.data("lineType")
     form.find("#note_commit_id").val dataHolder.data("commitId")
     form.find("#note_line_code").val dataHolder.data("lineCode")
     form.find("#note_noteable_type").val dataHolder.data("noteableType")
     form.find("#note_noteable_id").val dataHolder.data("noteableId")
+    form.find('.js-note-discard')
+        .show()
+        .removeClass('js-note-discard')
+        .addClass('js-close-discussion-note-form')
+        .text(form.find('.js-close-discussion-note-form').data('cancel-text'))
     @setupNoteForm form
     form.find(".js-note-text").focus()
-    form.addClass "js-discussion-note-form"
+    form
+      .removeClass('js-main-target-form')
+      .addClass("discussion-form js-discussion-note-form")
 
   ###
   Called when clicking on the "add a comment" button on the side of a diff line.
@@ -429,9 +498,8 @@ class @Notes
   ###
   addDiffNote: (e) =>
     e.preventDefault()
-    link = e.currentTarget
-    form = $(".js-new-note-form")
-    row = $(link).closest("tr")
+    $link = $(e.currentTarget)
+    row = $link.closest("tr")
     nextRow = row.next()
     hasNotes = nextRow.is(".notes_holder")
     addForm = false
@@ -440,7 +508,7 @@ class @Notes
 
     # In parallel view, look inside the correct left/right pane
     if @isParallelView()
-      lineType = $(link).data("lineType")
+      lineType = $link.data("lineType")
       targetContent += "." + lineType
       rowCssToAdd = "<tr class=\"notes_holder js-temp-notes-holder\"><td class=\"notes_line\"></td><td class=\"notes_content parallel old\"></td><td class=\"notes_line\"></td><td class=\"notes_content parallel new\"></td></tr>"
 
@@ -462,11 +530,11 @@ class @Notes
       addForm = true
 
     if addForm
-      newForm = form.clone()
+      newForm = @formClone.clone()
       newForm.appendTo row.next().find(targetContent)
 
       # show the form
-      @setupDiscussionNoteForm $(link), newForm
+      @setupDiscussionNoteForm $link, newForm
 
   ###
   Called in response to "cancel" on a diff note form.
@@ -476,6 +544,9 @@ class @Notes
   ###
   removeDiscussionNoteForm: (form)->
     row = form.closest("tr")
+
+    glForm = form.data 'gl-form'
+    glForm.destroy()
 
     form.find(".js-note-text").data("autosave").reset()
 
@@ -488,10 +559,8 @@ class @Notes
       # only remove the form
       form.remove()
 
-
   cancelDiscussionForm: (e) =>
     e.preventDefault()
-    form = $(".js-new-note-form")
     form = $(e.target).closest(".js-discussion-note-form")
     @removeDiscussionNoteForm(form)
 
@@ -516,21 +585,52 @@ class @Notes
   updateCloseButton: (e) =>
     textarea = $(e.target)
     form = textarea.parents('form')
-    form.find('.js-note-target-close').text('Close')
+    closebtn = form.find('.js-note-target-close')
+    closebtn.text(closebtn.data('original-text'))
 
   updateTargetButtons: (e) =>
     textarea = $(e.target)
     form = textarea.parents('form')
+    reopenbtn = form.find('.js-note-target-reopen')
+    closebtn = form.find('.js-note-target-close')
+    discardbtn = form.find('.js-note-discard')
+
     if textarea.val().trim().length > 0
-      form.find('.js-note-target-reopen').text('Comment & reopen')
-      form.find('.js-note-target-close').text('Comment & close')
-      form.find('.js-note-target-reopen').addClass('btn-comment-and-reopen')
-      form.find('.js-note-target-close').addClass('btn-comment-and-close')
+      reopentext = reopenbtn.data('alternative-text')
+      closetext = closebtn.data('alternative-text')
+
+      if reopenbtn.text() isnt reopentext
+        reopenbtn.text(reopentext)
+
+      if closebtn.text() isnt closetext
+        closebtn.text(closetext)
+
+      if reopenbtn.is(':not(.btn-comment-and-reopen)')
+        reopenbtn.addClass('btn-comment-and-reopen')
+
+      if closebtn.is(':not(.btn-comment-and-close)')
+        closebtn.addClass('btn-comment-and-close')
+
+      if discardbtn.is(':hidden')
+        discardbtn.show()
     else
-      form.find('.js-note-target-reopen').text('Reopen')
-      form.find('.js-note-target-close').text('Close')
-      form.find('.js-note-target-reopen').removeClass('btn-comment-and-reopen')
-      form.find('.js-note-target-close').removeClass('btn-comment-and-close')
+      reopentext = reopenbtn.data('original-text')
+      closetext = closebtn.data('original-text')
+
+      if reopenbtn.text() isnt reopentext
+        reopenbtn.text(reopentext)
+
+      if closebtn.text() isnt closetext
+        closebtn.text(closetext)
+
+      if reopenbtn.is('.btn-comment-and-reopen')
+        reopenbtn.removeClass('btn-comment-and-reopen')
+
+      if closebtn.is('.btn-comment-and-close')
+        closebtn.removeClass('btn-comment-and-close')
+
+      if discardbtn.is(':visible')
+        discardbtn.hide()
 
   initTaskList: ->
     @enableTaskList()
@@ -541,3 +641,6 @@ class @Notes
 
   updateTaskList: ->
     $('form', this).submit()
+
+  updateNotesCount: (updateCount) ->
+    @notesCountBadge.text(parseInt(@notesCountBadge.text()) + updateCount)

@@ -19,7 +19,7 @@
     %br
     Each project can also have an issue tracker and a wiki.
     %br
-    Read more about GitSwarm at #{link_to promo_host, promo_url, target: '_blank'}.
+    Read more about GitSwarm at #{link_to promo_host, promo_url + '/gitswarm/', target: '_blank'}.
     - if current_application_settings.help_page_text.present?
       %hr
       = markdown(current_application_settings.help_page_text)
@@ -34,7 +34,7 @@
         - readme_text = File.read(Rails.root.join("perforce_swarm", override_doc_dir, "README.md"))
         - text = readme_text.dup
         - readme_text.scan(/\]\(([^(]+)\)/) { |match| text.gsub!(match.first, "help/#{match.first}") }
-        = markdown text
+        = markdown text.gsub('$GitSwarm$', PerforceSwarm.short_name)
 
   .col-md-4
     .panel.panel-default

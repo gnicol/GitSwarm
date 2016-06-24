@@ -1,7 +1,9 @@
 # Changing your time zone
 
-GitSwarm defaults its time zone to UTC. It has a global timezone
-configuration parameter in `/etc/gitswarm/gitswarm.rb`.
+## Package installations
+
+$GitSwarm$ uses UTC as the global time zone. The global time zone
+configuration parameter can be changed in `/etc/gitswarm/gitswarm.rb`.
 
 To update, add the time zone that best applies to your location. Here are
 two examples:
@@ -27,3 +29,17 @@ After you add or modify this field, reconfigure and restart:
 sudo gitswarm-ctl reconfigure
 sudo gitswarm-ctl restart
 ```
+
+## Source installations
+
+The global time zone configuration parameter can be changed in
+`config/gitlab.yml`:
+
+```
+# time_zone: 'UTC'
+```
+
+Uncomment and customize if you want to change the default time zone of
+$GitSwarm$.
+
+To see all available time zones, run `bundle exec rake time:zones:all`.

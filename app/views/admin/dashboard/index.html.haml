@@ -1,4 +1,4 @@
-.admin-dashboard
+.admin-dashboard.prepend-top-default
   .row
     .col-md-4
       %h4 Statistics
@@ -92,6 +92,11 @@
         Rails
         %span.pull-right
           #{Rails::VERSION::STRING}
+
+      %p
+        = Gitlab::Database.adapter_name
+        %span.pull-right
+          = Gitlab::Database.version
   %hr
   .row
     .col-sm-4

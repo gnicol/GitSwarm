@@ -2,7 +2,7 @@ module API
   module Helpers
     PRIVATE_TOKEN_HEADER = "HTTP_PRIVATE_TOKEN"
     PRIVATE_TOKEN_PARAM = :private_token
-    SUDO_HEADER ="HTTP_SUDO"
+    SUDO_HEADER = "HTTP_SUDO"
     SUDO_PARAM = :sudo
 
     def parse_boolean(value)
@@ -30,7 +30,7 @@ module API
     end
 
     def sudo_identifier()
-      identifier ||= params[SUDO_PARAM] ||= env[SUDO_HEADER]
+      identifier ||= params[SUDO_PARAM] || env[SUDO_HEADER]
 
       # Regex for integers
       if !!(identifier =~ /^[0-9]+$/)
@@ -91,9 +91,19 @@ module API
       if can?(current_user, :read_group, group)
         group
       else
-        forbidden!("#{current_user.username} lacks sufficient "\
-        "access to #{group.name}")
+        not_found!('Group')
       end
+    end
+
+    def find_project_label(id)
+      label = user_project.labels.find_by_id(id) || user_project.labels.find_by_title(id)
+      label || not_found!('Label')
+    end
+
+    def find_project_issue(id)
+      issue = user_project.issues.find(id)
+      not_found! unless can?(current_user, :read_issue, issue)
+      issue
     end
 
     def paginate(relation)
@@ -118,9 +128,7 @@ module API
     end
 
     def authorize!(action, subject)
-      unless abilities.allowed?(current_user, action, subject)
-        forbidden!
-      end
+      forbidden! unless abilities.allowed?(current_user, action, subject)
     end
 
     def authorize_push_project
@@ -186,6 +194,22 @@ module API
       Gitlab::Access.options_with_owner.values.include? level.to_i
     end
 
+    # Checks the occurrences of datetime attributes, each attribute if present in the params hash must be in ISO 8601
+    # format (YYYY-MM-DDTHH:MM:SSZ) or a Bad Request error is invoked.
+    #
+    # Parameters:
+    #   keys (required) - An array consisting of elements that must be parseable as dates from the params hash
+    def datetime_attributes!(*keys)
+      keys.each do |key|
+        begin
+          params[key] = Time.xmlschema(params[key]) if params[key].present?
+        rescue ArgumentError
+          message = "\"" + key.to_s + "\" must be a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ"
+          render_api_error!(message, 400)
+        end
+      end
+    end
+
     def issuable_order_by
       if params["order_by"] == 'updated_at'
         'updated_at'
@@ -243,6 +267,10 @@ module API
       render_api_error!('413 Request Entity Too Large', 413)
     end
 
+    def not_modified!
+      render_api_error!('304 Not Modified', 304)
+    end
+
     def render_validation_error!(model)
       if model.errors.any?
         render_api_error!(model.errors.messages || '400 Bad Request', 400)
@@ -263,6 +291,10 @@ module API
 
       if params[:search].present?
         projects = projects.search(params[:search])
+      end
+
+      if params[:visibility].present?
+        projects = projects.search_by_visibility(params[:visibility])
       end
 
       projects.reorder(project_order_by => project_sort)
@@ -340,12 +372,22 @@ module API
 
     def pagination_links(paginated_data)
       request_url = request.url.split('?').first
+      request_params = params.clone
+      request_params[:per_page] = paginated_data.limit_value
 
       links = []
-      links << %(<#{request_url}?page=#{paginated_data.current_page - 1}&per_page=#{paginated_data.limit_value}>; rel="prev") unless paginated_data.first_page?
-      links << %(<#{request_url}?page=#{paginated_data.current_page + 1}&per_page=#{paginated_data.limit_value}>; rel="next") unless paginated_data.last_page?
-      links << %(<#{request_url}?page=1&per_page=#{paginated_data.limit_value}>; rel="first")
-      links << %(<#{request_url}?page=#{paginated_data.total_pages}&per_page=#{paginated_data.limit_value}>; rel="last")
+
+      request_params[:page] = paginated_data.current_page - 1
+      links << %(<#{request_url}?#{request_params.to_query}>; rel="prev") unless paginated_data.first_page?
+
+      request_params[:page] = paginated_data.current_page + 1
+      links << %(<#{request_url}?#{request_params.to_query}>; rel="next") unless paginated_data.last_page?
+
+      request_params[:page] = 1
+      links << %(<#{request_url}?#{request_params.to_query}>; rel="first")
+
+      request_params[:page] = paginated_data.total_pages
+      links << %(<#{request_url}?#{request_params.to_query}>; rel="last")
 
       links.join(', ')
     end

@@ -1,31 +1,12 @@
-# == Schema Information
-#
-# Table name: notes
-#
-#  id            :integer          not null, primary key
-#  note          :text
-#  noteable_type :string(255)
-#  author_id     :integer
-#  created_at    :datetime
-#  updated_at    :datetime
-#  project_id    :integer
-#  attachment    :string(255)
-#  line_code     :string(255)
-#  commit_id     :string(255)
-#  noteable_id   :integer
-#  system        :boolean          default(FALSE), not null
-#  st_diff       :text
-#  updated_by_id :integer
-#  is_award      :boolean          default(FALSE), not null
-#
-
 require 'spec_helper'
 
 describe Note, models: true do
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
-    it { is_expected.to belong_to(:noteable) }
+    it { is_expected.to belong_to(:noteable).touch(true) }
     it { is_expected.to belong_to(:author).class_name('User') }
+
+    it { is_expected.to have_many(:todos).dependent(:destroy) }
   end
 
   describe 'validation' do
@@ -50,24 +31,6 @@ describe Note, models: true do
 
     it "should be recognized by #for_commit?" do
       expect(note).to be_for_commit
-    end
-  end
-
-  describe "Commit diff line notes" do
-    let!(:note) { create(:note_on_commit_diff, note: "+1 from me") }
-    let!(:commit) { note.noteable }
-
-    it "should save a valid note" do
-      expect(note.commit_id).to eq(commit.id)
-      expect(note.noteable.id).to eq(commit.id)
-    end
-
-    it "should be recognized by #for_diff_line?" do
-      expect(note).to be_for_diff_line
-    end
-
-    it "should be recognized by #for_commit_diff_line?" do
-      expect(note).to be_for_commit_diff_line
     end
   end
 
@@ -138,13 +101,38 @@ describe Note, models: true do
     end
   end
 
-  describe :search do
-    let!(:note) { create(:note, note: "WoW") }
+  describe '.search' do
+    let(:note) { create(:note, note: 'WoW') }
 
-    it { expect(Note.search('wow')).to include(note) }
+    it 'returns notes with matching content' do
+      expect(described_class.search(note.note)).to eq([note])
+    end
+
+    it 'returns notes with matching content regardless of the casing' do
+      expect(described_class.search('WOW')).to eq([note])
+    end
+
+    context "confidential issues" do
+      let(:user) { create :user }
+      let(:confidential_issue) { create(:issue, :confidential, author: user) }
+      let(:confidential_note) { create :note, note: "Random", noteable: confidential_issue }
+
+      it "returns notes with matching content if user can see the issue" do
+        expect(described_class.search(confidential_note.note, as_user: user)).to eq([confidential_note])
+      end
+
+      it "does not return notes with matching content if user can not see the issue" do
+        user = create :user
+        expect(described_class.search(confidential_note.note, as_user: user)).to be_empty
+      end
+
+      it "does not return notes with matching content for unauthenticated users" do
+        expect(described_class.search(confidential_note.note)).to be_empty
+      end
+    end
   end
 
-  describe :grouped_awards do
+  describe '.grouped_awards' do
     before do
       create :note, note: "smile", is_award: true
       create :note, note: "smile", is_award: true
@@ -203,11 +191,27 @@ describe Note, models: true do
   end
 
   describe "set_award!" do
-    let(:issue) { create :issue }
+    let(:merge_request) { create :merge_request }
 
     it "converts aliases to actual name" do
-      note = create :note, note: ":+1:", noteable: issue
+      note = create(:note, note: ":+1:", noteable: merge_request)
       expect(note.reload.note).to eq("thumbsup")
+    end
+
+    it "is not an award emoji when comment is on a diff" do
+      note = create(:note_on_merge_request_diff, note: ":blowfish:", noteable: merge_request, line_code: "11d5d2e667e9da4f7f610f81d86c974b146b13bd_0_2")
+      note = note.reload
+
+      expect(note.note).to eq(":blowfish:")
+      expect(note.is_award?).to be_falsy
+    end
+  end
+
+  describe 'clear_blank_line_code!' do
+    it 'clears a blank line code before validation' do
+      note = build(:note, line_code: ' ')
+
+      expect { note.valid? }.to change(note, :line_code).to(nil)
     end
   end
 end

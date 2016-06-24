@@ -28,6 +28,19 @@ module PerforceSwarm
     def self.preprocess(category, file)
       content = File.read(Rails.root.join('doc', category, "#{file}.md"))
 
+      # map GitLab version declarations to GitSwarm versions
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)9\.[x0-9](\.\d+)?/, 'GitSwarm 2016.3')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)8\.[5678](\.\d+)?/, 'GitSwarm 2016.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)8\.[1234](\.\d+)?/, 'GitSwarm 2016.1')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)8\.0(\.\d+)?/, 'GitSwarm 2015.4')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.13(\.\d+)?/, 'GitSwarm 2015.3')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.12(\.\d+)?/, 'GitSwarm 2015.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.11(\.\d+)?/, 'GitSwarm 2015.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.10(\.\d+)?/, 'GitSwarm 2015.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)7\.[.2-9]*\d/, 'GitSwarm 2015.2')
+      content.gsub!(/(GitLab(( |\n\s*)EE)?|Edition)( |\n\s*)[1-6](\.[x0-9](\.\d+)?)?/, 'GitSwarm 2015.2')
+      content.gsub!(/\[introduced\]\[(c|e)e-\d+\]/, 'introduced')
+
       # replace GitLab attribution with our own
       content.gsub!(/GitLab B\.V\./, 'Perforce Software')
 
@@ -48,8 +61,8 @@ module PerforceSwarm
       content.gsub!(/our website/i, "GitLab's website")
 
       # redirect external help links to our site
-      content.gsub!('http://doc.gitlab.com/ce/', 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm/')
-      content.gsub!('http://doc.gitlab.com/ee/', 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/')
+      content.gsub!(%r{http://docs?.gitlab.com/ce/}, 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm/')
+      content.gsub!(%r{http://docs?.gitlab.com/ee/}, 'https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/')
 
       # fix example links value
       content.gsub!(/(your-)?gitlab\.example\.com/, '\1gitswarm.example.com')
@@ -62,6 +75,7 @@ module PerforceSwarm
       # also get gitlab-secrets.json
       content.gsub!(%r{(etc|gitswarm)/gitlab.rb}, '\1/gitswarm.rb')
       content.gsub!(%r{/etc/gitswarm/gitlab\-secrets\.json}, '/etc/gitswarm/gitswarm-secrets.json')
+      content.gsub!('`gitlab.rb`', '`/etc/gitswarm/gitswarm.rb`')
 
       # rename /opt/gitlab and /var/opt/gitlab
       content.gsub!('/opt/gitlab', '/opt/gitswarm')
@@ -89,8 +103,53 @@ module PerforceSwarm
         content.gsub!(/Omnibus-gitlab /, 'GitSwarm ')
         content.gsub!(/Omnibus-packages/, 'GitSwarm packages')
       end
+      content.gsub!(/# omnibus-gitlab/, '# package installations')
       content.gsub!(%r{(omnibus)-gitlab(?!/)}i, 'gitswarm')
-      content.gsub!(/Omnibus Installation/, 'Package Installation')
+
+      content.gsub!('(Omnibus)', '(package installation)')
+      content.gsub!('(Omnibus-only)', '(package installations only)')
+      content.gsub!("by omnibus\nwith", "by the package installation\nwith")
+      content.gsub!('Configure using Omnibus', 'Configure the package installation')
+      content.gsub!('Consider the Omnibus package installation', 'Consider the package installation')
+      content.gsub!('If using Omnibus', 'If using the package installation')
+      content.gsub!('in Omnibus,', 'in package installations,')
+      content.gsub!('Omnibus allows', 'Package installations allow')
+      content.gsub!('The omnibus design', 'The design of the package installation')
+      content.gsub!(/Omnibus(\n| )configuration/i, 'package installation configuration')
+      content.gsub!('Omnibus documentation', 'package installation documentation')
+      content.gsub!('Omnibus Installation', 'Package Installation')
+      content.gsub!(/Omnibus(\n| )installation/i, 'package\1installation')
+      content.gsub!(/omnibus installs/i, 'package installations')
+      content.gsub!(/(^|>)# Omnibus( install)?$/, '\1# Package installations')
+      content.gsub!(/# Omnibus package( installation)?/, '# Package installation')
+      content.gsub!('Omnibus Package', 'Package Installation')
+      content.gsub!(/Omnibus(\n| )package/i, 'package\1installation')
+      content.gsub!('omnibus version', 'package installation')
+      content.gsub!('The omnibus reconfigure', "The package installation's reconfigure")
+      content.gsub!('Updating Omnibus from', 'Updating the package installation from')
+      content.gsub!("without using\nOmnibus", "without using\nthe package installation")
+      content.gsub!('Omnibus Trusted Chain', PerforceSwarm.short_name + ' Trusted Chain')
+      content.gsub!('Omnibus 7.14', PerforceSwarm.short_name + ' 2016.1')
+      content.gsub!('GitSwarm Omnibus', 'GitSwarm package installation')
+      content.gsub!('GitSwarm EE Omnibus', 'GitSwarm EE package installation')
+
+      # say 'source installations' consistently
+      content.gsub!('# Installations from source', '# Source installations')
+      content.gsub!(/installations(\n| )from( the)? source/, 'source\1installations')
+      content.gsub!(/Installation from( the)? source/, 'Source installation')
+      content.gsub!(/installation from( the)? source/, 'source installation')
+      content.gsub!(/manual install(ation)?s/, 'source install\1s')
+      content.gsub!(/(^|>)# Source$/, '\1# Source installations')
+
+      # fix incoming email addresses
+      content.gsub!('gitlab-incoming', 'gitswarm-incoming')
+
+      # fixup reference links that include the label GitLab
+      content.gsub!(/\[(restart|reconfigure) gitlab\]/, '[\1 ' + PerforceSwarm.short_name + ']')
+
+      # fix escaped <> so that Pandoc's Markdown can display them correctly
+      content.gsub!('\<', '&lt;')
+      content.gsub!('\>', '&gt;')
 
       # do a variety of page specific touch-ups
 
@@ -156,23 +215,23 @@ module PerforceSwarm
       # apply a note about using SSH instead of HTTP(S), to avoid
       # resource issues.
       if category == 'workflow' && file == 'workflow'
-        if PerforceSwarm.ee?
-          content += <<EOS
+        content += if PerforceSwarm.ee?
+                     <<EOS
 
 Note: For performance reasons, it is better to clone from a repo via SSH
 instead of HTTP(S). GitSwarm EE maintains a limited pool of web worker
 processes, and each HTTP(S) push/pull/fetch operation ties up a worker
 process until completion.
 EOS
-        else
-          content += <<EOS
+                   else
+                     <<EOS
 
 Note: For performance reasons, it is better to clone from a repo via SSH
 instead of HTTP(S). GitSwarm maintains a limited pool of web worker
 processes, and each HTTP(S) push/pull/fetch operation ties up a worker
 process until completion.
 EOS
-        end
+                   end
       end
 
       # point the archived download link to our ftp.

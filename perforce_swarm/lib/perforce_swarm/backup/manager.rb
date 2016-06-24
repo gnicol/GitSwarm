@@ -5,7 +5,7 @@ module PerforceSwarm
     def pack
       # saving additional informations
       s = {}
-      s[:db_version]         = "#{ActiveRecord::Migrator.current_version}"
+      s[:db_version]         = ActiveRecord::Migrator.current_version.to_s
       s[:backup_created_at]  = Time.now
       s[:gitswarm_version]   = PerforceSwarm::VERSION
       s[:tar_version]        = tar_version
@@ -59,8 +59,9 @@ module PerforceSwarm
 
     def unpack
       Dir.chdir(Gitlab.config.backup.path)
+
       # check for existing backups in the backup dir
-      file_list = Dir.glob('*_git{swarm,lab}_backup.tar')
+      file_list = Dir.glob('*_git{swarm,lab}_backup.tar').each.map { |f| f.split(/_/).first.to_i }
       puts 'no backups found' if file_list.empty?
 
       if file_list.count > 1 && ENV['BACKUP'].nil?
@@ -69,12 +70,9 @@ module PerforceSwarm
         exit 1
       end
 
-      if ENV['BACKUP'].nil?
-        tar_file = file_list.first
-      else
-        tar_file = File.join(ENV['BACKUP'] + '_gitswarm_backup.tar')
-        tar_file = File.join(ENV['BACKUP'] + '_gitlab_backup.tar') unless File.exist?(tar_file)
-      end
+      backup   = ENV['BACKUP'].nil? ? file_list.first : ENV['BACKUP']
+      tar_file = File.join("#{backup}_gitswarm_backup.tar")
+      tar_file = File.join("#{backup}_gitlab_backup.tar") unless File.exist?(tar_file)
 
       unless File.exist?(tar_file)
         puts "The specified backup doesn't exist!"
@@ -90,7 +88,7 @@ module PerforceSwarm
         exit 1
       end
 
-      ENV['VERSION'] = "#{settings[:db_version]}" if settings[:db_version].to_i > 0
+      ENV['VERSION'] = settings[:db_version].to_s if settings[:db_version].to_i > 0
 
       # check for neither gitlab nor gitswarm version
       unless settings[:gitlab_version] || settings[:gitswarm_version]

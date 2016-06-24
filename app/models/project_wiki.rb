@@ -2,7 +2,7 @@ class ProjectWiki
   include Gitlab::ShellAdapter
 
   MARKUPS = {
-    'Markdown' => :md,
+    'Markdown' => :markdown,
     'RDoc'     => :rdoc,
     'AsciiDoc' => :asciidoc
   } unless defined?(MARKUPS)
@@ -12,6 +12,7 @@ class ProjectWiki
   # Returns a string describing what went wrong after
   # an operation fails.
   attr_reader :error_message
+  attr_reader :project
 
   def initialize(project, user = nil)
     @project = project
@@ -39,14 +40,14 @@ class ProjectWiki
   end
 
   def wiki_base_path
-    ["/", @project.path_with_namespace, "/wikis"].join('')
+    [Gitlab.config.gitlab.relative_url_root, "/", @project.path_with_namespace, "/wikis"].join('')
   end
 
   # Returns the Gollum::Wiki object.
   def wiki
     @wiki ||= begin
       Gollum::Wiki.new(path_to_repo)
-    rescue Gollum::NoSuchPathError
+    rescue Rugged::OSError
       create_repo!
     end
   end
@@ -89,7 +90,7 @@ class ProjectWiki
   def create_page(title, content, format = :markdown, message = nil)
     commit = commit_details(:created, message, title)
 
-    wiki.write_page(title, format, content, commit)
+    wiki.write_page(title, format.to_sym, content, commit)
 
     update_project_activity
   rescue Gollum::DuplicatePageError => e
@@ -100,7 +101,7 @@ class ProjectWiki
   def update_page(page, content, format = :markdown, message = nil)
     commit = commit_details(:updated, message, page.title)
 
-    wiki.update_page(page, page.name, format, content, commit)
+    wiki.update_page(page, page.name, format.to_sym, content, commit)
 
     update_project_activity
   end
@@ -112,7 +113,7 @@ class ProjectWiki
   end
 
   def page_title_and_dir(title)
-    title_array =  title.split("/")
+    title_array = title.split("/")
     title = title_array.pop
     [title, title_array.join("/")]
   end
@@ -122,22 +123,26 @@ class ProjectWiki
   end
 
   def repository
-    Repository.new(path_with_namespace, default_branch, @project)
+    @repository ||= Repository.new(path_with_namespace, @project)
   end
 
   def default_branch
     wiki.class.default_ref
   end
 
-  private
-
   def create_repo!
     if init_repo(path_with_namespace)
-      Gollum::Wiki.new(path_to_repo)
+      wiki = Gollum::Wiki.new(path_to_repo)
     else
       raise CouldNotCreateWikiError
     end
+
+    repository.after_create
+
+    wiki
   end
+
+  private
 
   def init_repo(path_with_namespace)
     gitlab_shell.add_repository(path_with_namespace)

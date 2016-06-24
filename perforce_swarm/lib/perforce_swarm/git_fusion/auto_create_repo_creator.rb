@@ -5,7 +5,7 @@ module PerforceSwarm
         super(config)
 
         unless config.auto_create_configured?
-          fail ConfigValidationError, 'Auto create is not configured properly.'
+          raise ConfigValidationError, 'Auto create is not configured properly.'
         end
       end
 
@@ -41,14 +41,14 @@ module PerforceSwarm
       # if any of the above conditions are not met, an exception is thrown
       def save_preflight(connection)
         if project_depot.include?('{namespace}') || project_depot.include?('{project-path}')
-          fail 'Depot names cannot contain substitution variables ({namespace} or {project-path}).'
+          raise 'Depot names cannot contain substitution variables ({namespace} or {project-path}).'
         end
 
         # ensure that the depots exist and there is not an existing p4gf_config file
         super(connection)
 
         if perforce_path_exists?(depot_path, connection)
-          fail "It appears that there is already content in Helix at #{depot_path}."
+          raise "It appears that there is already content in Helix at #{depot_path}."
         end
       end
     end

@@ -19,15 +19,13 @@ module MergeRequests
     end
 
     # Triggers the automatic merge of merge_request once the build succeeds
-    def trigger(build)
-      merge_requests = merge_request_from(build)
-
-      merge_requests.each do |merge_request|
+    def trigger(commit_status)
+      each_merge_request(commit_status) do |merge_request, ci_commit|
         next unless merge_request.merge_when_build_succeeds?
+        next unless merge_request.mergeable?
+        next unless ci_commit.success?
 
-        if merge_request.ci_commit && merge_request.ci_commit.success? && merge_request.mergeable?
-          MergeWorker.perform_async(merge_request.id, merge_request.merge_user_id, merge_request.merge_params)
-        end
+        MergeWorker.perform_async(merge_request.id, merge_request.merge_user_id, merge_request.merge_params)
       end
     end
 
@@ -43,13 +41,5 @@ module MergeRequests
       end
     end
 
-    private
-
-    def merge_request_from(build)
-      merge_requests = @project.origin_merge_requests.opened.where(source_branch: build.ref).to_a
-      merge_requests += @project.fork_merge_requests.opened.where(source_branch: build.ref).to_a
-
-      merge_requests.uniq.select(&:source_project)
-    end
   end
 end

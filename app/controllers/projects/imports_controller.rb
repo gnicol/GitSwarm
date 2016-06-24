@@ -1,8 +1,11 @@
 class Projects::ImportsController < Projects::ApplicationController
+  include ContinueParams
+
   # Authorize
   before_action :authorize_admin_project!
   before_action :require_no_repo, only: [:new, :create]
   before_action :redirect_if_progress, only: [:new, :create]
+  before_action :redirect_if_no_import, only: :show
 
   def new
   end
@@ -17,6 +20,7 @@ class Projects::ImportsController < Projects::ApplicationController
         @project.import_retry
       else
         @project.import_start
+        @project.add_import_job
       end
     end
 
@@ -43,16 +47,6 @@ class Projects::ImportsController < Projects::ApplicationController
 
   private
 
-  def continue_params
-    continue_params = params[:continue]
-
-    if continue_params
-      continue_params.permit(:to, :notice, :notice_now)
-    else
-      nil
-    end
-  end
-
   def finished_notice
     if @project.forked?
       'The project was successfully forked.'
@@ -63,14 +57,19 @@ class Projects::ImportsController < Projects::ApplicationController
 
   def require_no_repo
     if @project.repository_exists?
-      redirect_to(namespace_project_path(@project.namespace, @project))
+      redirect_to namespace_project_path(@project.namespace, @project)
     end
   end
 
   def redirect_if_progress
     if @project.import_in_progress?
-      redirect_to namespace_project_import_path(@project.namespace, @project) &&
-        return
+      redirect_to namespace_project_import_path(@project.namespace, @project)
+    end
+  end
+
+  def redirect_if_no_import
+    if @project.repository_exists? && @project.no_import?
+      redirect_to namespace_project_path(@project.namespace, @project)
     end
   end
 end

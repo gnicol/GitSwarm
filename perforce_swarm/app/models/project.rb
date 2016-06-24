@@ -3,20 +3,27 @@ require Rails.root.join('app', 'models', 'project')
 module PerforceSwarm
   module ProjectExtension
     # Git Fusion re-enable constants
-    GIT_FUSION_REENABLE_IN_PROGRESS = 'in_progress'
-    GIT_FUSION_REENABLE_ERROR       = 'error'
-    GIT_FUSION_REENABLE_MIRRORED    = 'mirrored'
-    GIT_FUSION_REENABLE_UNMIRRORED  = 'unmirrored'
+    GIT_FUSION_REENABLE_IN_PROGRESS = 'in_progress'.freeze
+    GIT_FUSION_REENABLE_ERROR       = 'error'.freeze
+    GIT_FUSION_REENABLE_MIRRORED    = 'mirrored'.freeze
+    GIT_FUSION_REENABLE_UNMIRRORED  = 'unmirrored'.freeze
 
     # Git Fusion repo creation types
-    GIT_FUSION_REPO_CREATION_DISABLED    = 'disabled'
-    GIT_FUSION_REPO_CREATION_AUTO_CREATE = 'auto-create'
-    GIT_FUSION_REPO_CREATION_IMPORT_REPO = 'import-repo'
-    GIT_FUSION_REPO_CREATION_FILE_SELECT = 'file-selector'
+    GIT_FUSION_REPO_CREATION_DISABLED    = 'disabled'.freeze
+    GIT_FUSION_REPO_CREATION_AUTO_CREATE = 'auto-create'.freeze
+    GIT_FUSION_REPO_CREATION_IMPORT_REPO = 'import-repo'.freeze
+    GIT_FUSION_REPO_CREATION_FILE_SELECT = 'file-selector'.freeze
 
     def import_in_progress?
       return true if git_fusion_mirrored? && import_status == 'started'
       super
+    end
+
+    def import?
+      return super unless git_fusion_mirrored?
+      # project is mirrored in fusion, and we set the status ourselves via
+      # the redis event and mirror fetch worker
+      !import_finished?
     end
 
     # disables Git Fusion mirroring on the project, and removes the mirror remote
@@ -81,15 +88,15 @@ module PerforceSwarm
       elsif git_fusion_mirrored?
         return GIT_FUSION_REENABLE_MIRRORED
       else
-        error = git_fusion_reenable_error
+        error = git_fusion_enable_error
         return error ? GIT_FUSION_REENABLE_ERROR : GIT_FUSION_REENABLE_UNMIRRORED
       end
     rescue
       return GIT_FUSION_REENABLE_ERROR
     end
 
-    def git_fusion_reenable_error
-      PerforceSwarm::Mirror.reenable_error(repository.path_to_repo)
+    def git_fusion_enable_error
+      PerforceSwarm::Mirror.enable_error(repository.path_to_repo)
     end
 
     def git_fusion_repo_segments
@@ -123,6 +130,12 @@ module PerforceSwarm
       repository.reload_raw_repository
       super
     end
+
+    def safe_import_url
+      return super if import_url
+      # show the git fusion mirror URL, minus the password
+      PerforceSwarm::GitFusionRepo.resolve_url(git_fusion_repo).to_s
+    end
   end
 end
 
@@ -150,19 +163,10 @@ class Project < ActiveRecord::Base
     # no git fusion repo, so carry on with normal import behaviour
     return add_import_job_super unless git_fusion_mirrored?
 
-    # we have a git fusion import request- ensure project is marked as imported from git fusion
-    update_column(:import_type, 'git_fusion')
-
-    # create mirror remote
-    PerforceSwarm::Repo.new(repository.path_to_repo).mirror_url = git_fusion_repo
-
-    # kick off and background initial import task
-    import_job = fork do
-      gitlab_shell  = File.expand_path(Gitlab.config.gitlab_shell.path)
-      mirror_script = File.join(gitlab_shell, 'perforce_swarm', 'bin', 'gitswarm-mirror')
-      exec Shellwords.shelljoin([mirror_script, 'fetch', '--redis-on-finish', path_with_namespace + '.git'])
-    end
-    Process.detach(import_job)
+    # we have a git fusion import request - ensure project is marked as imported from git fusion
+    # and perform the import
+    update_columns(import_type: 'git_fusion')
+    GitFusionImportWorker.new.perform(id)
   end
 
   # we don't include this in the ProjectExtension due to RSpec not allowing us

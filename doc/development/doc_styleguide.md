@@ -85,9 +85,19 @@ Inside the document:
 
 ## Notes
 
-- Notes should be in italics with the word `Note:` being bold. Use this form:
-  `_**Note:** This is something to note._`. If the note spans across multiple
-  lines it's OK to split the line.
+- Notes should be quoted with the word `Note:` being bold. Use this form:
+
+    ```
+    >**Note:**
+    This is something to note.
+    ```
+
+    which renders to:
+
+    >**Note:**
+    This is something to note.
+
+    If the note spans across multiple lines it's OK to split the line.
 
 ## New features
 
@@ -117,8 +127,19 @@ Inside the document:
     ```
   If the document you are editing resides in a place other than the GitLab CE/EE
   `doc/` directory, instead of the relative link, use the full path:
-  `http://doc.gitlab.com/ce/administration/restart_gitlab.html`.
+  `http://docs.gitlab.com/ce/administration/restart_gitlab.html`.
   Replace `reconfigure` with `restart` where appropriate.
+
+## Installation guide
+
+- **Ruby:**
+  In [step 2 of the installation guide](../install/installation.md#2-ruby),
+  we install Ruby from source. Whenever there is a new version that needs to
+  be updated, remember to change it throughout the codeblock and also replace
+  the sha256sum (it can be found in the [downloads page][ruby-dl] of the Ruby
+  website).
+
+[ruby-dl]: https://www.ruby-lang.org/en/downloads/ "Ruby download website"
 
 ## API
 
@@ -245,5 +266,5 @@ curl -X PUT -H "PRIVATE-TOKEN: 9koXpg98eAheJpvBs5tK" -d "restricted_signup_domai
 
 [cURL]: http://curl.haxx.se/ "cURL website"
 [single spaces]: http://www.slate.com/articles/technology/technology/2011/01/space_invaders.html
-[gfm]: http://doc.gitlab.com/ce/markdown/markdown.html#newlines "GitLab flavored markdown documentation"
+[gfm]: http://docs.gitlab.com/ce/markdown/markdown.html#newlines "GitLab flavored markdown documentation"
 [doc-restart]: ../administration/restart_gitlab.md "GitLab restart documentation"

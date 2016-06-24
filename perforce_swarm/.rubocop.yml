@@ -46,3 +46,33 @@ Style/MultilineOperationIndentation:
 
 Style/SpaceAroundOperators:
   Enabled: false
+
+Style/MutableConstant:
+  Enabled: false
+
+Style/Alias:
+  Enabled: false
+
+Performance/RedundantMatch:
+  Enabled: false
+
+Lint/LiteralInCondition:
+  Enabled: false
+
+RSpec/InstanceVariable:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/DescribeMethod:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/FilePath:
+  Enabled: false

@@ -25,7 +25,7 @@ class NewMergeRequestPage < LoggedInPage
   end
 
   def create_merge_request(title)
-    fail('There are no changes to merge') unless changes?
+    raise 'There are no changes to merge' unless changes?
     elem = @driver.find_element(:id, 'merge_request_title')
     elem.clear
     elem.send_keys(title)

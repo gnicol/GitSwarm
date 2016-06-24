@@ -1,8 +1,5 @@
 class Groups::GroupMembersController < Groups::ApplicationController
-  skip_before_action :authenticate_user!, only: [:index]
-
   # Authorize
-  before_action :authorize_read_group!
   before_action :authorize_admin_group_member!, except: [:index, :leave]
 
   def index
@@ -43,7 +40,7 @@ class Groups::GroupMembersController < Groups::ApplicationController
 
     respond_to do |format|
       format.html { redirect_to group_group_members_path(@group), notice: 'User was successfully removed from group.' }
-      format.js { render nothing: true }
+      format.js { head :ok }
     end
   end
 

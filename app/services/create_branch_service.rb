@@ -29,11 +29,7 @@ class CreateBranchService < BaseService
     end
 
     if new_branch
-      push_data = build_push_data(project, current_user, new_branch)
-
-      project.execute_hooks(push_data.dup, :push_hooks)
-      project.execute_services(push_data.dup, :push_hooks)
-
+      # GitPushService handles execution of services and hooks for branch pushes
       success(new_branch)
     else
       error('Invalid reference name')
@@ -46,10 +42,5 @@ class CreateBranchService < BaseService
     out = super()
     out[:branch] = branch
     out
-  end
-
-  def build_push_data(project, user, branch)
-    Gitlab::PushDataBuilder.
-      build(project, user, Gitlab::Git::BLANK_SHA, branch.target, "#{Gitlab::Git::BRANCH_REF_PREFIX}#{branch.name}", [])
   end
 end

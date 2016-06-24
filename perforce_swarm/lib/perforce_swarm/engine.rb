@@ -37,6 +37,12 @@ module PerforceSwarm
         end
       end
 
+      # from Ian Young September 11, 2015 at 5:06 pm
+      # https://blog.pivotal.io/labs/labs/leave-your-migrations-in-your-rails-engines
+      # these extra paths are required to ensure our migrations get marked as applied
+      ActiveRecord::Tasks::DatabaseTasks.migrations_paths |= app.config.paths['db/migrate'].to_a
+      ActiveRecord::Migrator.migrations_paths             |= app.config.paths['db/migrate'].to_a
+
       # Include our engine's fixtures in seed-fu
       SeedFu.fixture_paths << Rails.root.join('perforce_swarm/db/fixtures').to_s
       SeedFu.fixture_paths << Rails.root.join('perforce_swarm/db/fixtures/' + Rails.env).to_s
@@ -55,6 +61,10 @@ module PerforceSwarm
         ::ActionDispatch::PublicExceptions.new("#{root}/public")
       )
     end
+
+    initializer :assets_precompile do |app|
+      app.config.assets.precompile += %w(favicon.ico application_overrides.js application_overrides.css)
+    end
   end
 
   def self.edition
@@ -70,6 +80,22 @@ module PerforceSwarm
 
   def self.ce?
     edition == 'ce'
+  end
+
+  def self.short_name
+    ce? ? 'GitSwarm' : 'GitSwarm EE'
+  end
+
+  def self.long_name
+    ce? ? 'GitSwarm' : 'GitSwarm Enterprise Edition'
+  end
+
+  def self.package_name
+    ce? ? 'gitswarm' : 'gitswarm-ee'
+  end
+
+  def self.gitlab_name
+    ce? ? 'GitLab CE' : 'GitLab EE'
   end
 
   module ConfigurationExtension

@@ -53,6 +53,18 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
       .and_raise(PerforceSwarm::P4::IdentityNotFound, error_message)
   end
 
+  step 'Helix config errors are silenced' do
+    config = PerforceSwarm::GitlabConfig.new.git_fusion
+    config['silence_config_errors'] = true
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+  end
+
+  step 'Helix config errors are explicitly not silenced' do
+    config = PerforceSwarm::GitlabConfig.new.git_fusion
+    config['silence_config_errors'] = false
+    PerforceSwarm::GitlabConfig.any_instance.stub(git_fusion: config)
+  end
+
   step 'I should not see a convention-based mirroring radio button' do
     page.should_not have_selector('#git_fusion_repo_create_type_auto-create')
   end
@@ -68,6 +80,14 @@ class Spinach::Features::ConventionBasedRepos < Spinach::FeatureSteps
   step 'I should see a link to the convention-based mirroring help section' do
     page.should have_content 'Auto create is not configured properly. Please see this document for help.'
     page.should have_link(
+      'this document',
+      href: '/help/workflow/helix_mirroring/configuration#convention-based-mirroring-configuration'
+    )
+  end
+
+  step 'I should not see a link to the convention-based mirroring help section' do
+    page.should_not have_content 'Auto create is not configured properly. Please see this document for help.'
+    page.should_not have_link(
       'this document',
       href: '/help/workflow/helix_mirroring/configuration#convention-based-mirroring-configuration'
     )

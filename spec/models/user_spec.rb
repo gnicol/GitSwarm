@@ -1,66 +1,3 @@
-# == Schema Information
-#
-# Table name: users
-#
-#  id                          :integer          not null, primary key
-#  email                       :string(255)      default(""), not null
-#  encrypted_password          :string(255)      default(""), not null
-#  reset_password_token        :string(255)
-#  reset_password_sent_at      :datetime
-#  remember_created_at         :datetime
-#  sign_in_count               :integer          default(0)
-#  current_sign_in_at          :datetime
-#  last_sign_in_at             :datetime
-#  current_sign_in_ip          :string(255)
-#  last_sign_in_ip             :string(255)
-#  created_at                  :datetime
-#  updated_at                  :datetime
-#  name                        :string(255)
-#  admin                       :boolean          default(FALSE), not null
-#  projects_limit              :integer          default(10)
-#  skype                       :string(255)      default(""), not null
-#  linkedin                    :string(255)      default(""), not null
-#  twitter                     :string(255)      default(""), not null
-#  authentication_token        :string(255)
-#  theme_id                    :integer          default(1), not null
-#  bio                         :string(255)
-#  failed_attempts             :integer          default(0)
-#  locked_at                   :datetime
-#  username                    :string(255)
-#  can_create_group            :boolean          default(TRUE), not null
-#  can_create_team             :boolean          default(TRUE), not null
-#  state                       :string(255)
-#  color_scheme_id             :integer          default(1), not null
-#  notification_level          :integer          default(1), not null
-#  password_expires_at         :datetime
-#  created_by_id               :integer
-#  last_credential_check_at    :datetime
-#  avatar                      :string(255)
-#  confirmation_token          :string(255)
-#  confirmed_at                :datetime
-#  confirmation_sent_at        :datetime
-#  unconfirmed_email           :string(255)
-#  hide_no_ssh_key             :boolean          default(FALSE)
-#  website_url                 :string(255)      default(""), not null
-#  notification_email          :string(255)
-#  hide_no_password            :boolean          default(FALSE)
-#  password_automatically_set  :boolean          default(FALSE)
-#  location                    :string(255)
-#  encrypted_otp_secret        :string(255)
-#  encrypted_otp_secret_iv     :string(255)
-#  encrypted_otp_secret_salt   :string(255)
-#  otp_required_for_login      :boolean          default(FALSE), not null
-#  otp_backup_codes            :text
-#  public_email                :string(255)      default(""), not null
-#  dashboard                   :integer          default(0)
-#  project_view                :integer          default(0)
-#  consumed_timestep           :integer
-#  layout                      :integer          default(0)
-#  hide_project_limit          :boolean          default(FALSE)
-#  unlock_token                :string
-#  otp_grace_period_started_at :datetime
-#
-
 require 'spec_helper'
 
 describe User, models: true do
@@ -91,6 +28,8 @@ describe User, models: true do
     it { is_expected.to have_many(:assigned_merge_requests).dependent(:destroy) }
     it { is_expected.to have_many(:identities).dependent(:destroy) }
     it { is_expected.to have_one(:abuse_report) }
+    it { is_expected.to have_many(:spam_logs).dependent(:destroy) }
+    it { is_expected.to have_many(:todos).dependent(:destroy) }
   end
 
   describe 'validations' do
@@ -118,39 +57,17 @@ describe User, models: true do
 
     it { is_expected.to validate_length_of(:bio).is_within(0..255) }
 
+    it_behaves_like 'an object with email-formated attributes', :email do
+      subject { build(:user) }
+    end
+
+    it_behaves_like 'an object with email-formated attributes', :public_email, :notification_email do
+      subject { build(:user).tap { |user| user.emails << build(:email, email: email_value) } }
+    end
+
     describe 'email' do
-      it 'accepts info@example.com' do
-        user = build(:user, email: 'info@example.com')
-        expect(user).to be_valid
-      end
-
-      it 'accepts info+test@example.com' do
-        user = build(:user, email: 'info+test@example.com')
-        expect(user).to be_valid
-      end
-
-      it "accepts o'reilly@example.com" do
-        user = build(:user, email: "o'reilly@example.com")
-        expect(user).to be_valid
-      end
-
-      it 'rejects test@test@example.com' do
-        user = build(:user, email: 'test@test@example.com')
-        expect(user).to be_invalid
-      end
-
-      it 'rejects mailto:test@example.com' do
-        user = build(:user, email: 'mailto:test@example.com')
-        expect(user).to be_invalid
-      end
-
-      it "rejects lol!'+=?><#$%^&*()@gmail.com" do
-        user = build(:user, email: "lol!'+=?><#$%^&*()@gmail.com")
-        expect(user).to be_invalid
-      end
-
       context 'when no signup domains listed' do
-        before { allow(current_application_settings).to receive(:restricted_signup_domains).and_return([]) }
+        before { allow_any_instance_of(ApplicationSetting).to receive(:restricted_signup_domains).and_return([]) }
         it 'accepts any email' do
           user = build(:user, email: "info@example.com")
           expect(user).to be_valid
@@ -158,7 +75,7 @@ describe User, models: true do
       end
 
       context 'when a signup domain is listed and subdomains are allowed' do
-        before { allow(current_application_settings).to receive(:restricted_signup_domains).and_return(['example.com', '*.example.com']) }
+        before { allow_any_instance_of(ApplicationSetting).to receive(:restricted_signup_domains).and_return(['example.com', '*.example.com']) }
         it 'accepts info@example.com' do
           user = build(:user, email: "info@example.com")
           expect(user).to be_valid
@@ -176,7 +93,7 @@ describe User, models: true do
       end
 
       context 'when a signup domain is listed and subdomains are not allowed' do
-        before { allow(current_application_settings).to receive(:restricted_signup_domains).and_return(['example.com']) }
+        before { allow_any_instance_of(ApplicationSetting).to receive(:restricted_signup_domains).and_return(['example.com']) }
 
         it 'accepts info@example.com' do
           user = build(:user, email: "info@example.com")
@@ -193,6 +110,13 @@ describe User, models: true do
           expect(user).to be_invalid
         end
       end
+
+      context 'owns_notification_email' do
+        it 'accepts temp_oauth_email emails' do
+          user = build(:user, email: "temp-email-for-oauth@example.com")
+          expect(user).to be_valid
+        end
+      end
     end
   end
 
@@ -200,9 +124,24 @@ describe User, models: true do
     it { is_expected.to respond_to(:is_admin?) }
     it { is_expected.to respond_to(:name) }
     it { is_expected.to respond_to(:private_token) }
+    it { is_expected.to respond_to(:external?) }
+  end
+
+  describe 'before save hook' do
+    context 'when saving an external user' do
+      let(:user)          { create(:user) }
+      let(:external_user) { create(:user, external: true) }
+
+      it "sets other properties aswell" do
+        expect(external_user.can_create_team).to be_falsey
+        expect(external_user.can_create_group).to be_falsey
+        expect(external_user.projects_limit).to be 0
+      end
+    end
   end
 
   describe '#confirm' do
+    before { allow_any_instance_of(ApplicationSetting).to receive(:send_user_confirmation_email).and_return(true) }
     let(:user) { create(:user, confirmed_at: nil, unconfirmed_email: 'test@gitlab.com') }
 
     it 'returns unconfirmed' do
@@ -276,6 +215,7 @@ describe User, models: true do
       expect(user).to be_two_factor_enabled
       expect(user.encrypted_otp_secret).not_to be_nil
       expect(user.otp_backup_codes).not_to be_nil
+      expect(user.otp_grace_period_started_at).not_to be_nil
 
       user.disable_two_factor!
 
@@ -284,6 +224,7 @@ describe User, models: true do
       expect(user.encrypted_otp_secret_iv).to be_nil
       expect(user.encrypted_otp_secret_salt).to be_nil
       expect(user.otp_backup_codes).to be_nil
+      expect(user.otp_grace_period_started_at).to be_nil
     end
   end
 
@@ -422,6 +363,7 @@ describe User, models: true do
         expect(user.projects_limit).to eq(Gitlab.config.gitlab.default_projects_limit)
         expect(user.can_create_group).to eq(Gitlab.config.gitlab.default_can_create_group)
         expect(user.theme_id).to eq(Gitlab.config.gitlab.default_theme)
+        expect(user.external).to be_falsey
       end
     end
 
@@ -455,17 +397,43 @@ describe User, models: true do
     end
   end
 
-  describe 'search' do
-    let(:user1) { create(:user, username: 'James', email: 'james@testing.com') }
-    let(:user2) { create(:user, username: 'jameson', email: 'jameson@example.com') }
+  describe '.search' do
+    let(:user) { create(:user) }
 
-    it "should be case insensitive" do
-      expect(User.search(user1.username.upcase).to_a).to eq([user1])
-      expect(User.search(user1.username.downcase).to_a).to eq([user1])
-      expect(User.search(user2.username.upcase).to_a).to eq([user2])
-      expect(User.search(user2.username.downcase).to_a).to eq([user2])
-      expect(User.search(user1.username.downcase).to_a.size).to eq(2)
-      expect(User.search(user2.username.downcase).to_a.size).to eq(1)
+    it 'returns users with a matching name' do
+      expect(described_class.search(user.name)).to eq([user])
+    end
+
+    it 'returns users with a partially matching name' do
+      expect(described_class.search(user.name[0..2])).to eq([user])
+    end
+
+    it 'returns users with a matching name regardless of the casing' do
+      expect(described_class.search(user.name.upcase)).to eq([user])
+    end
+
+    it 'returns users with a matching Email' do
+      expect(described_class.search(user.email)).to eq([user])
+    end
+
+    it 'returns users with a partially matching Email' do
+      expect(described_class.search(user.email[0..2])).to eq([user])
+    end
+
+    it 'returns users with a matching Email regardless of the casing' do
+      expect(described_class.search(user.email.upcase)).to eq([user])
+    end
+
+    it 'returns users with a matching username' do
+      expect(described_class.search(user.username)).to eq([user])
+    end
+
+    it 'returns users with a partially matching username' do
+      expect(described_class.search(user.username[0..2])).to eq([user])
+    end
+
+    it 'returns users with a matching username regardless of the casing' do
+      expect(described_class.search(user.username.upcase)).to eq([user])
     end
   end
 
@@ -814,5 +782,24 @@ describe User, models: true do
     subject { user.authorized_projects }
 
     it { is_expected.to eq([private_project]) }
+  end
+
+  describe '#viewable_starred_projects' do
+    let(:user) { create(:user) }
+    let(:public_project) { create(:empty_project, :public) }
+    let(:private_project) { create(:empty_project, :private) }
+    let(:private_viewable_project) { create(:empty_project, :private) }
+
+    before do
+      private_viewable_project.team << [user, Gitlab::Access::MASTER]
+
+      [public_project, private_project, private_viewable_project].each do |project|
+        user.toggle_star(project)
+      end
+    end
+
+    it 'returns only starred projects the user can view' do
+      expect(user.viewable_starred_projects).not_to include(private_project)
+    end
   end
 end

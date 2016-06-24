@@ -31,6 +31,7 @@ module PerforceSwarm
       # normally a redis task cleans this up but a crash or other unexpected event could
       # leave it hung.
       repo_stats.import_hung.each do |stat|
+        stat[:project].repository.after_import
         stat[:project].import_finish
         stat[:project].save
       end
@@ -80,7 +81,7 @@ module PerforceSwarm
                      last_fetched:   PerforceSwarm::Mirror.last_fetched(repo_path),
                      active:         active,
                      reenabling:     PerforceSwarm::Mirror.reenabling?(repo_path),
-                     reenable_error: project.git_fusion_reenable_error
+                     reenable_error: project.git_fusion_enable_error
                     )
         end
 

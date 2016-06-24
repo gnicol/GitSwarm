@@ -9,8 +9,7 @@ describe Admin::UsersController do
   end
 
   describe 'DELETE #user with projects' do
-    let(:user) { create(:user) }
-    let(:project) { create(:project, namespace: user.namespace) }
+    let(:project) { create(:empty_project, namespace: user.namespace) }
 
     before do
       project.team << [user, :developer]
@@ -24,8 +23,6 @@ describe Admin::UsersController do
   end
 
   describe 'PUT block/:id' do
-    let(:user) { create(:user) }
-
     it 'blocks user' do
       put :block, id: user.username
       user.reload
@@ -51,8 +48,6 @@ describe Admin::UsersController do
     end
 
     context 'manually blocked users' do
-      let(:user) { create(:user) }
-
       before do
         user.block
       end
@@ -67,8 +62,6 @@ describe Admin::UsersController do
   end
 
   describe 'PUT unlock/:id' do
-    let(:user) { create(:user) }
-
     before do
       request.env["HTTP_REFERER"] = "/"
       user.lock_access!
@@ -96,8 +89,6 @@ describe Admin::UsersController do
   end
 
   describe 'PATCH disable_two_factor' do
-    let(:user) { create(:user) }
-
     it 'disables 2FA for the user' do
       expect(user).to receive(:disable_two_factor!)
       allow(subject).to receive(:user).and_return(user)
@@ -120,6 +111,82 @@ describe Admin::UsersController do
 
     def go
       patch :disable_two_factor, id: user.to_param
+    end
+  end
+
+  describe 'POST update' do
+    context 'when the password has changed' do
+      def update_password(user, password, password_confirmation = nil)
+        params = {
+          id: user.to_param,
+          user: {
+            password: password,
+            password_confirmation: password_confirmation || password
+          }
+        }
+
+        post :update, params
+      end
+
+      context 'when the new password is valid' do
+        it 'redirects to the user' do
+          update_password(user, 'AValidPassword1')
+
+          expect(response).to redirect_to(admin_user_path(user))
+        end
+
+        it 'updates the password' do
+          update_password(user, 'AValidPassword1')
+
+          expect { user.reload }.to change { user.encrypted_password }
+        end
+
+        it 'sets the new password to expire immediately' do
+          update_password(user, 'AValidPassword1')
+
+          expect { user.reload }.to change { user.password_expires_at }.to(a_value <= Time.now)
+        end
+      end
+
+      context 'when the new password is invalid' do
+        it 'shows the edit page again' do
+          update_password(user, 'invalid')
+
+          expect(response).to render_template(:edit)
+        end
+
+        it 'returns the error message' do
+          update_password(user, 'invalid')
+
+          expect(assigns[:user].errors).to contain_exactly(a_string_matching(/too short/))
+        end
+
+        it 'does not update the password' do
+          update_password(user, 'invalid')
+
+          expect { user.reload }.not_to change { user.encrypted_password }
+        end
+      end
+
+      context 'when the new password does not match the password confirmation' do
+        it 'shows the edit page again' do
+          update_password(user, 'AValidPassword1', 'AValidPassword2')
+
+          expect(response).to render_template(:edit)
+        end
+
+        it 'returns the error message' do
+          update_password(user, 'AValidPassword1', 'AValidPassword2')
+
+          expect(assigns[:user].errors).to contain_exactly(a_string_matching(/doesn't match/))
+        end
+
+        it 'does not update the password' do
+          update_password(user, 'AValidPassword1', 'AValidPassword2')
+
+          expect { user.reload }.not_to change { user.encrypted_password }
+        end
+      end
     end
   end
 

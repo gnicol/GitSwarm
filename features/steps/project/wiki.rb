@@ -85,7 +85,7 @@ class Spinach::Features::ProjectWiki < Spinach::FeatureSteps
   end
 
   step 'I have an existing Wiki page with images linked on page' do
-    wiki.create_page("pictures", "Look at this [image](image.jpg)\n\n ![image](image.jpg)", :markdown, "first commit")
+    wiki.create_page("pictures", "Look at this [image](image.jpg)\n\n ![alt text](image.jpg)", :markdown, "first commit")
     @wiki_page = wiki.find_page("pictures")
   end
 
@@ -120,7 +120,7 @@ class Spinach::Features::ProjectWiki < Spinach::FeatureSteps
   step 'I should see the new wiki page form' do
     expect(current_path).to match('wikis/image.jpg')
     expect(page).to have_content('New Wiki Page')
-    expect(page).to have_content('Edit Page image.jpg')
+    expect(page).to have_content('Edit Page')
   end
 
   step 'I create a New page with paths' do
@@ -159,11 +159,13 @@ class Spinach::Features::ProjectWiki < Spinach::FeatureSteps
   end
 
   step 'I should see the page history' do
-    expect(page).to have_content('History for')
+    page.within(:css, ".nav-text") do
+      expect(page).to have_content('History')
+    end
   end
 
   step 'I search for Wiki content' do
-    fill_in "Search in this project", with: "wiki_content"
+    fill_in "Search", with: "wiki_content"
     click_button "Search"
   end
 

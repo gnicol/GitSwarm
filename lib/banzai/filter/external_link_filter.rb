@@ -1,5 +1,3 @@
-require 'html/pipeline/filter'
-
 module Banzai
   module Filter
     # HTML Filter to modify the attributes of external links

@@ -2,7 +2,7 @@ class Admin::BroadcastMessagesController < Admin::ApplicationController
   before_action :finder, only: [:edit, :update, :destroy]
 
   def index
-    @broadcast_messages = BroadcastMessage.reorder("starts_at ASC").page(params[:page])
+    @broadcast_messages = BroadcastMessage.reorder("ends_at DESC").page(params[:page])
     @broadcast_message  = BroadcastMessage.new
   end
 
@@ -32,8 +32,12 @@ class Admin::BroadcastMessagesController < Admin::ApplicationController
 
     respond_to do |format|
       format.html { redirect_back_or_default(default: { action: 'index' }) }
-      format.js { render nothing: true }
+      format.js { head :ok }
     end
+  end
+
+  def preview
+    @message = broadcast_message_params[:message]
   end
 
   protected

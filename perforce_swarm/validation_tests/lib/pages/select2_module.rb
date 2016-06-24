@@ -27,6 +27,6 @@ module Select2Module
       x.click
       return true
     end
-    fail('Did not find requested option : '+option)
+    raise 'Did not find requested option : ' + option
   end
 end

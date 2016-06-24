@@ -10,6 +10,8 @@ class Notify < BaseMailer
   include Emails::Builds
 
   add_template_helper MergeRequestsHelper
+  add_template_helper DiffHelper
+  add_template_helper BlobHelper
   add_template_helper EmailsHelper
 
   def test_email(recipient_email, subject, body)
@@ -109,6 +111,10 @@ class Notify < BaseMailer
       address.display_name = @project.name_with_namespace
 
       headers['Reply-To'] = address
+
+      fallback_reply_message_id = "<reply-#{reply_key}@#{Gitlab.config.gitlab.host}>".freeze
+      headers['References'] ||= ''
+      headers['References'] << ' ' << fallback_reply_message_id
 
       @reply_by_email = true
     end

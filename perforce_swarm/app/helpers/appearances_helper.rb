@@ -1,7 +1,7 @@
 require Rails.root.join('app', 'helpers', 'appearances_helper')
 
 module AppearancesHelper
-  BRAND_TITLE_VALUE = 'GitSwarm'
+  BRAND_TITLE_VALUE = 'GitSwarm'.freeze
 
   def brand_title
     return brand_item.title if PerforceSwarm.ee? && brand_item
@@ -10,8 +10,8 @@ module AppearancesHelper
   end
 
   def brand_header_logo
-    if PerforceSwarm.ee? && brand_item && brand_item.light_logo?
-      image_tag brand_item.light_logo, class: 'brand-logo'
+    if PerforceSwarm.ee? && brand_item && brand_item.header_logo?
+      image_tag brand_item.header_logo, class: 'brand-logo'
     else
       content_tag :div, nil, class: 'brand-logo'
     end

@@ -1,9 +1,9 @@
 require_relative 'logged_in_page'
 
 class MergeRequestPage < LoggedInPage
-  OPEN         = 'Open'
-  CLOSED       = 'Closed'
-  MERGED       = 'Merged'
+  OPEN         = 'Open'.freeze
+  CLOSED       = 'Closed'.freeze
+  MERGED       = 'Merged'.freeze
 
   def initialize(driver)
     super(driver)
@@ -34,13 +34,13 @@ class MergeRequestPage < LoggedInPage
     accept_merge_and_wait
     # Once the page reloads we should see the issue box merged
     wait_for(:class, 'status-box-merged', 90)
-    fail('MR state is not CLOSED as expected') unless state == MERGED
+    raise 'MR state is not CLOSED as expected' unless state == MERGED
   end
 
   def accept_merge_request_expecting_failure
     accept_merge_and_wait
     wait_for_text(:class, 'mr-state-widget', 'Something went wrong during merge', 90)
-    fail('MR state is not OPEN as expected') unless state == OPEN
+    raise 'MR state is not OPEN as expected' unless state == OPEN
   end
 
   def state

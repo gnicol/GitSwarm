@@ -1,10 +1,10 @@
-# Updating GitSwarm to 2016.1
+# Updating GitSwarm to 2016.2
 
 ## Pre-update considerations
 
 GitSwarm can only restore backups made on the same version. Hence, a backup
 of GitSwarm 2015.4 can only be restored to an instance running 2015.4, and
-not on 2016.1 or higher versions. Although, updating GitSwarm should not
+not on 2016.2 or higher versions. Although, updating GitSwarm should not
 result in data corruption, we recommend taking backups of your existing
 version before you run an update.
 
@@ -60,11 +60,11 @@ Versioning Engine prior to updating GitSwarm.
 
 > **Important:** If you are upgrading from GitSwarm 2015.3 or prior, and
 > you had GitLab CI enabled, you must update to GitSwarm 2015.4 before you
-> update to GitSwarm 2016.1.
+> update to GitSwarm 2016.2.
 
-## Performing the update to 2016.1
+## Performing the update to 2016.2
 
-1.  **Download the 2016.1 GitSwarm package and install it.**
+1.  **Download the 2016.2 GitSwarm package and install it.**
 
     ```bash
     curl https://package.perforce.com/bootstrap/gitswarm.sh | sudo sh -

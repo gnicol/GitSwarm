@@ -3,7 +3,7 @@ module SharedProfile
 
   step 'I change the username to "NewUserQA" in "Profile settings"' do
     fill_in 'user_name', with: 'NewUserQA'
-    click_button 'Save changes'
+    click_button 'Update profile settings'
   end
 
   step 'the profile settings should be updated' do

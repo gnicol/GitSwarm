@@ -1,68 +1,4 @@
-# == Schema Information
-#
-# Table name: users
-#
-#  id                          :integer          not null, primary key
-#  email                       :string(255)      default(""), not null
-#  encrypted_password          :string(255)      default(""), not null
-#  reset_password_token        :string(255)
-#  reset_password_sent_at      :datetime
-#  remember_created_at         :datetime
-#  sign_in_count               :integer          default(0)
-#  current_sign_in_at          :datetime
-#  last_sign_in_at             :datetime
-#  current_sign_in_ip          :string(255)
-#  last_sign_in_ip             :string(255)
-#  created_at                  :datetime
-#  updated_at                  :datetime
-#  name                        :string(255)
-#  admin                       :boolean          default(FALSE), not null
-#  projects_limit              :integer          default(10)
-#  skype                       :string(255)      default(""), not null
-#  linkedin                    :string(255)      default(""), not null
-#  twitter                     :string(255)      default(""), not null
-#  authentication_token        :string(255)
-#  theme_id                    :integer          default(1), not null
-#  bio                         :string(255)
-#  failed_attempts             :integer          default(0)
-#  locked_at                   :datetime
-#  username                    :string(255)
-#  can_create_group            :boolean          default(TRUE), not null
-#  can_create_team             :boolean          default(TRUE), not null
-#  state                       :string(255)
-#  color_scheme_id             :integer          default(1), not null
-#  notification_level          :integer          default(1), not null
-#  password_expires_at         :datetime
-#  created_by_id               :integer
-#  last_credential_check_at    :datetime
-#  avatar                      :string(255)
-#  confirmation_token          :string(255)
-#  confirmed_at                :datetime
-#  confirmation_sent_at        :datetime
-#  unconfirmed_email           :string(255)
-#  hide_no_ssh_key             :boolean          default(FALSE)
-#  website_url                 :string(255)      default(""), not null
-#  notification_email          :string(255)
-#  hide_no_password            :boolean          default(FALSE)
-#  password_automatically_set  :boolean          default(FALSE)
-#  location                    :string(255)
-#  encrypted_otp_secret        :string(255)
-#  encrypted_otp_secret_iv     :string(255)
-#  encrypted_otp_secret_salt   :string(255)
-#  otp_required_for_login      :boolean          default(FALSE), not null
-#  otp_backup_codes            :text
-#  public_email                :string(255)      default(""), not null
-#  dashboard                   :integer          default(0)
-#  project_view                :integer          default(0)
-#  consumed_timestep           :integer
-#  layout                      :integer          default(0)
-#  hide_project_limit          :boolean          default(FALSE)
-#  unlock_token                :string
-#  otp_grace_period_started_at :datetime
-#
-
 require 'carrierwave/orm/activerecord'
-require 'file_size_validator'
 
 class User < ActiveRecord::Base
   extend Gitlab::ConfigHelper
@@ -77,6 +13,7 @@ class User < ActiveRecord::Base
   add_authentication_token_field :authentication_token
 
   default_value_for :admin, false
+  default_value_for :external, false
   default_value_for :can_create_group, gitlab_config.default_can_create_group
   default_value_for :can_create_team, false
   default_value_for :hide_no_ssh_key, false
@@ -84,7 +21,7 @@ class User < ActiveRecord::Base
   default_value_for :theme_id, gitlab_config.default_theme
 
   devise :two_factor_authenticatable,
-         otp_secret_encryption_key: File.read(Rails.root.join('.secret')).chomp
+         otp_secret_encryption_key: Gitlab::Application.config.secret_key_base
   alias_attribute :two_factor_enabled, :otp_required_for_login
 
   devise :two_factor_backupable, otp_number_of_backup_codes: 10
@@ -138,18 +75,17 @@ class User < ActiveRecord::Base
   has_many :assigned_merge_requests,  dependent: :destroy, foreign_key: :assignee_id, class_name: "MergeRequest"
   has_many :oauth_applications, class_name: 'Doorkeeper::Application', as: :owner, dependent: :destroy
   has_one  :abuse_report,             dependent: :destroy
+  has_many :spam_logs,                dependent: :destroy
   has_many :builds,                   dependent: :nullify, class_name: 'Ci::Build'
-
+  has_many :todos,                    dependent: :destroy
+  has_many :notification_settings,    dependent: :destroy
 
   #
   # Validations
   #
   validates :name, presence: true
-  # Note that a 'uniqueness' and presence check is provided by devise :validatable for email. We do not need to
-  # duplicate that here as the validation framework will have duplicate errors in the event of a failure.
-  validates :email, presence: true, email: { strict_mode: true }
-  validates :notification_email, presence: true, email: { strict_mode: true }
-  validates :public_email, presence: true, email: { strict_mode: true }, allow_blank: true, uniqueness: true
+  validates :notification_email, presence: true, email: true
+  validates :public_email, presence: true, uniqueness: true, email: true, allow_blank: true
   validates :bio, length: { maximum: 255 }, allow_blank: true
   validates :projects_limit, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :username,
@@ -157,7 +93,7 @@ class User < ActiveRecord::Base
     presence: true,
     uniqueness: { case_sensitive: false }
 
-  validates :notification_level, inclusion: { in: Notification.notification_levels }, presence: true
+  validates :notification_level, presence: true
   validate :namespace_uniq, if: ->(user) { user.username_changed? }
   validate :avatar_type, if: ->(user) { user.avatar.present? && user.avatar_changed? }
   validate :unique_email, if: ->(user) { user.email_changed? }
@@ -173,8 +109,10 @@ class User < ActiveRecord::Base
 
   after_update :update_emails_with_primary_email, if: ->(user) { user.email_changed? }
   before_save :ensure_authentication_token
+  before_save :ensure_external_user_rights
   after_save :ensure_namespace_correct
   after_initialize :set_projects_limit
+  before_create :check_confirmation_email
   after_create :post_create_hook
   after_destroy :post_destroy_hook
 
@@ -183,11 +121,18 @@ class User < ActiveRecord::Base
 
   # User's Dashboard preference
   # Note: When adding an option, it MUST go on the end of the array.
-  enum dashboard: [:projects, :stars, :project_activity, :starred_project_activity]
+  enum dashboard: [:projects, :stars, :project_activity, :starred_project_activity, :groups, :todos]
 
   # User's Project preference
   # Note: When adding an option, it MUST go on the end of the array.
   enum project_view: [:readme, :activity, :files]
+
+  # Notification level
+  # Note: When adding an option, it MUST go on the end of the array.
+  #
+  # TODO: Add '_prefix: :notification' to enum when update to Rails 5. https://github.com/rails/rails/pull/19813
+  # Because user.notification_disabled? is much better than user.disabled?
+  enum notification_level: [:disabled, :participating, :watch, :global, :mention]
 
   alias_attribute :private_token, :authentication_token
 
@@ -220,6 +165,7 @@ class User < ActiveRecord::Base
   # Scopes
   scope :admins, -> { where(admin: true) }
   scope :blocked, -> { with_states(:blocked, :ldap_blocked) }
+  scope :external, -> { where(external: true) }
   scope :active, -> { with_state(:active) }
   scope :not_in_project, ->(project) { project.users.present? ? where("id not in (:ids)", ids: project.users.map(&:id) ) : all }
   scope :without_projects, -> { where('id NOT IN (SELECT DISTINCT(user_id) FROM members)') }
@@ -275,13 +221,29 @@ class User < ActiveRecord::Base
         self.with_two_factor
       when 'wop'
         self.without_projects
+      when 'external'
+        self.external
       else
         self.active
       end
     end
 
+    # Searches users matching the given query.
+    #
+    # This method uses ILIKE on PostgreSQL and LIKE on MySQL.
+    #
+    # query - The search query as a String
+    #
+    # Returns an ActiveRecord::Relation.
     def search(query)
-      where("lower(name) LIKE :query OR lower(email) LIKE :query OR lower(username) LIKE :query", query: "%#{query.downcase}%")
+      table   = arel_table
+      pattern = "%#{query}%"
+
+      where(
+        table[:name].matches(pattern).
+          or(table[:email].matches(pattern)).
+          or(table[:username].matches(pattern))
+      )
     end
 
     def by_login(login)
@@ -331,10 +293,6 @@ class User < ActiveRecord::Base
     "#{self.class.reference_prefix}#{username}"
   end
 
-  def notification
-    @notification ||= Notification.new(self)
-  end
-
   def generate_password
     if self.force_random_password
       self.password = self.password_confirmation = Devise.friendly_token.first(8)
@@ -350,23 +308,29 @@ class User < ActiveRecord::Base
     @reset_token
   end
 
+  def check_confirmation_email
+    skip_confirmation! unless current_application_settings.send_user_confirmation_email
+  end
+
   def recently_sent_password_reset?
     reset_password_sent_at.present? && reset_password_sent_at >= 1.minute.ago
   end
 
   def disable_two_factor!
     update_attributes(
-      two_factor_enabled:        false,
-      encrypted_otp_secret:      nil,
-      encrypted_otp_secret_iv:   nil,
-      encrypted_otp_secret_salt: nil,
-      otp_backup_codes:          nil
+      two_factor_enabled:          false,
+      encrypted_otp_secret:        nil,
+      encrypted_otp_secret_iv:     nil,
+      encrypted_otp_secret_salt:   nil,
+      otp_grace_period_started_at: nil,
+      otp_backup_codes:            nil
     )
   end
 
   def namespace_uniq
     # Return early if username already failed the first uniqueness validation
-    return if self.errors[:username].include?('has already been taken')
+    return if self.errors.key?(:username) &&
+      self.errors[:username].include?('has already been taken')
 
     namespace_name = self.username
     existing_namespace = Namespace.by_path(namespace_name)
@@ -388,6 +352,8 @@ class User < ActiveRecord::Base
   end
 
   def owns_notification_email
+    return if self.temp_oauth_email?
+
     self.errors.add(:notification_email, "is not an email you own") unless self.all_emails.include?(self.notification_email)
   end
 
@@ -415,20 +381,20 @@ class User < ActiveRecord::Base
     Group.where("namespaces.id IN (#{union.to_sql})")
   end
 
-  # Returns the groups a user is authorized to access.
+  # Returns projects user is authorized to access.
   def authorized_projects
     Project.where("projects.id IN (#{projects_union.to_sql})")
+  end
+
+  def viewable_starred_projects
+    starred_projects.where("projects.visibility_level IN (?) OR projects.id IN (#{projects_union.to_sql})",
+                           [Project::PUBLIC, Project::INTERNAL])
   end
 
   def owned_projects
     @owned_projects ||=
       Project.where('namespace_id IN (?) OR namespace_id = ?',
                     owned_groups.select(:id), namespace.id).joins(:namespace)
-  end
-
-  # Team membership in authorized projects
-  def tm_in_authorized_projects
-    ProjectMember.where(source_id: authorized_projects.map(&:id), user_id: self.id)
   end
 
   def is_admin?
@@ -520,10 +486,6 @@ class User < ActiveRecord::Base
     "#{name} (#{username})"
   end
 
-  def tm_of(project)
-    project.project_member_by_id(self.id)
-  end
-
   def already_forked?(project)
     !!fork_of(project)
   end
@@ -602,6 +564,13 @@ class User < ActiveRecord::Base
     else
       false
     end
+  end
+
+  def try_obtain_ldap_lease
+    # After obtaining this lease LDAP checks will be blocked for 600 seconds
+    # (10 minutes) for this user.
+    lease = Gitlab::ExclusiveLease.new("user_ldap_check:#{id}", timeout: 600)
+    lease.try_obtain
   end
 
   def solo_owned_groups
@@ -798,12 +767,17 @@ class User < ActiveRecord::Base
     end
   end
 
+  def notification_settings_for(source)
+    notification_settings.find_or_initialize_by(source: source)
+  end
+
   private
 
   def projects_union
     Gitlab::SQL::Union.new([personal_projects.select(:id),
                             groups_projects.select(:id),
-                            projects.select(:id)])
+                            projects.select(:id),
+                            groups.joins(:shared_projects).select(:project_id)])
   end
 
   def ci_projects_union
@@ -818,5 +792,12 @@ class User < ActiveRecord::Base
   # Added according to https://github.com/plataformatec/devise/blob/7df57d5081f9884849ca15e4fde179ef164a575f/README.md#activejob-integration
   def send_devise_notification(notification, *args)
     devise_mailer.send(notification, self, *args).deliver_later
+  end
+
+  def ensure_external_user_rights
+    return unless self.external?
+
+    self.can_create_group   = false
+    self.projects_limit     = 0
   end
 end

@@ -1,10 +1,14 @@
 class SessionsController < Devise::SessionsController
   include AuthenticatesWithTwoFactor
+  include Devise::Controllers::Rememberable
   include Recaptcha::ClientHelper
 
+  skip_before_action :check_2fa_requirement, only: [:destroy]
+  prepend_before_action :check_initial_setup, only: [:new]
   prepend_before_action :authenticate_with_two_factor,
     if: :two_factor_enabled?, only: [:create]
   prepend_before_action :store_redirect_path, only: [:new]
+
   before_action :auto_sign_in_with_provider, only: [:new]
   before_action :load_recaptcha
 
@@ -31,6 +35,22 @@ class SessionsController < Devise::SessionsController
   end
 
   private
+
+  # Handle an "initial setup" state, where there's only one user, it's an admin,
+  # and they require a password change.
+  def check_initial_setup
+    return unless User.count == 1
+
+    user = User.admins.last
+
+    return unless user && user.require_password?
+
+    token = user.generate_reset_token
+    user.save
+
+    redirect_to edit_user_password_path(reset_password_token: token),
+      notice: "Please create a password for your new account."
+  end
 
   def user_params
     params.require(:user).permit(:login, :password, :remember_me, :otp_attempt)
@@ -76,6 +96,7 @@ class SessionsController < Devise::SessionsController
         # Remove any lingering user data from login
         session.delete(:otp_user_id)
 
+        remember_me(user) if user_params[:remember_me] == '1'
         sign_in(user) and return
       else
         flash.now[:alert] = 'Invalid two-factor code.'

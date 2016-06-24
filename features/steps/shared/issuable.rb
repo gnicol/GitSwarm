@@ -2,7 +2,7 @@ module SharedIssuable
   include Spinach::DSL
 
   def edit_issuable
-    find(:css, '.issuable-edit').click
+    find('.issuable-edit', visible: true).click
   end
 
   step 'project "Community" has "Community issue" open issue' do
@@ -71,13 +71,16 @@ module SharedIssuable
 
   step 'I should not see any related merge requests' do
     page.within '.issue-details' do
-      expect(page).not_to have_content('.merge-requests')
+      expect(page).not_to have_content('#merge-requests .merge-requests-title')
     end
   end
 
   step 'I should see the "Enterprise fix" related merge request' do
-    page.within '.merge-requests' do
+    page.within '#merge-requests .merge-requests-title' do
       expect(page).to have_content('1 Related Merge Request')
+    end
+
+    page.within '#merge-requests ul' do
       expect(page).to have_content('Enterprise fix')
     end
   end
@@ -104,6 +107,57 @@ module SharedIssuable
 
   step 'I click link "Edit" for the issue' do
     edit_issuable
+  end
+
+  step 'I sort the list by "Oldest updated"' do
+    find('button.dropdown-toggle.btn').click
+    page.within('ul.dropdown-menu.dropdown-menu-align-right li') do
+      click_link "Oldest updated"
+    end
+  end
+
+  step 'I sort the list by "Least popular"' do
+    find('button.dropdown-toggle.btn').click
+
+    page.within('ul.dropdown-menu.dropdown-menu-align-right li') do
+      click_link 'Least popular'
+    end
+  end
+
+  step 'I sort the list by "Most popular"' do
+    find('button.dropdown-toggle.btn').click
+
+    page.within('ul.dropdown-menu.dropdown-menu-align-right li') do
+      click_link 'Most popular'
+    end
+  end
+
+  step 'The list should be sorted by "Oldest updated"' do
+    page.within('div.dropdown.inline.prepend-left-10') do
+      expect(page.find('button.dropdown-toggle.btn')).to have_content('Oldest updated')
+    end
+  end
+
+  step 'I should see "1 of 1" in the sidebar' do
+    expect_sidebar_content('1 of 1')
+  end
+
+  step 'I should see "1 of 2" in the sidebar' do
+    expect_sidebar_content('1 of 2')
+  end
+
+  step 'I should see "2 of 2" in the sidebar' do
+    expect_sidebar_content('2 of 2')
+  end
+
+  step 'I should see "3 of 3" in the sidebar' do
+    expect_sidebar_content('3 of 3')
+  end
+
+  step 'I click link "Next" in the sidebar' do
+    page.within '.issuable-sidebar' do
+      click_link 'Next'
+    end
   end
 
   def create_issuable_for_project(project_name:, title:, type: :issue)
@@ -135,7 +189,7 @@ module SharedIssuable
 
     page.within('.js-main-target-form') do
       fill_in 'note[note]', with: "##{issuable.to_reference(project)}"
-      click_button 'Add Comment'
+      click_button 'Comment'
     end
   end
 
@@ -144,6 +198,12 @@ module SharedIssuable
 
     expect(page).to have_content(user_name)
     expect(page).to have_content("mentioned in #{issuable.class.to_s.titleize.downcase} #{issuable.to_reference(project)}")
+  end
+
+  def expect_sidebar_content(content)
+    page.within '.issuable-sidebar' do
+      expect(page).to have_content content
+    end
   end
 
 end

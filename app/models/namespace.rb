@@ -1,18 +1,3 @@
-# == Schema Information
-#
-# Table name: namespaces
-#
-#  id          :integer          not null, primary key
-#  name        :string(255)      not null
-#  path        :string(255)      not null
-#  owner_id    :integer
-#  created_at  :datetime
-#  updated_at  :datetime
-#  type        :string(255)
-#  description :string(255)      default(""), not null
-#  avatar      :string(255)
-#
-
 class Namespace < ActiveRecord::Base
   include Sortable
   include Gitlab::ShellAdapter
@@ -52,8 +37,18 @@ class Namespace < ActiveRecord::Base
       find_by("lower(path) = :path OR lower(name) = :path", path: path.downcase)
     end
 
+    # Searches for namespaces matching the given query.
+    #
+    # This method uses ILIKE on PostgreSQL and LIKE on MySQL.
+    #
+    # query - The search query as a String
+    #
+    # Returns an ActiveRecord::Relation
     def search(query)
-      where("name LIKE :query OR path LIKE :query", query: "%#{query}%")
+      t = arel_table
+      pattern = "%#{query}%"
+
+      where(t[:name].matches(pattern).or(t[:path].matches(pattern)))
     end
 
     def clean_path(path)
@@ -115,6 +110,10 @@ class Namespace < ActiveRecord::Base
     # Ensure old directory exists before moving it
     gitlab_shell.add_namespace(path_was)
 
+    if any_project_has_container_registry_tags?
+      raise Exception.new('Namespace cannot be moved, because at least one project has tags in container registry')
+    end
+
     if gitlab_shell.mv_namespace(path_was, path)
       Gitlab::UploadsTransfer.new.rename_namespace(path_was, path)
 
@@ -134,6 +133,10 @@ class Namespace < ActiveRecord::Base
       # db changes in order to prevent out of sync between db and fs
       raise Exception.new('namespace directory cannot be moved')
     end
+  end
+
+  def any_project_has_container_registry_tags?
+    projects.any?(&:has_container_registry_tags?)
   end
 
   def send_update_instructions

@@ -25,7 +25,7 @@ Introduction
 
 Documentation
 
-    GitSwarm EE Release 2016.1 documentation is included in the
+    GitSwarm EE Release 2016.2 documentation is included in the
     distribution and can be accessed from within GitSwarm EE from the "?"
     menu on the top toolbar. The latest GitSwarm EE Release documentation
     can be found online at:
@@ -50,13 +50,17 @@ Supported Client Browsers
 
 Installation and Supported Platforms
 
-    Please see the separate "install" file, a peer to this file.
+    Please see the instructions here:
+    https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/install/README.html
 
 Upgrading
 
-    Please see the separate "upgrade" file, a peer to this file.
+    Please see the instructions here:
+    https://www.perforce.com/perforce/doc.current/manuals/gitswarm-ee/update/README.html
 
 Known Issues
+
+    * Git LFS is not supported on GitSwarm EE projects mirrored in Git Fusion.
 
     * Helix Mirroring stops working when a GitSwarm EE project involves
       commits that contain only tags and no file changes.
@@ -108,6 +112,158 @@ Known Issues
       for help.
 
 ---------------------------------------------------------------------------
+
+Minor new functionality in 2016.2
+
+    #43e60c69, #2259c67d, #42e3ce7d (Bug #85789)
+        Add errors from Helix Git Fusion when mirroring is enabled on a new project
+
+    #428e0472 (Bug #85151)
+        Added logic to abort installation if there is a pre-existing 'git' user, and
+        we (GitSwarm) didn't create it
+
+    #874297bd (Bug #86986)
+        Removed GitLab's old default root password from post-install text
+
+    #b3a85def (Bug #85730)
+        Prevent creation of projects with empty depot paths selected from the custom
+        repo selector - the projects were being created, but without any branches
+
+    #54512710 (Bug #87009)
+        Incorporate GitLab's new password create on initial install with our
+        auto-provisioned Helix Git Fusion instance
+
+    #852d0453, #273ce8ae (Bug #86455)
+        Add a configurable that allows admins to suppresses Git Fusion configuration
+        errors both on the new project page and the reconfigure output
+
+Bugs fixed in 2016.2
+
+    #df2dc6cc, #b2a50c08 (Bug #85902)
+        The bootstrap script now checks for conflicting packages and aborts if any found
+
+    #65779263 (Bug #85761)
+        Ensure mapped streams exist before creating a new project with the custom repo
+        creator tool
+
+    #846ba34e (Bug #84059)
+        Fix UI when all of GitLab's import (e.g. GitHub) sources are disabled
+
+    #13c8dc56, #045070fa (Bug #86267)
+        Add the //.git-fusion depot to an client template if one is present
+
+GitLab EE changelogs since GitLab EE 8.4
+
+    GitLab EE 8.8
+        - Make sure OAuth routes that we generate for Geo matches with the ones in Rails routes !444
+        - Remove license overusage message
+        - Add standard web hook headers to Jenkins CI post. !374
+        - Gracefully handle malformed DNs in LDAP group sync. !392
+        - Reduce load on DB for license upgrade check. !421
+        - Make it clear the license overusage message is visible only to admins. !423
+        - Fix Git hook validations for fast-forward merges. !427
+        - [Elastic] In search results, only show notes on confidential issues that the
+          user has access to.
+        - [Elastic] Search through the filenames. !409
+        - Fix repository mirror updates for new imports stuck in "started" state. !416
+        - [Elastic] Database indexer prints its status
+        - [Elastic][Fix] Database indexer skips projects with invalid HEAD reference
+        - Fix skipping pages when restoring backups
+        - Add EE license via API !400
+        - [Elastic] More efficient snippets search
+        - [Elastic] Add rake task for removing all indexes
+        - [Elastic] Add rake task for clearing indexing status
+        - [Elastic] Improve code search
+        - [Elastic] Fix encoding issues during indexing
+        - Warn admin if current active count exceeds license
+        - Set KRB5 as default clone protocol when Kerberos is enabled and user is logged
+          in (Borja Aparicio)
+        - Reduce emails-on-push HTML size by using a simple monospace font
+        - API requests to /internal/authorized_keys are now tagged properly
+        - Geo: Single Sign Out support !380
+
+    GitLab EE 8.7
+        - Delete ProjectImportData record only if Project is not a mirror !370
+        - Fixed typo in GitLab GEO license check alert !379
+        - Fix LDAP access level spillover bug !499
+        - Fix MR notifications for slack and hipchat when approvals are fullfiled. !325
+        - GitLab Geo: Merge requests on Secondary should not check mergeable status
+        - Update GitLab Pages to 0.2.1: support user-defined 404 pages
+        - Refactor group sync to pull access level logic to its own class. !306
+        - [Elastic] Stabilize database indexer if database is inconsistent
+        - Add ability to sync to remote mirrors. !249
+        - GitLab Geo: Many replication improvements and fixes !354
+
+    GitLab EE 8.6
+        - Concat AD group recursive member results with regular member results. !333
+        - Fix LDAP group sync regression for groups with member value `uid=<username>`.
+          !335
+        - Don't attempt to include too large diffs in e-mail-on-push messages (Stan Hu).
+          !338
+        - Fix other cases where git hooks would fail due to old commits. !310
+        - Exit ElasticIndexerWorker's job happily if record cannot be found. !311
+        - Fix "Reload with full diff" button not working (Stan Hu). !313
+        - Fix old commits triggering git hooks on new branches branched off another
+          branch. !281
+        - Fix issue with deleted user in audit event (Stan Hu). !284
+        - Mark pending todos as done when approving a merge request. !292
+        - GitLab Geo: Display Attachments from Primary node. !302
+        - Only rename the `light_logo` column in the `appearances` table if its not there
+          yet. !290
+        - Fix diffs in text part of email-on-push messages (Stan Hu). !293
+        - Fix an issue with methods not accessible in some controllers. !295
+        - Ensure Projects::ApproversController inherits from
+          Projects::ApplicationController. !296
+        - Handle duplicate appearances table creation issue with upgrade from CE to EE
+        - Add confidential issues
+        - Improve weight filter for issues
+        - Update settings and documentation for per-install LDAP sync time
+        - Fire merge request webhooks when a merge request is approved
+        - Add full diff highlighting to Email on push
+        - Clear "stuck" mirror updates before periodically updating all mirrors
+        - LDAP: Don't render Linked LDAP groups forms when LDAP is disabled
+        - [Elastic] Add elastic checker to gitlab:check
+        - [Elastic] Added UPDATE_INDEX option to rake task
+        - [Elastic] Removing repository and wiki index after removing project
+        - [Elastic] Update index on push to wiki
+        - [Elastic] Use subprocesses for ElasticSearch index jobs
+        - [Elastic] More accurate as_indexed_json (More stable database indexer)
+        - [Elastic] Fix: Don't index newly created system messages and awards
+        - [Elastic] Fixed exception on branch removing
+        - [Elastic] Fix bin/elastic_repo_indexer to follow config
+        - GitLab Geo: OAuth authentication
+        - GitLab Geo: Wiki synchronization
+        - GitLab Geo: ReadOnly Middleware improvements
+        - GitLab Geo: SSH Keys synchronization
+        - Allow SSL verification to be configurable when importing GitHub projects
+        - Disable git-hooks for git annex commits
+
+    GitLab EE 8.5
+        - Fix vulnerability that made it possible to enumerate private projects belonging
+          to group
+        - GitLab Geo: Documentation
+        - GitLab Geo: Repository synchronization between primary and secondary nodes
+        - Add documentation for GitLab Pages
+        - Fix importing projects from GitHub Enterprise Edition
+        - Fix syntax error in init file
+        - Only show group member roles if explicitly requested
+        - GitLab Geo: Improve GeoNodes Admin screen
+        - GitLab Geo: Avoid locking yourself out when adding a GeoNode
+        - [Elastic][Security] Notes exposure
+        - Prevent LDAP from downgrading a group's last owner
+        - Update gitlab-elastic-search gem to 0.0.11
+        - Update LDAP groups asynchronously
+        - Fix an issue when weight text was displayed in Issuable collapsed sidebar
+        - Fix importing projects from GitHub Enterprise Edition.
+        - Fix adding pages domain to projects in groups
+        - Fix Elasticsearch blob results linking to the wrong reference ID (Stan Hu)
+        - Show warning when mirror repository default branch could not be updated because
+          it has diverged from upstream.
+        - More reliable wiki indexer
+        - GitLab Pages gets support for custom domain and custom certificate
+        - Fix of Elastic indexer. It should not trigger record validation for projects
+        - Fix of Elastic indexer. Stabilze indexer when serialized data is corrupted
+        - [Elastic] Don't index unnecessary data into elastic
 
 Major new functionality in 2016.1
 

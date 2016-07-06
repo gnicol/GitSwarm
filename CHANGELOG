@@ -36,6 +36,10 @@ v 8.7.0 (unreleased)
   - Fix creation of merge requests for orphaned branches (Stan Hu)
   - API: Ability to retrieve a single tag (Robert Schilling)
 v 8.8.0 (unreleased)
+v 8.8.7
+  - Fix privilege escalation issue with OAuth external users.
+  - Ensure references to private repos aren't shown to logged-out users.
+
 v 8.8.6
   - Fix visibility of snippets when searching.
   - Update omniauth-saml to 1.6.0 !4951

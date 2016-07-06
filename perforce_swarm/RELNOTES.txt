@@ -145,6 +145,8 @@ Bugs fixed in 2016.2
 GitLab changelogs since GitLab 8.4
 
     GitLab 8.8
+        - Fix privilege escalation issue with OAuth external users.
+        - Ensure references to private repos aren't shown to logged-out users.
         - Fix visibility of snippets when searching.
         - Update omniauth-saml to 1.6.0 !4951
         - Import GitHub repositories respecting the API rate limit !4166

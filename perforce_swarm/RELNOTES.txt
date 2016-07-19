@@ -129,6 +129,9 @@ Minor new functionality in 2016.2
 
 Bugs fixed in 2016.2
 
+    #b40288aa (Bug #87663)
+        Unpin OpenSSL so we install the same version as the community (currently 1.0.2h)
+
     #df2dc6cc, #b2a50c08 (Bug #85902)
         The bootstrap script now checks for conflicting packages and aborts if any found
 
